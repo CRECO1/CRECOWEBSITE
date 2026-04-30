@@ -127,7 +127,7 @@ export default function TeamPage() {
 
             <div className="relative h-40 w-full bg-background-warm">
               {selected.image_url ? (
-                <Image src={selected.image_url as string} alt={selected.name} fill className="object-cover object-top" />
+                <Image src={selected.image_url as string} alt={selected.name} fill sizes="(max-width: 640px) 100vw, 384px" className="object-cover object-top" />
               ) : (
                 <div className="flex h-full items-center justify-center">
                   <User className="h-20 w-20 text-foreground-subtle" />

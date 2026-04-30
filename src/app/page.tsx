@@ -226,6 +226,7 @@ export default async function HomePage() {
             src={s.hero_image_url}
             alt="Texas commercial real estate"
             fill
+            sizes="100vw"
             className="object-cover opacity-40"
             priority
           />
@@ -315,7 +316,7 @@ export default async function HomePage() {
                 <Link href={`/listings/${listing.slug}`} className="card-luxury group block">
                   <div className="image-luxury aspect-property bg-background-warm relative">
                     {listing.images && (listing.images as string[])[0] ? (
-                      <Image src={(listing.images as string[])[0]} alt={listing.title} fill className="object-cover" />
+                      <Image src={(listing.images as string[])[0]} alt={listing.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />
                     ) : (
                       <div className="flex h-full items-center justify-center text-foreground-subtle"><Building2 className="h-12 w-12" /></div>
                     )}

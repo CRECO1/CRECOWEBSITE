@@ -53,7 +53,7 @@ export default async function SubmarketsPage() {
                   <Link href={`/submarkets/${s.slug}`}
                     className="group relative overflow-hidden rounded-xl bg-primary aspect-[4/3] flex flex-col justify-end p-6 text-white">
                     {s.image_url ? (
-                      <Image src={s.image_url} alt={s.name} fill className="object-cover transition-transform duration-700 group-hover:scale-105" />
+                      <Image src={s.image_url} alt={s.name} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-105" />
                     ) : (
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/80 to-primary" />
                     )}

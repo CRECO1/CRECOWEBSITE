@@ -97,7 +97,7 @@ export default async function SoldPage() {
                   <div className="card-luxury overflow-hidden">
                     <div className="relative aspect-property bg-background-warm">
                       {p.image_url ? (
-                        <Image src={p.image_url} alt={p.address} fill className="object-cover" />
+                        <Image src={p.image_url} alt={p.address} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />
                       ) : (
                         <div className="flex h-full items-center justify-center text-foreground-subtle">
                           <Building2 className="h-10 w-10" />

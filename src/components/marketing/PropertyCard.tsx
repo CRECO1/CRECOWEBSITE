@@ -43,6 +43,7 @@ export function PropertyCard({ listing, showPropertyTypeBadge = false }: Propert
             src={heroImage}
             alt={`${listing.title} – ${propertyTypeLabel(listing.property_type)} in ${listing.city ?? 'Texas'}, TX`}
             fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (

@@ -78,7 +78,7 @@ export default async function SubmarketDetailPage({ params }: Props) {
         {/* Hero */}
         <section className="relative bg-primary py-16 text-white overflow-hidden">
           {submarket.image_url && (
-            <Image src={submarket.image_url} alt={`${submarket.name} San Antonio`} fill className="object-cover opacity-30" priority />
+            <Image src={submarket.image_url} alt={`${submarket.name} San Antonio`} fill sizes="100vw" className="object-cover opacity-30" priority />
           )}
           <Container className="relative z-10">
             <div className="flex items-center gap-2 mb-2 text-gold">
@@ -228,7 +228,7 @@ export default async function SubmarketDetailPage({ params }: Props) {
                   <Link key={listing.id} href={`/listings/${listing.slug}`} className="card-luxury group block">
                     <div className="image-luxury aspect-property bg-background-warm relative">
                       {listing.images && (listing.images as string[])[0] ? (
-                        <Image src={(listing.images as string[])[0]} alt={listing.title} fill className="object-cover" />
+                        <Image src={(listing.images as string[])[0]} alt={listing.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />
                       ) : (
                         <div className="flex h-full items-center justify-center text-foreground-subtle"><Building2 className="h-10 w-10" /></div>
                       )}

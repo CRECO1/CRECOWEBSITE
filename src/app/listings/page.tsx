@@ -220,7 +220,7 @@ export default function ListingsPage() {
                     <Link key={listing.id} href={`/listings/${listing.slug}`} className="card-luxury group block">
                       <div className="image-luxury aspect-property bg-background-warm relative">
                         {listing.images && (listing.images as string[])[0] ? (
-                          <Image src={(listing.images as string[])[0]} alt={listing.title} fill className="object-cover" />
+                          <Image src={(listing.images as string[])[0]} alt={listing.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />
                         ) : (
                           <div className="flex h-full items-center justify-center text-foreground-subtle">
                             <Building2 className="h-10 w-10" />
