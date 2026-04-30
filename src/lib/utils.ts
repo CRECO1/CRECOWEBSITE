@@ -46,10 +46,12 @@ export function formatLeaseRate(rate: number | null | undefined, basis: string |
 
 export function transactionLabel(t: string | null | undefined): string {
   if (!t) return '';
-  if (t === 'lease') return 'For Lease';
-  if (t === 'sale') return 'For Sale';
-  if (t === 'both') return 'Lease or Sale';
-  return t;
+  const map: Record<string, string> = {
+    lease: 'For Lease',
+    sale: 'For Sale',
+    both: 'Lease or Sale',
+  };
+  return map[t] ?? titleCaseSlug(t);
 }
 
 export function propertyTypeLabel(t: string | null | undefined): string {
@@ -64,5 +66,10 @@ export function propertyTypeLabel(t: string | null | undefined): string {
     'mixed-use': 'Mixed-Use',
     industrial: 'Industrial',
   };
-  return map[t] ?? t;
+  return map[t] ?? titleCaseSlug(t);
+}
+
+/** Turn "self-storage" / "data_center" → "Self Storage" / "Data Center" for custom types. */
+function titleCaseSlug(s: string): string {
+  return s.replace(/[-_]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 }

@@ -8,7 +8,7 @@ import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Input } from '@/components/ui/Input';
 import { formatSqft, formatLeaseRate, formatPrice, transactionLabel, propertyTypeLabel } from '@/lib/utils';
-import type { Listing, PropertyType, TransactionType } from '@/lib/supabase';
+import type { Listing } from '@/lib/supabase';
 
 const DEMO_LISTINGS: Listing[] = [
   {
@@ -49,20 +49,10 @@ const DEMO_LISTINGS: Listing[] = [
   },
 ];
 
-const PROPERTY_TYPES: { label: string; value: 'all' | PropertyType }[] = [
-  { label: 'All Types', value: 'all' },
-  { label: 'Office', value: 'office' },
-  { label: 'Warehouse', value: 'warehouse' },
-  { label: 'Flex', value: 'flex' },
-  { label: 'Retail', value: 'retail' },
-  { label: 'Land', value: 'land' },
-];
-
-const TRANSACTION_TYPES: { label: string; value: 'all' | TransactionType }[] = [
-  { label: 'Sale or Lease', value: 'all' },
-  { label: 'For Lease', value: 'lease' },
-  { label: 'For Sale', value: 'sale' },
-];
+// Predefined options always shown in the dropdowns, in this order. Custom
+// property/transaction types coming from the data get appended below these.
+const PROPERTY_TYPE_PRESETS = ['office', 'warehouse', 'flex', 'retail', 'land'];
+const TRANSACTION_TYPE_PRESETS = ['lease', 'sale'];
 
 const SIZE_RANGES: { label: string; min: number; max: number }[] = [
   { label: 'Any Size', min: 0, max: Infinity },
@@ -75,19 +65,42 @@ const SIZE_RANGES: { label: string; min: number; max: number }[] = [
 export default function ListingsPage() {
   const [listings, setListings] = useState<Listing[]>(DEMO_LISTINGS);
   const [search, setSearch] = useState('');
-  const [propertyType, setPropertyType] = useState<'all' | PropertyType>('all');
-  const [transactionType, setTransactionType] = useState<'all' | TransactionType>('all');
+  const [propertyType, setPropertyType] = useState<string>('all');
+  const [transactionType, setTransactionType] = useState<string>('all');
   const [sizeIdx, setSizeIdx] = useState(0);
   const [filtersOpen, setFiltersOpen] = useState(false);
+
+  // Build dropdown options dynamically: preset values first, then any custom
+  // values found in the actual listing data. This way custom types added in
+  // /admin (like "self-storage") appear in the public filter automatically.
+  const propertyTypeOptions = useMemo(() => {
+    const customs = Array.from(new Set(listings.map(l => l.property_type).filter(Boolean)))
+      .filter(v => !PROPERTY_TYPE_PRESETS.includes(v as string));
+    return [
+      { value: 'all', label: 'All Types' },
+      ...PROPERTY_TYPE_PRESETS.map(v => ({ value: v, label: propertyTypeLabel(v) })),
+      ...customs.map(v => ({ value: v as string, label: propertyTypeLabel(v as string) })),
+    ];
+  }, [listings]);
+
+  const transactionTypeOptions = useMemo(() => {
+    const customs = Array.from(new Set(listings.map(l => l.transaction_type).filter(Boolean)))
+      .filter(v => !TRANSACTION_TYPE_PRESETS.includes(v as string) && v !== 'both');
+    return [
+      { value: 'all', label: 'Sale or Lease' },
+      ...TRANSACTION_TYPE_PRESETS.map(v => ({ value: v, label: transactionLabel(v) })),
+      ...customs.map(v => ({ value: v as string, label: transactionLabel(v as string) })),
+    ];
+  }, [listings]);
 
   // Read query string filter (?type=warehouse, ?txn=lease) on first mount
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
-    const t = params.get('type') as PropertyType | null;
-    const txn = params.get('txn') as TransactionType | null;
-    if (t && PROPERTY_TYPES.find(p => p.value === t)) setPropertyType(t);
-    if (txn && TRANSACTION_TYPES.find(p => p.value === txn)) setTransactionType(txn);
+    const t = params.get('type');
+    const txn = params.get('txn');
+    if (t) setPropertyType(t);
+    if (txn) setTransactionType(txn);
   }, []);
 
   useEffect(() => {
@@ -147,18 +160,18 @@ export default function ListingsPage() {
 
               <select
                 value={propertyType}
-                onChange={e => setPropertyType(e.target.value as 'all' | PropertyType)}
+                onChange={e => setPropertyType(e.target.value)}
                 className="h-11 rounded-lg border border-border px-3 text-body-sm text-primary"
               >
-                {PROPERTY_TYPES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
+                {propertyTypeOptions.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
               </select>
 
               <select
                 value={transactionType}
-                onChange={e => setTransactionType(e.target.value as 'all' | TransactionType)}
+                onChange={e => setTransactionType(e.target.value)}
                 className="h-11 rounded-lg border border-border px-3 text-body-sm text-primary"
               >
-                {TRANSACTION_TYPES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
+                {transactionTypeOptions.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
               </select>
 
               <button

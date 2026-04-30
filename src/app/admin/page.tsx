@@ -6,6 +6,25 @@ import type { Session } from '@supabase/supabase-js';
 
 type Tab = 'listings' | 'sold' | 'agents' | 'submarkets' | 'testimonials' | 'leads' | 'settings' | 'landing_pages';
 
+// Predefined property type options. Custom types can be added via the
+// "+ Add custom type…" item in the dropdown — they're saved as plain strings.
+const PROPERTY_TYPE_OPTIONS = [
+  { value: 'office',       label: 'Office' },
+  { value: 'warehouse',    label: 'Warehouse / Industrial' },
+  { value: 'flex',         label: 'Flex' },
+  { value: 'retail',       label: 'Retail' },
+  { value: 'land',         label: 'Land' },
+  { value: 'multifamily',  label: 'Multifamily' },
+  { value: 'mixed-use',    label: 'Mixed-Use' },
+  { value: 'industrial',   label: 'Industrial' },
+];
+
+const TRANSACTION_TYPE_OPTIONS = [
+  { value: 'lease', label: 'For Lease' },
+  { value: 'sale',  label: 'For Sale' },
+  { value: 'both',  label: 'Lease or Sale' },
+];
+
 // ─── Image Upload Button ──────────────────────────────────────────────────────
 function ImageUpload({
   value,
@@ -61,6 +80,109 @@ function ImageUpload({
         <input ref={inputRef} type="file" accept="image/*" className="hidden"
           onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
       </div>
+    </div>
+  );
+}
+
+// ─── Type Select (with custom-add) ────────────────────────────────────────────
+// Used for property_type and transaction_type fields on listings. Renders a
+// <select> with predefined options merged with any unique values already in
+// the data (so once you save a custom type, it's reusable for the next
+// listing). Choosing "+ Add custom type…" swaps in a text input.
+function TypeSelect({
+  label,
+  value,
+  options,
+  knownValues = [],
+  onChange,
+  placeholder = 'Choose…',
+}: {
+  label: string;
+  value: string;
+  options: { value: string; label: string }[];
+  knownValues?: string[];
+  onChange: (v: string) => void;
+  placeholder?: string;
+}) {
+  // Merge predefined + already-saved values, dedupe, preserve predefined order
+  const knownExtras = knownValues
+    .filter(v => v && !options.some(o => o.value === v))
+    .map(v => ({ value: v, label: v.replace(/^\w/, c => c.toUpperCase()) }));
+  const allOptions = [...options, ...knownExtras];
+
+  const isCustom = !!value && !allOptions.some(o => o.value === value);
+  const [adding, setAdding] = useState(false);
+  const [custom, setCustom] = useState('');
+
+  // Custom mode UI (text input + cancel)
+  if (adding || isCustom) {
+    return (
+      <div>
+        <label className="mb-1 block text-xs font-medium text-gray-600 capitalize">{label}</label>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            autoFocus={adding}
+            value={adding ? custom : value}
+            onChange={e => {
+              if (adding) setCustom(e.target.value);
+              else onChange(e.target.value);
+            }}
+            onBlur={() => {
+              if (adding) {
+                const v = custom.trim().toLowerCase().replace(/\s+/g, '-');
+                if (v) onChange(v);
+                setAdding(false);
+                setCustom('');
+              }
+            }}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                e.currentTarget.blur();
+              } else if (e.key === 'Escape') {
+                setAdding(false);
+                setCustom('');
+              }
+            }}
+            placeholder="e.g. self-storage, data-center"
+            className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+          />
+          <button
+            type="button"
+            onClick={() => { setAdding(false); setCustom(''); onChange(''); }}
+            className="rounded-lg border border-gray-300 px-3 py-2 text-xs text-gray-600 hover:bg-gray-50"
+          >
+            Use list
+          </button>
+        </div>
+        {isCustom && !adding && (
+          <p className="mt-1 text-xs text-gray-400">Custom value — saved as <code className="bg-gray-100 px-1 py-0.5 rounded">{value}</code></p>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <label className="mb-1 block text-xs font-medium text-gray-600 capitalize">{label}</label>
+      <select
+        value={value ?? ''}
+        onChange={e => {
+          if (e.target.value === '__custom__') {
+            setAdding(true);
+          } else {
+            onChange(e.target.value);
+          }
+        }}
+        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+      >
+        <option value="">{placeholder}</option>
+        {allOptions.map(o => (
+          <option key={o.value} value={o.value}>{o.label}</option>
+        ))}
+        <option value="__custom__">+ Add custom type…</option>
+      </select>
     </div>
   );
 }
@@ -876,11 +998,31 @@ function DataTable({ tab }: { tab: Exclude<Tab, 'settings' | 'landing_pages'> })
                 {Object.keys(editing)
                   .filter(k => !hiddenFields.has(k) && k !== imageField && k !== 'images' && k !== 'features' && k !== 'highlights' && k !== 'specialties')
                   .map(field => (
-                    <div key={field} className={textareaFields.has(field) ? 'sm:col-span-2' : ''}>
-                      <label className="mb-1 block text-xs font-medium text-gray-600 capitalize">
-                        {field.replace(/_/g, ' ')}
-                      </label>
-                      {textareaFields.has(field) ? (
+                    <div key={field} className={textareaFields.has(field) || field === 'property_type' || field === 'transaction_type' ? 'sm:col-span-2' : ''}>
+                      {field !== 'property_type' && field !== 'transaction_type' && (
+                        <label className="mb-1 block text-xs font-medium text-gray-600 capitalize">
+                          {field.replace(/_/g, ' ')}
+                        </label>
+                      )}
+                      {field === 'property_type' ? (
+                        <TypeSelect
+                          label="Property Type"
+                          value={editing[field] ?? ''}
+                          options={PROPERTY_TYPE_OPTIONS}
+                          knownValues={Array.from(new Set(rows.map(r => r.property_type).filter(Boolean)))}
+                          onChange={v => setEditing({ ...editing, [field]: v })}
+                          placeholder="Choose a property type…"
+                        />
+                      ) : field === 'transaction_type' ? (
+                        <TypeSelect
+                          label="Transaction Type"
+                          value={editing[field] ?? ''}
+                          options={TRANSACTION_TYPE_OPTIONS}
+                          knownValues={Array.from(new Set(rows.map(r => r.transaction_type).filter(Boolean)))}
+                          onChange={v => setEditing({ ...editing, [field]: v })}
+                          placeholder="Choose a transaction type…"
+                        />
+                      ) : textareaFields.has(field) ? (
                         <textarea rows={4} value={editing[field] ?? ''}
                           onChange={e => setEditing({ ...editing, [field]: e.target.value })}
                           className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500" />
@@ -898,7 +1040,8 @@ function DataTable({ tab }: { tab: Exclude<Tab, 'settings' | 'landing_pages'> })
                           <option value="active">Active</option>
                           <option value="pending">Pending</option>
                           <option value="sold">Sold</option>
-                          <option value="withdrawn">Withdrawn</option>
+                          <option value="leased">Leased</option>
+                          <option value="off-market">Off Market</option>
                         </select>
                       ) : (
                         <input
