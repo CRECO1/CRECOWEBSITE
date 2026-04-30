@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Session } from '@supabase/supabase-js';
+import { ImageCropModal, fileToDataURL } from './ImageCropModal';
 
 type Tab = 'listings' | 'sold' | 'agents' | 'submarkets' | 'testimonials' | 'leads' | 'settings' | 'landing_pages';
 
@@ -26,27 +27,60 @@ const TRANSACTION_TYPE_OPTIONS = [
 ];
 
 // ─── Image Upload Button ──────────────────────────────────────────────────────
+async function uploadBlobToImages(blob: Blob, ext = 'jpg'): Promise<string> {
+  const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const { error } = await supabase.storage.from('images').upload(path, blob, { upsert: true, contentType: blob.type || 'image/jpeg' });
+  if (error) throw error;
+  const { data } = supabase.storage.from('images').getPublicUrl(path);
+  return data.publicUrl;
+}
+
 function ImageUpload({
   value,
   onChange,
   label = 'Image',
+  defaultAspect = 1,
 }: {
   value: string | null;
   onChange: (url: string) => void;
   label?: string;
+  /** Aspect ratio used by the crop modal. 1 = square, 4/3 = landscape, 16/9 = wide. */
+  defaultAspect?: number;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
 
-  async function handleFile(file: File) {
+  // When a file is picked, read it and open the crop modal first.
+  async function onFilePicked(file: File) {
+    const dataUrl = await fileToDataURL(file);
+    setCropSrc(dataUrl);
+  }
+
+  // After crop confirmation: upload the cropped blob.
+  async function onCropConfirm(blob: Blob) {
+    setCropSrc(null);
     setUploading(true);
-    const ext = file.name.split('.').pop();
-    const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const { error } = await supabase.storage.from('images').upload(path, file, { upsert: true });
-    if (error) { alert('Upload failed: ' + error.message); setUploading(false); return; }
-    const { data } = supabase.storage.from('images').getPublicUrl(path);
-    onChange(data.publicUrl);
-    setUploading(false);
+    try {
+      const url = await uploadBlobToImages(blob);
+      onChange(url);
+    } catch (e) {
+      alert('Upload failed: ' + (e as Error).message);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  // Edit Crop on an existing image: fetch → blob → re-open modal
+  async function onEditCrop() {
+    if (!value) return;
+    try {
+      const res = await fetch(value);
+      const blob = await res.blob();
+      setCropSrc(URL.createObjectURL(blob));
+    } catch (e) {
+      alert('Could not load image for editing: ' + (e as Error).message);
+    }
   }
 
   return (
@@ -71,15 +105,29 @@ function ImageUpload({
             {uploading ? 'Uploading…' : value ? 'Change Photo' : 'Upload Photo'}
           </button>
           {value && (
-            <button type="button" onClick={() => onChange('')}
-              className="text-xs text-red-500 hover:underline text-left">
-              Remove
-            </button>
+            <>
+              <button type="button" onClick={onEditCrop}
+                className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium hover:bg-gray-50">
+                ✂️ Crop
+              </button>
+              <button type="button" onClick={() => onChange('')}
+                className="text-xs text-red-500 hover:underline text-left">
+                Remove
+              </button>
+            </>
           )}
         </div>
         <input ref={inputRef} type="file" accept="image/*" className="hidden"
-          onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
+          onChange={e => { const f = e.target.files?.[0]; if (f) onFilePicked(f); e.target.value = ''; }} />
       </div>
+      {cropSrc && (
+        <ImageCropModal
+          imageSrc={cropSrc}
+          initialAspect={defaultAspect}
+          onConfirm={onCropConfirm}
+          onCancel={() => setCropSrc(null)}
+        />
+      )}
     </div>
   );
 }
@@ -189,7 +237,8 @@ function TypeSelect({
 
 // ─── Multi-Image Upload ───────────────────────────────────────────────────────
 // For listings (and sold) which have an `images` text[] column. Lets the user
-// add multiple photos, remove individual ones, and reorder by drag.
+// add multiple photos, remove individual ones, reorder them, and crop each
+// individual photo via the crop modal.
 function MultiImageUpload({
   value,
   onChange,
@@ -202,8 +251,13 @@ function MultiImageUpload({
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState({ done: 0, total: 0 });
+  // When non-null, the crop modal is open for that thumbnail index
+  const [cropIdx, setCropIdx] = useState<number | null>(null);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
   const items = Array.isArray(value) ? value : [];
 
+  // Bulk upload — no crop, just upload the originals. User can crop each
+  // afterward via the per-thumbnail Crop button.
   async function handleFiles(files: FileList) {
     const arr = Array.from(files);
     setUploading(true);
@@ -212,19 +266,50 @@ function MultiImageUpload({
     const newUrls: string[] = [];
     for (let i = 0; i < arr.length; i++) {
       const file = arr[i];
-      const ext = file.name.split('.').pop();
-      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error } = await supabase.storage.from('images').upload(path, file, { upsert: true });
-      if (error) {
-        alert(`Upload failed for ${file.name}: ${error.message}`);
+      try {
+        const url = await uploadBlobToImages(file, file.name.split('.').pop());
+        newUrls.push(url);
+      } catch (e) {
+        alert(`Upload failed for ${file.name}: ${(e as Error).message}`);
         continue;
       }
-      const { data } = supabase.storage.from('images').getPublicUrl(path);
-      newUrls.push(data.publicUrl);
       setProgress({ done: i + 1, total: arr.length });
     }
     setUploading(false);
     onChange([...items, ...newUrls]);
+  }
+
+  // Open the crop modal for one thumbnail
+  async function openCrop(idx: number) {
+    const url = items[idx];
+    if (!url) return;
+    try {
+      const res = await fetch(url);
+      const blob = await res.blob();
+      setCropIdx(idx);
+      setCropSrc(URL.createObjectURL(blob));
+    } catch (e) {
+      alert('Could not load image: ' + (e as Error).message);
+    }
+  }
+
+  // After crop: upload cropped version, replace URL at that index
+  async function onCropConfirm(blob: Blob) {
+    if (cropIdx === null) return;
+    const idx = cropIdx;
+    setCropSrc(null);
+    setCropIdx(null);
+    setUploading(true);
+    try {
+      const url = await uploadBlobToImages(blob);
+      const next = [...items];
+      next[idx] = url;
+      onChange(next);
+    } catch (e) {
+      alert('Upload failed: ' + (e as Error).message);
+    } finally {
+      setUploading(false);
+    }
   }
 
   function removeAt(idx: number) {
@@ -255,17 +340,25 @@ function MultiImageUpload({
               {i === 0 && (
                 <span className="absolute top-1 left-1 rounded bg-yellow-600 px-1.5 py-0.5 text-[10px] font-semibold text-white shadow">COVER</span>
               )}
-              <div className="absolute inset-0 flex items-end justify-between bg-black/0 group-hover:bg-black/40 transition-colors p-1">
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="absolute inset-0 flex flex-col justify-between bg-black/0 group-hover:bg-black/45 transition-colors p-1.5 opacity-0 group-hover:opacity-100">
+                {/* Top row: reorder arrows */}
+                <div className="flex gap-1">
                   <button type="button" onClick={() => moveItem(i, i - 1)} disabled={i === 0}
                     className="rounded bg-white/90 px-1.5 py-0.5 text-xs hover:bg-white disabled:opacity-40" aria-label="Move left">←</button>
                   <button type="button" onClick={() => moveItem(i, i + 1)} disabled={i === items.length - 1}
                     className="rounded bg-white/90 px-1.5 py-0.5 text-xs hover:bg-white disabled:opacity-40" aria-label="Move right">→</button>
                 </div>
-                <button type="button" onClick={() => removeAt(i)}
-                  className="rounded bg-red-600/90 px-1.5 py-0.5 text-xs font-medium text-white hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                  Remove
-                </button>
+                {/* Bottom row: crop + remove */}
+                <div className="flex gap-1 justify-between">
+                  <button type="button" onClick={() => openCrop(i)}
+                    className="rounded bg-white/95 px-2 py-0.5 text-xs font-medium text-gray-800 hover:bg-white" aria-label="Crop photo">
+                    ✂️ Crop
+                  </button>
+                  <button type="button" onClick={() => removeAt(i)}
+                    className="rounded bg-red-600/95 px-2 py-0.5 text-xs font-medium text-white hover:bg-red-600">
+                    Remove
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -289,7 +382,17 @@ function MultiImageUpload({
       </div>
 
       <input ref={inputRef} type="file" accept="image/*" multiple className="hidden"
-        onChange={e => { if (e.target.files && e.target.files.length > 0) handleFiles(e.target.files); }} />
+        onChange={e => { if (e.target.files && e.target.files.length > 0) handleFiles(e.target.files); e.target.value = ''; }} />
+
+      {/* Crop modal — opens when user clicks the ✂️ Crop button on a thumbnail */}
+      {cropSrc !== null && (
+        <ImageCropModal
+          imageSrc={cropSrc}
+          initialAspect={4 / 3}
+          onConfirm={onCropConfirm}
+          onCancel={() => { setCropSrc(null); setCropIdx(null); }}
+        />
+      )}
     </div>
   );
 }
