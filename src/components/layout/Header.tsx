@@ -12,8 +12,8 @@ import { Container } from '@/components/ui/Container';
 const navLinks = [
   { href: '/listings', label: 'Properties' },
   { href: '/services', label: 'Services' },
-  { href: '/submarkets', label: 'Submarkets' },
-  { href: '/team', label: 'Team' },
+  { href: '/owner-services', label: 'Owner Services' },
+  { href: '/insights', label: 'Insights' },
   { href: '/about', label: 'About' },
   { href: '/tenant-needs', label: 'Tenant Needs', isHighlight: true },
 ];
@@ -59,7 +59,7 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
             )}>
               <Image
                 src="/images/creco-logo.jpg"
-                alt="CRECO"
+                alt="CRECO – Texas Commercial Real Estate Company"
                 width={180}
                 height={48}
                 className="h-12 w-auto object-contain"

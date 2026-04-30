@@ -5,25 +5,31 @@ import './globals.css';
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.crecotx.com'),
   title: {
-    default: 'San Antonio Commercial Real Estate | CRECO',
-    template: '%s | CRECO',
+    default: 'Texas Commercial Real Estate | Retail, Industrial & Office | CRECO',
+    template: '%s | CRECO – Texas Commercial Real Estate',
   },
   description:
-    'CRECO is a San Antonio commercial real estate company specializing in office, warehouse, flex, retail, and land — for tenants, owners, and investors across South Texas.',
+    'CRECO is a Texas commercial real estate firm specializing in retail, industrial, and office properties for lease and sale. Tenant representation, owner services, and portfolio advisory for multi-property owners across Texas — from our San Antonio headquarters.',
   keywords: [
-    'San Antonio commercial real estate',
+    'Texas commercial real estate',
+    'commercial real estate Texas',
+    'commercial property Texas',
+    'commercial property for sale Texas',
+    'commercial property for lease Texas',
+    'retail space for lease Texas',
+    'industrial property for lease Texas',
+    'warehouse for lease Texas',
+    'office space for lease Texas',
+    'tenant representation Texas',
+    'commercial real estate broker Texas',
+    'commercial property owner services Texas',
+    'portfolio commercial real estate Texas',
     'CRECO',
-    'commercial real estate company San Antonio',
-    'San Antonio office space for lease',
-    'San Antonio warehouse for lease',
-    'San Antonio flex space for lease',
-    'San Antonio retail space for lease',
-    'San Antonio industrial real estate',
-    'commercial property San Antonio TX',
-    'tenant representation San Antonio',
-    'commercial property management San Antonio',
-    'investment advisory commercial real estate Texas',
-    'commercial property development San Antonio',
+    'San Antonio commercial real estate',
+    'Austin commercial real estate',
+    'Houston commercial real estate',
+    'Dallas commercial real estate',
+    'Fort Worth commercial real estate',
   ],
   authors: [{ name: 'CRECO – Commercial Real Estate Company' }],
   creator: 'CRECO – Commercial Real Estate Company',
@@ -34,45 +40,39 @@ export const metadata: Metadata = {
       { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
     ],
-    apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
-    other: [
-      { rel: 'mask-icon', url: '/icon.svg', color: '#C9A962' },
-    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
+    other: [{ rel: 'mask-icon', url: '/icon.svg', color: '#C9A962' }],
   },
   manifest: '/site.webmanifest',
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'default',
-    title: 'CRECO',
-  },
+  appleWebApp: { capable: true, statusBarStyle: 'default', title: 'CRECO' },
   other: {
     'mobile-web-app-capable': 'yes',
     'msapplication-TileColor': '#1A1A1A',
+    'geo.region': 'US-TX',
+    'geo.placename': 'San Antonio',
   },
   openGraph: {
     type: 'website',
     locale: 'en_US',
     url: 'https://www.crecotx.com',
-    siteName: 'CRECO – Commercial Real Estate Company',
-    title: 'San Antonio Commercial Real Estate | CRECO',
+    siteName: 'CRECO – Texas Commercial Real Estate',
+    title: 'Texas Commercial Real Estate | Retail, Industrial & Office | CRECO',
     description:
-      'Office, warehouse, flex, retail and land in San Antonio and South Texas. Tenant representation, investment advisory, development, and property management.',
+      'Retail, industrial, and office commercial property across Texas. Tenant representation, owner services, and portfolio advisory. Trusted by multi-property owners and growing tenants statewide.',
     images: [
       {
         url: '/images/creco-logo.jpg',
         width: 1200,
         height: 630,
-        alt: 'CRECO – Commercial Real Estate Company',
+        alt: 'CRECO – Texas Commercial Real Estate Company',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'San Antonio Commercial Real Estate | CRECO',
+    title: 'Texas Commercial Real Estate | CRECO',
     description:
-      'Where your real estate ventures find the support they deserve. San Antonio commercial real estate — office, warehouse, flex, retail, and land.',
+      'Texas commercial real estate — retail, industrial, and office. Tenant representation and owner services for multi-property investors statewide.',
     images: ['/images/creco-logo.jpg'],
   },
   robots: {
@@ -99,7 +99,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        {/* JSON-LD Structured Data — RealEstateAgent + LocalBusiness */}
+        {/* JSON-LD Structured Data — RealEstateAgent + LocalBusiness + WebSite */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -107,14 +107,15 @@ export default function RootLayout({
               '@context': 'https://schema.org',
               '@graph': [
                 {
-                  '@type': ['RealEstateAgent', 'LocalBusiness'],
+                  '@type': ['RealEstateAgent', 'LocalBusiness', 'Organization'],
                   '@id': 'https://www.crecotx.com/#business',
                   name: 'CRECO – Commercial Real Estate Company',
+                  alternateName: 'CRECO',
                   url: 'https://www.crecotx.com',
                   logo: 'https://www.crecotx.com/images/creco-logo.jpg',
                   image: 'https://www.crecotx.com/images/creco-logo.jpg',
                   description:
-                    'San Antonio commercial real estate company offering tenant representation, investment advisory, property development, leasing & sales, market research, property management, and sustainability consulting.',
+                    'Texas commercial real estate firm specializing in retail, industrial, and office properties. Tenant representation, owner services, investment advisory, leasing & sales, property management, and portfolio strategy for multi-property owners across Texas.',
                   telephone: '+1-210-817-3443',
                   email: 'info@crecotx.com',
                   address: {
@@ -128,13 +129,46 @@ export default function RootLayout({
                     latitude: 29.4241,
                     longitude: -98.4936,
                   },
+                  // Texas-wide service area
                   areaServed: [
-                    { '@type': 'City', name: 'San Antonio' },
-                    { '@type': 'City', name: 'New Braunfels' },
-                    { '@type': 'City', name: 'Schertz' },
-                    { '@type': 'City', name: 'Boerne' },
                     { '@type': 'State', name: 'Texas' },
+                    { '@type': 'City', name: 'San Antonio' },
+                    { '@type': 'City', name: 'Austin' },
+                    { '@type': 'City', name: 'Houston' },
+                    { '@type': 'City', name: 'Dallas' },
+                    { '@type': 'City', name: 'Fort Worth' },
+                    { '@type': 'City', name: 'El Paso' },
+                    { '@type': 'City', name: 'Corpus Christi' },
+                    { '@type': 'City', name: 'New Braunfels' },
+                    { '@type': 'City', name: 'Boerne' },
+                    { '@type': 'City', name: 'Schertz' },
                   ],
+                  knowsAbout: [
+                    'Retail commercial real estate',
+                    'Industrial commercial real estate',
+                    'Warehouse leasing',
+                    'Office leasing',
+                    'Tenant representation',
+                    'Investment advisory',
+                    'Property management',
+                    'Property development',
+                    'Commercial real estate sales',
+                    'Multi-property owner services',
+                    'Portfolio asset management',
+                    '1031 exchanges',
+                  ],
+                  hasOfferCatalog: {
+                    '@type': 'OfferCatalog',
+                    name: 'Commercial Real Estate Services',
+                    itemListElement: [
+                      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Tenant Representation', url: 'https://www.crecotx.com/services/tenant-representation' } },
+                      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Investment Advisory', url: 'https://www.crecotx.com/services/investment-advisory' } },
+                      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Leasing & Sales', url: 'https://www.crecotx.com/services/leasing-sales' } },
+                      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Property Management', url: 'https://www.crecotx.com/services/property-management' } },
+                      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Property Development', url: 'https://www.crecotx.com/services/development' } },
+                      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Sustainability Consulting', url: 'https://www.crecotx.com/services/sustainability' } },
+                    ],
+                  },
                   openingHoursSpecification: [
                     {
                       '@type': 'OpeningHoursSpecification',
@@ -149,8 +183,9 @@ export default function RootLayout({
                   '@type': 'WebSite',
                   '@id': 'https://www.crecotx.com/#website',
                   url: 'https://www.crecotx.com',
-                  name: 'CRECO – Commercial Real Estate Company',
-                  description: 'San Antonio commercial real estate — where your real estate ventures find the support they deserve.',
+                  name: 'CRECO – Texas Commercial Real Estate',
+                  description:
+                    'Texas commercial real estate. Retail, industrial, and office properties for lease and sale. Tenant representation and owner services statewide.',
                   publisher: { '@id': 'https://www.crecotx.com/#business' },
                   potentialAction: {
                     '@type': 'SearchAction',
@@ -160,6 +195,7 @@ export default function RootLayout({
                     },
                     'query-input': 'required name=search_term_string',
                   },
+                  inLanguage: 'en-US',
                 },
               ],
             }),

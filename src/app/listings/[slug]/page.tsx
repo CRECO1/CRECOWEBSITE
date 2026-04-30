@@ -44,8 +44,73 @@ export default async function ListingDetailPage({ params }: Props) {
       ? formatLeaseRate(listing!.lease_rate, listing!.lease_rate_basis)
       : 'Contact for pricing';
 
+  // Build RealEstateListing JSON-LD for rich search results
+  const listingSchema: Record<string, any> = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: listing!.title,
+    description: listing!.description ?? listing!.headline ?? `${listing!.property_type} property at ${listing!.address}, ${listing!.city}, ${listing!.state}`,
+    image: images.length > 0 ? images : ['https://www.crecotx.com/images/creco-logo.jpg'],
+    category: `Commercial Real Estate · ${listing!.property_type}`,
+    offers: listing!.transaction_type === 'sale' && listing!.sale_price
+      ? {
+          '@type': 'Offer',
+          price: listing!.sale_price,
+          priceCurrency: 'USD',
+          availability: 'https://schema.org/InStock',
+          url: `https://www.crecotx.com/listings/${listing!.slug}`,
+          seller: { '@id': 'https://www.crecotx.com/#business' },
+        }
+      : listing!.lease_rate
+        ? {
+            '@type': 'Offer',
+            priceSpecification: {
+              '@type': 'UnitPriceSpecification',
+              price: listing!.lease_rate,
+              priceCurrency: 'USD',
+              unitCode: 'FTK', // Square Foot
+              billingIncrement: 'yearly',
+              description: `${listing!.lease_rate_basis ?? 'NNN'} per SF per year`,
+            },
+            availability: 'https://schema.org/InStock',
+            url: `https://www.crecotx.com/listings/${listing!.slug}`,
+            seller: { '@id': 'https://www.crecotx.com/#business' },
+          }
+        : undefined,
+  };
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(listingSchema) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'RealEstateListing',
+            name: listing!.title,
+            url: `https://www.crecotx.com/listings/${listing!.slug}`,
+            description: listing!.description ?? listing!.headline ?? '',
+            datePosted: listing!.listing_date ?? listing!.created_at,
+            mainEntity: {
+              '@type': 'CommercialProperty',
+              name: listing!.title,
+              address: {
+                '@type': 'PostalAddress',
+                streetAddress: listing!.address,
+                addressLocality: listing!.city,
+                addressRegion: listing!.state,
+                postalCode: listing!.zip,
+                addressCountry: 'US',
+              },
+              floorSize: listing!.sqft
+                ? { '@type': 'QuantitativeValue', value: listing!.sqft, unitCode: 'FTK' }
+                : undefined,
+            },
+            broker: { '@id': 'https://www.crecotx.com/#business' },
+          }),
+        }}
+      />
       <Header variant="minimal" />
       <main className="min-h-screen pt-20">
         {/* Back */}
@@ -74,7 +139,7 @@ export default async function ListingDetailPage({ params }: Props) {
                 {[1, 2].map(i => (
                   <div key={i} className="aspect-[4/3] relative rounded-xl overflow-hidden bg-background-cream">
                     {images[i] ? (
-                      <Image src={images[i]} alt={`Photo ${i + 1}`} fill className="object-cover" />
+                      <Image src={images[i]} alt={`${listing!.title} – ${propertyTypeLabel(listing!.property_type)} property in ${listing!.city}, TX (photo ${i + 1})`} fill className="object-cover" />
                     ) : (
                       <div className="flex h-full items-center justify-center text-foreground-subtle">
                         <Building2 className="h-10 w-10" />
