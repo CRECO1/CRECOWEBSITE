@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import type { Session } from '@supabase/supabase-js';
 
-type Tab = 'listings' | 'sold' | 'agents' | 'submarkets' | 'testimonials' | 'leads' | 'settings';
+type Tab = 'listings' | 'sold' | 'agents' | 'submarkets' | 'testimonials' | 'leads' | 'settings' | 'landing_pages';
 
 // ─── Image Upload Button ──────────────────────────────────────────────────────
 function ImageUpload({
@@ -259,8 +259,276 @@ function SettingsTab() {
   );
 }
 
+// ─── Landing Pages Tab ────────────────────────────────────────────────────────
+// Edits the `landing_pages` table — admin-controlled SEO copy for the
+// 4 Texas keyword landing pages and /owner-services. Changes hit production
+// immediately on next request (pages are force-dynamic).
+
+interface LandingPageRow {
+  slug: string;
+  title: string;
+  meta_title: string | null;
+  meta_description: string | null;
+  eyebrow: string | null;
+  h1: string | null;
+  subhead: string | null;
+  intro_paragraphs: string[];
+  market_bullets: { title: string; body: string }[];
+  why_bullets: string[];
+  faqs: { q: string; a: string }[];
+  updated_at: string;
+}
+
+function StringListEditor({ label, helper, value, onChange }: { label: string; helper?: string; value: string[]; onChange: (v: string[]) => void }) {
+  const [items, setItems] = useState<string[]>(value ?? []);
+  useEffect(() => { setItems(value ?? []); }, [value]);
+  function commit(next: string[]) { setItems(next); onChange(next); }
+  return (
+    <div>
+      <label className="mb-1 block text-xs font-medium text-gray-600">{label}</label>
+      {helper && <p className="mb-2 text-xs text-gray-400">{helper}</p>}
+      <div className="space-y-2">
+        {items.map((item, i) => (
+          <div key={i} className="flex items-start gap-2">
+            <textarea rows={2} value={item}
+              onChange={e => { const next = [...items]; next[i] = e.target.value; commit(next); }}
+              className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+            <button type="button" onClick={() => commit(items.filter((_, j) => j !== i))}
+              className="shrink-0 rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100">Remove</button>
+          </div>
+        ))}
+        <button type="button" onClick={() => commit([...items, ''])}
+          className="rounded-lg border border-dashed border-gray-300 px-3 py-2 text-xs font-medium text-gray-600 hover:border-yellow-500 hover:text-yellow-700">+ Add item</button>
+      </div>
+    </div>
+  );
+}
+
+function MarketBulletsEditor({ value, onChange }: { value: { title: string; body: string }[]; onChange: (v: { title: string; body: string }[]) => void }) {
+  const [items, setItems] = useState(value ?? []);
+  useEffect(() => { setItems(value ?? []); }, [value]);
+  function commit(next: { title: string; body: string }[]) { setItems(next); onChange(next); }
+  return (
+    <div>
+      <label className="mb-1 block text-xs font-medium text-gray-600">Market Context Cards</label>
+      <p className="mb-2 text-xs text-gray-400">3 cards explaining why this Texas market matters. Each has a short title and a longer body paragraph.</p>
+      <div className="space-y-3">
+        {items.map((item, i) => (
+          <div key={i} className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-xs font-semibold text-gray-500">Card {i + 1}</span>
+              <button type="button" onClick={() => commit(items.filter((_, j) => j !== i))}
+                className="rounded-lg border border-red-200 bg-white px-2.5 py-1 text-xs text-red-700 hover:bg-red-50">Remove</button>
+            </div>
+            <input type="text" placeholder="Card title…" value={item.title}
+              onChange={e => { const next = [...items]; next[i] = { ...item, title: e.target.value }; commit(next); }}
+              className="mb-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+            <textarea rows={3} placeholder="Card body…" value={item.body}
+              onChange={e => { const next = [...items]; next[i] = { ...item, body: e.target.value }; commit(next); }}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+          </div>
+        ))}
+        <button type="button" onClick={() => commit([...items, { title: '', body: '' }])}
+          className="rounded-lg border border-dashed border-gray-300 px-3 py-2 text-xs font-medium text-gray-600 hover:border-yellow-500 hover:text-yellow-700">+ Add card</button>
+      </div>
+    </div>
+  );
+}
+
+function FAQEditor({ value, onChange }: { value: { q: string; a: string }[]; onChange: (v: { q: string; a: string }[]) => void }) {
+  const [items, setItems] = useState(value ?? []);
+  useEffect(() => { setItems(value ?? []); }, [value]);
+  function commit(next: { q: string; a: string }[]) { setItems(next); onChange(next); }
+  return (
+    <div>
+      <label className="mb-1 block text-xs font-medium text-gray-600">FAQs</label>
+      <p className="mb-2 text-xs text-gray-400">Each FAQ becomes part of the page&apos;s FAQ schema (Google &quot;People Also Ask&quot; rich result eligibility).</p>
+      <div className="space-y-3">
+        {items.map((item, i) => (
+          <div key={i} className="rounded-lg border border-gray-200 bg-gray-50 p-3">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-xs font-semibold text-gray-500">FAQ {i + 1}</span>
+              <button type="button" onClick={() => commit(items.filter((_, j) => j !== i))}
+                className="rounded-lg border border-red-200 bg-white px-2.5 py-1 text-xs text-red-700 hover:bg-red-50">Remove</button>
+            </div>
+            <input type="text" placeholder="Question…" value={item.q}
+              onChange={e => { const next = [...items]; next[i] = { ...item, q: e.target.value }; commit(next); }}
+              className="mb-2 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+            <textarea rows={4} placeholder="Answer…" value={item.a}
+              onChange={e => { const next = [...items]; next[i] = { ...item, a: e.target.value }; commit(next); }}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+          </div>
+        ))}
+        <button type="button" onClick={() => commit([...items, { q: '', a: '' }])}
+          className="rounded-lg border border-dashed border-gray-300 px-3 py-2 text-xs font-medium text-gray-600 hover:border-yellow-500 hover:text-yellow-700">+ Add FAQ</button>
+      </div>
+    </div>
+  );
+}
+
+function LandingPagesTab() {
+  const [pages, setPages] = useState<LandingPageRow[]>([]);
+  const [activeSlug, setActiveSlug] = useState<string | null>(null);
+  const [draft, setDraft] = useState<LandingPageRow | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    supabase.from('landing_pages').select('*').order('slug')
+      .then(({ data }) => {
+        if (data) {
+          setPages(data as LandingPageRow[]);
+          if (!activeSlug && data.length > 0) {
+            setActiveSlug(data[0].slug);
+            setDraft(data[0] as LandingPageRow);
+          }
+        }
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function selectPage(slug: string) {
+    setActiveSlug(slug);
+    const p = pages.find(x => x.slug === slug);
+    if (p) setDraft({ ...p });
+    setSaved(false);
+  }
+
+  async function handleSave() {
+    if (!draft) return;
+    setSaving(true);
+    const { updated_at, ...fields } = draft;
+    await supabase.from('landing_pages').update({ ...fields, updated_at: new Date().toISOString() }).eq('slug', draft.slug);
+    setSaving(false);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2500);
+    // Refresh local list cache
+    setPages(prev => prev.map(p => p.slug === draft.slug ? { ...draft } : p));
+  }
+
+  if (!draft || pages.length === 0) {
+    return <div className="py-20 text-center text-gray-400">Loading landing pages…</div>;
+  }
+
+  const livePath = '/' + draft.slug;
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6">
+      {/* Sidebar — page picker */}
+      <aside className="space-y-1">
+        <h2 className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-gray-500">Landing Pages</h2>
+        {pages.map(p => (
+          <button key={p.slug} onClick={() => selectPage(p.slug)}
+            className={`w-full text-left rounded-lg px-3 py-2.5 text-sm transition-colors ${
+              activeSlug === p.slug ? 'bg-yellow-100 text-yellow-900 font-semibold' : 'text-gray-700 hover:bg-gray-100'
+            }`}>
+            <div>{p.title}</div>
+            <div className="text-xs text-gray-400 truncate">/{p.slug}</div>
+          </button>
+        ))}
+      </aside>
+
+      {/* Editor */}
+      <div className="max-w-3xl space-y-6">
+        <div className="rounded-xl border border-gray-200 bg-white p-6">
+          <div className="mb-4 flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-800">{draft.title}</h2>
+              <a href={livePath} target="_blank" rel="noopener noreferrer" className="text-xs text-yellow-700 hover:underline">View live page → {livePath}</a>
+            </div>
+          </div>
+
+          <div className="space-y-5">
+            {/* SEO meta */}
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-600">SEO Title (browser tab + Google result)</label>
+              <input type="text" value={draft.meta_title ?? ''}
+                onChange={e => setDraft({ ...draft, meta_title: e.target.value })}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-600">SEO Meta Description (Google search result snippet — keep under 160 chars)</label>
+              <textarea rows={3} value={draft.meta_description ?? ''}
+                onChange={e => setDraft({ ...draft, meta_description: e.target.value })}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+            </div>
+
+            {/* Hero */}
+            <div className="border-t border-gray-100 pt-5">
+              <label className="mb-1 block text-xs font-medium text-gray-600">Hero Eyebrow (small text above headline)</label>
+              <input type="text" value={draft.eyebrow ?? ''}
+                onChange={e => setDraft({ ...draft, eyebrow: e.target.value })}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-600">Hero Headline (H1)</label>
+              <input type="text" value={draft.h1 ?? ''}
+                onChange={e => setDraft({ ...draft, h1: e.target.value })}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-600">Hero Subheadline</label>
+              <textarea rows={4} value={draft.subhead ?? ''}
+                onChange={e => setDraft({ ...draft, subhead: e.target.value })}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500" />
+            </div>
+
+            {/* Owner-services-style intro paragraphs */}
+            {(draft.slug === 'owner-services' || (draft.intro_paragraphs && draft.intro_paragraphs.length > 0)) && (
+              <div className="border-t border-gray-100 pt-5">
+                <StringListEditor
+                  label="Intro Paragraphs"
+                  helper="Multi-paragraph intro section (used on /owner-services). Each entry renders as one paragraph."
+                  value={draft.intro_paragraphs ?? []}
+                  onChange={v => setDraft({ ...draft, intro_paragraphs: v })}
+                />
+              </div>
+            )}
+
+            {/* Property-landing-style market bullets */}
+            {draft.slug !== 'owner-services' && (
+              <div className="border-t border-gray-100 pt-5">
+                <MarketBulletsEditor
+                  value={draft.market_bullets ?? []}
+                  onChange={v => setDraft({ ...draft, market_bullets: v })}
+                />
+              </div>
+            )}
+
+            {/* Why bullets */}
+            <div className="border-t border-gray-100 pt-5">
+              <StringListEditor
+                label="Why CRECO bullets"
+                helper="Bullet list shown in the 'Why CRECO' / 'What you get with CRECO' section."
+                value={draft.why_bullets ?? []}
+                onChange={v => setDraft({ ...draft, why_bullets: v })}
+              />
+            </div>
+
+            {/* FAQs */}
+            <div className="border-t border-gray-100 pt-5">
+              <FAQEditor
+                value={draft.faqs ?? []}
+                onChange={v => setDraft({ ...draft, faqs: v })}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 pb-8">
+          <button onClick={handleSave} disabled={saving}
+            className="rounded-lg bg-yellow-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-yellow-700 disabled:opacity-60">
+            {saving ? 'Saving…' : 'Save Changes'}
+          </button>
+          {saved && <span className="text-sm font-medium text-green-600">✓ Saved! Changes live at {livePath}.</span>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Data Table ───────────────────────────────────────────────────────────────
-function DataTable({ tab }: { tab: Exclude<Tab, 'settings'> }) {
+function DataTable({ tab }: { tab: Exclude<Tab, 'settings' | 'landing_pages'> }) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -544,6 +812,7 @@ export default function AdminPage() {
 
   const tabs: { key: Tab; label: string }[] = [
     { key: 'settings', label: '⚙️ Homepage' },
+    { key: 'landing_pages', label: '📄 Landing Pages' },
     { key: 'listings', label: '🏠 Listings' },
     { key: 'sold', label: '✅ Sold' },
     { key: 'agents', label: '👥 Agents' },
@@ -581,10 +850,13 @@ export default function AdminPage() {
           ))}
         </div>
 
-        {tab === 'settings'
-          ? <SettingsTab />
-          : <DataTable key={tab} tab={tab as Exclude<Tab, 'settings'>} />
-        }
+        {tab === 'settings' ? (
+          <SettingsTab />
+        ) : tab === 'landing_pages' ? (
+          <LandingPagesTab />
+        ) : (
+          <DataTable key={tab} tab={tab as Exclude<Tab, 'settings' | 'landing_pages'>} />
+        )}
       </div>
     </div>
   );

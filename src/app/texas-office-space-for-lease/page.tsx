@@ -2,8 +2,9 @@ export const dynamic = 'force-dynamic';
 
 import type { Metadata } from 'next';
 import { PropertyLandingPage } from '@/components/marketing/PropertyLandingPage';
+import { getLandingPage } from '@/lib/supabase';
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: 'Office Space for Lease in Texas | CRECO',
   description:
     'Office space for lease across Texas — Class A, B, and C, medical office, professional suites, executive office, and creative office. CRECO places companies into the right Texas office submarkets in San Antonio, Austin, Houston, and DFW.',
@@ -30,9 +31,20 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Page() {
+export async function generateMetadata(): Promise<Metadata> {
+  const db = await getLandingPage('texas-office-space-for-lease');
+  return {
+    ...baseMetadata,
+    title: db?.meta_title || (baseMetadata.title as string),
+    description: db?.meta_description || (baseMetadata.description as string),
+  };
+}
+
+export default async function Page() {
+  const dbContent = await getLandingPage('texas-office-space-for-lease').catch(() => null);
   return (
     <PropertyLandingPage
+      dbContent={dbContent}
       config={{
         eyebrow: 'Texas Commercial Real Estate · Office',
         h1: 'Office Space for Lease in Texas',

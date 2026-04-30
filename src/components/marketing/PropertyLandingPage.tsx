@@ -23,7 +23,7 @@ import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import {
   formatPrice, formatSqft, formatLeaseRate, transactionLabel, propertyTypeLabel,
 } from '@/lib/utils';
-import type { Listing, PropertyType, TransactionType } from '@/lib/supabase';
+import type { Listing, PropertyType, TransactionType, LandingPageContent } from '@/lib/supabase';
 import { getListings } from '@/lib/supabase';
 
 export interface LandingFAQ { q: string; a: string }
@@ -53,9 +53,35 @@ export interface PropertyLandingConfig {
   secondaryCta?: { href: string; label: string };
 }
 
-interface Props { config: PropertyLandingConfig }
+interface Props {
+  config: PropertyLandingConfig;
+  /**
+   * Optional admin-editable content from the landing_pages table. When present,
+   * fields override the corresponding config fields below. Pass `null` if the
+   * DB row is missing — the page falls back to the hardcoded config.
+   */
+  dbContent?: LandingPageContent | null;
+}
 
-export async function PropertyLandingPage({ config }: Props) {
+/**
+ * Merge admin-editable DB content into the hardcoded fallback config.
+ * DB wins on each field; if DB field is empty, falls back to config.
+ */
+function mergeConfig(config: PropertyLandingConfig, db: LandingPageContent | null | undefined): PropertyLandingConfig {
+  if (!db) return config;
+  return {
+    ...config,
+    eyebrow: db.eyebrow || config.eyebrow,
+    h1: db.h1 || config.h1,
+    subhead: db.subhead || config.subhead,
+    marketBullets: (db.market_bullets && db.market_bullets.length > 0) ? db.market_bullets : config.marketBullets,
+    whyBullets: (db.why_bullets && db.why_bullets.length > 0) ? db.why_bullets : config.whyBullets,
+    faqs: (db.faqs && db.faqs.length > 0) ? db.faqs : config.faqs,
+  };
+}
+
+export async function PropertyLandingPage({ config: configIn, dbContent }: Props) {
+  const config = mergeConfig(configIn, dbContent);
   // Fetch listings and apply the configured filters
   const allListings = await getListings('active').catch(() => [] as Listing[]);
   const filtered = allListings.filter(l => {

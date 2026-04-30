@@ -54,15 +54,18 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3" aria-label="CRECO – Commercial Real Estate Company home">
             <div className={cn(
-              'relative h-12 w-auto transition-all',
-              isTransparent ? 'brightness-0 invert' : ''
+              'relative transition-all',
+              // On the transparent (over-hero) header variant, give the logo a
+              // subtle white pill so the JPEG with white BG is still readable
+              // against the dark hero. On the solid header, no pill needed.
+              isTransparent ? 'rounded-md bg-white/95 px-2 py-1 shadow-sm' : ''
             )}>
               <Image
                 src="/images/creco-logo.jpg"
                 alt="CRECO – Texas Commercial Real Estate Company"
                 width={180}
                 height={48}
-                className="h-12 w-auto object-contain"
+                className="h-10 w-auto object-contain"
                 priority
               />
             </div>

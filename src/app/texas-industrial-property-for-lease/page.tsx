@@ -2,8 +2,9 @@ export const dynamic = 'force-dynamic';
 
 import type { Metadata } from 'next';
 import { PropertyLandingPage } from '@/components/marketing/PropertyLandingPage';
+import { getLandingPage } from '@/lib/supabase';
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: 'Industrial & Warehouse Property for Lease in Texas | CRECO',
   description:
     'Industrial property and warehouse for lease across Texas — distribution, light manufacturing, flex-industrial, last-mile logistics, and cold storage. CRECO works the I-35 corridor, Houston Ship Channel, DFW industrial submarkets, and beyond.',
@@ -31,9 +32,20 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Page() {
+export async function generateMetadata(): Promise<Metadata> {
+  const db = await getLandingPage('texas-industrial-property-for-lease');
+  return {
+    ...baseMetadata,
+    title: db?.meta_title || (baseMetadata.title as string),
+    description: db?.meta_description || (baseMetadata.description as string),
+  };
+}
+
+export default async function Page() {
+  const dbContent = await getLandingPage('texas-industrial-property-for-lease').catch(() => null);
   return (
     <PropertyLandingPage
+      dbContent={dbContent}
       config={{
         eyebrow: 'Texas Commercial Real Estate · Industrial & Warehouse',
         h1: 'Industrial & Warehouse Property for Lease in Texas',

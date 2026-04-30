@@ -2,8 +2,9 @@ export const dynamic = 'force-dynamic';
 
 import type { Metadata } from 'next';
 import { PropertyLandingPage } from '@/components/marketing/PropertyLandingPage';
+import { getLandingPage } from '@/lib/supabase';
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: 'Retail Space for Lease in Texas | CRECO',
   description:
     'Retail space for lease across Texas — strip centers, freestanding restaurants, urban storefronts, mixed-use, and shopping center inline space. CRECO connects retail tenants and franchisees with vetted Texas locations across San Antonio, Austin, Houston, Dallas–Fort Worth, and beyond.',
@@ -29,9 +30,20 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Page() {
+export async function generateMetadata(): Promise<Metadata> {
+  const db = await getLandingPage('texas-retail-space-for-lease');
+  return {
+    ...baseMetadata,
+    title: db?.meta_title || (baseMetadata.title as string),
+    description: db?.meta_description || (baseMetadata.description as string),
+  };
+}
+
+export default async function Page() {
+  const dbContent = await getLandingPage('texas-retail-space-for-lease').catch(() => null);
   return (
     <PropertyLandingPage
+      dbContent={dbContent}
       config={{
         eyebrow: 'Texas Commercial Real Estate · Retail',
         h1: 'Retail Space for Lease in Texas',

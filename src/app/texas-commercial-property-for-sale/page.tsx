@@ -2,8 +2,9 @@ export const dynamic = 'force-dynamic';
 
 import type { Metadata } from 'next';
 import { PropertyLandingPage } from '@/components/marketing/PropertyLandingPage';
+import { getLandingPage } from '@/lib/supabase';
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   title: 'Commercial Property for Sale in Texas | CRECO',
   description:
     'Commercial property for sale across Texas — retail centers, industrial buildings, office buildings, mixed-use, and land. CRECO advises investors and owner-users on Texas CRE acquisitions in San Antonio, Austin, Houston, DFW, and statewide.',
@@ -31,9 +32,20 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Page() {
+export async function generateMetadata(): Promise<Metadata> {
+  const db = await getLandingPage('texas-commercial-property-for-sale');
+  return {
+    ...baseMetadata,
+    title: db?.meta_title || (baseMetadata.title as string),
+    description: db?.meta_description || (baseMetadata.description as string),
+  };
+}
+
+export default async function Page() {
+  const dbContent = await getLandingPage('texas-commercial-property-for-sale').catch(() => null);
   return (
     <PropertyLandingPage
+      dbContent={dbContent}
       config={{
         eyebrow: 'Texas Commercial Real Estate · For Sale',
         h1: 'Commercial Property for Sale in Texas',

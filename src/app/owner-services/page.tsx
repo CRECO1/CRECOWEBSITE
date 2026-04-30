@@ -8,6 +8,9 @@ import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
+import { getLandingPage } from '@/lib/supabase';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Texas Commercial Property Owner Services | Multi-Property Portfolio | CRECO',
@@ -95,7 +98,38 @@ const FAQS = [
   },
 ];
 
-export default function OwnerServicesPage() {
+// Defaults — used when the DB row is missing/empty
+const DEFAULTS = {
+  eyebrow: 'Texas Commercial Real Estate · Owner Services',
+  h1: 'Built for Texas commercial property owners with portfolios.',
+  subhead: 'Hold/sell analysis. Repositioning strategy. 1031 exchange identification. Tenant mix optimization. Property management with institutional-quality reporting at boutique-firm responsiveness. CRECO is the operating partner Texas commercial property owners trust to grow NOI across portfolios of 5 to 100+ properties.',
+  intro_paragraphs: [
+    'When you owned one or two properties, a basic management firm was enough. But once you cross 5 — and certainly by 10 — properties, you start needing strategy, not just operations. Which assets are dragging your portfolio? When should you sell vs reposition? Where can you push rents? Are your tenants the right ones? When does a 1031 make sense?',
+    "These are not questions a property manager answers. They are questions a principal-level commercial real estate firm answers — and that's what CRECO is built to be.",
+    'We sit in your seat. Every quarter, we walk your full Texas portfolio and tell you: keep, reposition, or sell. We make the case with hard numbers — submarket comps, tenant credit analysis, mark-to-market upside — and we execute the recommendations through our leasing, sales, and management teams.',
+  ],
+  why_bullets: [
+    'Principal-level relationship — every engagement is led by a senior CRECO broker',
+    'Quarterly portfolio strategy reviews with actionable recommendations',
+    'Texas-wide coverage: San Antonio, Austin, Houston, DFW, and beyond',
+    'Institutional reporting (monthly financials, leasing pipeline, capex tracking)',
+    'Off-market deal flow for acquisitions and 1031 up-legs',
+    'Direct broker access — no junior-associate handoffs',
+  ],
+  faqs: FAQS,
+};
+
+export default async function OwnerServicesPage() {
+  const db = await getLandingPage('owner-services').catch(() => null);
+  const content = {
+    eyebrow: db?.eyebrow || DEFAULTS.eyebrow,
+    h1: db?.h1 || DEFAULTS.h1,
+    subhead: db?.subhead || DEFAULTS.subhead,
+    intro_paragraphs: (db?.intro_paragraphs && db.intro_paragraphs.length > 0) ? db.intro_paragraphs : DEFAULTS.intro_paragraphs,
+    why_bullets: (db?.why_bullets && db.why_bullets.length > 0) ? db.why_bullets : DEFAULTS.why_bullets,
+    faqs: (db?.faqs && db.faqs.length > 0) ? db.faqs : DEFAULTS.faqs,
+  };
+
   return (
     <>
       {/* FAQ Schema */}
@@ -105,7 +139,7 @@ export default function OwnerServicesPage() {
           __html: JSON.stringify({
             '@context': 'https://schema.org',
             '@type': 'FAQPage',
-            mainEntity: FAQS.map(f => ({
+            mainEntity: content.faqs.map(f => ({
               '@type': 'Question',
               name: f.q,
               acceptedAnswer: { '@type': 'Answer', text: f.a },
@@ -122,12 +156,12 @@ export default function OwnerServicesPage() {
             style={{ backgroundImage: "url('/images/sa-hero.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }} />
           <Container className="relative z-10">
             <div className="max-w-3xl">
-              <p className="overline mb-4 text-gold">Texas Commercial Real Estate · Owner Services</p>
+              <p className="overline mb-4 text-gold">{content.eyebrow}</p>
               <h1 className="font-heading text-display font-bold mb-6">
-                Built for Texas commercial property owners with portfolios.
+                {content.h1}
               </h1>
               <p className="text-body-lg text-white/80 mb-8">
-                Hold/sell analysis. Repositioning strategy. 1031 exchange identification. Tenant mix optimization. Property management with institutional-quality reporting at boutique-firm responsiveness. CRECO is the operating partner Texas commercial property owners trust to grow NOI across portfolios of 5 to 100+ properties.
+                {content.subhead}
               </p>
               <div className="flex flex-wrap gap-4">
                 <Button size="lg" asChild>
@@ -150,29 +184,21 @@ export default function OwnerServicesPage() {
                 <h2 className="mb-6 font-heading text-display-sm font-bold text-primary">
                   Most Texas commercial owners outgrow generic property management.
                 </h2>
-                <p className="mb-4 text-body text-foreground-muted leading-relaxed">
-                  When you owned one or two properties, a basic management firm was enough. But once you cross 5 — and certainly by 10 — properties, you start needing strategy, not just operations. Which assets are dragging your portfolio? When should you sell vs reposition? Where can you push rents? Are your tenants the right ones? When does a 1031 make sense?
-                </p>
-                <p className="mb-4 text-body text-foreground-muted leading-relaxed">
-                  These are not questions a property manager answers. They are questions a principal-level commercial real estate firm answers — and that&apos;s what CRECO is built to be.
-                </p>
-                <p className="text-body text-foreground-muted leading-relaxed">
-                  We sit in your seat. Every quarter, we walk your full Texas portfolio and tell you: keep, reposition, or sell. We make the case with hard numbers — submarket comps, tenant credit analysis, mark-to-market upside — and we execute the recommendations through our leasing, sales, and management teams.
-                </p>
+                {content.intro_paragraphs.map((para, i) => (
+                  <p
+                    key={i}
+                    className={i === content.intro_paragraphs.length - 1 ? 'text-body text-foreground-muted leading-relaxed' : 'mb-4 text-body text-foreground-muted leading-relaxed'}
+                  >
+                    {para}
+                  </p>
+                ))}
               </RevealOnScroll>
               <RevealOnScroll direction="right">
                 <div className="rounded-2xl bg-background-cream p-8">
                   <Sparkles className="mb-4 h-8 w-8 text-gold" />
                   <h3 className="mb-4 font-heading text-heading-lg font-bold text-primary">What you get with CRECO</h3>
                   <ul className="space-y-3">
-                    {[
-                      'Principal-level relationship — every engagement is led by a senior CRECO broker',
-                      'Quarterly portfolio strategy reviews with actionable recommendations',
-                      'Texas-wide coverage: San Antonio, Austin, Houston, DFW, and beyond',
-                      'Institutional reporting (monthly financials, leasing pipeline, capex tracking)',
-                      'Off-market deal flow for acquisitions and 1031 up-legs',
-                      'Direct broker access — no junior-associate handoffs',
-                    ].map(item => (
+                    {content.why_bullets.map(item => (
                       <li key={item} className="flex items-start gap-3 text-body-sm text-foreground-muted">
                         <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-gold" />
                         {item}
@@ -250,7 +276,7 @@ export default function OwnerServicesPage() {
               </div>
             </RevealOnScroll>
             <div className="mx-auto max-w-3xl space-y-3">
-              {FAQS.map((faq, i) => (
+              {content.faqs.map((faq, i) => (
                 <RevealOnScroll key={faq.q} delay={i * 50}>
                   <details className="group rounded-xl border border-border bg-white open:border-gold open:shadow-card-hover transition-all">
                     <summary className="flex cursor-pointer items-start justify-between gap-4 p-6 text-left font-heading text-heading-sm font-semibold text-primary marker:hidden list-none">

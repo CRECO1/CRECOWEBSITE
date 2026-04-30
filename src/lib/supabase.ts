@@ -233,6 +233,42 @@ export async function getClosedDeals(limit = 12): Promise<ClosedDeal[]> {
   })) as unknown as ClosedDeal[];
 }
 
+// ─── Landing Pages (admin-editable copy) ────────────────────────────────────
+
+export interface LandingPageContent {
+  slug: string;
+  title: string;
+  meta_title: string | null;
+  meta_description: string | null;
+  eyebrow: string | null;
+  h1: string | null;
+  subhead: string | null;
+  intro_paragraphs: string[];
+  market_bullets: { title: string; body: string }[];
+  why_bullets: string[];
+  faqs: { q: string; a: string }[];
+  updated_at: string;
+}
+
+export async function getLandingPage(slug: string): Promise<LandingPageContent | null> {
+  const { data, error } = await supabase
+    .from('landing_pages')
+    .select('*')
+    .eq('slug', slug)
+    .single();
+  if (error || !data) return null;
+  return data as LandingPageContent;
+}
+
+export async function getAllLandingPages(): Promise<LandingPageContent[]> {
+  const { data, error } = await supabase
+    .from('landing_pages')
+    .select('*')
+    .order('slug');
+  if (error) return [];
+  return (data ?? []) as LandingPageContent[];
+}
+
 export async function submitLead(lead: {
   name: string;
   email: string;
