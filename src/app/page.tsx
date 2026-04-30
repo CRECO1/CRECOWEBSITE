@@ -219,7 +219,7 @@ export default async function HomePage() {
       <Header variant="transparent" />
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
-      <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-primary">
+      <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-primary pt-28 md:pt-0 pb-12 md:pb-0">
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-primary/80" />
         {s.hero_image_url ? (
           <Image
