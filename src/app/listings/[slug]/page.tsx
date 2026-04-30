@@ -2,7 +2,6 @@ export const dynamic = 'force-dynamic';
 
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 import { MapPin, Calendar, Phone, ArrowLeft, Building2, CheckCircle, Layers, Ruler, Truck, Download, Map } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
@@ -10,6 +9,7 @@ import { getListingBySlug } from '@/lib/supabase';
 import { formatPrice, formatSqft, formatAcres, formatLeaseRate, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 import { ListingContactForm } from './ListingContactForm';
 import { RelatedListings } from '@/components/marketing/RelatedListings';
+import { ListingGallery } from '@/components/marketing/ListingGallery';
 
 const DEMO: Record<string, object> = {
   '1222-chulie-dr': {
@@ -123,35 +123,11 @@ export default async function ListingDetailPage({ params }: Props) {
           </Container>
         </div>
 
-        {/* Image Gallery */}
-        <div className="bg-background-warm">
-          <Container className="py-6">
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-              <div className="md:col-span-2 aspect-[4/3] relative rounded-xl overflow-hidden bg-background-cream">
-                {images[0] ? (
-                  <Image src={images[0]} alt={listing!.title} fill sizes="(max-width: 768px) 100vw, 66vw" className="object-cover" priority />
-                ) : (
-                  <div className="flex h-full items-center justify-center text-foreground-subtle">
-                    <Building2 className="h-20 w-20" />
-                  </div>
-                )}
-              </div>
-              <div className="grid grid-rows-2 gap-3">
-                {[1, 2].map(i => (
-                  <div key={i} className="aspect-[4/3] relative rounded-xl overflow-hidden bg-background-cream">
-                    {images[i] ? (
-                      <Image src={images[i]} alt={`${listing!.title} – ${propertyTypeLabel(listing!.property_type)} property in ${listing!.city}, TX (photo ${i + 1})`} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-foreground-subtle">
-                        <Building2 className="h-10 w-10" />
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Container>
-        </div>
+        {/* Image Gallery — click to open lightbox */}
+        <ListingGallery
+          images={images}
+          altPrefix={`${listing!.title} – ${propertyTypeLabel(listing!.property_type)} property in ${listing!.city}, TX`}
+        />
 
         {/* Detail Content */}
         <Container className="py-10">
