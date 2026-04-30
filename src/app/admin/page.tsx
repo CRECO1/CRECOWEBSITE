@@ -65,6 +65,113 @@ function ImageUpload({
   );
 }
 
+// ─── Multi-Image Upload ───────────────────────────────────────────────────────
+// For listings (and sold) which have an `images` text[] column. Lets the user
+// add multiple photos, remove individual ones, and reorder by drag.
+function MultiImageUpload({
+  value,
+  onChange,
+  label = 'Property Photos',
+}: {
+  value: string[] | null | undefined;
+  onChange: (urls: string[]) => void;
+  label?: string;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState({ done: 0, total: 0 });
+  const items = Array.isArray(value) ? value : [];
+
+  async function handleFiles(files: FileList) {
+    const arr = Array.from(files);
+    setUploading(true);
+    setProgress({ done: 0, total: arr.length });
+
+    const newUrls: string[] = [];
+    for (let i = 0; i < arr.length; i++) {
+      const file = arr[i];
+      const ext = file.name.split('.').pop();
+      const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await supabase.storage.from('images').upload(path, file, { upsert: true });
+      if (error) {
+        alert(`Upload failed for ${file.name}: ${error.message}`);
+        continue;
+      }
+      const { data } = supabase.storage.from('images').getPublicUrl(path);
+      newUrls.push(data.publicUrl);
+      setProgress({ done: i + 1, total: arr.length });
+    }
+    setUploading(false);
+    onChange([...items, ...newUrls]);
+  }
+
+  function removeAt(idx: number) {
+    onChange(items.filter((_, i) => i !== idx));
+  }
+
+  function moveItem(from: number, to: number) {
+    if (to < 0 || to >= items.length) return;
+    const next = [...items];
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    onChange(next);
+  }
+
+  return (
+    <div className="sm:col-span-2">
+      <label className="mb-1 block text-xs font-medium text-gray-600">{label}</label>
+      <p className="mb-3 text-xs text-gray-400">
+        First photo becomes the cover image on listing cards. Hover or tap a photo to reorder or remove.
+      </p>
+
+      {items.length > 0 && (
+        <div className="mb-3 grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2">
+          {items.map((url, i) => (
+            <div key={url + i} className="relative group rounded-lg border border-gray-200 overflow-hidden aspect-square bg-gray-50">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={url} alt={`Photo ${i + 1}`} className="absolute inset-0 h-full w-full object-cover" />
+              {i === 0 && (
+                <span className="absolute top-1 left-1 rounded bg-yellow-600 px-1.5 py-0.5 text-[10px] font-semibold text-white shadow">COVER</span>
+              )}
+              <div className="absolute inset-0 flex items-end justify-between bg-black/0 group-hover:bg-black/40 transition-colors p-1">
+                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button type="button" onClick={() => moveItem(i, i - 1)} disabled={i === 0}
+                    className="rounded bg-white/90 px-1.5 py-0.5 text-xs hover:bg-white disabled:opacity-40" aria-label="Move left">←</button>
+                  <button type="button" onClick={() => moveItem(i, i + 1)} disabled={i === items.length - 1}
+                    className="rounded bg-white/90 px-1.5 py-0.5 text-xs hover:bg-white disabled:opacity-40" aria-label="Move right">→</button>
+                </div>
+                <button type="button" onClick={() => removeAt(i)}
+                  className="rounded bg-red-600/90 px-1.5 py-0.5 text-xs font-medium text-white hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                  Remove
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          disabled={uploading}
+          className="rounded-lg border-2 border-dashed border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 hover:border-yellow-500 hover:text-yellow-700 disabled:opacity-60"
+        >
+          {uploading
+            ? `Uploading… ${progress.done} / ${progress.total}`
+            : items.length === 0 ? '+ Add Photos' : '+ Add More Photos'}
+        </button>
+        {items.length > 0 && (
+          <span className="text-xs text-gray-500">{items.length} photo{items.length === 1 ? '' : 's'}</span>
+        )}
+      </div>
+
+      <input ref={inputRef} type="file" accept="image/*" multiple className="hidden"
+        onChange={e => { if (e.target.files && e.target.files.length > 0) handleFiles(e.target.files); }} />
+    </div>
+  );
+}
+
 // ─── Tag Editor ───────────────────────────────────────────────────────────────
 function TagEditor({ label = 'Specialties', value, onChange }: { label?: string; value: string[]; onChange: (tags: string[]) => void }) {
   const [input, setInput] = useState('');
@@ -547,9 +654,30 @@ function DataTable({ tab }: { tab: Exclude<Tab, 'settings' | 'landing_pages'> })
   // Blank templates so "Add" forms always show the right fields
   const blankTemplates: Record<string, object> = {
     agents: { name: '', title: '', email: '', phone: '', bio: '', image_url: '', license_number: '', years_experience: 0, featured: false, order: 0, specialties: [] },
-    listings: { title: '', slug: '', price: 0, address: '', city: '', state: 'TX', zip: '', bedrooms: 0, bathrooms: 0, sqft: 0, lot_size: '', year_built: new Date().getFullYear(), property_type: 'Single Family', status: 'active', description: '', mls_number: '', image_url: '' },
-    sold: { title: '', slug: '', price: 0, sold_date: new Date().toISOString().slice(0, 10), address: '', city: '', state: 'TX', zip: '', bedrooms: 0, bathrooms: 0, sqft: 0, lot_size: '', year_built: new Date().getFullYear(), property_type: 'Single Family', status: 'sold', description: '', mls_number: '', image_url: '' },
-    submarkets: { name: '', slug: '', city: '', description: '', image_url: '', avg_price: 0, avg_sqft: 0, school_district: '', featured: false },
+    // Commercial listing schema (matches public.listings columns)
+    listings: {
+      title: '', slug: '', address: '', city: 'San Antonio', state: 'TX', zip: '', submarket: '',
+      property_type: 'office', transaction_type: 'lease',
+      sale_price: null, lease_rate: null, lease_rate_basis: 'NNN',
+      sqft: 0, available_sqft: 0, lot_size: 0, zoning: '', year_built: new Date().getFullYear(),
+      clear_height: null, dock_doors: null, grade_doors: null,
+      headline: '', description: '', features: [],
+      images: [], brochure_url: '', virtual_tour_url: '',
+      status: 'active', listing_date: new Date().toISOString().slice(0, 10),
+    },
+    sold: {
+      title: '', slug: '', address: '', city: 'San Antonio', state: 'TX', zip: '', submarket: '',
+      property_type: 'office', transaction_type: 'sale',
+      sale_price: null, lease_rate: null, lease_rate_basis: null,
+      sqft: 0, lot_size: 0, zoning: '', year_built: new Date().getFullYear(),
+      headline: '', description: '', features: [],
+      images: [],
+      status: 'sold', closed_date: new Date().toISOString().slice(0, 10),
+    },
+    submarkets: {
+      name: '', slug: '', description: '', image_url: '',
+      highlights: [], zip_codes: [], featured: false, order: 99,
+    },
     testimonials: { client_name: '', client_location: '', quote: '', rating: 5, image_url: '', featured: false },
   };
 
@@ -568,15 +696,18 @@ function DataTable({ tab }: { tab: Exclude<Tab, 'settings' | 'landing_pages'> })
 
   useEffect(() => { load(); }, [load]);
 
-  // Image fields per table
-  const imageFields: Record<string, string> = {
-    agents: 'image_url',
-    submarkets: 'image_url',
-    listings: 'image_url',
-    sold: 'image_url',
-    testimonials: 'image_url',
+  // Image field configuration per table:
+  //  - listings/sold use the `images` text[] column (multi-photo)
+  //  - everything else uses a single `image_url` column
+  const imageFields: Record<string, { field: string; multi: boolean }> = {
+    agents:        { field: 'image_url', multi: false },
+    submarkets:    { field: 'image_url', multi: false },
+    testimonials:  { field: 'image_url', multi: false },
+    listings:      { field: 'images',    multi: true  },
+    sold:          { field: 'images',    multi: true  },
   };
-  const imageField = imageFields[tab];
+  const imageConfig = imageFields[tab];
+  const imageField = imageConfig?.field;
 
   async function handleSave() {
     setSaving(true);
@@ -603,10 +734,10 @@ function DataTable({ tab }: { tab: Exclude<Tab, 'settings' | 'landing_pages'> })
   }
 
   const columnOrder: Record<string, string[]> = {
-    listings: ['title', 'price', 'address', 'city', 'status', 'bedrooms', 'bathrooms', 'sqft'],
-    sold: ['title', 'price', 'sold_date', 'address', 'city', 'bedrooms', 'bathrooms', 'sqft'],
+    listings: ['title', 'property_type', 'transaction_type', 'city', 'submarket', 'sqft', 'status'],
+    sold: ['title', 'property_type', 'sale_price', 'closed_date', 'address', 'city', 'sqft'],
     agents: ['name', 'title', 'email', 'phone', 'featured'],
-    submarkets: ['name', 'city', 'avg_price', 'school_district', 'featured'],
+    submarkets: ['name', 'featured', 'order'],
     testimonials: ['client_name', 'rating', 'quote', 'featured'],
     leads: ['name', 'email', 'phone', 'source', 'created_at'],
   };
@@ -654,7 +785,9 @@ function DataTable({ tab }: { tab: Exclude<Tab, 'settings' | 'landing_pages'> })
                   <td key={c} className="max-w-[200px] truncate px-4 py-3 text-gray-700">
                     {c === 'featured' ? (row[c] ? '✅' : '—') :
                       c === 'rating' ? '⭐'.repeat(row[c] ?? 0) :
-                      c === 'price' || c === 'avg_price' ? (row[c] ? `$${Number(row[c]).toLocaleString()}` : '—') :
+                      c === 'sale_price' || c === 'price' || c === 'avg_price' ? (row[c] ? `$${Number(row[c]).toLocaleString()}` : '—') :
+                      c === 'lease_rate' ? (row[c] ? `$${Number(row[c]).toFixed(2)}/SF` : '—') :
+                      c === 'sqft' ? (row[c] ? `${Number(row[c]).toLocaleString()} SF` : '—') :
                       String(row[c] ?? '—')}
                   </td>
                 ))}
@@ -687,13 +820,21 @@ function DataTable({ tab }: { tab: Exclude<Tab, 'settings' | 'landing_pages'> })
             </h2>
 
             <div className="space-y-4">
-              {/* Image upload — always first if applicable */}
+              {/* Image upload — multi for listings/sold, single for the rest */}
               {imageField && (
-                <ImageUpload
-                  label="Profile / Cover Photo"
-                  value={editing[imageField] ?? ''}
-                  onChange={url => setEditing({ ...editing, [imageField]: url })}
-                />
+                imageConfig.multi ? (
+                  <MultiImageUpload
+                    label="Property Photos"
+                    value={Array.isArray(editing[imageField]) ? editing[imageField] : []}
+                    onChange={urls => setEditing({ ...editing, [imageField]: urls })}
+                  />
+                ) : (
+                  <ImageUpload
+                    label="Profile / Cover Photo"
+                    value={editing[imageField] ?? ''}
+                    onChange={url => setEditing({ ...editing, [imageField]: url })}
+                  />
+                )
               )}
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
