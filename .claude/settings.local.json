@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \"import json; f=open\\('/Users/zacharya.stovall/Downloads/Fairoaksrealtygroup-copy 2/.mcp.json'\\); json.load\\(f\\); print\\('valid'\\)\")",
+      "mcp__supabase__apply_migration",
+      "mcp__supabase__execute_sql",
+      "mcp__supabase__get_publishable_keys",
+      "mcp__supabase__get_project_url",
+      "Bash(npm -v)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(npx vercel *)",
+      "Bash(mkdir -p \"/Users/zacharya.stovall/Downloads/Fairoaksrealtygroup-copy 2/src/app/\\(payload\\)/admin/[[...segments]]\")",
+      "Bash(mkdir -p \"/Users/zacharya.stovall/Downloads/Fairoaksrealtygroup-copy 2/src/app/\\(payload\\)/api/[...slug]\")",
+      "Bash(npx payload *)",
+      "Bash(xargs sed *)",
+      "mcp__supabase__list_tables",
+      "Bash(vercel --prod)",
+      "WebFetch(domain:crecotx.com)",
+      "Bash(rsync -a --exclude='node_modules' --exclude='.next' --exclude='.vercel' --exclude='.DS_Store' \"/Users/zacharya.stovall/Downloads/Fairoaksrealtygroup-copy 2/\" \"/Users/zacharya.stovall/Desktop/CRECO Website Rebrand/\")"
+    ]
+  }
+}

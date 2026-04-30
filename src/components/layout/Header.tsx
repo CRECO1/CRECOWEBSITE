@@ -1,0 +1,218 @@
+'use client';
+
+import * as React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+import { Menu, X, Phone, Calendar, Building2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/Button';
+import { Container } from '@/components/ui/Container';
+
+const navLinks = [
+  { href: '/listings', label: 'Properties' },
+  { href: '/services', label: 'Services' },
+  { href: '/submarkets', label: 'Submarkets' },
+  { href: '/team', label: 'Team' },
+  { href: '/about', label: 'About' },
+  { href: '/tenant-needs', label: 'Tenant Needs', isHighlight: true },
+];
+
+interface HeaderProps {
+  variant?: 'default' | 'minimal' | 'transparent';
+  phone?: string;
+}
+
+export function Header({ variant = 'default', phone = '(210) 817-3443' }: HeaderProps) {
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isScrolled, setIsScrolled] = React.useState(false);
+  const pathname = usePathname();
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const isTransparent = variant === 'transparent' && !isScrolled;
+  const textShadowStyle = isTransparent ? { textShadow: '0 2px 4px rgba(0,0,0,0.5)' } : {};
+
+  return (
+    <header
+      className={cn(
+        'fixed left-0 right-0 top-0 z-50 transition-all duration-300',
+        isTransparent
+          ? 'bg-gradient-to-b from-black/40 to-transparent'
+          : 'bg-white shadow-sm',
+        variant === 'minimal' && 'bg-white shadow-sm'
+      )}
+    >
+      <Container>
+        <nav className="flex h-20 items-center justify-between">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-3" aria-label="CRECO – Commercial Real Estate Company home">
+            <div className={cn(
+              'relative h-12 w-auto transition-all',
+              isTransparent ? 'brightness-0 invert' : ''
+            )}>
+              <Image
+                src="/images/creco-logo.jpg"
+                alt="CRECO"
+                width={180}
+                height={48}
+                className="h-12 w-auto object-contain"
+                priority
+              />
+            </div>
+          </Link>
+
+          {/* Desktop Navigation */}
+          {variant !== 'minimal' && (
+            <div className="hidden items-center gap-6 lg:flex">
+              {navLinks.map((link) => (
+                'isHighlight' in link && link.isHighlight ? (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={cn(
+                      'flex items-center gap-1.5 px-4 py-2 rounded-full text-body-sm font-semibold transition-all',
+                      isTransparent
+                        ? 'bg-gold text-primary hover:bg-gold-light'
+                        : 'bg-gold/10 text-gold-dark hover:bg-gold hover:text-primary',
+                      pathname === link.href && 'bg-gold text-primary'
+                    )}
+                  >
+                    <Building2 className="h-4 w-4" />
+                    {link.label}
+                  </Link>
+                ) : (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={cn(
+                      'relative text-body-sm font-medium transition-colors',
+                      isTransparent
+                        ? 'text-white hover:text-gold-light'
+                        : 'text-primary hover:text-gold',
+                      pathname === link.href && 'text-gold'
+                    )}
+                    style={textShadowStyle}
+                  >
+                    {link.label}
+                    {pathname === link.href && (
+                      <span className="absolute -bottom-1 left-0 h-0.5 w-full bg-gold" />
+                    )}
+                  </Link>
+                )
+              ))}
+            </div>
+          )}
+
+          {/* CTA Buttons */}
+          <div className="flex items-center gap-3">
+            <a
+              href={`tel:${phone.replace(/\D/g, '')}`}
+              className={cn(
+                'flex items-center gap-2 font-semibold transition-colors',
+                isTransparent ? 'text-white' : 'text-primary',
+                'hover:text-gold'
+              )}
+              style={textShadowStyle}
+            >
+              <Phone className="h-5 w-5" />
+              <span className="hidden sm:inline">{phone}</span>
+            </a>
+
+            <Button
+              variant="primary"
+              size="sm"
+              className="hidden sm:inline-flex"
+              asChild
+            >
+              <Link href="/contact#schedule">
+                <Calendar className="mr-2 h-4 w-4" />
+                Schedule
+              </Link>
+            </Button>
+
+            {variant !== 'minimal' && (
+              <button
+                className={cn(
+                  'ml-2 p-2 lg:hidden',
+                  isTransparent ? 'text-white' : 'text-primary'
+                )}
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+              >
+                {isMenuOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
+              </button>
+            )}
+          </div>
+        </nav>
+      </Container>
+
+      {/* Mobile Menu */}
+      {isMenuOpen && variant !== 'minimal' && (
+        <div className="fixed inset-0 top-20 z-40 bg-white lg:hidden">
+          <Container>
+            <nav className="flex flex-col py-8">
+              {navLinks.filter(link => !('isHighlight' in link && link.isHighlight)).map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setIsMenuOpen(false)}
+                  className={cn(
+                    'border-b border-border py-4 text-heading font-medium text-primary transition-colors',
+                    'hover:text-gold',
+                    pathname === link.href && 'text-gold'
+                  )}
+                >
+                  {link.label}
+                </Link>
+              ))}
+              <Link
+                href="/contact"
+                onClick={() => setIsMenuOpen(false)}
+                className="border-b border-border py-4 text-heading font-medium text-primary transition-colors hover:text-gold"
+              >
+                Contact
+              </Link>
+
+              <div className="mt-8 space-y-4">
+                <Button
+                  size="lg"
+                  fullWidth
+                  className="bg-gold hover:bg-gold-dark text-primary font-semibold"
+                  asChild
+                >
+                  <Link href="/tenant-needs" onClick={() => setIsMenuOpen(false)}>
+                    <Building2 className="mr-2 h-5 w-5" />
+                    Find My Space
+                  </Link>
+                </Button>
+                <Button variant="primary" size="lg" fullWidth asChild>
+                  <a href={`tel:${phone.replace(/\D/g, '')}`}>
+                    <Phone className="mr-2 h-5 w-5" />
+                    Call Now: {phone}
+                  </a>
+                </Button>
+                <Button variant="outline" size="lg" fullWidth asChild>
+                  <Link href="/contact#schedule">
+                    <Calendar className="mr-2 h-5 w-5" />
+                    Schedule a Consultation
+                  </Link>
+                </Button>
+              </div>
+            </nav>
+          </Container>
+        </div>
+      )}
+    </header>
+  );
+}
