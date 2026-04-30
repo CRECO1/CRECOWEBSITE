@@ -713,6 +713,18 @@ function DataTable({ tab }: { tab: Exclude<Tab, 'settings' | 'landing_pages'> })
     setSaving(true);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, created_at, updated_at, search_vector, ...fields } = editing;
+
+    // Defensive: strip legacy field names that may linger in component state
+    // from a stale tab. Listings/sold use the `images` text[] column — older
+    // code wrote `image_url`, which Postgres rejects with a schema-cache error.
+    if (table === 'listings') {
+      delete (fields as { image_url?: string }).image_url;
+      // Also strip residential-only fields that may exist on rows imported from
+      // the original Fair Oaks codebase
+      const stale = ['bedrooms', 'bathrooms', 'mls_number', 'sold_price', 'days_on_market'];
+      for (const k of stale) delete (fields as Record<string, unknown>)[k];
+    }
+
     if (id && rows.find(r => r.id === id)) {
       const { error } = await supabase.from(table).update({ ...fields, updated_at: new Date().toISOString() }).eq('id', id);
       if (error) alert(error.message);
