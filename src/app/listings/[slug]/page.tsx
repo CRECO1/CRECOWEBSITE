@@ -9,6 +9,7 @@ import { Container } from '@/components/ui/Container';
 import { getListingBySlug } from '@/lib/supabase';
 import { formatPrice, formatSqft, formatAcres, formatLeaseRate, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 import { ListingContactForm } from './ListingContactForm';
+import { RelatedListings } from '@/components/marketing/RelatedListings';
 
 const DEMO: Record<string, object> = {
   '1222-chulie-dr': {
@@ -295,6 +296,16 @@ export default async function ListingDetailPage({ params }: Props) {
             </div>
           </div>
         </Container>
+
+        {/* More Available Properties — cross-sell */}
+        <RelatedListings
+          currentSlug={listing!.slug}
+          currentPropertyType={listing!.property_type}
+          currentSubmarket={listing!.submarket}
+          limit={3}
+          title="More Available Properties"
+          subtitle={`Other Texas commercial real estate currently on the market — prioritized by similar property type${listing!.submarket ? ' and submarket' : ''}.`}
+        />
       </main>
       <Footer />
     </>
