@@ -13,6 +13,7 @@ const navLinks = [
   { href: '/listings', label: 'Properties' },
   { href: '/services', label: 'Services' },
   { href: '/owner-services', label: 'Owner Services' },
+  { href: '/team', label: 'Team' },
   { href: '/insights', label: 'Insights' },
   { href: '/about', label: 'About' },
   { href: '/tenant-needs', label: 'Tenant Needs', isHighlight: true },
