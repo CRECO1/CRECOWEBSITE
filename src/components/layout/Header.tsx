@@ -52,24 +52,18 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
     >
       <Container>
         <nav className="flex h-20 items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-3" aria-label="CRECO – Commercial Real Estate Company home">
-            <div className={cn(
-              'relative transition-all',
-              // On the transparent (over-hero) header variant, give the logo a
-              // subtle white pill so the JPEG with white BG is still readable
-              // against the dark hero. On the solid header, no pill needed.
-              isTransparent ? 'rounded-md bg-white/95 px-2 py-1 shadow-sm' : ''
-            )}>
-              <Image
-                src="/images/creco-logo.jpg"
-                alt="CRECO – Texas Commercial Real Estate Company"
-                width={180}
-                height={48}
-                className="h-10 w-auto object-contain"
-                priority
-              />
-            </div>
+          {/* Logo — different file per header variant so the colors read
+              against the background (transparent black BG over dark hero,
+              transparent white BG on solid white headers). No more pill. */}
+          <Link href="/" className="flex items-center" aria-label="CRECO – Commercial Real Estate Company home">
+            <Image
+              src={isTransparent ? '/images/creco-logo-dark.png' : '/images/creco-logo-light.png'}
+              alt="CRECO – Texas Commercial Real Estate Company"
+              width={240}
+              height={64}
+              className="h-14 w-auto object-contain transition-opacity"
+              priority
+            />
           </Link>
 
           {/* Desktop Navigation */}
