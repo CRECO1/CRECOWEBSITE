@@ -54,6 +54,7 @@ export interface Listing {
   listing_date: string | null;
   closed_date: string | null;
   submarket: string | null;
+  featured: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -123,7 +124,10 @@ export async function getListings(status: 'active' | 'pending' | 'sold' | 'lease
   } else if (status !== 'all') {
     query = query.eq('status', status);
   }
-  const { data, error } = await query.order('listing_date', { ascending: false });
+  // Featured listings always come first; within each group, newest listing_date first.
+  const { data, error } = await query
+    .order('featured', { ascending: false })
+    .order('listing_date', { ascending: false });
   if (error) throw error;
   return data ?? [];
 }

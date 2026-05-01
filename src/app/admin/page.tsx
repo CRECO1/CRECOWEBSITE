@@ -889,6 +889,7 @@ function DataTable({ tab }: { tab: Exclude<Tab, 'settings' | 'landing_pages'> })
       headline: '', description: '', features: [],
       images: [], brochure_url: '', virtual_tour_url: '',
       status: 'active', listing_date: new Date().toISOString().slice(0, 10),
+      featured: false,
     },
     sold: {
       title: '', slug: '', address: '', city: 'San Antonio', state: 'TX', zip: '', submarket: '',
