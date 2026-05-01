@@ -21,7 +21,7 @@ const DEMO_LISTINGS: Listing[] = [
     headline: '16,100 SF warehouse with dock and grade doors',
     description: null, features: ['Dock-high loading', 'Grade-level door', 'Fenced yard'],
     images: null, brochure_url: null, virtual_tour_url: null, status: 'active',
-    listing_date: '2026-04-10', closed_date: null, submarket: 'Northeast', created_at: '', updated_at: '',
+    listing_date: '2026-04-10', closed_date: null, submarket: 'Northeast', featured: false, created_at: '', updated_at: '',
   },
   {
     id: '2', title: '1346 Parkridge Dr', slug: '1346-parkridge-dr',
@@ -33,7 +33,7 @@ const DEMO_LISTINGS: Listing[] = [
     headline: '1.7 acres with 2,475 SF office building',
     description: null, features: ['Stand-alone building', 'Ample parking', 'Highway visibility'],
     images: null, brochure_url: null, virtual_tour_url: null, status: 'active',
-    listing_date: '2026-03-22', closed_date: null, submarket: 'North Central', created_at: '', updated_at: '',
+    listing_date: '2026-03-22', closed_date: null, submarket: 'North Central', featured: false, created_at: '', updated_at: '',
   },
   {
     id: '3', title: '2250 Chipley Circle', slug: '2250-chipley-circle',
@@ -45,7 +45,7 @@ const DEMO_LISTINGS: Listing[] = [
     headline: '26,400 SF warehouse, I-1 zoning',
     description: null, features: ['Heavy power', 'Cross-dock layout', 'Fenced & secured'],
     images: null, brochure_url: null, virtual_tour_url: null, status: 'active',
-    listing_date: '2026-04-01', closed_date: null, submarket: 'Northeast', created_at: '', updated_at: '',
+    listing_date: '2026-04-01', closed_date: null, submarket: 'Northeast', featured: false, created_at: '', updated_at: '',
   },
 ];
 
