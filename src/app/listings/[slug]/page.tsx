@@ -1,5 +1,6 @@
 export const dynamic = 'force-dynamic';
 
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { MapPin, Calendar, Phone, ArrowLeft, Building2, CheckCircle, Layers, Ruler, Truck, Download, Map } from 'lucide-react';
@@ -10,6 +11,38 @@ import { formatPrice, formatSqft, formatAcres, formatLeaseRate, transactionLabel
 import { ListingContactForm } from './ListingContactForm';
 import { RelatedListings } from '@/components/marketing/RelatedListings';
 import { ListingGallery } from '@/components/marketing/ListingGallery';
+
+// Per-listing metadata so each property has a unique <title>, <meta description>,
+// canonical URL, and OG image (instead of inheriting the /listings index meta).
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const listing = await getListingBySlug(slug).catch(() => null);
+  if (!listing) {
+    return { title: 'Property Not Found | CRECO' };
+  }
+  const txn = transactionLabel(listing.transaction_type) || 'Available';
+  const type = propertyTypeLabel(listing.property_type) || 'Commercial Property';
+  const sf = listing.sqft ? `${listing.sqft.toLocaleString()} SF ` : '';
+  const title = `${listing.title} — ${sf}${type} ${txn} in ${listing.city ?? 'Texas'} | CRECO`;
+  const description =
+    (listing.description && String(listing.description).trim().slice(0, 160)) ||
+    listing.headline ||
+    `${type} ${txn.toLowerCase()} at ${listing.address}, ${listing.city ?? 'Texas'}, TX. Contact CRECO for full details, photos, and a tour.`;
+  const heroImage = Array.isArray(listing.images) && listing.images[0] ? listing.images[0] : 'https://www.crecotx.com/images/creco-logo.jpg';
+  return {
+    title,
+    description,
+    alternates: { canonical: `https://www.crecotx.com/listings/${listing.slug}` },
+    openGraph: {
+      title,
+      description,
+      url: `https://www.crecotx.com/listings/${listing.slug}`,
+      type: 'website',
+      images: [{ url: heroImage, alt: listing.title }],
+    },
+    twitter: { card: 'summary_large_image', title, description, images: [heroImage] },
+  };
+}
 
 const DEMO: Record<string, object> = {
   '1222-chulie-dr': {

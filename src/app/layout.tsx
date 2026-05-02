@@ -6,8 +6,9 @@ import './globals.css';
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.crecotx.com'),
   title: {
+    // Each page provides its own complete title (already includes "| CRECO")
     default: 'Texas Commercial Real Estate | Retail, Industrial & Office | CRECO',
-    template: '%s | CRECO – Texas Commercial Real Estate',
+    template: '%s',
   },
   description:
     'CRECO is a Texas commercial real estate firm specializing in retail, industrial, and office properties for lease and sale. Tenant representation, owner services, and portfolio advisory for multi-property owners across Texas — from our San Antonio headquarters.',
