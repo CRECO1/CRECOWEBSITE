@@ -149,7 +149,7 @@ export function Footer() {
                   className="inline-flex items-center gap-2 rounded-lg border border-gold/50 px-5 py-2.5 text-body-sm font-semibold text-gold transition-all hover:bg-gold hover:text-primary">
                   Submit Tenant Needs
                 </Link>
-                <a href="https://www.fairoaksrealtygroup.com/crm"
+                <a href="https://www.fairoaksrealtygroup.com/crm/commercial"
                   target="_blank" rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-lg border border-white/20 px-5 py-2.5 text-body-sm font-semibold text-white/70 transition-all hover:border-white/40 hover:text-white">
                   Agent Login
