@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 import Link from 'next/link';
 import Image from 'next/image';
 import {
-  ArrowRight, Star, Building2, TrendingUp, Award, Sparkles, MapPin,
+  ArrowRight, Star, Building2, Award, Sparkles, MapPin,
   Briefcase, Warehouse, Store, Layers, LineChart, Wrench, Leaf, BadgeCheck,
 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
@@ -164,7 +164,6 @@ const DEFAULT_SETTINGS = {
   stat_sf_transacted: '2.4M',
   stat_years_experience: 15,
   stat_satisfaction: '98%',
-  stat_active_listings: 30,
   about_headline: 'A trailblazing approach to Texas commercial real estate.',
   about_text: 'CRECO is built on innovation, expertise, and a relentless commitment to client outcomes. We blend deep Texas market knowledge with the analytical rigor you would expect from a national firm — and we keep our roster small enough that every client works directly with a principal. From single-asset tenants to multi-property portfolio owners, we treat your assignment like our name is on the building.',
   cta_headline: 'Need space — or have space to fill?',
@@ -195,7 +194,6 @@ export default async function HomePage() {
     { value: `${s.stat_sf_transacted ?? DEFAULT_SETTINGS.stat_sf_transacted}+`, label: 'SF Transacted', icon: Building2 },
     { value: `${s.stat_years_experience ?? DEFAULT_SETTINGS.stat_years_experience}+`, label: 'Years in Texas CRE', icon: Award },
     { value: s.stat_satisfaction ?? DEFAULT_SETTINGS.stat_satisfaction, label: 'Client Satisfaction', icon: Star },
-    { value: String(s.stat_active_listings ?? DEFAULT_SETTINGS.stat_active_listings), label: 'Active Listings', icon: TrendingUp },
   ];
 
   return (
@@ -258,7 +256,7 @@ export default async function HomePage() {
             </Button>
           </div>
 
-          <div className="mt-16 grid grid-cols-2 gap-6 sm:grid-cols-4 animate-fade-in delay-500 fill-both">
+          <div className="mt-16 grid grid-cols-3 gap-4 sm:gap-6 animate-fade-in delay-500 fill-both">
             {STATS.map(({ value, label }) => (
               <div key={label} className="text-center">
                 <div className="mb-1 font-heading text-3xl font-bold text-gold">{value}</div>
@@ -471,7 +469,7 @@ export default async function HomePage() {
               </div>
             </RevealOnScroll>
             <RevealOnScroll direction="right">
-              <div className="grid grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
                 {STATS.map(({ value, label, icon: Icon }) => (
                   <div key={label} className="rounded-xl border border-border bg-background-cream p-6 text-center">
                     <Icon className="mx-auto mb-3 h-8 w-8 text-gold" />
