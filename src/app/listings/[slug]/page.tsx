@@ -11,6 +11,7 @@ import { formatPrice, formatSqft, formatAcres, formatLeaseRate, transactionLabel
 import { ListingContactForm } from './ListingContactForm';
 import { RelatedListings } from '@/components/marketing/RelatedListings';
 import { ListingGallery } from '@/components/marketing/ListingGallery';
+import { CompareToggle } from '@/components/listings/CompareToggle';
 
 // Per-listing metadata so each property has a unique <title>, <meta description>,
 // canonical URL, and OG image (instead of inheriting the /listings index meta).
@@ -193,6 +194,9 @@ export default async function ListingDetailPage({ params }: Props) {
                     <span className="rounded-full bg-primary/10 px-3 py-0.5 text-caption font-semibold text-primary uppercase">
                       {propertyTypeLabel(listing!.property_type)}
                     </span>
+                  </div>
+                  <div className="mt-3 flex justify-end">
+                    <CompareToggle listingId={listing!.id} variant="full" />
                   </div>
                 </div>
               </div>

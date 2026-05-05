@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
+import { NewsletterSignup } from '@/components/forms/NewsletterSignup';
 import { supabase } from '@/lib/supabase';
 
 const footerLinks = {
@@ -84,6 +85,12 @@ export function Footer() {
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white/60 transition-colors hover:border-gold hover:text-gold">
                   <Linkedin className="h-4 w-4" />
                 </a>
+              </div>
+
+              {/* Newsletter signup */}
+              <div className="mt-8">
+                <h3 className="mb-3 text-body-sm font-semibold uppercase tracking-widest text-gold">CRECO Insights</h3>
+                <NewsletterSignup />
               </div>
             </div>
 

@@ -7,6 +7,7 @@ import { Search, SlidersHorizontal, MapPin, Building2, Layers, X } from 'lucide-
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Input } from '@/components/ui/Input';
+import { CompareToggle } from '@/components/listings/CompareToggle';
 import { formatSqft, formatLeaseRate, formatPrice, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 import type { Listing } from '@/lib/supabase';
 
@@ -246,6 +247,9 @@ export default function ListingsPage() {
                           <span className="rounded-full bg-white/95 px-3 py-1 text-caption font-semibold text-primary">
                             {propertyTypeLabel(listing.property_type)}
                           </span>
+                        </div>
+                        <div className="absolute top-4 right-4">
+                          <CompareToggle listingId={listing.id} variant="icon" />
                         </div>
                       </div>
                       <div className="p-6">

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
 import { MobileStickyCTA } from '@/components/layout/MobileStickyCTA';
+import { CompareBar } from '@/components/listings/CompareBar';
 import { RecaptchaScript } from '@/components/forms/Recaptcha';
 import './globals.css';
 
@@ -62,21 +63,15 @@ export const metadata: Metadata = {
     title: 'Texas Commercial Real Estate | Retail, Industrial & Office | CRECO',
     description:
       'Retail, industrial, and office commercial property across Texas. Tenant representation, owner services, and portfolio advisory. Trusted by multi-property owners and growing tenants statewide.',
-    images: [
-      {
-        url: '/images/creco-logo.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'CRECO – Texas Commercial Real Estate Company',
-      },
-    ],
+    // images intentionally omitted — Next.js auto-discovers /opengraph-image.tsx
+    // and uses it as the default for every page (1200×630 branded design).
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Texas Commercial Real Estate | CRECO',
     description:
       'Texas commercial real estate — retail, industrial, and office. Tenant representation and owner services for multi-property investors statewide.',
-    images: ['/images/creco-logo.jpg'],
+    // Twitter card image also pulled from /opengraph-image.tsx automatically
   },
   robots: {
     index: true,
@@ -233,6 +228,7 @@ export default function RootLayout({
         )}
         {children}
         <MobileStickyCTA />
+        <CompareBar />
         <RecaptchaScript />
       </body>
     </html>

@@ -12,6 +12,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/texas-industrial-property-for-lease`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.95 },
     { url: `${BASE_URL}/texas-office-space-for-lease`,        lastModified: new Date(), changeFrequency: 'weekly', priority: 0.95 },
     { url: `${BASE_URL}/texas-commercial-property-for-sale`,  lastModified: new Date(), changeFrequency: 'weekly', priority: 0.95 },
+    // City hub pages
+    { url: `${BASE_URL}/austin-commercial-real-estate`,       lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9  },
+    { url: `${BASE_URL}/houston-commercial-real-estate`,      lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9  },
+    { url: `${BASE_URL}/dallas-commercial-real-estate`,       lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9  },
     { url: `${BASE_URL}/owner-services`,              lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9  },
     // Standard pages
     { url: `${BASE_URL}/services`,                    lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9  },
@@ -24,10 +28,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/team`,                        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7  },
     { url: `${BASE_URL}/about`,                       lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7  },
     { url: `${BASE_URL}/insights`,                    lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.85 },
+    { url: `${BASE_URL}/guides`,                      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${BASE_URL}/property-alerts`,             lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8  },
+    { url: `${BASE_URL}/compare`,                     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6  },
     { url: `${BASE_URL}/privacy`,                     lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3  },
   ];
 
-  const insightSlugs = ['texas-commercial-real-estate-outlook-2026', 'lease-vs-buy-texas-business', 'multi-property-owner-strategy'];
+  const guideSlugs = ['texas-tenant-lease-negotiation-playbook', 'texas-owner-disposition-strategy-guide'];
+  const guidePages: MetadataRoute.Sitemap = guideSlugs.map(slug => ({
+    url: `${BASE_URL}/guides/${slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'monthly',
+    priority: 0.75,
+  }));
+
+  const insightSlugs = [
+    'texas-commercial-real-estate-outlook-2026',
+    'lease-vs-buy-texas-business',
+    'multi-property-owner-strategy',
+    'texas-industrial-warehouse-leasing-2026',
+    'texas-1031-exchange-strategy',
+    'texas-retail-leasing-fundamentals-2026',
+  ];
   const insightPages: MetadataRoute.Sitemap = insightSlugs.map(slug => ({
     url: `${BASE_URL}/insights/${slug}`,
     lastModified: new Date(),
@@ -71,5 +93,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   } catch {}
 
-  return [...staticPages, ...servicePages, ...insightPages, ...listingPages, ...submarketPages];
+  return [...staticPages, ...servicePages, ...insightPages, ...guidePages, ...listingPages, ...submarketPages];
 }
