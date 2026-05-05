@@ -8,9 +8,9 @@ const NOTIFICATION_EMAIL = process.env.LEAD_NOTIFICATION_EMAIL ?? 'info@crecotx.
 // Resolved at request time (not module load) so env var changes from Vercel
 // take effect on next deploy without code changes. Defaults to Resend's free
 // shared sender; once the domain is verified set RESEND_FROM_VERIFIED=true
-// (or override via RESEND_getFromEmail()) to send from noreply@crecotx.com.
+// (or override via RESEND_FROM_EMAIL) to send from noreply@crecotx.com.
 function getFromEmail(): string {
-  if (process.env.RESEND_getFromEmail()) return process.env.RESEND_getFromEmail();
+  if (process.env.RESEND_FROM_EMAIL) return process.env.RESEND_FROM_EMAIL;
   if (process.env.RESEND_FROM_VERIFIED === 'true') return 'CRECO <noreply@crecotx.com>';
   return 'onboarding@resend.dev';
 }

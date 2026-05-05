@@ -6,7 +6,7 @@ import { verifyRecaptcha } from '@/lib/recaptcha';
 const NOTIFICATION_EMAIL = process.env.LEAD_NOTIFICATION_EMAIL ?? 'info@crecotx.com';
 
 function getFromEmail(): string {
-  if (process.env.RESEND_getFromEmail()) return process.env.RESEND_getFromEmail();
+  if (process.env.RESEND_FROM_EMAIL) return process.env.RESEND_FROM_EMAIL;
   if (process.env.RESEND_FROM_VERIFIED === 'true') return 'CRECO <noreply@crecotx.com>';
   return 'onboarding@resend.dev';
 }
