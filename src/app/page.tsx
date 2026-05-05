@@ -252,7 +252,7 @@ export default async function HomePage() {
               <Link href="/listings">View Texas Properties <ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary" asChild>
-              <Link href="/tenant-needs"><Building2 className="mr-2 h-5 w-5" />Find My Space</Link>
+              <Link href="/get-started"><Building2 className="mr-2 h-5 w-5" />Get Started</Link>
             </Button>
           </div>
 
@@ -548,7 +548,7 @@ export default async function HomePage() {
             </div>
             <div className="flex flex-col sm:flex-row gap-3 shrink-0">
               <Button size="xl" className="bg-white text-primary hover:bg-white/90 shadow-lg font-bold" asChild>
-                <Link href="/tenant-needs"><Sparkles className="mr-2 h-5 w-5 text-gold" />Find Space</Link>
+                <Link href="/get-started"><Sparkles className="mr-2 h-5 w-5 text-gold" />Find Space</Link>
               </Button>
               <Button size="xl" className="bg-primary text-white hover:bg-primary/90 shadow-lg font-bold" asChild>
                 <Link href="/sell">List My Property</Link>

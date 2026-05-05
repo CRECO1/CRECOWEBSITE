@@ -221,7 +221,7 @@ export default function ListingsPage() {
               <div className="py-24 text-center">
                 <Building2 className="mx-auto mb-4 h-12 w-12 text-foreground-subtle" />
                 <h2 className="font-heading text-heading font-semibold text-primary">No properties found</h2>
-                <p className="mt-2 text-body text-foreground-muted">Try adjusting your filters — or <Link href="/tenant-needs" className="text-gold hover:text-gold-dark">submit your tenant needs</Link> and we&apos;ll bring options to you.</p>
+                <p className="mt-2 text-body text-foreground-muted">Try adjusting your filters — or <Link href="/get-started" className="text-gold hover:text-gold-dark">submit your tenant needs</Link> and we&apos;ll bring options to you.</p>
               </div>
             ) : (
               <>

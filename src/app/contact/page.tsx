@@ -9,7 +9,7 @@ import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { Honeypot } from '@/components/forms/Honeypot';
 
 const CONTACT_REASONS = [
-  'Submit Tenant Needs (looking for space)',
+  'Looking for space to lease or buy',
   'List My Property (sell or lease)',
   'Property Management',
   'Investment Advisory',

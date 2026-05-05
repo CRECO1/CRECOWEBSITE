@@ -16,7 +16,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Phone, Building2 } from 'lucide-react';
 
-const HIDDEN_PREFIXES = ['/admin', '/manage', '/crm', '/tenant-needs', '/sell', '/contact'];
+const HIDDEN_PREFIXES = ['/admin', '/manage', '/crm', '/tenant-needs', '/get-started', '/sell', '/contact'];
 
 export function MobileStickyCTA({ phone = '(210) 817-3443' }: { phone?: string }) {
   const pathname = usePathname() ?? '/';
@@ -41,11 +41,11 @@ export function MobileStickyCTA({ phone = '(210) 817-3443' }: { phone?: string }
           Call
         </a>
         <Link
-          href="/tenant-needs"
+          href="/get-started"
           className="flex items-center justify-center gap-2 rounded-lg bg-gold px-3 py-3 text-sm font-semibold text-primary active:bg-gold-dark"
         >
           <Building2 className="h-4 w-4" aria-hidden="true" />
-          Find Space
+          Get Started
         </Link>
       </div>
     </>

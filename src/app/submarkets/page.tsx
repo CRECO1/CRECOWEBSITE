@@ -89,8 +89,8 @@ export default async function SubmarketsPage() {
               <p className="text-body text-foreground-muted mb-6">
                 Submit your tenant needs and we&apos;ll bring vetted options across any submarket — including off-market opportunities.
               </p>
-              <Link href="/tenant-needs" className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-white hover:bg-primary/90 transition-colors">
-                Submit Tenant Needs
+              <Link href="/get-started" className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-white hover:bg-primary/90 transition-colors">
+                Get Started
               </Link>
             </div>
           </Container>

@@ -107,7 +107,7 @@ export default async function Page() {
           { href: '/submarkets', label: 'San Antonio Submarkets' },
           { href: '/listings?type=retail', label: 'All Retail Listings' },
         ],
-        primaryCta: { href: '/tenant-needs', label: 'Submit Tenant Needs' },
+        primaryCta: { href: '/get-started', label: 'Get Started' },
         secondaryCta: { href: 'tel:+12108173443', label: '(210) 817-3443' },
       }}
     />

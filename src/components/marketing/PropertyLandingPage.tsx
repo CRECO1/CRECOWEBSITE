@@ -47,7 +47,7 @@ export interface PropertyLandingConfig {
   faqs: LandingFAQ[];
   /** Related pages to link in the cross-link footer. */
   relatedLinks: { href: string; label: string }[];
-  /** Primary CTA — typically /tenant-needs for lease pages, /sell for sale pages. */
+  /** Primary CTA — typically /get-started for lease pages, /sell for sale pages. */
   primaryCta: { href: string; label: string };
   /** Secondary CTA. */
   secondaryCta?: { href: string; label: string };

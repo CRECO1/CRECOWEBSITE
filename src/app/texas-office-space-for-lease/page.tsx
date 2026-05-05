@@ -108,7 +108,7 @@ export default async function Page() {
           { href: '/submarkets/north-central', label: 'San Antonio North Central' },
           { href: '/listings?type=office', label: 'All Office Listings' },
         ],
-        primaryCta: { href: '/tenant-needs', label: 'Submit Tenant Needs' },
+        primaryCta: { href: '/get-started', label: 'Get Started' },
         secondaryCta: { href: 'tel:+12108173443', label: '(210) 817-3443' },
       }}
     />

@@ -109,7 +109,7 @@ export default async function Page() {
           { href: '/submarkets/northeast', label: 'San Antonio Northeast' },
           { href: '/listings?type=warehouse', label: 'All Industrial Listings' },
         ],
-        primaryCta: { href: '/tenant-needs', label: 'Submit Tenant Needs' },
+        primaryCta: { href: '/get-started', label: 'Get Started' },
         secondaryCta: { href: 'tel:+12108173443', label: '(210) 817-3443' },
       }}
     />

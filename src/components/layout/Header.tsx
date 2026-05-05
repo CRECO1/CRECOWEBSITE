@@ -16,7 +16,7 @@ const navLinks = [
   { href: '/owner-services', label: 'Owner Services' },
   { href: '/insights', label: 'Insights' },
   { href: '/about', label: 'About' },
-  { href: '/tenant-needs', label: 'Tenant Needs', isHighlight: true },
+  { href: '/get-started', label: 'Get Started', isHighlight: true },
 ];
 
 interface HeaderProps {
@@ -189,9 +189,9 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
                   className="bg-gold hover:bg-gold-dark text-primary font-semibold"
                   asChild
                 >
-                  <Link href="/tenant-needs" onClick={() => setIsMenuOpen(false)}>
+                  <Link href="/get-started" onClick={() => setIsMenuOpen(false)}>
                     <Building2 className="mr-2 h-5 w-5" />
-                    Find My Space
+                    Get Started
                   </Link>
                 </Button>
                 <Button variant="primary" size="lg" fullWidth asChild>
