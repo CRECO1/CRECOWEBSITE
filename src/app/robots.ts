@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin', '/crm', '/manage', '/api/'],
+        disallow: ['/admin', '/manage', '/api/'],
       },
     ],
     sitemap: 'https://www.crecotx.com/sitemap.xml',

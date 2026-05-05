@@ -22,8 +22,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Check for Supabase env vars
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+  // Check for Supabase env vars (this project uses the newer `_PUBLISHABLE_KEY`
+  // naming, not the legacy `_ANON_KEY`). Without this fix the middleware
+  // bails out and /manage is effectively unprotected at the edge.
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
     return NextResponse.next();
   }
 
