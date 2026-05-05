@@ -1,17 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
+import { verifyRecaptcha } from '@/lib/recaptcha';
 
 const NOTIFICATION_EMAIL = process.env.LEAD_NOTIFICATION_EMAIL ?? 'info@crecotx.com';
-const FROM_EMAIL = 'onboarding@resend.dev'; // works on free Resend plan; swap to noreply@crecotx.com after domain verification
+
+// Resolved at request time (not module load) so env var changes from Vercel
+// take effect on next deploy without code changes. Defaults to Resend's free
+// shared sender; once the domain is verified set RESEND_FROM_VERIFIED=true
+// (or override via RESEND_getFromEmail()) to send from noreply@crecotx.com.
+function getFromEmail(): string {
+  if (process.env.RESEND_getFromEmail()) return process.env.RESEND_getFromEmail();
+  if (process.env.RESEND_FROM_VERIFIED === 'true') return 'CRECO <noreply@crecotx.com>';
+  return 'onboarding@resend.dev';
+}
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, company, email, phone, message, property_interest, source } = body;
+    const { name, company, email, phone, message, property_interest, source, recaptchaToken } = body;
 
     if (!name || !email) {
       return NextResponse.json({ error: 'Name and email are required' }, { status: 400 });
+    }
+
+    // Anti-spam: reCAPTCHA v3 score check (no-op if RECAPTCHA_SECRET_KEY unset)
+    const captcha = await verifyRecaptcha(recaptchaToken);
+    if (!captcha.ok) {
+      return NextResponse.json({ error: 'Spam check failed', reason: captcha.reason }, { status: 400 });
     }
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -35,7 +51,7 @@ export async function POST(req: NextRequest) {
       const resend = new Resend(process.env.RESEND_API_KEY);
 
       await resend.emails.send({
-        from: FROM_EMAIL,
+        from: getFromEmail(),
         to: NOTIFICATION_EMAIL,
         subject: `New Lead: ${name} — ${source ?? 'Contact Form'}`,
         html: `
@@ -55,7 +71,7 @@ export async function POST(req: NextRequest) {
       });
 
       await resend.emails.send({
-        from: FROM_EMAIL,
+        from: getFromEmail(),
         to: email,
         subject: 'We received your inquiry — CRECO',
         html: `

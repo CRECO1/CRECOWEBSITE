@@ -5,6 +5,7 @@ import { TrendingUp, Building2, FileText, Users, CheckCircle, ArrowRight, Phone 
 import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
+import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
 
 const STEPS = [
@@ -30,6 +31,7 @@ export default function SellPage() {
     e.preventDefault();
     setLoading(true);
     const data = new FormData(e.currentTarget);
+    const recaptchaToken = await getRecaptchaToken('submit_sell');
     await fetch('/api/leads', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -40,6 +42,7 @@ export default function SellPage() {
         phone: data.get('phone'),
         message: `Property Address: ${data.get('address')}\nProperty Type: ${data.get('property_type')}\nGoal: ${data.get('goal')}\nTimeline: ${data.get('timeline')}\nNotes: ${data.get('notes')}`,
         source: 'owner-inquiry',
+        recaptchaToken,
       }),
     }).catch(() => {});
     setLoading(false);

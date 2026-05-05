@@ -1,12 +1,14 @@
 'use client';
 
 import { Button } from '@/components/ui/Button';
+import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 
 export function ListingContactForm({ listingTitle }: { listingTitle: string }) {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
     const data = new FormData(form);
+    const recaptchaToken = await getRecaptchaToken('submit_listing_inquiry');
     await fetch('/api/leads', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -18,6 +20,7 @@ export function ListingContactForm({ listingTitle }: { listingTitle: string }) {
         message: data.get('message') || `I'm interested in ${listingTitle}`,
         property_interest: listingTitle,
         source: 'listing',
+        recaptchaToken,
       }),
     });
     form.reset();

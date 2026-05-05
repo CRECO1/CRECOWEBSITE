@@ -5,6 +5,7 @@ import { ArrowRight, ArrowLeft, CheckCircle, Building2, Briefcase, Warehouse, St
 import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
+import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 
 interface QuizStep {
   id: string;
@@ -141,10 +142,11 @@ export default function TenantNeedsPage() {
   async function handleContact(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
+    const recaptchaToken = await getRecaptchaToken('submit_tenant_needs');
     await fetch('/api/tenant-needs', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, company, email, phone, answers }),
+      body: JSON.stringify({ name, company, email, phone, answers, recaptchaToken }),
     }).catch(() => {});
     setLoading(false);
     setDone(true);

@@ -5,6 +5,7 @@ import { Phone, Mail, MapPin, Clock, CheckCircle, Calendar } from 'lucide-react'
 import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
+import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 
 const CONTACT_REASONS = [
   'Submit Tenant Needs (looking for space)',
@@ -24,6 +25,7 @@ export default function ContactPage() {
     e.preventDefault();
     setLoading(true);
     const data = new FormData(e.currentTarget);
+    const recaptchaToken = await getRecaptchaToken('submit_contact');
     await fetch('/api/leads', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -34,6 +36,7 @@ export default function ContactPage() {
         phone: data.get('phone'),
         message: `Reason: ${data.get('reason')}\n\n${data.get('message')}`,
         source: 'contact',
+        recaptchaToken,
       }),
     }).catch(() => {});
     setLoading(false);
