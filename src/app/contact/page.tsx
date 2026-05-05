@@ -6,6 +6,7 @@ import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { getRecaptchaToken } from '@/components/forms/Recaptcha';
+import { Honeypot } from '@/components/forms/Honeypot';
 
 const CONTACT_REASONS = [
   'Submit Tenant Needs (looking for space)',
@@ -37,6 +38,7 @@ export default function ContactPage() {
         message: `Reason: ${data.get('reason')}\n\n${data.get('message')}`,
         source: 'contact',
         recaptchaToken,
+        website: data.get('website'),  // honeypot field
       }),
     }).catch(() => {});
     setLoading(false);
@@ -152,6 +154,7 @@ export default function ContactPage() {
                     <>
                       <h2 className="mb-6 font-heading text-heading-xl font-bold text-primary">Send Us a Message</h2>
                       <form onSubmit={handleSubmit} className="space-y-5">
+                        <Honeypot />
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                           <div>
                             <label className="label-readable">Full Name *</label>

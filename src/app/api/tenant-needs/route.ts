@@ -24,7 +24,12 @@ const STEP_LABELS: Record<string, string> = {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, company, email, phone, answers, recaptchaToken } = body;
+    const { name, company, email, phone, answers, recaptchaToken, website } = body;
+
+    // Honeypot — silently accept if the invisible field was filled (= bot)
+    if (typeof website === 'string' && website.length > 0) {
+      return NextResponse.json({ success: true });
+    }
 
     if (!name || !email || !phone) {
       return NextResponse.json({ error: 'Name, email, and phone are required' }, { status: 400 });

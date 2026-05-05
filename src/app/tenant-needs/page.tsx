@@ -6,6 +6,7 @@ import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { getRecaptchaToken } from '@/components/forms/Recaptcha';
+import { Honeypot } from '@/components/forms/Honeypot';
 
 interface QuizStep {
   id: string;
@@ -139,14 +140,15 @@ export default function TenantNeedsPage() {
     return Array.isArray(v) ? v.includes(value) : v === value;
   }
 
-  async function handleContact(e: React.FormEvent) {
+  async function handleContact(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     const recaptchaToken = await getRecaptchaToken('submit_tenant_needs');
+    const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
     await fetch('/api/tenant-needs', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, company, email, phone, answers, recaptchaToken }),
+      body: JSON.stringify({ name, company, email, phone, answers, recaptchaToken, website: honeypot }),
     }).catch(() => {});
     setLoading(false);
     setDone(true);
@@ -212,6 +214,7 @@ export default function TenantNeedsPage() {
                 </p>
               </div>
               <form onSubmit={handleContact} className="space-y-4 bg-white rounded-2xl shadow-card p-8">
+                <Honeypot />
                 <div>
                   <label className="label-readable">Your Name *</label>
                   <input required value={name} onChange={e => setName(e.target.value)} placeholder="First & Last Name" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold" />

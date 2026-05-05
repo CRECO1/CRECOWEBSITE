@@ -18,7 +18,14 @@ function getFromEmail(): string {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, company, email, phone, message, property_interest, source, recaptchaToken } = body;
+    const { name, company, email, phone, message, property_interest, source, recaptchaToken, website } = body;
+
+    // Honeypot — `website` is an invisible field; if filled it's almost
+    // certainly a bot. Return 200 OK so the bot thinks it succeeded and
+    // doesn't retry with a different strategy.
+    if (typeof website === 'string' && website.length > 0) {
+      return NextResponse.json({ success: true, message: 'Lead received' });
+    }
 
     if (!name || !email) {
       return NextResponse.json({ error: 'Name and email are required' }, { status: 400 });

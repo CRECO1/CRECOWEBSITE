@@ -6,6 +6,7 @@ import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { getRecaptchaToken } from '@/components/forms/Recaptcha';
+import { Honeypot } from '@/components/forms/Honeypot';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
 
 const STEPS = [
@@ -43,6 +44,7 @@ export default function SellPage() {
         message: `Property Address: ${data.get('address')}\nProperty Type: ${data.get('property_type')}\nGoal: ${data.get('goal')}\nTimeline: ${data.get('timeline')}\nNotes: ${data.get('notes')}`,
         source: 'owner-inquiry',
         recaptchaToken,
+        website: data.get('website'),  // honeypot
       }),
     }).catch(() => {});
     setLoading(false);
@@ -161,6 +163,7 @@ export default function SellPage() {
                         Tell us about your property and we&apos;ll provide a no-obligation Broker Opinion of Value or leasing strategy.
                       </p>
                       <form onSubmit={handleSubmit} className="space-y-4">
+                        <Honeypot />
                         <div className="grid grid-cols-2 gap-4">
                           <input name="name" required placeholder="Your Name" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold" />
                           <input name="company" placeholder="Company / Entity" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold" />
