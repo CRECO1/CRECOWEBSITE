@@ -15,6 +15,8 @@ const footerLinks = {
     { href: '/listings?type=flex', label: 'Flex Space' },
     { href: '/listings?type=retail', label: 'Retail Space' },
     { href: '/listings?type=land', label: 'Land' },
+    { href: '/property-alerts', label: 'Property Alerts' },
+    { href: '/compare', label: 'Compare Listings' },
   ],
   services: [
     { href: '/services/tenant-representation', label: 'Tenant Representation' },
@@ -22,6 +24,8 @@ const footerLinks = {
     { href: '/services/leasing-sales', label: 'Leasing & Sales' },
     { href: '/services/property-management', label: 'Property Management' },
     { href: '/services/development', label: 'Property Development' },
+    { href: '/guides', label: 'Free Guides' },
+    { href: '/insights', label: 'Insights' },
   ],
 };
 

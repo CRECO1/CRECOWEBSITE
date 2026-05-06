@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { verifyRecaptcha } from '@/lib/recaptcha';
+import { escapeHtml, clampString, isValidEmail, safePhone, MAX_LEN } from '@/lib/sanitize';
 
 /**
  * Unified inquiry endpoint — handles all 5 paths from /get-started:
@@ -14,6 +15,9 @@ import { verifyRecaptcha } from '@/lib/recaptcha';
  * Saves to public.leads with `source = '<path>-inquiry'`, then sends a
  * formatted notification email with a path-specific subject so the broker
  * can triage at a glance.
+ *
+ * All user-controlled values are escaped before being interpolated into
+ * HTML email bodies; email is validated strictly to block header injection.
  */
 
 const NOTIFICATION_EMAIL = process.env.LEAD_NOTIFICATION_EMAIL ?? 'info@crecotx.com';
@@ -65,22 +69,53 @@ const FIELD_LABELS: Record<string, string> = {
   interest: 'Area of interest',
 };
 
+/**
+ * Format the answers object to a plain-text summary for storage + email.
+ * Each value is clamped to a sane length so a malicious submitter can't
+ * dump a megabyte of input into a single field.
+ */
+function summarizeAnswers(answers: Record<string, unknown> | undefined | null): string {
+  if (!answers) return '';
+  return Object.entries(answers)
+    .map(([k, v]) => {
+      const label = FIELD_LABELS[k] ?? k;
+      const value = Array.isArray(v)
+        ? (v as unknown[]).map(x => clampString(x, MAX_LEN.shortField)).filter(Boolean).join(', ')
+        : clampString(v, MAX_LEN.message);
+      return `${label}: ${value}`;
+    })
+    .join('\n');
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { path, name, company, email, phone, answers, recaptchaToken, website } = body;
+    const {
+      path, name: rawName, company: rawCompany, email: rawEmail,
+      phone: rawPhone, answers, recaptchaToken, website,
+    } = body;
 
     // Honeypot — silent accept on bot
     if (typeof website === 'string' && website.length > 0) {
       return NextResponse.json({ success: true });
     }
 
-    if (!path || !PATH_LABELS[path]) {
+    if (!path || typeof path !== 'string' || !PATH_LABELS[path]) {
       return NextResponse.json({ error: 'Invalid path' }, { status: 400 });
     }
-    if (!name || !email || !phone) {
-      return NextResponse.json({ error: 'Name, email, and phone are required' }, { status: 400 });
+
+    if (!isValidEmail(rawEmail)) {
+      return NextResponse.json({ error: 'Valid email is required' }, { status: 400 });
     }
+    const email = rawEmail.trim().toLowerCase();
+
+    const name = clampString(rawName, MAX_LEN.name);
+    const phone = safePhone(rawPhone);
+    if (!name || !phone) {
+      return NextResponse.json({ error: 'Name and phone are required' }, { status: 400 });
+    }
+
+    const company = clampString(rawCompany, MAX_LEN.company);
 
     const captcha = await verifyRecaptcha(recaptchaToken);
     if (!captcha.ok) {
@@ -88,11 +123,7 @@ export async function POST(req: NextRequest) {
     }
 
     const meta = PATH_LABELS[path];
-
-    // Format the answers nicely for the email + DB message
-    const answerSummary = Object.entries(answers ?? {})
-      .map(([k, v]) => `${FIELD_LABELS[k] ?? k}: ${Array.isArray(v) ? (v as string[]).join(', ') : v}`)
-      .join('\n');
+    const answerSummary = summarizeAnswers(answers);
 
     // Save lead
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -103,7 +134,7 @@ export async function POST(req: NextRequest) {
         name,
         email,
         phone,
-        company: company ?? null,
+        company: company || null,
         source: meta.source,
         status: 'new',
         intake_data: { path, ...answers },
@@ -111,7 +142,8 @@ export async function POST(req: NextRequest) {
       }]);
     }
 
-    // Notification email
+    // Notification email — every interpolated value escaped to block any
+    // HTML injection in the broker's inbox.
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -121,16 +153,16 @@ export async function POST(req: NextRequest) {
         subject: `${meta.subject}: ${name}${company ? ` (${company})` : ''}`,
         html: `
           <div style="font-family:sans-serif;max-width:600px">
-            <h2 style="color:#1A1A1A">${meta.subject} — CRECO</h2>
-            <p style="color:#525252;font-style:italic;margin:0 0 16px">Path selected: <strong>${meta.humanLabel}</strong></p>
+            <h2 style="color:#1A1A1A">${escapeHtml(meta.subject)} — CRECO</h2>
+            <p style="color:#525252;font-style:italic;margin:0 0 16px">Path selected: <strong>${escapeHtml(meta.humanLabel)}</strong></p>
             <table style="border-collapse:collapse;width:100%">
-              <tr><td style="padding:8px 12px;font-weight:bold;background:#FAFAF8;border:1px solid #E8E5E0">Name</td><td style="padding:8px 12px;border:1px solid #E8E5E0">${name}</td></tr>
-              <tr><td style="padding:8px 12px;font-weight:bold;background:#FAFAF8;border:1px solid #E8E5E0">Company</td><td style="padding:8px 12px;border:1px solid #E8E5E0">${company ?? '—'}</td></tr>
-              <tr><td style="padding:8px 12px;font-weight:bold;background:#FAFAF8;border:1px solid #E8E5E0">Email</td><td style="padding:8px 12px;border:1px solid #E8E5E0"><a href="mailto:${email}">${email}</a></td></tr>
-              <tr><td style="padding:8px 12px;font-weight:bold;background:#FAFAF8;border:1px solid #E8E5E0">Phone</td><td style="padding:8px 12px;border:1px solid #E8E5E0"><a href="tel:${phone}">${phone}</a></td></tr>
+              <tr><td style="padding:8px 12px;font-weight:bold;background:#FAFAF8;border:1px solid #E8E5E0">Name</td><td style="padding:8px 12px;border:1px solid #E8E5E0">${escapeHtml(name)}</td></tr>
+              <tr><td style="padding:8px 12px;font-weight:bold;background:#FAFAF8;border:1px solid #E8E5E0">Company</td><td style="padding:8px 12px;border:1px solid #E8E5E0">${escapeHtml(company || '—')}</td></tr>
+              <tr><td style="padding:8px 12px;font-weight:bold;background:#FAFAF8;border:1px solid #E8E5E0">Email</td><td style="padding:8px 12px;border:1px solid #E8E5E0"><a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></td></tr>
+              <tr><td style="padding:8px 12px;font-weight:bold;background:#FAFAF8;border:1px solid #E8E5E0">Phone</td><td style="padding:8px 12px;border:1px solid #E8E5E0"><a href="tel:${escapeHtml(phone)}">${escapeHtml(phone)}</a></td></tr>
             </table>
             <h3 style="color:#1A1A1A;margin-top:20px">Their Responses:</h3>
-            <pre style="background:#FAFAF8;padding:12px;border-radius:4px;white-space:pre-wrap;border:1px solid #E8E5E0;font-family:monospace;font-size:13px">${answerSummary}</pre>
+            <pre style="background:#FAFAF8;padding:12px;border-radius:4px;white-space:pre-wrap;border:1px solid #E8E5E0;font-family:monospace;font-size:13px">${escapeHtml(answerSummary)}</pre>
           </div>
         `,
       });
@@ -142,7 +174,7 @@ export async function POST(req: NextRequest) {
         subject: 'We received your inquiry — CRECO',
         html: `
           <div style="font-family:sans-serif;max-width:600px">
-            <h2 style="color:#1A1A1A">Hi ${name},</h2>
+            <h2 style="color:#1A1A1A">Hi ${escapeHtml(name)},</h2>
             <p>Thanks for reaching out to <strong>CRECO – Commercial Real Estate Company</strong>. A broker on our team will review your responses and reach out within one business day.</p>
             <p>Need to talk sooner? Call us at <a href="tel:+12108173443" style="color:#C9A962">(210) 817-3443</a>.</p>
             <br/>

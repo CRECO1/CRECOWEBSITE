@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { verifyRecaptcha } from '@/lib/recaptcha';
+import { escapeHtml, clampString, isValidEmail, MAX_LEN } from '@/lib/sanitize';
 
 /**
  * Unified subscribe endpoint — handles all 3 subscription types:
@@ -16,6 +17,10 @@ import { verifyRecaptcha } from '@/lib/recaptcha';
  * endpoint. If a subscriber re-submits with the same email + type, the
  * unique index lets the conflict bubble up — we treat it as success
  * (re-confirmation) rather than an error.
+ *
+ * All user-controlled values are escaped before being interpolated into
+ * the HTML email bodies. Email is also validated strictly so it can't
+ * carry header-injection payloads into Resend.
  */
 
 const NOTIFICATION_EMAIL = process.env.LEAD_NOTIFICATION_EMAIL ?? 'info@crecotx.com';
@@ -32,7 +37,8 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const {
-      email, name, subscription_type, filters, source, asset_slug,
+      email: rawEmail, name: rawName, subscription_type, filters,
+      source: rawSource, asset_slug: rawAssetSlug,
       recaptchaToken, website,
     } = body;
 
@@ -41,12 +47,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true });
     }
 
-    if (!email || typeof email !== 'string' || !email.includes('@')) {
+    // Strict email validation — also rejects newline/whitespace that could
+    // become a header-injection vector if forwarded to a raw SMTP header.
+    if (!isValidEmail(rawEmail)) {
       return NextResponse.json({ error: 'Valid email is required' }, { status: 400 });
     }
+    const email = rawEmail.trim().toLowerCase();
+
     if (!subscription_type || !VALID_TYPES.includes(subscription_type)) {
       return NextResponse.json({ error: 'Invalid subscription_type' }, { status: 400 });
     }
+
+    // Clamp + sanitize all other user-controlled string inputs
+    const name = clampString(rawName, MAX_LEN.name);
+    const source = clampString(rawSource, MAX_LEN.shortField);
+    const asset_slug = clampString(rawAssetSlug, MAX_LEN.shortField);
 
     // reCAPTCHA — fail-open if not configured
     const captcha = await verifyRecaptcha(recaptchaToken);
@@ -60,12 +75,12 @@ export async function POST(req: NextRequest) {
     if (supabaseUrl && supabaseKey) {
       const supabase = createClient(supabaseUrl, supabaseKey);
       const { error } = await supabase.from('subscribers').insert([{
-        email: email.trim().toLowerCase(),
-        name: name ?? null,
+        email,
+        name: name || null,
         subscription_type,
         filters: filters ?? null,
-        source: source ?? null,
-        asset_slug: asset_slug ?? null,
+        source: source || null,
+        asset_slug: asset_slug || null,
       }]);
       // Duplicate (re-subscribe) is OK — treat as success
       if (error && !error.message.includes('duplicate') && !error.message.includes('unique')) {
@@ -85,9 +100,11 @@ export async function POST(req: NextRequest) {
 
       const subscriberBodies = {
         'newsletter': `<p>Thanks for subscribing to CRECO Insights. You'll receive market analysis, deal commentary, and Texas commercial real estate strategy roughly once a month — no spam, no fluff.</p>`,
-        'property-alerts': `<p>You're set up to receive property alerts. As soon as a Texas commercial property matching your filters hits the CRECO listings, we'll send it your way.</p><p>Filters you set:</p><pre style="background:#FAFAF8;padding:12px;border-radius:4px">${JSON.stringify(filters ?? {}, null, 2)}</pre>`,
+        'property-alerts': `<p>You're set up to receive property alerts. As soon as a Texas commercial property matching your filters hits the CRECO listings, we'll send it your way.</p><p>Filters you set:</p><pre style="background:#FAFAF8;padding:12px;border-radius:4px">${escapeHtml(JSON.stringify(filters ?? {}, null, 2))}</pre>`,
         'lead-magnet': `<p>Thanks for downloading from CRECO. Your guide is attached / available at the link you came from.</p><p>If you have a specific Texas commercial real estate situation you'd like to discuss, reply to this email or call (210) 817-3443.</p>`,
       };
+
+      const safeName = name || 'there';
 
       await resend.emails.send({
         from: getFromEmail(),
@@ -95,7 +112,7 @@ export async function POST(req: NextRequest) {
         subject: subscriberSubjects[subscription_type as keyof typeof subscriberSubjects],
         html: `
           <div style="font-family:sans-serif;max-width:600px">
-            <h2 style="color:#1A1A1A">Hi ${name ?? 'there'},</h2>
+            <h2 style="color:#1A1A1A">Hi ${escapeHtml(safeName)},</h2>
             ${subscriberBodies[subscription_type as keyof typeof subscriberBodies]}
             <br/>
             <p>— The CRECO Team<br/>San Antonio, TX · <a href="tel:+12108173443" style="color:#C9A962">(210) 817-3443</a></p>
@@ -111,12 +128,12 @@ export async function POST(req: NextRequest) {
           subject: `New ${subscription_type} subscriber: ${email}`,
           html: `
             <div style="font-family:sans-serif;max-width:600px">
-              <h2 style="color:#1A1A1A">New subscriber — ${subscription_type}</h2>
-              <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
-              ${name ? `<p><strong>Name:</strong> ${name}</p>` : ''}
-              ${source ? `<p><strong>Signed up from:</strong> ${source}</p>` : ''}
-              ${asset_slug ? `<p><strong>Asset:</strong> ${asset_slug}</p>` : ''}
-              ${filters ? `<p><strong>Filters:</strong></p><pre style="background:#FAFAF8;padding:12px;border-radius:4px">${JSON.stringify(filters, null, 2)}</pre>` : ''}
+              <h2 style="color:#1A1A1A">New subscriber — ${escapeHtml(subscription_type)}</h2>
+              <p><strong>Email:</strong> <a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></p>
+              ${name ? `<p><strong>Name:</strong> ${escapeHtml(name)}</p>` : ''}
+              ${source ? `<p><strong>Signed up from:</strong> ${escapeHtml(source)}</p>` : ''}
+              ${asset_slug ? `<p><strong>Asset:</strong> ${escapeHtml(asset_slug)}</p>` : ''}
+              ${filters ? `<p><strong>Filters:</strong></p><pre style="background:#FAFAF8;padding:12px;border-radius:4px">${escapeHtml(JSON.stringify(filters, null, 2))}</pre>` : ''}
             </div>
           `,
         });
