@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Script from 'next/script';
 import { MobileStickyCTA } from '@/components/layout/MobileStickyCTA';
 import { CompareBar } from '@/components/listings/CompareBar';
+import { ChatWidget } from '@/components/chat/ChatWidget';
 import { RecaptchaScript } from '@/components/forms/Recaptcha';
 import './globals.css';
 
@@ -230,6 +231,7 @@ export default function RootLayout({
         {children}
         <MobileStickyCTA />
         <CompareBar />
+        <ChatWidget />
         <RecaptchaScript />
       </body>
     </html>
