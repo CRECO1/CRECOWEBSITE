@@ -1,42 +1,76 @@
 'use client';
 
 /**
- * Interest-capture form for the 8000 Fair Oaks Pkwy development. Collects
- * tenant prospect details (name, email, phone, company, use, sf needed,
- * timeline, notes) and POSTs to /api/leads with a development-specific
- * source so the broker can triage at a glance.
+ * Inquiry form for 8000 Fair Oaks Pkwy. Captures whether the prospect is
+ * looking at the retail bays, an executive office suite, or wants to talk
+ * about either — plus the standard tenant context (use, SF, timeline).
  *
- * Re-uses the existing leads endpoint instead of creating a new schema —
- * simpler ops, fewer moving parts. The structured info is packed into the
- * `message` field as a formatted block.
+ * POSTs to /api/leads with source='8000-fair-oaks-pkwy' and a structured
+ * message body so the broker triages it like any other lead. The interest
+ * type is included in the message subject and body so it's the first thing
+ * the broker sees.
  */
 
 import { useState } from 'react';
-import { ArrowRight, CheckCircle, MapPin } from 'lucide-react';
+import { ArrowRight, CheckCircle, MapPin, Store, Briefcase } from 'lucide-react';
 import { getRecaptchaToken } from './Recaptcha';
 import { Honeypot } from './Honeypot';
 
-const USE_TYPES = [
+type InterestType = 'retail' | 'suite' | 'either';
+
+const INTEREST_OPTIONS: { value: InterestType; label: string; description: string; icon: typeof Store }[] = [
+  {
+    value: 'retail',
+    label: 'Retail bay',
+    description: 'One of the 4 retail bays — restaurant, fast-casual, coffee, fitness, retail, or service concept',
+    icon: Store,
+  },
+  {
+    value: 'suite',
+    label: 'Executive office suite',
+    description: 'A private office suite — solo professional, small team, satellite location, or growing business',
+    icon: Briefcase,
+  },
+  {
+    value: 'either',
+    label: 'Open to either',
+    description: "Tell us about your situation and we'll point you to the right option",
+    icon: MapPin,
+  },
+];
+
+const RETAIL_USES = [
   'Restaurant / fast-casual',
-  'Restaurant w/ drive-thru',
   'Coffee / quick-service',
   'Retail / boutique',
   'Fitness / studio',
   'Medical / dental',
   'Service business',
-  'Professional office',
+  'Other',
+];
+
+const SUITE_USES = [
+  'Solo professional',
+  'Small team (2-5)',
+  'Satellite office',
+  'Real estate / insurance',
+  'Legal / accounting',
+  'Consulting',
+  'Therapy / counseling',
   'Other',
 ];
 
 const TIMELINES = [
+  'ASAP',
+  'Within 30 days',
+  'Within 90 days',
+  '3-6 months',
+  '6+ months',
   'Just exploring',
-  'Within 6 months',
-  '6-12 months',
-  '12+ months',
-  'Flexible — depends on the right fit',
 ];
 
 export function DevelopmentInterestForm() {
+  const [interest, setInterest] = useState<InterestType>('retail');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -49,20 +83,34 @@ export function DevelopmentInterestForm() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Use-type options change based on interest selection — different prospect
+  // pools have different relevant categories.
+  const useOptions = interest === 'suite' ? SUITE_USES : interest === 'retail' ? RETAIL_USES : [...RETAIL_USES, ...SUITE_USES];
+
+  // Reset use type if it's no longer in the visible options when interest flips
+  function handleInterestChange(next: InterestType) {
+    setInterest(next);
+    setUseType('');
+  }
+
+  const interestLabel = INTEREST_OPTIONS.find(o => o.value === interest)?.label ?? '';
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
     try {
-      const recaptchaToken = await getRecaptchaToken('submit_development_interest');
+      const recaptchaToken = await getRecaptchaToken('submit_8000_fair_oaks_pkwy');
       const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
 
-      // Pack the development-specific fields into the message body so the
-      // broker gets all context in one place without changing the leads schema.
+      // Pack the structured fields into the message body so the broker gets
+      // all the context up-front. The interest type leads so it's the first
+      // thing they see in the email subject preview.
       const message = [
-        '8000 Fair Oaks Pkwy — tenant prospect',
+        `8000 Fair Oaks Pkwy — ${interestLabel} inquiry`,
         '',
-        `Use: ${useType || '—'}`,
+        `Interest: ${interestLabel}`,
+        `Use / role: ${useType || '—'}`,
         `SF needed: ${sfNeeded || '—'}`,
         `Timeline: ${timeline || '—'}`,
         notes ? `\nNotes: ${notes}` : '',
@@ -77,15 +125,15 @@ export function DevelopmentInterestForm() {
           phone,
           company,
           message,
-          property_interest: '8000 Fair Oaks Pkwy',
-          source: '8000-fair-oaks-pkwy',
+          property_interest: `8000 Fair Oaks Pkwy — ${interestLabel}`,
+          source: `8000-fair-oaks-pkwy-${interest}`,
           recaptchaToken,
           website: honeypot,
         }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || 'Could not register interest');
+        throw new Error(body.error || 'Could not send inquiry');
       }
       setSubmitted(true);
     } catch (err) {
@@ -101,7 +149,7 @@ export function DevelopmentInterestForm() {
         <CheckCircle className="mx-auto h-12 w-12 text-gold mb-4" />
         <h2 className="font-heading text-heading-md font-bold text-primary mb-2">Got it — we'll be in touch.</h2>
         <p className="text-body text-foreground-muted max-w-md mx-auto">
-          Thanks for registering interest in 8000 Fair Oaks Pkwy. A CRECO broker will follow up directly with current development status, available space, and timeline as soon as we have specifics to share with you.
+          Thanks for your interest in 8000 Fair Oaks Pkwy. A CRECO broker will follow up directly with current availability, rates, and next steps.
         </p>
         <p className="mt-4 text-body-sm text-foreground-muted">
           Want to talk now? Call <a href="tel:+12108173443" className="text-gold-dark hover:underline font-semibold">(210) 817-3443</a>.
@@ -113,6 +161,33 @@ export function DevelopmentInterestForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <Honeypot />
+
+      {/* Interest selector — drives the rest of the form */}
+      <div>
+        <label className="block text-body-sm font-semibold text-primary mb-3">What are you looking for?</label>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {INTEREST_OPTIONS.map(opt => {
+            const Icon = opt.icon;
+            const selected = interest === opt.value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => handleInterestChange(opt.value)}
+                className={`text-left rounded-xl border-2 p-4 transition-colors ${
+                  selected ? 'border-gold bg-gold/5' : 'border-border bg-white hover:border-gold/50'
+                }`}
+              >
+                <Icon className={`h-5 w-5 mb-2 ${selected ? 'text-gold' : 'text-foreground-muted'}`} />
+                <div className={`font-heading text-body-sm font-bold mb-1 ${selected ? 'text-primary' : 'text-primary'}`}>
+                  {opt.label}
+                </div>
+                <div className="text-caption text-foreground-muted leading-snug">{opt.description}</div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* Identity */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -161,11 +236,13 @@ export function DevelopmentInterestForm() {
         </div>
       </div>
 
-      {/* Use Type */}
+      {/* Use Type — options shift with interest */}
       <div>
-        <label className="block text-body-sm font-semibold text-primary mb-2">Type of use</label>
+        <label className="block text-body-sm font-semibold text-primary mb-2">
+          {interest === 'suite' ? 'Type of work / business' : interest === 'retail' ? 'Type of use' : 'Use / business type'}
+        </label>
         <div className="flex flex-wrap gap-2">
-          {USE_TYPES.map(u => (
+          {useOptions.map(u => (
             <button
               key={u}
               type="button"
@@ -185,13 +262,15 @@ export function DevelopmentInterestForm() {
       {/* SF + Timeline */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-1.5">Approximate SF needed</label>
+          <label className="block text-body-sm font-semibold text-primary mb-1.5">
+            {interest === 'suite' ? 'Suite size or # of offices' : 'Approximate SF needed'}
+          </label>
           <input
             type="text"
             value={sfNeeded}
             onChange={e => setSfNeeded(e.target.value)}
             className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
-            placeholder="e.g. 2,500 SF"
+            placeholder={interest === 'suite' ? 'e.g. 1 office for solo, or 600 SF' : 'e.g. 1,500 SF'}
           />
         </div>
         <div>
@@ -215,7 +294,13 @@ export function DevelopmentInterestForm() {
           onChange={e => setNotes(e.target.value)}
           rows={3}
           className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
-          placeholder="Drive-thru / patio needs, hours of operation, parking, anchor co-tenancy preferences, etc."
+          placeholder={
+            interest === 'suite'
+              ? 'Conference room needs, parking, after-hours access, etc.'
+              : interest === 'retail'
+                ? 'Hours of operation, drive-thru / patio needs, parking, anchor co-tenancy preferences, etc.'
+                : 'Tell us about your situation — we want to point you to the right option.'
+          }
         />
       </div>
 
@@ -231,7 +316,7 @@ export function DevelopmentInterestForm() {
           disabled={submitting}
           className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-body-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-60 whitespace-nowrap"
         >
-          {submitting ? 'Sending…' : <>Register interest <ArrowRight className="h-4 w-4" /></>}
+          {submitting ? 'Sending…' : <>Send inquiry <ArrowRight className="h-4 w-4" /></>}
         </button>
       </div>
     </form>

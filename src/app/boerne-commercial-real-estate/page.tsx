@@ -46,7 +46,7 @@ export default function BoernePage() {
         marketIntro: [
           "Boerne occupies a position in Texas commercial real estate that's hard to replicate. The historic Main Street is a genuine destination retail district — restaurants, boutiques, gallery space, and lifestyle retail anchored by the kind of pedestrian energy most Texas towns spend decades trying to manufacture and rarely achieve. The I-10 commercial corridor — anchored by H-E-B and Walmart, with a deep tenant mix of national chains, fast-casual restaurants, and service operators — handles the daily-needs commerce for a fast-growing trade area. Highway 46 is the emerging third corridor, picking up commercial activity as residential growth heads east toward Bulverde and west toward Fredericksburg.",
           "What makes Boerne distinctive isn't just the corridors — it's that they don't compete with each other. Main Street is destination retail; I-10 is daily-needs and chain commerce; Highway 46 is suburban-format residential-adjacent. Tenants don't have to choose between visibility and authenticity. Owners don't have to bet on one corridor over another. The trade area can support all three.",
-          "CRECO covers Boerne with the same disciplined broker practice we bring to every Texas market — tenant representation for businesses scouting Boerne space, owner services for Boerne and Kendall County property owners, and investment advisory connecting Boerne deals to our Texas-wide buyer/seller network. Boerne and neighboring Fair Oaks Ranch (where CRECO is developing at 8000 Fair Oaks Pkwy) form the core of our Hill Country gateway practice.",
+          "CRECO covers Boerne with the same disciplined broker practice we bring to every Texas market — tenant representation for businesses scouting Boerne space, owner services for Boerne and Kendall County property owners, and investment advisory connecting Boerne deals to our Texas-wide buyer/seller network. Boerne and neighboring Fair Oaks Ranch (where CRECO owns and operates the mixed-use commercial center at 8000 Fair Oaks Pkwy) form the core of our Hill Country gateway practice.",
         ],
         servicesIntro: [
           "Boerne tenancy rewards specificity. The right Main Street space is wrong for a fast-casual concept that needs drive-thru access; the right I-10 location is wrong for a destination boutique. CRECO's tenant rep practice underwrites every Boerne opportunity against the tenant's specific concept, target customer, and operating model — and we know the differences between Main Street, I-10, and Highway 46 cold.",
@@ -87,7 +87,7 @@ export default function BoernePage() {
         ],
         whyBullets: [
           'Texas-wide reach with deep Boerne and Kendall County market knowledge',
-          'Sister market to our Fair Oaks Ranch practice — where CRECO is developing at 8000 Fair Oaks Pkwy',
+          'Sister market to our Fair Oaks Ranch practice — where CRECO owns and operates the 8000 Fair Oaks Pkwy commercial center',
           'Tenant rep for retail, restaurants, professional services, and Hill Country concepts — landlord pays our commission',
           'Owner services for Boerne and Kendall County property owners',
           'Investment advisory connecting Boerne deals to our Texas-wide 1031 + buyer network',
@@ -114,7 +114,7 @@ export default function BoernePage() {
         propertyLinks: [
           { label: 'Retail space for lease', href: '/texas-retail-space-for-lease', description: 'Boerne and Texas retail — Main Street destination, I-10 chain corridor, and Highway 46 emerging commercial.' },
           { label: 'Office space for lease', href: '/texas-office-space-for-lease', description: 'Professional services office in Boerne, Kendall County, and the I-10 corridor.' },
-          { label: 'Fair Oaks Ranch commercial', href: '/fair-oaks-ranch-commercial-real-estate', description: "Boerne's neighboring submarket where CRECO is developing at 8000 Fair Oaks Pkwy." },
+          { label: 'Fair Oaks Ranch commercial', href: '/fair-oaks-ranch-commercial-real-estate', description: "Boerne's neighboring submarket where CRECO owns and operates the 8000 Fair Oaks Pkwy mixed-use center." },
           { label: 'Commercial property for sale', href: '/texas-commercial-property-for-sale', description: 'Boerne, Kendall County, and Texas commercial property for sale — investment, owner-user, and 1031 opportunities.' },
         ],
       }}

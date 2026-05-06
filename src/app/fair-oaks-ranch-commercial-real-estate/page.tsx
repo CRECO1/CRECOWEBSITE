@@ -36,7 +36,7 @@ export default function FairOaksRanchPage() {
         heroEyebrow: 'Texas Commercial Real Estate · Fair Oaks Ranch',
         heroTitle: 'Fair Oaks Ranch commercial real estate — and we have the local conviction to prove it.',
         heroSubhead:
-          "CRECO covers Fair Oaks Ranch as a core submarket of our Texas commercial real estate practice. We're headquartered in San Antonio and invested locally at 8000 Fair Oaks Pkwy — where we're developing retail to serve a market the rest of Texas commercial brokerage has historically under-served. If you're a tenant scouting Fair Oaks Ranch space, an owner repositioning a property, or an investor looking at the I-10 corridor, this is where to start.",
+          "CRECO covers Fair Oaks Ranch as a core submarket of our Texas commercial real estate practice. We're headquartered in San Antonio and operate locally at 8000 Fair Oaks Pkwy — a 4-bay retail center plus two two-story executive office suite buildings, owned and leased by us, in a market the rest of Texas commercial brokerage has historically under-served. If you're a tenant scouting Fair Oaks Ranch space, an owner repositioning a property, or an investor looking at the I-10 corridor, this is where to start.",
         marketStats: [
           { label: 'Median household income', value: '$130K+', context: 'one of the highest-income suburbs in Texas' },
           { label: 'Population growth', value: 'High', context: 'driven by master-planned community expansion' },
@@ -45,19 +45,19 @@ export default function FairOaksRanchPage() {
         ],
         marketIntro: [
           "Fair Oaks Ranch is one of the most distinctive commercial real estate submarkets in the greater San Antonio area. The residential side of Fair Oaks Ranch is characterized by very affluent demographics — household incomes among the highest in Texas, large-lot residential, and a master-planned community fabric that has been growing steadily for two decades. That residential strength has not, until recently, been matched by commercial development at the same caliber.",
-          "That mismatch is what makes Fair Oaks Ranch interesting for retail in 2026. The trade area's spending power is leaving Fair Oaks Ranch every day for retail, dining, and services — going down I-10 to The Rim and 1604 corridor to the south, or up to Boerne to the north. Bringing that spending back into Fair Oaks Ranch with the right retail product is the thesis CRECO is acting on — most visibly with our own development at 8000 Fair Oaks Pkwy, but also with the broker work we do for tenants and owners across the submarket.",
+          "That mismatch is what makes Fair Oaks Ranch interesting for retail in 2026. The trade area's spending power is leaving Fair Oaks Ranch every day for retail, dining, and services — going down I-10 to The Rim and 1604 corridor to the south, or up to Boerne to the north. Bringing that spending back into Fair Oaks Ranch with the right retail product is the thesis CRECO is acting on — most visibly at 8000 Fair Oaks Pkwy, where we own and lease a 4-bay retail center alongside two executive office suite buildings, but also through the broker work we do for tenants and owners across the submarket.",
           "Beyond retail, Fair Oaks Ranch has growing office demand from professional services that want to operate where their clients live, modest industrial demand from contractor and service businesses, and a recurring stream of land transactions tied to the residential growth pipeline. CRECO covers all of it.",
         ],
         servicesIntro: [
-          "We don't treat Fair Oaks Ranch as an afterthought to a generic San Antonio commercial real estate practice. CRECO is invested in this submarket through our own development at 8000 Fair Oaks Pkwy — and that on-the-ground commitment shapes how we work with tenant, owner, and investor clients here.",
+          "We don't treat Fair Oaks Ranch as an afterthought to a generic San Antonio commercial real estate practice. CRECO owns and operates the mixed-use commercial center at 8000 Fair Oaks Pkwy — and that on-the-ground commitment shapes how we work with tenant, owner, and investor clients here.",
           "For tenants — restaurants, retail concepts, professional services, fitness, medical, and specialty operators — we underwrite Fair Oaks Ranch sites against your specific concept, your trade area, and your operating model. We know the I-10 frontage submarkets, the Fair Oaks Pkwy corridor, and the Dominion-adjacent options, and we're candid about which makes sense for which uses.",
           "For owners and investors, we provide the same rigorous broker work we bring to every Texas market: hold/sell/reposition strategy on existing assets, off-market deal flow for acquisitions, leasing campaigns to drive occupancy, and disposition coordination when it's time to sell.",
         ],
         submarkets: [
           {
             name: 'Fair Oaks Pkwy Corridor',
-            characterization: 'Emerging retail',
-            description: "The Fair Oaks Pkwy spine — anchor of the residential community and the natural location for community-serving retail, restaurants, and services. CRECO's own development at 8000 Fair Oaks Pkwy sits here.",
+            characterization: 'Retail + executive office',
+            description: "The Fair Oaks Pkwy spine — anchor of the residential community and the natural location for community-serving retail and professional services. CRECO's mixed-use center at 8000 Fair Oaks Pkwy sits here, with retail bays + executive office suites.",
           },
           {
             name: 'I-10 Frontage',
@@ -86,9 +86,9 @@ export default function FairOaksRanchPage() {
           },
         ],
         whyBullets: [
-          'Local conviction — CRECO is developing at 8000 Fair Oaks Pkwy, not just brokering nearby',
+          'Local conviction — CRECO owns and operates the mixed-use center at 8000 Fair Oaks Pkwy',
           'Texas-wide reach — Fair Oaks Ranch deals connect to our broader San Antonio + Hill Country network',
-          'Tenant rep for restaurants, retail, services, and professional concepts — landlord pays our commission',
+          'Tenant rep for restaurants, retail, professional services, and executive suite tenants — landlord pays our commission',
           'Owner services and asset strategy for Fair Oaks Ranch property owners',
           'Off-market deal flow on land, retail, and owner-user opportunities',
           'Direct broker access — every engagement led by a senior CRECO broker',
@@ -113,7 +113,7 @@ export default function FairOaksRanchPage() {
         propertyLinks: [
           { label: 'Retail space for lease', href: '/texas-retail-space-for-lease', description: 'Retail in Fair Oaks Ranch and across Texas — strip centers, end-caps with drive-thru, restaurants, and pad sites.' },
           { label: 'Office space for lease', href: '/texas-office-space-for-lease', description: 'Professional services office in Fair Oaks Ranch and the broader I-10 corridor.' },
-          { label: '8000 Fair Oaks Pkwy', href: '/8000-fair-oaks-pkwy', description: "CRECO's retail development at 8000 Fair Oaks Pkwy — register your interest now while leasing details are finalized." },
+          { label: '8000 Fair Oaks Pkwy', href: '/8000-fair-oaks-pkwy', description: "CRECO's mixed-use center at 8000 Fair Oaks Pkwy — 4 retail bays + two executive suite buildings, now leasing." },
           { label: 'Boerne commercial real estate', href: '/boerne-commercial-real-estate', description: 'The neighboring Boerne market — Hill Country gateway, strong I-10 commercial corridor, growing demographics.' },
         ],
       }}
