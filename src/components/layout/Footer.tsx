@@ -171,6 +171,34 @@ export function Footer() {
         </Container>
       </div>
 
+      {/* Markets We Serve */}
+      <div className="border-t border-white/10 py-6 bg-primary/80">
+        <Container>
+          <p className="text-caption uppercase tracking-widest text-gold mb-3 text-center md:text-left">Texas Markets We Serve</p>
+          <div className="flex flex-wrap justify-center md:justify-start gap-x-5 gap-y-2">
+            {[
+              { href: '/fair-oaks-ranch-commercial-real-estate', label: 'Fair Oaks Ranch' },
+              { href: '/boerne-commercial-real-estate', label: 'Boerne' },
+              { href: '/submarkets', label: 'San Antonio' },
+              { href: '/austin-commercial-real-estate', label: 'Austin' },
+              { href: '/houston-commercial-real-estate', label: 'Houston' },
+              { href: '/dallas-commercial-real-estate', label: 'Dallas–Fort Worth' },
+              { href: '/8000-fair-oaks-pkwy', label: '8000 Fair Oaks Pkwy', highlight: true },
+            ].map(m => (
+              <Link
+                key={m.href}
+                href={m.href}
+                className={`text-body-sm transition-colors ${
+                  m.highlight ? 'text-gold font-semibold hover:text-gold-light' : 'text-white/60 hover:text-gold'
+                }`}
+              >
+                {m.label}
+              </Link>
+            ))}
+          </div>
+        </Container>
+      </div>
+
       {/* Sister Site */}
       <div className="border-t border-white/10 py-5 bg-primary/80">
         <Container>

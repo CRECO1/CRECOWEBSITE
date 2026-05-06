@@ -16,6 +16,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/austin-commercial-real-estate`,       lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9  },
     { url: `${BASE_URL}/houston-commercial-real-estate`,      lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9  },
     { url: `${BASE_URL}/dallas-commercial-real-estate`,       lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9  },
+    // Hill Country gateway submarkets — Fair Oaks Ranch + Boerne
+    { url: `${BASE_URL}/fair-oaks-ranch-commercial-real-estate`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.95 },
+    { url: `${BASE_URL}/boerne-commercial-real-estate`,        lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9  },
+    // CRECO development — 8000 Fair Oaks Pkwy
+    { url: `${BASE_URL}/8000-fair-oaks-pkwy`,                  lastModified: new Date(), changeFrequency: 'weekly', priority: 0.95 },
     { url: `${BASE_URL}/owner-services`,              lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9  },
     // Standard pages
     { url: `${BASE_URL}/services`,                    lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9  },

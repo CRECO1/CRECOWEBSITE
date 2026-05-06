@@ -25,7 +25,8 @@ const PROPERTY_TYPES = [
 
 const SUBMARKETS = [
   'Northwest', 'North Central', 'Northeast', 'Downtown', 'South Side', 'Far West',
-  'Austin', 'Houston', 'Dallas', 'Fort Worth', 'New Braunfels', 'Boerne', 'Schertz',
+  'Fair Oaks Ranch', 'Boerne', 'Schertz', 'New Braunfels',
+  'Austin', 'Houston', 'Dallas', 'Fort Worth',
 ];
 
 const SIZE_RANGES = [

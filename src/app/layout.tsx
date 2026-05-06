@@ -139,6 +139,7 @@ export default function RootLayout({
                     { '@type': 'City', name: 'Corpus Christi' },
                     { '@type': 'City', name: 'New Braunfels' },
                     { '@type': 'City', name: 'Boerne' },
+                    { '@type': 'City', name: 'Fair Oaks Ranch' },
                     { '@type': 'City', name: 'Schertz' },
                   ],
                   knowsAbout: [
