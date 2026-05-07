@@ -27,9 +27,34 @@ const TRANSACTION_TYPE_OPTIONS = [
 ];
 
 // ─── Image Upload Button ──────────────────────────────────────────────────────
+
+// Defense-in-depth: even though admin uploads are gated by Supabase RLS,
+// validate file type and size at the client too. Blocks the stored-XSS path
+// where a compromised admin account would upload a crafted SVG (which can
+// embed JavaScript) and reference it as an <img> on a public page. The
+// allowlist excludes SVG and image/* anything else.
+const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'image/gif']);
+const ALLOWED_IMAGE_EXTS = new Set(['jpg', 'jpeg', 'png', 'webp', 'avif', 'gif']);
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10 MB
+
 async function uploadBlobToImages(blob: Blob, ext = 'jpg'): Promise<string> {
-  const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-  const { error } = await supabase.storage.from('images').upload(path, blob, { upsert: true, contentType: blob.type || 'image/jpeg' });
+  // Size cap
+  if (blob.size > MAX_IMAGE_BYTES) {
+    throw new Error(`Image too large (max ${MAX_IMAGE_BYTES / 1024 / 1024} MB)`);
+  }
+  // Mime allowlist — fall back to ext check if browser didn't supply a type
+  const mime = (blob.type || '').toLowerCase();
+  const safeExt = (ext || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (mime) {
+    if (!ALLOWED_IMAGE_TYPES.has(mime)) {
+      throw new Error(`File type "${mime}" is not allowed. Use JPEG, PNG, WebP, AVIF, or GIF.`);
+    }
+  } else if (!ALLOWED_IMAGE_EXTS.has(safeExt)) {
+    throw new Error(`File extension ".${safeExt}" is not allowed. Use jpg, png, webp, avif, or gif.`);
+  }
+
+  const path = `${Date.now()}-${Math.random().toString(36).slice(2)}.${safeExt || 'jpg'}`;
+  const { error } = await supabase.storage.from('images').upload(path, blob, { upsert: true, contentType: mime || 'image/jpeg' });
   if (error) throw error;
   const { data } = supabase.storage.from('images').getPublicUrl(path);
   return data.publicUrl;
