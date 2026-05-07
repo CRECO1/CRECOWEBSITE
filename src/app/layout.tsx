@@ -117,6 +117,11 @@ export default function RootLayout({
                     'Texas commercial real estate firm specializing in retail, industrial, and office properties. Tenant representation, owner services, investment advisory, leasing & sales, property management, and portfolio strategy for multi-property owners across Texas.',
                   telephone: '+1-210-817-3443',
                   email: 'info@crecotx.com',
+                  identifier: {
+                    '@type': 'PropertyValue',
+                    propertyID: 'TREC License',
+                    value: '9014367-BB',
+                  },
                   address: {
                     '@type': 'PostalAddress',
                     streetAddress: '8000 Fair Oaks Pkwy, Suite 102',

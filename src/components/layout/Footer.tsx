@@ -259,7 +259,7 @@ export function Footer() {
               <Link href="/terms" className="text-caption text-white/40 transition-colors hover:text-white/70">
                 Terms of Service
               </Link>
-              <span className="text-caption text-white/40">Licensed Texas Real Estate Brokerage</span>
+              <span className="text-caption text-white/40">Licensed Texas Real Estate Brokerage · TREC #9014367-BB</span>
             </div>
           </div>
         </Container>
