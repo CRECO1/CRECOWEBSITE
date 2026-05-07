@@ -10,7 +10,10 @@ import { signIn } from '@/lib/auth';
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get('redirect') ?? '/manage';
+  // After sign-in, send the user to the admin editor at /admin (the
+  // ?redirect=… query param overrides this when middleware bounced them
+  // here from a deep link).
+  const redirect = searchParams.get('redirect') ?? '/admin';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

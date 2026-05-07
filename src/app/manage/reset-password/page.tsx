@@ -89,8 +89,8 @@ export default function ResetPasswordPage() {
     try {
       await updatePassword(password);
       setDone(true);
-      // Redirect back to /manage after a beat
-      setTimeout(() => router.push('/manage'), 2000);
+      // Redirect into the admin editor after a beat
+      setTimeout(() => router.push('/admin'), 2000);
     } catch (err) {
       setError((err as Error).message || 'Could not update password. Try again.');
     } finally {
