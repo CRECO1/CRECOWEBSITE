@@ -4,7 +4,10 @@ import { updateSession } from '@/lib/supabase/middleware';
 
 // Protected routes that require authentication
 const protectedRoutes = ['/manage'];
-const publicRoutes = ['/manage/login'];
+// Auth-flow pages within /manage that must be reachable without a session
+// (login, forgot-password request form, and the reset-password page that
+// Supabase's recovery email links to).
+const publicRoutes = ['/manage/login', '/manage/forgot-password', '/manage/reset-password'];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

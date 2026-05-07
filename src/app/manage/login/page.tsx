@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense, useState } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Eye, EyeOff, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -96,6 +97,15 @@ function LoginForm() {
               Sign In
             </Button>
           </form>
+
+          <div className="mt-5 text-center">
+            <Link
+              href="/manage/forgot-password"
+              className="text-body-sm text-foreground-muted hover:text-gold transition-colors"
+            >
+              Forgot your password?
+            </Link>
+          </div>
         </div>
 
         <p className="mt-6 text-center text-caption text-foreground-muted">
