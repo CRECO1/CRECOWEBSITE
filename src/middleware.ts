@@ -2,8 +2,10 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
 
-// Protected routes that require authentication
-const protectedRoutes = ['/manage'];
+// Protected routes that require authentication. /admin is the actual editor
+// surface; /manage holds the auth-flow pages (login, forgot, reset) plus
+// any future server-rendered admin views.
+const protectedRoutes = ['/admin', '/manage'];
 // Auth-flow pages within /manage that must be reachable without a session
 // (login, forgot-password request form, and the reset-password page that
 // Supabase's recovery email links to).
@@ -55,7 +57,9 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Match all admin routes except static files
+    // Run the middleware on every admin surface. The handler itself decides
+    // whether each path is protected or public.
+    '/admin/:path*',
     '/manage/:path*',
   ],
 };

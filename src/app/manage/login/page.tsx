@@ -7,13 +7,31 @@ import { Eye, EyeOff, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { signIn } from '@/lib/auth';
 
+/**
+ * Constrain post-login redirects to same-origin paths only. Without this
+ * validation, an attacker can craft a phishing URL like
+ *   /manage/login?redirect=https://evil.com
+ * and the browser would jump straight to evil.com after a successful
+ * sign-in. The check rejects:
+ *   - any string that doesn't start with "/"  (absolute URLs)
+ *   - "//"-prefixed protocol-relative URLs
+ *   - "/\..." (some browsers treat that as protocol-relative)
+ *   - non-string values
+ */
+function safeRedirect(value: string | null): string {
+  if (typeof value !== 'string' || value.length === 0) return '/admin';
+  if (value[0] !== '/') return '/admin';
+  if (value.length > 1 && (value[1] === '/' || value[1] === '\\')) return '/admin';
+  return value;
+}
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  // After sign-in, send the user to the admin editor at /admin (the
+  // After sign-in, send the user to the admin editor at /admin. The
   // ?redirect=… query param overrides this when middleware bounced them
-  // here from a deep link).
-  const redirect = searchParams.get('redirect') ?? '/admin';
+  // here from a deep link — but only same-origin paths are honored.
+  const redirect = safeRedirect(searchParams.get('redirect'));
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
