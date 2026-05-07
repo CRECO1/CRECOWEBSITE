@@ -239,7 +239,13 @@ export default function RootLayout({
         {children}
         <MobileStickyCTA />
         <CompareBar />
-        <ChatWidget />
+        {/*
+          Chatbot is archived — the component, /api/chat route, and system
+          prompt all remain in the codebase. Flip on by setting:
+            NEXT_PUBLIC_CHAT_ENABLED=true
+          in Vercel env (also requires ANTHROPIC_API_KEY + funded credits).
+        */}
+        {process.env.NEXT_PUBLIC_CHAT_ENABLED === 'true' && <ChatWidget />}
         <RecaptchaScript />
       </body>
     </html>
