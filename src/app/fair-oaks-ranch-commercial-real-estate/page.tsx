@@ -4,7 +4,7 @@ import { CityHubPage } from '@/components/marketing/CityHubPage';
 export const metadata: Metadata = {
   title: 'Fair Oaks Ranch Commercial Real Estate | Retail, Office, Land | CRECO',
   description:
-    'Fair Oaks Ranch commercial real estate — retail, office, and land for lease and sale. CRECO is headquartered in San Antonio and invested locally at 8000 Fair Oaks Pkwy, with the on-the-ground market knowledge to back tenants, owners, and investors in Fair Oaks Ranch.',
+    'Fair Oaks Ranch commercial real estate — retail, office, and land for lease and sale. CRECO is headquartered at 8000 Fair Oaks Pkwy in Fair Oaks Ranch, where we own and operate the mixed-use commercial center, with the on-the-ground market knowledge to back tenants, owners, and investors.',
   keywords: [
     'fair oaks ranch commercial real estate',
     'fair oaks ranch retail space',
@@ -36,7 +36,7 @@ export default function FairOaksRanchPage() {
         heroEyebrow: 'Texas Commercial Real Estate · Fair Oaks Ranch',
         heroTitle: 'Fair Oaks Ranch commercial real estate — and we have the local conviction to prove it.',
         heroSubhead:
-          "CRECO covers Fair Oaks Ranch as a core submarket of our Texas commercial real estate practice. We're headquartered in San Antonio and operate locally at 8000 Fair Oaks Pkwy — a 4-bay retail center plus two two-story executive office suite buildings, owned and leased by us, in a market the rest of Texas commercial brokerage has historically under-served. If you're a tenant scouting Fair Oaks Ranch space, an owner repositioning a property, or an investor looking at the I-10 corridor, this is where to start.",
+          "Fair Oaks Ranch is home base — CRECO is headquartered at 8000 Fair Oaks Pkwy, the mixed-use commercial center we own and operate. A 4-bay retail center plus two two-story executive office suite buildings, in a market the rest of Texas commercial brokerage has historically under-served. If you're a tenant scouting Fair Oaks Ranch space, an owner repositioning a property, or an investor looking at the I-10 corridor, this is where to start.",
         marketStats: [
           { label: 'Median household income', value: '$130K+', context: 'one of the highest-income suburbs in Texas' },
           { label: 'Population growth', value: 'High', context: 'driven by master-planned community expansion' },

@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
             <h2 style="color:#1A1A1A">Hi ${escapeHtml(safeName)},</h2>
             ${subscriberBodies[subscription_type as keyof typeof subscriberBodies]}
             <br/>
-            <p>— The CRECO Team<br/>San Antonio, TX · <a href="tel:+12108173443" style="color:#C9A962">(210) 817-3443</a></p>
+            <p>— The CRECO Team<br/>8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015 · <a href="tel:+12108173443" style="color:#C9A962">(210) 817-3443</a></p>
           </div>
         `,
       });

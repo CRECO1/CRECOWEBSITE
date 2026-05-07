@@ -7,6 +7,7 @@ import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin } from 'lucide-react
 import { Container } from '@/components/ui/Container';
 import { NewsletterSignup } from '@/components/forms/NewsletterSignup';
 import { supabase } from '@/lib/supabase';
+import { googleMapsUrl } from '@/lib/utils';
 
 const footerLinks = {
   properties: [
@@ -32,7 +33,9 @@ const footerLinks = {
 const DEFAULTS = {
   phone: '(210) 817-3443',
   email: 'info@crecotx.com',
-  address: 'San Antonio, TX',
+  // Canonical CRECO office. Multi-line so Footer renders street + city/state on
+  // separate lines via the addressLines split.
+  address: '8000 Fair Oaks Pkwy, Suite 102\nFair Oaks Ranch, TX 78015',
 };
 
 export function Footer() {
@@ -145,14 +148,20 @@ export function Footer() {
                   </a>
                 </li>
                 <li>
-                  <div className="flex items-start gap-3 text-body-sm text-white/60">
+                  <a
+                    href={googleMapsUrl(contact.address)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Open ${contact.address} in Google Maps`}
+                    className="flex items-start gap-3 text-body-sm text-white/60 transition-colors hover:text-gold"
+                  >
                     <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
                     <span>
                       {addressLines.map((line, i) => (
                         <span key={i}>{line}{i < addressLines.length - 1 && <br />}</span>
                       ))}
                     </span>
-                  </div>
+                  </a>
                 </li>
               </ul>
               <div className="mt-6 flex flex-col gap-3">

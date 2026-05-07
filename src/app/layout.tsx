@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     template: '%s',
   },
   description:
-    'CRECO is a Texas commercial real estate firm specializing in retail, industrial, and office properties for lease and sale. Tenant representation, owner services, and portfolio advisory for multi-property owners across Texas — from our San Antonio headquarters.',
+    'CRECO is a Texas commercial real estate firm specializing in retail, industrial, and office properties for lease and sale. Tenant representation, owner services, and portfolio advisory for multi-property owners across Texas — from our Fair Oaks Ranch headquarters at 8000 Fair Oaks Pkwy.',
   keywords: [
     'Texas commercial real estate',
     'commercial real estate Texas',
@@ -119,14 +119,17 @@ export default function RootLayout({
                   email: 'info@crecotx.com',
                   address: {
                     '@type': 'PostalAddress',
-                    addressLocality: 'San Antonio',
+                    streetAddress: '8000 Fair Oaks Pkwy, Suite 102',
+                    addressLocality: 'Fair Oaks Ranch',
                     addressRegion: 'TX',
+                    postalCode: '78015',
                     addressCountry: 'US',
                   },
                   geo: {
                     '@type': 'GeoCoordinates',
-                    latitude: 29.4241,
-                    longitude: -98.4936,
+                    // Approximate coords for 8000 Fair Oaks Pkwy, Fair Oaks Ranch
+                    latitude: 29.7449,
+                    longitude: -98.6303,
                   },
                   // Texas-wide service area
                   areaServed: [

@@ -286,7 +286,7 @@ export function CityHubPage({ config }: { config: CityHubConfig }) {
               </div>
               <p className="mt-8 text-caption text-white/50 flex items-center justify-center gap-2">
                 <TrendingUp className="h-3 w-3 text-gold" />
-                Texas commercial real estate · headquartered in San Antonio · serving the entire state
+                Texas commercial real estate · headquartered in Fair Oaks Ranch · serving the entire state
               </p>
             </div>
           </Container>

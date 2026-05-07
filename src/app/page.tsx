@@ -137,7 +137,7 @@ const FAQS = [
   },
   {
     q: 'Where in Texas do you work?',
-    a: 'We are headquartered in San Antonio with active brokerage and advisory work across the major Texas commercial markets — including Austin, Houston, Dallas–Fort Worth, El Paso, Corpus Christi, New Braunfels, and the Hill Country. If your property or search is in Texas, we cover it.',
+    a: 'We are headquartered at 8000 Fair Oaks Pkwy in Fair Oaks Ranch, with active brokerage and advisory work across the major Texas commercial markets — San Antonio, Austin, Houston, Dallas–Fort Worth, El Paso, Corpus Christi, New Braunfels, Boerne, and the Hill Country. If your property or search is in Texas, we cover it.',
   },
   {
     q: 'Do you work with multi-property owners and investors?',
@@ -170,7 +170,7 @@ const DEFAULT_SETTINGS = {
   cta_subheadline: 'Submit your tenant requirements or list your property in 2 minutes. A CRECO principal responds within one business day with vetted options or a no-obligation property opinion.',
   phone: '(210) 817-3443',
   email: 'info@crecotx.com',
-  address: 'San Antonio, TX',
+  address: '8000 Fair Oaks Pkwy, Suite 102\nFair Oaks Ranch, TX 78015',
 };
 
 export default async function HomePage() {

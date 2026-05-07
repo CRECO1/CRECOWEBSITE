@@ -15,6 +15,7 @@ import { useState } from 'react';
 import { ArrowRight, CheckCircle, MapPin, Store, Briefcase } from 'lucide-react';
 import { getRecaptchaToken } from './Recaptcha';
 import { Honeypot } from './Honeypot';
+import { googleMapsUrl } from '@/lib/utils';
 
 type InterestType = 'retail' | 'suite' | 'either';
 
@@ -307,10 +308,16 @@ export function DevelopmentInterestForm() {
       {error && <p className="text-body-sm text-destructive">{error}</p>}
 
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:justify-between">
-        <p className="text-caption text-foreground-muted max-w-md flex items-center gap-1.5">
+        <a
+          href={googleMapsUrl('8000 Fair Oaks Pkwy Suite 102, Fair Oaks Ranch, TX 78015')}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Open 8000 Fair Oaks Pkwy in Google Maps"
+          className="text-caption text-foreground-muted hover:text-gold transition-colors max-w-md flex items-center gap-1.5"
+        >
           <MapPin className="h-3 w-3 text-gold shrink-0" />
           8000 Fair Oaks Pkwy · Fair Oaks Ranch, TX
-        </p>
+        </a>
         <button
           type="submit"
           disabled={submitting}

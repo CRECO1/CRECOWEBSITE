@@ -44,6 +44,16 @@ export function formatLeaseRate(rate: number | null | undefined, basis: string |
   return `$${rate.toLocaleString(undefined, { maximumFractionDigits: 2 })}/SF/yr${basis ? ` ${basis}` : ''}`;
 }
 
+/**
+ * Builds a Google Maps "search" URL for an address. Used everywhere we
+ * render a visible address — wraps it in a clickable link that opens
+ * Maps with the address pre-searched. The `?api=1&query=` form is the
+ * documented stable URL pattern (no API key, works on every device).
+ */
+export function googleMapsUrl(query: string): string {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query.trim())}`;
+}
+
 export function transactionLabel(t: string | null | undefined): string {
   if (!t) return '';
   const map: Record<string, string> = {

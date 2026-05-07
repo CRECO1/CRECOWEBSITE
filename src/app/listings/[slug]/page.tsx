@@ -7,7 +7,7 @@ import { MapPin, Calendar, Phone, ArrowLeft, Building2, CheckCircle, Layers, Rul
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { getListingBySlug } from '@/lib/supabase';
-import { formatPrice, formatSqft, formatAcres, formatLeaseRate, transactionLabel, propertyTypeLabel } from '@/lib/utils';
+import { formatPrice, formatSqft, formatAcres, formatLeaseRate, transactionLabel, propertyTypeLabel, googleMapsUrl } from '@/lib/utils';
 import { ListingContactForm } from './ListingContactForm';
 import { RelatedListings } from '@/components/marketing/RelatedListings';
 import { ListingGallery } from '@/components/marketing/ListingGallery';
@@ -173,7 +173,15 @@ export default async function ListingDetailPage({ params }: Props) {
                 <div>
                   <p className="text-caption text-foreground-muted mb-1">
                     <MapPin className="mr-1 inline h-3 w-3" />
-                    {listing!.address}, {listing!.city}, {listing!.state} {listing!.zip}
+                    <a
+                      href={googleMapsUrl(`${listing!.address}, ${listing!.city}, ${listing!.state} ${listing!.zip}`)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Open property location in Google Maps"
+                      className="hover:text-gold transition-colors"
+                    >
+                      {listing!.address}, {listing!.city}, {listing!.state} {listing!.zip}
+                    </a>
                     {listing!.submarket ? ` · ${listing!.submarket}` : ''}
                   </p>
                   <h1 className="font-heading text-display-sm font-bold text-primary">

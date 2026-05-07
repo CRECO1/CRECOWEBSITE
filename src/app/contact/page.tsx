@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { Honeypot } from '@/components/forms/Honeypot';
+import { googleMapsUrl } from '@/lib/utils';
 
 const CONTACT_REASONS = [
   'Looking for space to lease or buy',
@@ -104,9 +105,16 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="font-semibold text-primary">Office</p>
-                      <p className="text-body-sm text-foreground-muted">
-                        San Antonio, TX
-                      </p>
+                      <a
+                        href={googleMapsUrl('8000 Fair Oaks Pkwy Suite 102, Fair Oaks Ranch, TX 78015')}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Open CRECO office in Google Maps"
+                        className="text-body-sm text-foreground-muted hover:text-gold transition-colors block"
+                      >
+                        8000 Fair Oaks Pkwy, Suite 102<br />
+                        Fair Oaks Ranch, TX 78015
+                      </a>
                     </div>
                   </div>
 

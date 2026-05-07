@@ -353,7 +353,7 @@ export default function FairOaksDevPage() {
                 We're not just brokering Fair Oaks Ranch. We're operating here.
               </h2>
               <p className="text-body-lg text-white/70 leading-relaxed mb-8">
-                CRECO is a Texas commercial real estate firm headquartered in San Antonio. Our practice spans tenant representation, owner services, investment advisory, leasing & sales, property management, and development. 8000 Fair Oaks Pkwy is one of the assets where we're not just brokering — we own and operate it. That conviction is what we bring to every Fair Oaks Ranch and Boerne client.
+                CRECO is a Texas commercial real estate firm headquartered at 8000 Fair Oaks Pkwy in Fair Oaks Ranch — the same mixed-use commercial center we own and operate. Our practice spans tenant representation, owner services, investment advisory, leasing & sales, property management, and development across Texas. We're not just brokering this property — we live in it. That conviction is what we bring to every Fair Oaks Ranch and Boerne client.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
                 <Link

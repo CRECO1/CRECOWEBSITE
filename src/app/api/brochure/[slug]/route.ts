@@ -105,7 +105,7 @@ export async function GET(
     doc.setFontSize(8);
     doc.setTextColor(150);
     doc.text(
-      'CRECO – Commercial Real Estate Company  ·  San Antonio, TX  ·  Licensed Texas Real Estate Brokerage',
+      'CRECO – Commercial Real Estate Company  ·  8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015  ·  Licensed Texas Real Estate Brokerage',
       105,
       265,
       { align: 'center' }
