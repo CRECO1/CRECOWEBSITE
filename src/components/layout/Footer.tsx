@@ -27,6 +27,7 @@ const footerLinks = {
     { href: '/services/development', label: 'Property Development' },
     { href: '/guides', label: 'Free Guides' },
     { href: '/insights', label: 'Insights' },
+    { href: '/careers', label: 'Careers' },
   ],
 };
 

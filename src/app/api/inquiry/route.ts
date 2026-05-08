@@ -34,6 +34,7 @@ const PATH_LABELS: Record<string, { subject: string; source: string; humanLabel:
   seller:    { subject: 'Seller / Listing Inquiry',        source: 'owner-inquiry',     humanLabel: 'Want to sell or list' },
   pm:        { subject: 'Property Management Inquiry',     source: 'pm-inquiry',        humanLabel: 'Needs property management' },
   exploring: { subject: 'New Lead — Exploring',            source: 'exploring',         humanLabel: 'Just exploring' },
+  agent:     { subject: 'Agent Application',               source: 'agent-application', humanLabel: 'Wants to join CRECO as an agent' },
 };
 
 const FIELD_LABELS: Record<string, string> = {
@@ -67,6 +68,15 @@ const FIELD_LABELS: Record<string, string> = {
   service_area: 'Service area',
   // exploring
   interest: 'Area of interest',
+  // agent application
+  license_status: 'License status',
+  license_number: 'TREC license #',
+  years_experience: 'Years of experience',
+  current_brokerage: 'Current brokerage',
+  specialties: 'Specialties',
+  primary_market: 'Primary market',
+  why_creco: 'Why CRECO',
+  linkedin: 'LinkedIn URL',
 };
 
 /**
