@@ -1,25 +1,36 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowRight, Clock, FileText, Lock } from 'lucide-react';
+import { ArrowRight, Clock, FileText, Lock, BarChart3, BookOpen } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
-import { SORTED_GUIDES } from '@/lib/guides';
+import { SORTED_GUIDES, type Guide } from '@/lib/guides';
 
 export const metadata: Metadata = {
-  title: 'Texas Commercial Real Estate Guides | Free Downloads | CRECO',
+  title: 'Texas Commercial Real Estate Guides & Market Reports | Free Downloads | CRECO',
   description:
-    "Free in-depth guides for Texas commercial real estate tenants, owners, and investors. Lease negotiation playbooks, disposition strategy, and market analysis from CRECO's broker team.",
+    "Free in-depth guides and quarterly market reports for Texas commercial real estate — lease negotiation, disposition strategy, and Q2 2026 industrial, retail, office, and investment market data from CRECO's broker team.",
   keywords: [
     'texas commercial real estate guide',
     'commercial lease negotiation guide texas',
     'commercial property owner guide texas',
     'texas commercial real estate playbook',
+    'texas commercial real estate market report',
+    'q2 2026 texas market report',
     'creco guides',
   ],
   alternates: { canonical: 'https://www.crecotx.com/guides' },
 };
 
+/**
+ * Market reports are identified by slug — every quarterly report uses the
+ * `qN-YYYY-` prefix. Everything else is a strategy playbook.
+ */
+const isMarketReport = (g: Guide) => /^q\d-\d{4}-/.test(g.slug);
+
 export default function GuidesIndex() {
+  const marketReports = SORTED_GUIDES.filter(isMarketReport);
+  const playbooks = SORTED_GUIDES.filter(g => !isMarketReport(g));
+
   return (
     <>
       <Header />
@@ -27,60 +38,64 @@ export default function GuidesIndex() {
         {/* Hero */}
         <section className="bg-primary py-16 sm:py-20 text-white">
           <Container>
-            <p className="overline mb-3 text-gold">Texas Commercial Real Estate · Free Guides</p>
+            <p className="overline mb-3 text-gold">Texas Commercial Real Estate · Free Guides & Market Reports</p>
             <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-4">
-              In-depth guides for the decisions that matter.
+              In-depth analysis for the decisions that matter.
             </h1>
             <p className="text-body-lg text-white/70 max-w-3xl leading-relaxed">
-              Practical, no-fluff guides written by CRECO's broker team. Each guide is the document we'd hand a client before our first conversation — covering lease negotiation, disposition strategy, owner-user economics, and the deal points that actually move money. Free in exchange for an email.
+              Quarterly Texas CRE market reports plus practical strategy playbooks — written by CRECO's broker team. Each piece is the analysis we'd hand a client before our first conversation. Free in exchange for an email.
             </p>
           </Container>
         </section>
 
-        {/* Guides */}
-        <section className="section-luxury bg-background-cream">
-          <Container>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {SORTED_GUIDES.map(guide => (
-                <Link
-                  key={guide.slug}
-                  href={`/guides/${guide.slug}`}
-                  className="group rounded-2xl bg-white shadow-card hover:shadow-card-hover transition-all p-8 flex flex-col"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-gold/10 text-gold">
-                      <FileText className="h-5 w-5" />
-                    </div>
-                    <span className="text-caption uppercase tracking-widest text-gold">For {guide.audience}s</span>
-                  </div>
-                  <h2 className="font-heading text-heading-lg font-bold text-primary mb-3 group-hover:text-gold transition-colors">
-                    {guide.title}
-                  </h2>
-                  <p className="text-body-sm text-foreground-muted leading-relaxed mb-6 flex-1">
-                    {guide.excerpt}
+        {/* Market Reports */}
+        {marketReports.length > 0 && (
+          <section className="section-luxury bg-background-cream">
+            <Container>
+              <div className="mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                <div>
+                  <p className="overline mb-2 flex items-center gap-2">
+                    <BarChart3 className="h-4 w-4" /> Quarterly Market Reports
                   </p>
-                  <div className="flex items-center gap-5 text-caption text-foreground-muted border-t border-border pt-4 mb-4">
-                    <span className="flex items-center gap-1.5">
-                      <FileText className="h-3.5 w-3.5" /> {guide.pageCount} pages
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Clock className="h-3.5 w-3.5" /> {guide.readingMinutes} min read
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Lock className="h-3.5 w-3.5" /> Free w/ email
-                    </span>
-                  </div>
-                  <span className="inline-flex items-center gap-2 text-body-sm font-semibold text-gold-dark group-hover:text-gold transition-colors">
-                    Read the guide <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </Container>
-        </section>
+                  <h2 className="font-heading text-display-sm font-bold text-primary">Q2 2026 Texas CRE market data.</h2>
+                  <p className="mt-3 text-body text-foreground-muted max-w-2xl">
+                    Rents, cap rates, vacancy, absorption, and deal-flow commentary across the four major Texas metros, broken down by asset class.
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {marketReports.map(guide => (
+                  <GuideCard key={guide.slug} guide={guide} accent="report" />
+                ))}
+              </div>
+            </Container>
+          </section>
+        )}
+
+        {/* Strategy Playbooks */}
+        {playbooks.length > 0 && (
+          <section className="section-luxury bg-white">
+            <Container>
+              <div className="mb-10">
+                <p className="overline mb-2 flex items-center gap-2">
+                  <BookOpen className="h-4 w-4" /> Strategy Playbooks
+                </p>
+                <h2 className="font-heading text-display-sm font-bold text-primary">The plays that move money.</h2>
+                <p className="mt-3 text-body text-foreground-muted max-w-2xl">
+                  Tactical playbooks for the high-stakes decisions — lease negotiation, disposition strategy, and the deal points that actually decide whether you got a good deal.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {playbooks.map(guide => (
+                  <GuideCard key={guide.slug} guide={guide} accent="playbook" />
+                ))}
+              </div>
+            </Container>
+          </section>
+        )}
 
         {/* CTA */}
-        <section className="section-luxury bg-white">
+        <section className="section-luxury bg-background-cream">
           <Container>
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="font-heading text-display-sm font-bold text-primary mb-4">Have a specific Texas commercial real estate situation?</h2>
@@ -100,5 +115,42 @@ export default function GuidesIndex() {
       </main>
       <Footer />
     </>
+  );
+}
+
+function GuideCard({ guide, accent }: { guide: Guide; accent: 'report' | 'playbook' }) {
+  const Icon = accent === 'report' ? BarChart3 : FileText;
+  return (
+    <Link
+      href={`/guides/${guide.slug}`}
+      className="group rounded-2xl bg-white shadow-card hover:shadow-card-hover transition-all p-8 flex flex-col border border-border/40"
+    >
+      <div className="flex items-center gap-3 mb-4">
+        <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-gold/10 text-gold">
+          <Icon className="h-5 w-5" />
+        </div>
+        <span className="text-caption uppercase tracking-widest text-gold">For {guide.audience}s</span>
+      </div>
+      <h3 className="font-heading text-heading-lg font-bold text-primary mb-3 group-hover:text-gold transition-colors">
+        {guide.title}
+      </h3>
+      <p className="text-body-sm text-foreground-muted leading-relaxed mb-6 flex-1">
+        {guide.excerpt}
+      </p>
+      <div className="flex items-center gap-5 text-caption text-foreground-muted border-t border-border pt-4 mb-4">
+        <span className="flex items-center gap-1.5">
+          <FileText className="h-3.5 w-3.5" /> {guide.pageCount} pages
+        </span>
+        <span className="flex items-center gap-1.5">
+          <Clock className="h-3.5 w-3.5" /> {guide.readingMinutes} min read
+        </span>
+        <span className="flex items-center gap-1.5">
+          <Lock className="h-3.5 w-3.5" /> Free w/ email
+        </span>
+      </div>
+      <span className="inline-flex items-center gap-2 text-body-sm font-semibold text-gold-dark group-hover:text-gold transition-colors">
+        {accent === 'report' ? 'Read the report' : 'Read the guide'} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+      </span>
+    </Link>
   );
 }

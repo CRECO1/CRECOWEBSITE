@@ -40,7 +40,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/privacy`,                     lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3  },
   ];
 
-  const guideSlugs = ['texas-tenant-lease-negotiation-playbook', 'texas-owner-disposition-strategy-guide'];
+  const guideSlugs = [
+    'texas-tenant-lease-negotiation-playbook',
+    'texas-owner-disposition-strategy-guide',
+    'q2-2026-texas-industrial-market-report',
+    'q2-2026-texas-retail-market-report',
+    'q2-2026-texas-office-market-report',
+    'q2-2026-texas-investment-outlook-report',
+  ];
   const guidePages: MetadataRoute.Sitemap = guideSlugs.map(slug => ({
     url: `${BASE_URL}/guides/${slug}`,
     lastModified: new Date(),

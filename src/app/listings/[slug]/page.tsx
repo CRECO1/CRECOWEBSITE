@@ -8,7 +8,7 @@ import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { getListingBySlug } from '@/lib/supabase';
 import { formatPrice, formatSqft, formatAcres, formatLeaseRate, transactionLabel, propertyTypeLabel, googleMapsUrl } from '@/lib/utils';
-import { ListingContactForm } from './ListingContactForm';
+import { ListingInquiryTabs } from './ListingInquiryTabs';
 import { RelatedListings } from '@/components/marketing/RelatedListings';
 import { ListingGallery } from '@/components/marketing/ListingGallery';
 import { CompareToggle } from '@/components/listings/CompareToggle';
@@ -296,16 +296,14 @@ export default async function ListingDetailPage({ params }: Props) {
               )}
             </div>
 
-            {/* Sidebar */}
+            {/* Sidebar — tabbed inquiry (Tour | Message) */}
             <div className="lg:col-span-1">
               <div className="sticky top-28 rounded-xl border border-border bg-white p-6 shadow-card">
-                <h3 className="mb-2 font-heading text-heading font-semibold text-primary">
-                  Interested in this property?
-                </h3>
-                <p className="mb-6 text-body-sm text-foreground-muted">
-                  Request a tour, brochure, or additional financials. A CRECO broker will respond within one business day.
-                </p>
-                <ListingContactForm listingTitle={listing!.title} />
+                <ListingInquiryTabs
+                  listingTitle={listing!.title}
+                  listingSlug={listing!.slug}
+                  listingAddress={`${listing!.address}, ${listing!.city}, ${listing!.state} ${listing!.zip ?? ''}`.trim()}
+                />
                 <div className="mt-6 pt-6 border-t border-border text-center">
                   <p className="text-caption text-foreground-muted mb-2">Or call us directly</p>
                   <a href="tel:+12108173443" className="inline-flex items-center gap-2 font-semibold text-primary hover:text-gold transition-colors">
