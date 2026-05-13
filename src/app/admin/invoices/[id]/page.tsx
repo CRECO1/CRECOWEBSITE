@@ -16,7 +16,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   ArrowLeft, Download, Send, CheckCircle, AlertTriangle, Trash2,
-  Pencil, Save, X, RotateCw, Ban,
+  Pencil, Save, X, RotateCw, Ban, Mail,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
@@ -24,6 +24,7 @@ import {
   STATUS_STYLES, lineAmount,
   type Invoice, type InvoiceLineItem,
 } from '@/lib/invoices';
+import { FALLBACK_TEMPLATE, substituteTemplate } from '@/lib/invoice-email';
 
 type Editable = Omit<Invoice, 'line_items'> & { line_items: InvoiceLineItem[] };
 
@@ -38,6 +39,12 @@ export default function InvoiceDetailPage() {
   const [busy, setBusy] = useState<null | string>(null);     // which action is in-flight
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
+
+  // Compose-before-send modal state
+  const [composeOpen, setComposeOpen] = useState(false);
+  const [composeSubject, setComposeSubject] = useState('');
+  const [composeMessage, setComposeMessage] = useState('');
+  const [composeCc, setComposeCc] = useState('');
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -62,21 +69,51 @@ export default function InvoiceDetailPage() {
 
   // ── Actions ────────────────────────────────────────────────────────────
 
-  async function send() {
+  /**
+   * Step 1 of the send flow — load the global template from invoice_settings,
+   * substitute variables against the current invoice, and pop the Compose
+   * modal pre-filled. The actual send happens in confirmSend() once the
+   * admin clicks Send inside the modal.
+   */
+  async function openCompose() {
+    if (!invoice) return;
+    setError(null);
+    setInfo(null);
+
+    // Pull the saved template; fall back to defaults if the table isn't
+    // populated yet (migration 0011 hasn't been run).
+    const { data: settings } = await supabase
+      .from('invoice_settings')
+      .select('default_subject, default_message')
+      .eq('id', 1)
+      .single();
+    const template = settings ?? FALLBACK_TEMPLATE;
+
+    setComposeSubject(substituteTemplate(template.default_subject, invoice));
+    setComposeMessage(substituteTemplate(template.default_message, invoice));
+    setComposeCc('');
+    setComposeOpen(true);
+  }
+
+  async function confirmSend() {
     if (!invoice) return;
     setBusy('send');
     setError(null);
-    setInfo(null);
     try {
       const res = await fetch(`/api/invoices/${invoice.id}/send`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
+        body: JSON.stringify({
+          subject: composeSubject,
+          message: composeMessage,
+          cc: composeCc.trim() || undefined,
+        }),
       });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body?.error ?? 'Send failed');
       }
+      setComposeOpen(false);
       setInfo(`Invoice sent to ${invoice.client_email}.`);
       await load();
     } catch (e) {
@@ -84,6 +121,12 @@ export default function InvoiceDetailPage() {
     } finally {
       setBusy(null);
     }
+  }
+
+  function resetCompose() {
+    if (!invoice) return;
+    setComposeSubject(substituteTemplate(FALLBACK_TEMPLATE.default_subject, invoice));
+    setComposeMessage(substituteTemplate(FALLBACK_TEMPLATE.default_message, invoice));
   }
 
   async function markPaid() {
@@ -300,8 +343,8 @@ export default function InvoiceDetailPage() {
                     <button type="button" onClick={startEdit} className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-4 py-2 text-body-sm text-primary hover:border-primary">
                       <Pencil className="h-4 w-4" /> Edit
                     </button>
-                    <button type="button" onClick={send} disabled={busy === 'send'} className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-body-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-60">
-                      <Send className="h-4 w-4" /> {busy === 'send' ? 'Sending…' : invoice.sent_at ? 'Resend' : 'Send'}
+                    <button type="button" onClick={openCompose} disabled={busy === 'send'} className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-body-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-60">
+                      <Send className="h-4 w-4" /> {invoice.sent_at ? 'Resend' : 'Send'}
                     </button>
                     <button type="button" onClick={markPaid} disabled={busy === 'paid'} className="inline-flex items-center gap-1.5 rounded-lg bg-green-700 px-4 py-2 text-body-sm font-semibold text-white hover:bg-green-800 disabled:opacity-60">
                       <CheckCircle className="h-4 w-4" /> Mark paid
@@ -486,6 +529,132 @@ export default function InvoiceDetailPage() {
           </div>
         )}
       </div>
+
+      {/* Compose-before-send modal */}
+      {composeOpen && invoice && (
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm p-4 sm:p-8 overflow-y-auto"
+          onClick={() => !busy && setComposeOpen(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl my-8"
+            onClick={e => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="compose-title"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-border">
+              <div className="flex items-center gap-2.5">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gold/15 text-gold">
+                  <Mail className="h-4 w-4" />
+                </span>
+                <div>
+                  <h2 id="compose-title" className="font-heading text-body font-bold text-primary">
+                    Send invoice {invoice.invoice_number}
+                  </h2>
+                  <p className="text-caption text-foreground-muted">
+                    Review and edit before sending
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => !busy && setComposeOpen(false)}
+                disabled={!!busy}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-foreground-muted hover:text-primary hover:bg-background-cream disabled:opacity-50"
+                aria-label="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-5 space-y-4">
+              <div>
+                <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-1">To</span>
+                <div className="rounded-lg bg-background-cream border border-border px-3 py-2.5 text-body-sm text-primary">
+                  {invoice.client_email}
+                </div>
+              </div>
+
+              <label className="block">
+                <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-1">CC (optional)</span>
+                <input
+                  type="email"
+                  className={inputCls}
+                  placeholder="zack@crecotx.com"
+                  value={composeCc}
+                  onChange={e => setComposeCc(e.target.value)}
+                />
+              </label>
+
+              <label className="block">
+                <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-1">Subject</span>
+                <input
+                  type="text"
+                  className={inputCls}
+                  value={composeSubject}
+                  onChange={e => setComposeSubject(e.target.value)}
+                />
+              </label>
+
+              <label className="block">
+                <span className="flex items-center justify-between text-caption uppercase tracking-widest text-foreground-muted mb-1">
+                  <span>Message</span>
+                  <button
+                    type="button"
+                    onClick={resetCompose}
+                    className="text-caption normal-case tracking-normal text-gold-dark hover:text-gold"
+                  >
+                    Reset to template
+                  </button>
+                </span>
+                <textarea
+                  className={inputCls}
+                  rows={10}
+                  value={composeMessage}
+                  onChange={e => setComposeMessage(e.target.value)}
+                />
+                <p className="mt-1.5 text-caption text-foreground-muted">
+                  Goes above the auto-generated summary and Pay-online button. Edit the global default at{' '}
+                  <Link href="/admin/invoices/settings" className="text-gold-dark hover:underline">/admin/invoices/settings</Link>.
+                </p>
+              </label>
+
+              <div className="rounded-lg bg-background-cream/60 border border-border px-4 py-3 text-caption text-foreground-muted">
+                <div className="font-semibold text-primary text-body-sm mb-1">Attached</div>
+                <div>📎 {invoice.invoice_number}.pdf — full invoice rendered with line items, totals, and payment instructions</div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 border-t border-border bg-background-cream/40 flex items-center justify-between gap-3 rounded-b-2xl">
+              <p className="text-caption text-foreground-muted">
+                Sending will mark this invoice as <span className="font-semibold">Sent</span>.
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setComposeOpen(false)}
+                  disabled={!!busy}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-4 py-2 text-body-sm text-foreground-muted hover:text-primary disabled:opacity-60"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={confirmSend}
+                  disabled={busy === 'send' || !composeSubject.trim() || !composeMessage.trim()}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-5 py-2 text-body-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-60"
+                >
+                  <Send className="h-4 w-4" /> {busy === 'send' ? 'Sending…' : 'Send invoice'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

@@ -14,7 +14,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, FilePlus2, Filter, Receipt } from 'lucide-react';
+import { ArrowLeft, ArrowRight, FilePlus2, Filter, Mail, Receipt } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
   formatMoney, formatDate, effectiveStatus, STATUS_STYLES,
@@ -104,12 +104,21 @@ export default function InvoicesListPage() {
               Invoices
             </h1>
           </div>
-          <Link
-            href="/admin/invoices/new"
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-body-sm font-semibold text-white hover:bg-primary/90"
-          >
-            <FilePlus2 className="h-4 w-4" /> New invoice
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/admin/invoices/settings"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-4 py-2.5 text-body-sm text-foreground-muted hover:text-primary"
+              title="Edit email template"
+            >
+              <Mail className="h-4 w-4" /> Email template
+            </Link>
+            <Link
+              href="/admin/invoices/new"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-body-sm font-semibold text-white hover:bg-primary/90"
+            >
+              <FilePlus2 className="h-4 w-4" /> New invoice
+            </Link>
+          </div>
         </div>
       </header>
 
