@@ -5,6 +5,7 @@ import type { Invoice } from '@/lib/invoices';
 import { isValidEmail, clampString, MAX_LEN } from '@/lib/sanitize';
 import { FALLBACK_TEMPLATE, substituteTemplate } from '@/lib/invoice-email';
 import { sendInvoiceEmail } from '@/lib/invoice-send';
+import { createInvoicePaymentLink, isStripeConfigured } from '@/lib/stripe';
 
 /**
  * POST /api/invoices/[id]/send
@@ -71,6 +72,20 @@ export async function POST(
     .order('sort_order', { ascending: true });
 
   const fullInvoice: Invoice = { ...invoice, line_items: line_items ?? [] };
+
+  // If Stripe is configured AND this invoice doesn't yet have a payment link,
+  // create one before sending so the email + PDF include the "Pay online" CTA.
+  // Failures here aren't fatal — we still send the invoice without the link
+  // and the admin can retry the link later from the detail page.
+  if (isStripeConfigured() && !fullInvoice.stripe_payment_link_url) {
+    try {
+      const { url } = await createInvoicePaymentLink(fullInvoice);
+      fullInvoice.stripe_payment_link_url = url;
+      await supabase.from('invoices').update({ stripe_payment_link_url: url }).eq('id', id);
+    } catch (err) {
+      console.warn('Auto payment-link creation failed; sending without link:', err);
+    }
+  }
 
   // Parse + sanitize the request body
   let bodySubject = '';

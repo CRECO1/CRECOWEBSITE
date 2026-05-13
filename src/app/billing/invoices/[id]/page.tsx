@@ -193,6 +193,24 @@ export default function InvoiceDetailPage() {
     await load();
   }
 
+  async function generatePaymentLink() {
+    if (!invoice) return;
+    setBusy('link');
+    setError(null);
+    try {
+      const res = await fetch(`/api/invoices/${invoice.id}/payment-link`, { method: 'POST' });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body?.error ?? 'Could not generate payment link');
+      }
+      await load();
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
   async function toggleReminders(next: boolean) {
     if (!invoice) return;
     setBusy('reminders');
@@ -455,11 +473,24 @@ export default function InvoiceDetailPage() {
                 {editing ? (
                   <Field label="Stripe payment link URL"><input className={inputCls} value={view.stripe_payment_link_url ?? ''} onChange={e => setDraft(d => d && ({ ...d, stripe_payment_link_url: e.target.value }))} placeholder="https://buy.stripe.com/..." /></Field>
                 ) : view.stripe_payment_link_url ? (
-                  <a href={view.stripe_payment_link_url} target="_blank" rel="noopener noreferrer" className="text-body-sm text-gold-dark hover:underline break-all">
-                    {view.stripe_payment_link_url}
-                  </a>
+                  <div className="space-y-2">
+                    <a href={view.stripe_payment_link_url} target="_blank" rel="noopener noreferrer" className="block text-body-sm text-gold-dark hover:underline break-all">
+                      {view.stripe_payment_link_url}
+                    </a>
+                    <p className="text-caption text-foreground-muted">Card + ACH enabled. Stripe will auto-mark this invoice paid when the customer checks out.</p>
+                  </div>
                 ) : (
-                  <p className="text-caption text-foreground-muted">No payment link attached. Create one in your Stripe dashboard and paste the URL here.</p>
+                  <div className="space-y-3">
+                    <p className="text-caption text-foreground-muted">No payment link yet. Generate one for card + ACH checkout, or paste a manually-created Stripe link via Edit.</p>
+                    <button
+                      type="button"
+                      onClick={generatePaymentLink}
+                      disabled={busy === 'link' || invoice.status === 'paid' || invoice.status === 'void'}
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-gold px-3 py-1.5 text-body-sm font-semibold text-primary hover:bg-gold-light disabled:opacity-60"
+                    >
+                      {busy === 'link' ? 'Creating…' : 'Generate Stripe payment link'}
+                    </button>
+                  </div>
                 )}
               </Card>
 
