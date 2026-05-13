@@ -45,6 +45,9 @@ export interface Invoice {
   stripe_payment_link_url: string | null;
   payment_terms: string | null;
 
+  // Per-invoice opt-out for the auto-reminder cron (defaults to true)
+  reminders_enabled?: boolean;
+
   sent_at: string | null;
   paid_at: string | null;
   paid_amount: number | null;

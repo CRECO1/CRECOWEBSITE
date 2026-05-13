@@ -25,6 +25,7 @@ import {
   type Invoice, type InvoiceLineItem,
 } from '@/lib/invoices';
 import { FALLBACK_TEMPLATE, substituteTemplate } from '@/lib/invoice-email';
+import { REMINDER_STAGES, type ReminderStage } from '@/lib/invoice-reminders';
 
 type Editable = Omit<Invoice, 'line_items'> & { line_items: InvoiceLineItem[] };
 
@@ -46,6 +47,9 @@ export default function InvoiceDetailPage() {
   const [composeMessage, setComposeMessage] = useState('');
   const [composeCc, setComposeCc] = useState('');
 
+  // Reminder history for this invoice
+  const [reminders, setReminders] = useState<{ stage: ReminderStage; sent_at: string }[]>([]);
+
   const load = useCallback(async () => {
     if (!id) return;
     setError(null);
@@ -60,6 +64,15 @@ export default function InvoiceDetailPage() {
       .eq('invoice_id', id)
       .order('sort_order', { ascending: true });
     setInvoice({ ...(inv as Invoice), line_items: (items ?? []) as InvoiceLineItem[] });
+
+    // Reminder history — pre-migration this table doesn't exist; ignore that
+    // error so the page still renders without it.
+    const { data: rems } = await supabase
+      .from('invoice_reminders')
+      .select('stage, sent_at')
+      .eq('invoice_id', id)
+      .order('sent_at', { ascending: true });
+    setReminders((rems ?? []) as { stage: ReminderStage; sent_at: string }[]);
   }, [id]);
 
   useEffect(() => { load(); }, [load]);
@@ -171,6 +184,21 @@ export default function InvoiceDetailPage() {
     const { error } = await supabase
       .from('invoices')
       .update({ status: invoice.sent_at ? 'sent' : 'draft', paid_at: null, paid_method: null, paid_amount: null })
+      .eq('id', invoice.id);
+    setBusy(null);
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    await load();
+  }
+
+  async function toggleReminders(next: boolean) {
+    if (!invoice) return;
+    setBusy('reminders');
+    const { error } = await supabase
+      .from('invoices')
+      .update({ reminders_enabled: next })
       .eq('id', invoice.id);
     setBusy(null);
     if (error) {
@@ -434,6 +462,51 @@ export default function InvoiceDetailPage() {
                   <p className="text-caption text-foreground-muted">No payment link attached. Create one in your Stripe dashboard and paste the URL here.</p>
                 )}
               </Card>
+
+              {/* Payment reminders — only relevant once the invoice has been
+                  sent. Drafts don't get reminders. */}
+              {invoice.status !== 'draft' && invoice.status !== 'void' && (
+                <Card title="Payment reminders">
+                  {/* Per-invoice toggle. The `reminders_enabled` column is
+                      added by migration 0013 — if it's missing, default to
+                      true. Disabling stops the cron from firing further
+                      reminders for this client. */}
+                  <label className="flex items-start gap-3 rounded-lg border border-border p-3 cursor-pointer hover:border-gold/50 transition-colors">
+                    <input
+                      type="checkbox"
+                      checked={invoice.reminders_enabled !== false}
+                      onChange={e => toggleReminders(e.target.checked)}
+                      disabled={busy === 'reminders' || editing}
+                      className="mt-0.5 h-4 w-4 rounded text-gold focus:ring-gold"
+                    />
+                    <div>
+                      <div className="text-body-sm font-semibold text-primary">Auto-send reminders</div>
+                      <div className="text-caption text-foreground-muted">Cron checks daily and emails this client at each stage below — until the invoice is paid.</div>
+                    </div>
+                  </label>
+
+                  <div className="mt-3 space-y-1.5">
+                    {REMINDER_STAGES.map(def => {
+                      const log = reminders.find(r => r.stage === def.stage);
+                      const sent = !!log;
+                      const sentDate = log ? new Date(log.sent_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : null;
+                      return (
+                        <div key={def.stage} className="flex items-center justify-between gap-2 text-caption">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className={`inline-block h-1.5 w-1.5 rounded-full shrink-0 ${sent ? 'bg-green-600' : 'bg-foreground-subtle'}`} />
+                            <span className={`truncate ${sent ? 'text-primary' : 'text-foreground-muted'}`}>{def.label}</span>
+                          </div>
+                          {sent ? (
+                            <span className="text-foreground-muted shrink-0">Sent {sentDate}</span>
+                          ) : (
+                            <span className="text-foreground-muted/60 shrink-0">Scheduled</span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </Card>
+              )}
             </section>
 
             <section className="lg:col-span-2 space-y-6">

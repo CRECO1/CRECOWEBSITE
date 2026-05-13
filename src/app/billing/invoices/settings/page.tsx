@@ -18,6 +18,7 @@ import Link from 'next/link';
 import { ArrowLeft, Save, RotateCw, Mail, AlertTriangle, CheckCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { FALLBACK_TEMPLATE, TEMPLATE_VARIABLES } from '@/lib/invoice-email';
+import { REMINDER_STAGES } from '@/lib/invoice-reminders';
 
 export default function InvoiceSettingsPage() {
   const [subject, setSubject] = useState(FALLBACK_TEMPLATE.default_subject);
@@ -195,6 +196,33 @@ export default function InvoiceSettingsPage() {
                 <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-gold shrink-0" /> Sign-off, phone, and TREC #</li>
                 <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-gold shrink-0" /> The invoice itself as a branded PDF attachment</li>
               </ul>
+            </div>
+
+            <div className="rounded-xl border border-border bg-white p-6">
+              <h2 className="font-heading text-body font-bold text-primary mb-1">Automated payment reminders</h2>
+              <p className="text-caption text-foreground-muted mb-4">
+                A daily cron job sends reminder emails on the schedule below. Each stage sends at most once per invoice. Per-invoice opt-out lives on the invoice detail page under "Payment reminders".
+              </p>
+              <div className="space-y-2">
+                {REMINDER_STAGES.map(s => (
+                  <div key={s.stage} className="flex items-center justify-between gap-3 rounded-lg border border-border bg-background-cream/40 px-3 py-2.5">
+                    <div className="flex items-start gap-3 min-w-0">
+                      <span className="font-mono text-caption text-gold-dark font-semibold shrink-0 mt-0.5">
+                        {s.triggerDaysFromDue > 0 ? `T−${s.triggerDaysFromDue}` :
+                         s.triggerDaysFromDue === 0 ? 'T+0' :
+                         `T+${Math.abs(s.triggerDaysFromDue)}`}
+                      </span>
+                      <div className="min-w-0">
+                        <div className="text-body-sm font-semibold text-primary">{s.label}</div>
+                        <div className="text-caption text-foreground-muted font-mono truncate">{s.subject}</div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-4 text-caption text-foreground-muted">
+                Reminder subjects + bodies are hard-coded today. Want to customize them? Tell me and we'll add per-stage template editing.
+              </p>
             </div>
           </section>
 
