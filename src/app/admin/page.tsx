@@ -1255,6 +1255,12 @@ export default function AdminPage() {
             <span className="ml-2 text-sm text-gray-400">Admin</span>
           </div>
           <div className="flex items-center gap-4">
+            <a
+              href="/admin/invoices"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-yellow-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-yellow-700"
+            >
+              💸 Invoices
+            </a>
             <a href="/" target="_blank" className="text-sm text-gray-500 hover:text-gray-700">← View Site</a>
             <button onClick={handleSignOut}
               className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50">Sign Out</button>

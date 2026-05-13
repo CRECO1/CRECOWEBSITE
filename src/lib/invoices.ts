@@ -1,0 +1,141 @@
+/**
+ * Invoice shared types + math helpers.
+ *
+ * Money is stored in the DB as numeric(12,2). All math here is done with
+ * JavaScript numbers — fine for two-decimal currency at single-invoice
+ * scale, but every result is rounded to 2 decimals before display or
+ * persistence so we never write 19.999999999 into the DB.
+ */
+
+export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'void';
+
+export interface InvoiceLineItem {
+  id?: string;
+  invoice_id?: string;
+  description: string;
+  quantity: number;
+  rate: number;
+  amount: number;
+  sort_order: number;
+}
+
+export interface Invoice {
+  id: string;
+  invoice_number: string;
+
+  client_name: string;
+  client_email: string;
+  client_company: string | null;
+  client_address: string | null;
+
+  issue_date: string;          // ISO date, YYYY-MM-DD
+  due_date: string;            // ISO date
+
+  status: InvoiceStatus;
+
+  subtotal: number;
+  tax_rate: number;            // 0.0825 = 8.25%
+  tax_amount: number;
+  total: number;
+
+  property_reference: string | null;
+  notes: string | null;
+  internal_notes: string | null;
+
+  stripe_payment_link_url: string | null;
+  payment_terms: string | null;
+
+  sent_at: string | null;
+  paid_at: string | null;
+  paid_amount: number | null;
+  paid_method: string | null;
+
+  created_at: string;
+  updated_at: string;
+
+  // Joined in by the API when relevant
+  line_items?: InvoiceLineItem[];
+}
+
+/** Round to 2 decimals deterministically (avoids -0 and Math.round bias). */
+export function round2(n: number): number {
+  return Math.round((n + Number.EPSILON) * 100) / 100;
+}
+
+/** Compute a single line's amount from quantity * rate. */
+export function lineAmount(item: { quantity: number; rate: number }): number {
+  return round2((item.quantity || 0) * (item.rate || 0));
+}
+
+/**
+ * Given a list of line items and a tax rate (e.g. 0.0825), return the three
+ * totals to persist on the invoice row: subtotal, tax_amount, total.
+ */
+export function calculateTotals(
+  items: { quantity: number; rate: number }[],
+  taxRate: number,
+): { subtotal: number; tax_amount: number; total: number } {
+  const subtotal = round2(items.reduce((sum, it) => sum + lineAmount(it), 0));
+  const tax_amount = round2(subtotal * (taxRate || 0));
+  const total = round2(subtotal + tax_amount);
+  return { subtotal, tax_amount, total };
+}
+
+/** Currency formatter — uses USD by default. */
+const usdFmt = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+export function formatMoney(n: number | null | undefined): string {
+  if (n == null) return '—';
+  return usdFmt.format(n);
+}
+
+/** Tax rate display: 0.0825 → "8.25%". */
+export function formatTaxRate(rate: number | null | undefined): string {
+  if (!rate) return '0%';
+  return `${(rate * 100).toFixed(rate * 100 < 10 ? 3 : 2).replace(/\.?0+$/, '')}%`;
+}
+
+/** "Apr 15, 2026" — used in lists and on the PDF. */
+export function formatDate(iso: string | null | undefined): string {
+  if (!iso) return '—';
+  return new Date(iso + 'T12:00:00Z').toLocaleDateString('en-US', {
+    year: 'numeric', month: 'short', day: 'numeric',
+  });
+}
+
+/**
+ * "Is this invoice past due as of today?" Used to mark sent invoices as
+ * overdue on the fly without needing a cron job — the list view computes
+ * effective status from `status` + `due_date`.
+ */
+export function effectiveStatus(invoice: Pick<Invoice, 'status' | 'due_date'>): InvoiceStatus {
+  if (invoice.status === 'sent') {
+    const due = new Date(invoice.due_date + 'T23:59:59Z');
+    if (Date.now() > due.getTime()) return 'overdue';
+  }
+  return invoice.status;
+}
+
+/**
+ * Generate the next invoice number. Format: "INV-YYYY-####" where #### is
+ * derived from the count of existing invoices in the current year + 1001.
+ * Caller passes the count it already queried.
+ */
+export function nextInvoiceNumber(yearCount: number, year: number = new Date().getFullYear()): string {
+  const seq = (1001 + yearCount).toString();
+  return `INV-${year}-${seq}`;
+}
+
+/** Color classes for status badges. Keeps the admin list legible at a glance. */
+export const STATUS_STYLES: Record<InvoiceStatus, { label: string; className: string }> = {
+  draft:   { label: 'Draft',   className: 'bg-gray-100 text-gray-700 border-gray-200' },
+  sent:    { label: 'Sent',    className: 'bg-blue-100 text-blue-800 border-blue-200' },
+  paid:    { label: 'Paid',    className: 'bg-green-100 text-green-800 border-green-200' },
+  overdue: { label: 'Overdue', className: 'bg-red-100 text-red-800 border-red-200' },
+  void:    { label: 'Void',    className: 'bg-gray-50 text-gray-400 border-gray-200 line-through' },
+};
