@@ -193,11 +193,19 @@ export default function InvoiceDetailPage() {
         paid_amount: amount,
       })
       .eq('id', invoice.id);
-    setBusy(null);
     if (error) {
+      setBusy(null);
       setError(error.message);
       return;
     }
+    // Deactivate the Stripe Payment Link (if any) so the client can't pay
+    // again via the link after we've marked them paid by other means.
+    // Best-effort — failure here doesn't block the Paid status update.
+    if (invoice.stripe_payment_link_url) {
+      await fetch(`/api/invoices/${invoice.id}/deactivate-payment-link`, { method: 'POST' })
+        .catch(err => console.warn('Payment link deactivation failed (non-fatal):', err));
+    }
+    setBusy(null);
     setInfo('Marked as paid.');
     await load();
   }
@@ -255,8 +263,13 @@ export default function InvoiceDetailPage() {
     if (!window.confirm('Mark this invoice as void? This is reversible — you can reopen later.')) return;
     setBusy('void');
     const { error } = await supabase.from('invoices').update({ status: 'void' }).eq('id', invoice.id);
+    if (error) { setBusy(null); setError(error.message); return; }
+    // Kill the Stripe link so no one pays a void invoice
+    if (invoice.stripe_payment_link_url) {
+      await fetch(`/api/invoices/${invoice.id}/deactivate-payment-link`, { method: 'POST' })
+        .catch(err => console.warn('Payment link deactivation failed (non-fatal):', err));
+    }
     setBusy(null);
-    if (error) { setError(error.message); return; }
     await load();
   }
 
@@ -264,6 +277,12 @@ export default function InvoiceDetailPage() {
     if (!invoice) return;
     if (!window.confirm(`Permanently delete invoice ${invoice.invoice_number}? This cannot be undone.`)) return;
     setBusy('delete');
+    // Deactivate the Stripe link BEFORE deleting the row — once the row is
+    // gone we lose the stored URL and can't reach back into Stripe.
+    if (invoice.stripe_payment_link_url) {
+      await fetch(`/api/invoices/${invoice.id}/deactivate-payment-link`, { method: 'POST' })
+        .catch(err => console.warn('Payment link deactivation failed (non-fatal):', err));
+    }
     const { error } = await supabase.from('invoices').delete().eq('id', invoice.id);
     setBusy(null);
     if (error) { setError(error.message); return; }
