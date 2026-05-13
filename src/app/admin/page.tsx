@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import type { Session } from '@supabase/supabase-js';
 import { ImageCropModal, fileToDataURL } from './ImageCropModal';
@@ -1207,11 +1208,29 @@ function DataTable({ tab }: { tab: Exclude<Tab, 'settings' | 'landing_pages'> })
   );
 }
 
+const VALID_TABS: Tab[] = ['listings', 'sold', 'agents', 'submarkets', 'testimonials', 'leads', 'settings', 'landing_pages'];
+const TAB_TITLES: Record<Tab, string> = {
+  settings: 'Homepage',
+  landing_pages: 'Landing Pages',
+  listings: 'Listings',
+  sold: 'Sold',
+  agents: 'Agents',
+  submarkets: 'Submarkets',
+  testimonials: 'Testimonials',
+  leads: 'Leads',
+};
+
 // ─── Main Admin Page ──────────────────────────────────────────────────────────
-export default function AdminPage() {
+function AdminPageInner() {
+  const searchParams = useSearchParams();
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState<Tab>('settings');
+
+  // Tab is sourced from the URL (?tab=...) so the left rail's <Link>s
+  // navigate naturally and browser back/forward work as expected. Default
+  // to "settings" (Homepage) when no tab is present.
+  const rawTab = searchParams.get('tab');
+  const tab: Tab = (VALID_TABS as readonly string[]).includes(rawTab ?? '') ? (rawTab as Tab) : 'settings';
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -1222,65 +1241,26 @@ export default function AdminPage() {
     return () => subscription.unsubscribe();
   }, []);
 
-  async function handleSignOut() {
-    await supabase.auth.signOut();
-    setSession(null);
-  }
-
   if (loading) return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+    <div className="flex min-h-screen items-center justify-center">
       <div className="h-8 w-8 animate-spin rounded-full border-4 border-yellow-500 border-t-transparent" />
     </div>
   );
 
+  // Defensive — middleware should never let this render, but if a session
+  // expires mid-use we surface the inline LoginForm rather than a broken UI.
   if (!session) return <LoginForm onLogin={setSession} />;
 
-  const tabs: { key: Tab; label: string }[] = [
-    { key: 'settings', label: '⚙️ Homepage' },
-    { key: 'landing_pages', label: '📄 Landing Pages' },
-    { key: 'listings', label: '🏠 Listings' },
-    { key: 'sold', label: '✅ Sold' },
-    { key: 'agents', label: '👥 Agents' },
-    { key: 'submarkets', label: '🏙️ Submarkets' },
-    { key: 'testimonials', label: '⭐ Testimonials' },
-    { key: 'leads', label: '📬 Leads' },
-  ];
-
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="border-b border-gray-200 bg-white px-6 py-4">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
-          <div>
-            <span className="text-xl font-bold text-gray-900">CRE<span className="text-yellow-600">CO</span></span>
-            <span className="ml-2 text-sm text-gray-400">Admin</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <a
-              href="/admin/invoices"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-yellow-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-yellow-700"
-            >
-              💸 Invoices
-            </a>
-            <a href="/" target="_blank" className="text-sm text-gray-500 hover:text-gray-700">← View Site</a>
-            <button onClick={handleSignOut}
-              className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50">Sign Out</button>
-          </div>
-        </div>
+    <div className="min-h-screen">
+      {/* Thin section title bar — replaces the old admin header (rail covers
+          brand + sign-out now). Padded extra-left on mobile to clear the
+          hamburger toggle button. */}
+      <header className="border-b border-gray-200 bg-white px-6 py-4 pl-16 lg:pl-6">
+        <h1 className="text-lg font-semibold text-gray-900">{TAB_TITLES[tab]}</h1>
       </header>
 
       <div className="mx-auto max-w-7xl px-6 py-8">
-        {/* Tab bar */}
-        <div className="mb-6 flex flex-wrap gap-1 rounded-xl bg-white p-1 shadow-sm border border-gray-200 w-fit">
-          {tabs.map(t => (
-            <button key={t.key} onClick={() => setTab(t.key)}
-              className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                tab === t.key ? 'bg-yellow-600 text-white' : 'text-gray-600 hover:text-gray-900'
-              }`}>
-              {t.label}
-            </button>
-          ))}
-        </div>
-
         {tab === 'settings' ? (
           <SettingsTab />
         ) : tab === 'landing_pages' ? (
@@ -1290,5 +1270,18 @@ export default function AdminPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// useSearchParams() requires Suspense in app router.
+export default function AdminPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-yellow-500 border-t-transparent" />
+      </div>
+    }>
+      <AdminPageInner />
+    </Suspense>
   );
 }

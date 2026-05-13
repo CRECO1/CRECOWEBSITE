@@ -310,7 +310,7 @@ export default function InvoiceDetailPage() {
   return (
     <main className="min-h-screen bg-background-cream pb-20">
       <header className="border-b border-border bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-5 flex items-center justify-between gap-4 flex-wrap">
+        <div className="mx-auto max-w-6xl pl-16 pr-6 lg:px-6 py-5 flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-3 min-w-0">
             <Link href="/admin/invoices" className="inline-flex items-center gap-1.5 text-body-sm text-foreground-muted hover:text-primary">
               <ArrowLeft className="h-4 w-4" /> Invoices

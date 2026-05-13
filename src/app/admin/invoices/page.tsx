@@ -90,7 +90,7 @@ export default function InvoicesListPage() {
     <main className="min-h-screen bg-background-cream pb-20">
       {/* Header */}
       <header className="border-b border-border bg-white">
-        <div className="mx-auto max-w-6xl px-6 py-5 flex items-center justify-between gap-4">
+        <div className="mx-auto max-w-6xl pl-16 pr-6 lg:px-6 py-5 flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-3">
             <Link
               href="/admin"
