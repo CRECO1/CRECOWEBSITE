@@ -12,8 +12,8 @@
 
 import { Resend } from 'resend';
 import { renderInvoicePdf } from './invoice-pdf';
-import { formatMoney, formatDate, type Invoice } from './invoices';
-import { escapeHtml } from './sanitize';
+import type { Invoice } from './invoices';
+import { buildInvoiceEmailHtml } from './invoice-email-html';
 
 export interface SendInvoiceOptions {
   invoice: Invoice;
@@ -50,51 +50,9 @@ export async function sendInvoiceEmail(opts: SendInvoiceOptions): Promise<string
   const pdf = await renderInvoicePdf(invoice);
   const pdfBuffer = Buffer.from(pdf);
 
-  const payLinkBlock = invoice.stripe_payment_link_url
-    ? `<p style="margin:16px 0"><a href="${escapeHtml(invoice.stripe_payment_link_url)}" style="display:inline-block;background:#1A1A1A;color:#C9A962;padding:12px 22px;border-radius:8px;font-weight:700;text-decoration:none">Pay online →</a></p>`
-    : '';
-
-  const safeTotal = escapeHtml(formatMoney(invoice.total));
-  const safeDue = escapeHtml(formatDate(invoice.due_date));
-  const safeNumber = escapeHtml(invoice.invoice_number);
-
-  // Logo: hosted at /images/creco-logo-light.png (dark logo on transparent,
-  // sized for light-background contexts). Absolute URL so email clients can
-  // load it — relative URLs get stripped by most. Width specified twice
-  // (HTML attribute + inline style) so clients that ignore one honor the
-  // other. Alt text falls back if images are blocked.
-  const html = `
-    <div style="font-family:Helvetica,Arial,sans-serif;max-width:600px;color:#1A1A1A">
-      <div style="margin:0 0 20px;padding:0 0 18px;border-bottom:2px solid #C9A962">
-        <a href="https://www.crecotx.com" style="text-decoration:none;display:inline-block">
-          <img src="https://www.crecotx.com/images/creco-logo-light.png"
-               alt="CRECO"
-               width="180"
-               style="display:block;width:180px;max-width:180px;height:auto;border:0" />
-        </a>
-      </div>
-
-      <h2 style="margin:0 0 16px;color:#1A1A1A;font-size:20px">Invoice ${safeNumber}</h2>
-
-      <div style="white-space:pre-line;margin:0 0 24px;line-height:1.6">${escapeHtml(message)}</div>
-
-      <table style="width:100%;border-collapse:collapse;margin:0 0 20px">
-        <tr><td style="padding:8px 12px;background:#FAFAF8;border:1px solid #E8E5E0"><strong>Invoice #</strong></td><td style="padding:8px 12px;border:1px solid #E8E5E0">${safeNumber}</td></tr>
-        <tr><td style="padding:8px 12px;background:#FAFAF8;border:1px solid #E8E5E0"><strong>Amount due</strong></td><td style="padding:8px 12px;border:1px solid #E8E5E0;font-size:18px;color:#C9A962"><strong>${safeTotal}</strong></td></tr>
-        <tr><td style="padding:8px 12px;background:#FAFAF8;border:1px solid #E8E5E0"><strong>Due date</strong></td><td style="padding:8px 12px;border:1px solid #E8E5E0">${safeDue}</td></tr>
-      </table>
-
-      ${payLinkBlock}
-
-      <p style="margin:20px 0;color:#525252">Mail check to:<br/>CRECO – Commercial Real Estate Company<br/>8000 Fair Oaks Pkwy, Suite 102<br/>Fair Oaks Ranch, TX 78015</p>
-
-      <p style="margin:20px 0;color:#525252">Questions? Reply here or call <a href="tel:+12108173443" style="color:#C9A962">(210) 817-3443</a>.</p>
-
-      <br/>
-      <p style="color:#525252;margin:0">— The CRECO Team</p>
-      <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367-BB · crecotx.com</p>
-    </div>
-  `;
+  // Body HTML is rendered by the shared builder so the live preview on
+  // /billing/invoices/new is guaranteed to match what we ship.
+  const html = buildInvoiceEmailHtml({ invoice, message });
 
   const resend = new Resend(process.env.RESEND_API_KEY);
   const result = await resend.emails.send({

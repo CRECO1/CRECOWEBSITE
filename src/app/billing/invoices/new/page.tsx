@@ -24,6 +24,7 @@ import {
   type Invoice, type InvoiceLineItem,
 } from '@/lib/invoices';
 import { FALLBACK_TEMPLATE, substituteTemplate } from '@/lib/invoice-email';
+import { buildInvoiceEmailPreview } from '@/lib/invoice-email-html';
 
 const DEFAULT_LINE: Omit<InvoiceLineItem, 'sort_order'> = {
   description: '',
@@ -146,6 +147,18 @@ export default function NewInvoicePage() {
     setEmailSubject(substituteTemplate(emailTemplate.default_subject, previewInvoice));
     setEmailMessage(substituteTemplate(emailTemplate.default_message, previewInvoice));
   }
+
+  // Live email preview HTML — wraps the shared body renderer with a
+  // simulated inbox header (From / To / Subject / Attachment chip) so
+  // the admin sees exactly what the client receives.
+  const previewHtml = useMemo(
+    () => buildInvoiceEmailPreview({
+      invoice: previewInvoice,
+      subject: emailSubject,
+      message: emailMessage,
+    }),
+    [previewInvoice, emailSubject, emailMessage],
+  );
 
   function updateItem(i: number, patch: Partial<typeof DEFAULT_LINE>) {
     setItems(prev => {
@@ -493,6 +506,21 @@ export default function NewInvoicePage() {
                   Showing the global template, substituted with this invoice's values. Start typing to customize for this client.
                 </p>
               )}
+
+              {/* Live preview — same HTML the client receives, wrapped in a
+                  simulated inbox header. Updates as you type. The sandbox=""
+                  attribute strips scripts + form submissions for safety,
+                  since the message content is admin-controlled but we want
+                  defense in depth. */}
+              <div className="pt-2">
+                <p className="text-caption uppercase tracking-widest text-foreground-muted mb-2">Preview · this is what the client sees</p>
+                <iframe
+                  srcDoc={previewHtml}
+                  title="Invoice email preview"
+                  sandbox=""
+                  className="w-full h-[640px] rounded-lg border border-border bg-background-cream"
+                />
+              </div>
             </Card>
           </section>
         </div>
