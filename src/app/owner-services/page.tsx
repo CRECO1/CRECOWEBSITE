@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import {
   Building2, LineChart, Wrench, RefreshCw, FileBarChart, Layers, ArrowRight,
-  CheckCircle, Phone, Sparkles,
+  CheckCircle, Phone, Sparkles, Calculator,
 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
@@ -207,6 +207,31 @@ export default async function OwnerServicesPage() {
                   </ul>
                 </div>
               </RevealOnScroll>
+            </div>
+          </Container>
+        </section>
+
+        {/* Free valuation tool callout */}
+        <section className="bg-primary text-white py-14">
+          <Container>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+              <div className="lg:col-span-2 flex items-start gap-5">
+                <div className="hidden sm:inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gold/10 text-gold">
+                  <Calculator className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="overline mb-2 text-gold">Free Tool · 60 Seconds</p>
+                  <h2 className="font-heading text-display-sm font-bold mb-3">What's your Texas commercial property worth?</h2>
+                  <p className="text-body text-white/70">
+                    Get an instant preliminary valuation range using current Texas cap rates by property type and submarket. No contact info required to see the number. Free, no obligation, and a senior CRECO broker follows up only if you want a full broker valuation.
+                  </p>
+                </div>
+              </div>
+              <div className="text-center lg:text-right">
+                <Button size="lg" className="bg-gold text-primary hover:bg-gold-light" asChild>
+                  <Link href="/property-valuation">Try the valuation tool <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                </Button>
+              </div>
             </div>
           </Container>
         </section>

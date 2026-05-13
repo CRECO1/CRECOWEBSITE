@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { TrendingUp, Building2, FileText, Users, CheckCircle, ArrowRight, Phone } from 'lucide-react';
+import Link from 'next/link';
+import { TrendingUp, Building2, FileText, Users, CheckCircle, ArrowRight, Phone, Calculator } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
@@ -86,6 +87,31 @@ export default function SellPage() {
                     <div className="mt-1 text-caption uppercase tracking-wider text-white/50">{label}</div>
                   </div>
                 ))}
+              </div>
+            </div>
+          </Container>
+        </section>
+
+        {/* Free valuation tool callout */}
+        <section className="bg-background-warm py-14 border-y border-gold/30">
+          <Container>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
+              <div className="lg:col-span-2 flex items-start gap-5">
+                <div className="hidden sm:inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-gold/15 text-gold-dark">
+                  <Calculator className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="overline mb-2 text-gold-dark">Not ready to talk to a broker yet?</p>
+                  <h2 className="font-heading text-heading-xl font-bold text-primary mb-2">Get an instant preliminary value range first.</h2>
+                  <p className="text-body text-foreground-muted">
+                    Our free valuation tool produces a cap-rate-based value range in 60 seconds — no contact info required to see the number. Once you have it, you can decide whether to request the full broker opinion below.
+                  </p>
+                </div>
+              </div>
+              <div className="text-center lg:text-right">
+                <Button size="lg" variant="outline" asChild>
+                  <Link href="/property-valuation">Use the valuation tool <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                </Button>
               </div>
             </div>
           </Container>

@@ -40,6 +40,7 @@ import Image from 'next/image';
 import {
   ArrowRight, Star, Building2, Award, Sparkles, MapPin,
   Briefcase, Warehouse, Store, Layers, LineChart, Wrench, Leaf, BadgeCheck,
+  BarChart3, Calculator,
 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
@@ -434,6 +435,63 @@ export default async function HomePage() {
                 <Link href="/owner-services">Owner Services <ArrowRight className="ml-2 h-5 w-5" /></Link>
               </Button>
             </div>
+          </div>
+        </Container>
+      </section>
+
+      {/* ── Free Tools: Valuation + Market Reports ────────────────────── */}
+      <section className="section-luxury bg-background-cream">
+        <Container>
+          <RevealOnScroll>
+            <div className="mb-12 text-center">
+              <p className="overline mb-3">Free for Texas Commercial Owners & Investors</p>
+              <h2 className="font-heading text-display-sm font-bold text-primary gold-line gold-line-center inline-block pb-3">
+                Tools and data, no obligation.
+              </h2>
+              <p className="mx-auto mt-6 max-w-2xl text-body text-foreground-muted">
+                We publish what we know about Texas commercial real estate — quarterly market reports, strategy playbooks, and an instant cap-rate-based valuation tool. Use them whether you ever talk to a CRECO broker or not.
+              </p>
+            </div>
+          </RevealOnScroll>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            <RevealOnScroll>
+              <Link
+                href="/property-valuation"
+                className="group h-full block rounded-2xl bg-white p-8 shadow-card hover:shadow-card-hover transition-all border border-border/40"
+              >
+                <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gold/10 text-gold">
+                  <Calculator className="h-6 w-6" />
+                </div>
+                <h3 className="mb-3 font-heading text-heading-lg font-bold text-primary group-hover:text-gold transition-colors">
+                  What's my property worth?
+                </h3>
+                <p className="mb-5 text-body-sm text-foreground-muted leading-relaxed">
+                  Instant preliminary value range using current Texas cap rates by property type and submarket. 60 seconds. No contact info required to see the number.
+                </p>
+                <span className="inline-flex items-center gap-2 text-body-sm font-semibold text-gold-dark group-hover:text-gold transition-colors">
+                  Try the valuation tool <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </span>
+              </Link>
+            </RevealOnScroll>
+            <RevealOnScroll delay={80}>
+              <Link
+                href="/guides"
+                className="group h-full block rounded-2xl bg-white p-8 shadow-card hover:shadow-card-hover transition-all border border-border/40"
+              >
+                <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gold/10 text-gold">
+                  <BarChart3 className="h-6 w-6" />
+                </div>
+                <h3 className="mb-3 font-heading text-heading-lg font-bold text-primary group-hover:text-gold transition-colors">
+                  Q2 2026 Texas market reports
+                </h3>
+                <p className="mb-5 text-body-sm text-foreground-muted leading-relaxed">
+                  Industrial, retail, office, and a cross-asset investment outlook. Rents, cap rates, vacancy, and deal flow across the four major Texas metros. Free with email.
+                </p>
+                <span className="inline-flex items-center gap-2 text-body-sm font-semibold text-gold-dark group-hover:text-gold transition-colors">
+                  Read the reports <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </span>
+              </Link>
+            </RevealOnScroll>
           </div>
         </Container>
       </section>
