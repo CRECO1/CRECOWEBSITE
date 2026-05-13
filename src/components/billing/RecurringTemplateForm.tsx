@@ -326,10 +326,15 @@ export function RecurringTemplateForm({
                   <Plus className="h-3.5 w-3.5" /> Add line
                 </button>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-4 sm:space-y-3">
                 {items.map((it, i) => (
-                  <div key={i} className="grid grid-cols-12 gap-2 items-start">
-                    <div className="col-span-12 sm:col-span-6">
+                  /*
+                    Mobile: stack as Description (full), then [Qty / Rate / Amount / Delete] in a row of small fields.
+                    sm+:   compact 12-col grid like before.
+                  */
+                  <div key={i} className="rounded-md border border-border/60 p-3 sm:p-0 sm:border-0 sm:rounded-none sm:grid sm:grid-cols-12 sm:gap-2 sm:items-start">
+                    {/* Description */}
+                    <div className="sm:col-span-6 mb-2 sm:mb-0">
                       <input
                         type="text"
                         value={it.description}
@@ -338,39 +343,47 @@ export function RecurringTemplateForm({
                         className={inputCls}
                       />
                     </div>
-                    <div className="col-span-3 sm:col-span-2">
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={it.quantity}
-                        onChange={e => updateItem(i, { quantity: Number(e.target.value) })}
-                        placeholder="Qty"
-                        className={inputCls + ' text-right'}
-                      />
-                    </div>
-                    <div className="col-span-4 sm:col-span-2">
-                      <input
-                        type="number"
-                        step="0.01"
-                        value={it.rate}
-                        onChange={e => updateItem(i, { rate: Number(e.target.value) })}
-                        placeholder="Rate"
-                        className={inputCls + ' text-right'}
-                      />
-                    </div>
-                    <div className="col-span-4 sm:col-span-1 self-center text-right font-mono text-body-sm text-primary">
-                      {formatMoney(it.amount)}
-                    </div>
-                    <div className="col-span-1 self-center text-right">
-                      <button
-                        type="button"
-                        onClick={() => removeItem(i)}
-                        className="text-foreground-muted hover:text-red-600"
-                        disabled={items.length === 1}
-                        aria-label="Remove line"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                    {/* Row of small fields — labels visible on mobile only */}
+                    <div className="sm:contents grid grid-cols-12 gap-2 items-end">
+                      <label className="col-span-3 sm:col-span-2 block">
+                        <span className="block text-caption text-foreground-muted mb-0.5 sm:hidden">Qty</span>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={it.quantity}
+                          onChange={e => updateItem(i, { quantity: Number(e.target.value) })}
+                          placeholder="Qty"
+                          className={inputCls + ' text-right'}
+                          aria-label="Quantity"
+                        />
+                      </label>
+                      <label className="col-span-4 sm:col-span-2 block">
+                        <span className="block text-caption text-foreground-muted mb-0.5 sm:hidden">Rate</span>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={it.rate}
+                          onChange={e => updateItem(i, { rate: Number(e.target.value) })}
+                          placeholder="Rate"
+                          className={inputCls + ' text-right'}
+                          aria-label="Rate"
+                        />
+                      </label>
+                      <div className="col-span-3 sm:col-span-1 sm:self-center text-right">
+                        <span className="block text-caption text-foreground-muted mb-0.5 sm:hidden">Amount</span>
+                        <span className="font-mono text-body-sm text-primary">{formatMoney(it.amount)}</span>
+                      </div>
+                      <div className="col-span-2 sm:col-span-1 sm:self-center text-right">
+                        <button
+                          type="button"
+                          onClick={() => removeItem(i)}
+                          className="inline-flex items-center justify-center h-9 w-9 rounded-md text-foreground-muted hover:text-red-600 hover:bg-red-50 disabled:opacity-40"
+                          disabled={items.length === 1}
+                          aria-label="Remove line"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}

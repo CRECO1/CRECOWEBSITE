@@ -183,7 +183,7 @@ export default function ArAgingPage() {
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-body-sm">
+                  <table className="w-full text-body-sm min-w-[720px]">
                     <thead className="bg-background-cream/50 text-caption uppercase tracking-widest text-foreground-muted">
                       <tr>
                         <th className="px-5 py-3 text-left font-medium">Invoice</th>
@@ -232,20 +232,20 @@ export default function ArAgingPage() {
                             <div className="flex items-center gap-2">
                               <a
                                 href={`mailto:${r.invoice.client_email}?subject=Following up on invoice ${r.invoice.invoice_number}&body=Hi ${encodeURIComponent(r.invoice.client_name)},%0D%0A%0D%0AThis is a quick note about invoice ${r.invoice.invoice_number} for ${formatMoney(r.invoice.total)} which was due ${formatDate(r.invoice.due_date)}.${r.invoice.stripe_payment_link_url ? `%0D%0A%0D%0APayment link: ${r.invoice.stripe_payment_link_url}` : ''}%0D%0A%0D%0AThanks!`}
-                                className="inline-flex items-center justify-center h-7 w-7 rounded-md border border-border bg-white text-foreground-muted hover:text-primary hover:border-primary"
+                                className="inline-flex items-center justify-center h-9 w-9 rounded-md border border-border bg-white text-foreground-muted hover:text-primary hover:border-primary"
                                 title="Email client"
                               >
-                                <Mail className="h-3.5 w-3.5" />
+                                <Mail className="h-4 w-4" />
                               </a>
                               {r.invoice.stripe_payment_link_url && (
                                 <a
                                   href={r.invoice.stripe_payment_link_url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="inline-flex items-center justify-center h-7 w-7 rounded-md border border-border bg-white text-foreground-muted hover:text-primary hover:border-primary"
+                                  className="inline-flex items-center justify-center h-9 w-9 rounded-md border border-border bg-white text-foreground-muted hover:text-primary hover:border-primary"
                                   title="Open payment link"
                                 >
-                                  <ExternalLink className="h-3.5 w-3.5" />
+                                  <ExternalLink className="h-4 w-4" />
                                 </a>
                               )}
                             </div>

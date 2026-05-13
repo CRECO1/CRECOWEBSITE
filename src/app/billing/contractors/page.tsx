@@ -151,7 +151,8 @@ export default function ContractorsListPage() {
               </section>
             ) : (
               <section className="rounded-xl border border-border bg-white overflow-hidden">
-                <table className="w-full text-body-sm">
+                <div className="overflow-x-auto">
+                <table className="w-full text-body-sm min-w-[640px]">
                   <thead className="bg-background-cream/50 text-caption uppercase tracking-widest text-foreground-muted">
                     <tr>
                       <th className="px-5 py-3 text-left font-medium">Name</th>
@@ -226,6 +227,7 @@ export default function ContractorsListPage() {
                     })}
                   </tbody>
                 </table>
+                </div>
               </section>
             )}
           </>

@@ -178,7 +178,8 @@ export default function InvoicesListPage() {
               )}
             </div>
           ) : (
-            <table className="w-full">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[720px]">
               <thead className="bg-background-cream border-b border-border">
                 <tr className="text-left text-caption uppercase tracking-widest text-foreground-muted">
                   <th className="px-5 py-3 font-semibold">Invoice</th>
@@ -229,6 +230,7 @@ export default function InvoicesListPage() {
                 })}
               </tbody>
             </table>
+            </div>
           )}
         </section>
       </div>

@@ -156,7 +156,8 @@ export default function NineteenNinetyNinePage() {
                   No 1099-eligible expenses in {year}. Mark contractor expenses as 1099-eligible on the expense form to populate this report.
                 </div>
               ) : (
-                <table className="w-full text-body-sm">
+                <div className="overflow-x-auto">
+                <table className="w-full text-body-sm min-w-[640px]">
                   <thead className="bg-background-cream/50 text-caption uppercase tracking-widest text-foreground-muted">
                     <tr>
                       <th className="px-5 py-3 text-left font-medium">Contractor</th>
@@ -212,6 +213,7 @@ export default function NineteenNinetyNinePage() {
                     ))}
                   </tbody>
                 </table>
+                </div>
               )}
             </section>
           </>

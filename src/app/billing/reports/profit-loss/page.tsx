@@ -239,7 +239,8 @@ export default function ProfitLossPage() {
                   No expenses in this period.
                 </div>
               ) : (
-                <table className="w-full text-body-sm">
+                <div className="overflow-x-auto">
+                <table className="w-full text-body-sm min-w-[640px]">
                   <thead className="bg-background-cream/50 text-caption uppercase tracking-widest text-foreground-muted">
                     <tr>
                       <th className="px-5 py-3 text-left font-medium">Category</th>
@@ -280,6 +281,7 @@ export default function ProfitLossPage() {
                     </tr>
                   </tbody>
                 </table>
+                </div>
               )}
             </section>
           </>
@@ -313,26 +315,32 @@ function PlChart({
   }));
   const max = Math.max(1, ...data.map(d => Math.max(d.revenue, d.expenses)));
 
+  // 24px min bar width per month so a YTD or trailing-12 view stays
+  // readable on narrow screens — wider ranges scroll horizontally.
+  const minWidth = Math.max(0, months.length * 32);
+
   return (
     <div>
-      <div className="flex items-end justify-between gap-1 h-48">
-        {data.map(d => {
-          const rH = (d.revenue / max) * 100;
-          const eH = (d.expenses / max) * 100;
-          const label = new Date(d.m + '-01T00:00:00Z')
-            .toLocaleString('en-US', { month: 'short', timeZone: 'UTC' });
-          return (
-            <div key={d.m} className="flex-1 flex flex-col items-center gap-1 min-w-0" title={`${d.m}: ${formatMoney(d.revenue)} rev / ${formatMoney(d.expenses)} exp`}>
-              <div className="w-full flex items-end justify-center gap-0.5 h-40">
-                <div className="w-1/2 bg-green-500/80 rounded-t" style={{ height: `${rH}%`, minHeight: d.revenue > 0 ? '2px' : '0' }} />
-                <div className="w-1/2 bg-slate-300 rounded-t" style={{ height: `${eH}%`, minHeight: d.expenses > 0 ? '2px' : '0' }} />
+      <div className="overflow-x-auto -mx-2 px-2">
+        <div className="flex items-end justify-between gap-1 h-40 sm:h-48" style={{ minWidth: `${minWidth}px` }}>
+          {data.map(d => {
+            const rH = (d.revenue / max) * 100;
+            const eH = (d.expenses / max) * 100;
+            const label = new Date(d.m + '-01T00:00:00Z')
+              .toLocaleString('en-US', { month: 'short', timeZone: 'UTC' });
+            return (
+              <div key={d.m} className="flex-1 flex flex-col items-center gap-1 min-w-0" title={`${d.m}: ${formatMoney(d.revenue)} rev / ${formatMoney(d.expenses)} exp`}>
+                <div className="w-full flex items-end justify-center gap-0.5 h-32 sm:h-40">
+                  <div className="w-1/2 bg-green-500/80 rounded-t" style={{ height: `${rH}%`, minHeight: d.revenue > 0 ? '2px' : '0' }} />
+                  <div className="w-1/2 bg-slate-300 rounded-t" style={{ height: `${eH}%`, minHeight: d.expenses > 0 ? '2px' : '0' }} />
+                </div>
+                <span className="text-caption text-foreground-muted">{label}</span>
               </div>
-              <span className="text-caption text-foreground-muted">{label}</span>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
-      <div className="mt-3 flex items-center justify-center gap-4 text-caption text-foreground-muted">
+      <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-caption text-foreground-muted">
         <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-sm bg-green-500/80" /> Revenue</span>
         <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-sm bg-slate-300" /> Expenses</span>
       </div>

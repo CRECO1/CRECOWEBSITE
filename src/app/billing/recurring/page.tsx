@@ -172,7 +172,7 @@ export default function RecurringTemplatesPage() {
             ) : (
               <section className="rounded-xl border border-border bg-white overflow-hidden">
                 <div className="overflow-x-auto">
-                  <table className="w-full text-body-sm">
+                  <table className="w-full text-body-sm min-w-[720px]">
                     <thead className="bg-background-cream/50 text-caption uppercase tracking-widest text-foreground-muted">
                       <tr>
                         <th className="px-5 py-3 text-left font-medium">Template</th>

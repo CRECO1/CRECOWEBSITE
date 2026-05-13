@@ -503,24 +503,27 @@ function TrendChart({
 
   return (
     <div>
-      <div className="flex items-end justify-between gap-1 h-40">
-        {data.map(d => {
-          const rH = (d.revenue / max) * 100;
-          const eH = (d.expenses / max) * 100;
-          const label = new Date(d.m + '-01T00:00:00Z')
-            .toLocaleString('en-US', { month: 'short', timeZone: 'UTC' });
-          return (
-            <div key={d.m} className="flex-1 flex flex-col items-center gap-1 min-w-0" title={`${label}: ${formatMoney(d.revenue)} rev / ${formatMoney(d.expenses)} exp`}>
-              <div className="w-full flex items-end justify-center gap-0.5 h-32">
-                <div className="w-1/2 bg-green-500/80 rounded-t" style={{ height: `${rH}%`, minHeight: d.revenue > 0 ? '2px' : '0' }} />
-                <div className="w-1/2 bg-slate-300 rounded-t" style={{ height: `${eH}%`, minHeight: d.expenses > 0 ? '2px' : '0' }} />
+      {/* Horizontal scroll lane on narrow screens — 12 bars across 320px is unreadable */}
+      <div className="overflow-x-auto -mx-2 px-2">
+        <div className="flex items-end justify-between gap-1 h-32 sm:h-40 min-w-[480px] sm:min-w-0">
+          {data.map(d => {
+            const rH = (d.revenue / max) * 100;
+            const eH = (d.expenses / max) * 100;
+            const label = new Date(d.m + '-01T00:00:00Z')
+              .toLocaleString('en-US', { month: 'short', timeZone: 'UTC' });
+            return (
+              <div key={d.m} className="flex-1 flex flex-col items-center gap-1 min-w-0" title={`${label}: ${formatMoney(d.revenue)} rev / ${formatMoney(d.expenses)} exp`}>
+                <div className="w-full flex items-end justify-center gap-0.5 h-24 sm:h-32">
+                  <div className="w-1/2 bg-green-500/80 rounded-t" style={{ height: `${rH}%`, minHeight: d.revenue > 0 ? '2px' : '0' }} />
+                  <div className="w-1/2 bg-slate-300 rounded-t" style={{ height: `${eH}%`, minHeight: d.expenses > 0 ? '2px' : '0' }} />
+                </div>
+                <span className="text-caption text-foreground-muted">{label}</span>
               </div>
-              <span className="text-caption text-foreground-muted">{label}</span>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
-      <div className="mt-3 flex items-center justify-center gap-4 text-caption text-foreground-muted">
+      <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-caption text-foreground-muted">
         <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-sm bg-green-500/80" /> Revenue (paid)</span>
         <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-sm bg-slate-300" /> Expenses</span>
       </div>

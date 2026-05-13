@@ -148,7 +148,8 @@ export default function ExpensesListPage() {
               )}
             </div>
           ) : (
-            <table className="w-full">
+            <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px]">
               <thead className="bg-background-cream border-b border-border">
                 <tr className="text-left text-caption uppercase tracking-widest text-foreground-muted">
                   <th className="px-5 py-3 font-semibold">Date</th>
@@ -190,6 +191,7 @@ export default function ExpensesListPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           )}
         </section>
       </div>
