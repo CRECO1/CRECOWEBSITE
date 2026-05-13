@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * /admin/invoices/new — create a new invoice.
+ * /billing/invoices/new — create a new invoice.
  *
  * Form is intentionally one screen: client block on the left, line items
  * + totals on the right. Submitting either saves as a Draft (default) or
@@ -166,12 +166,12 @@ export default function NewInvoicePage() {
         setSaving(false);
         setError(body?.error ?? 'Saved as draft, but email send failed.');
         // Still navigate to the detail page so the admin can retry
-        router.push(`/admin/invoices/${created.id}`);
+        router.push(`/billing/invoices/${created.id}`);
         return;
       }
     }
 
-    router.push(`/admin/invoices/${created.id}`);
+    router.push(`/billing/invoices/${created.id}`);
   }
 
   return (
@@ -179,7 +179,7 @@ export default function NewInvoicePage() {
       <header className="border-b border-border bg-white">
         <div className="mx-auto max-w-6xl pl-16 pr-6 lg:px-6 py-5 flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-3">
-            <Link href="/admin/invoices" className="inline-flex items-center gap-1.5 text-body-sm text-foreground-muted hover:text-primary">
+            <Link href="/billing/invoices" className="inline-flex items-center gap-1.5 text-body-sm text-foreground-muted hover:text-primary">
               <ArrowLeft className="h-4 w-4" /> Invoices
             </Link>
             <span className="text-foreground-muted">/</span>

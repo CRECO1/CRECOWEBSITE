@@ -1,10 +1,10 @@
 'use client';
 
 /**
- * /admin/invoices — the invoice control center.
+ * /billing/invoices — the invoice control center.
  *
  * Shows a stats strip across the top (Outstanding / Overdue / Paid this
- * month) and a filterable table below. Click a row → /admin/invoices/[id]
+ * month) and a filterable table below. Click a row → /billing/invoices/[id]
  * to view, edit, send, or mark paid.
  *
  * All reads/writes go through the Supabase client using the admin's session
@@ -106,14 +106,14 @@ export default function InvoicesListPage() {
           </div>
           <div className="flex items-center gap-2">
             <Link
-              href="/admin/invoices/settings"
+              href="/billing/invoices/settings"
               className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-4 py-2.5 text-body-sm text-foreground-muted hover:text-primary"
               title="Edit email template"
             >
               <Mail className="h-4 w-4" /> Email template
             </Link>
             <Link
-              href="/admin/invoices/new"
+              href="/billing/invoices/new"
               className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-body-sm font-semibold text-white hover:bg-primary/90"
             >
               <FilePlus2 className="h-4 w-4" /> New invoice
@@ -170,7 +170,7 @@ export default function InvoicesListPage() {
               </p>
               {invoices.length === 0 && !error && (
                 <Link
-                  href="/admin/invoices/new"
+                  href="/billing/invoices/new"
                   className="inline-flex items-center gap-2 mt-5 rounded-lg bg-gold px-5 py-2.5 text-body-sm font-semibold text-primary hover:bg-gold-light"
                 >
                   <FilePlus2 className="h-4 w-4" /> Create invoice
@@ -196,7 +196,7 @@ export default function InvoicesListPage() {
                   return (
                     <tr key={inv.id} className="border-b border-border last:border-0 hover:bg-background-cream/50 transition-colors">
                       <td className="px-5 py-4">
-                        <Link href={`/admin/invoices/${inv.id}`} className="font-mono text-body-sm font-semibold text-primary hover:text-gold-dark">
+                        <Link href={`/billing/invoices/${inv.id}`} className="font-mono text-body-sm font-semibold text-primary hover:text-gold-dark">
                           {inv.invoice_number}
                         </Link>
                       </td>
@@ -218,7 +218,7 @@ export default function InvoicesListPage() {
                       </td>
                       <td className="px-5 py-4 text-right">
                         <Link
-                          href={`/admin/invoices/${inv.id}`}
+                          href={`/billing/invoices/${inv.id}`}
                           className="inline-flex items-center gap-1 text-body-sm text-gold-dark hover:text-gold"
                         >
                           Open <ArrowRight className="h-3 w-3" />

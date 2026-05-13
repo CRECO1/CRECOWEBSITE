@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * /admin/invoices/[id] — view, send, mark paid, void, delete.
+ * /billing/invoices/[id] — view, send, mark paid, void, delete.
  *
  * Read-only display by default — click "Edit" to make changes, "Save" to
  * commit. Actions sit in the top bar: download PDF, send (or resend) to
@@ -197,7 +197,7 @@ export default function InvoiceDetailPage() {
     const { error } = await supabase.from('invoices').delete().eq('id', invoice.id);
     setBusy(null);
     if (error) { setError(error.message); return; }
-    router.push('/admin/invoices');
+    router.push('/billing/invoices');
   }
 
   // ── Edit mode ───────────────────────────────────────────────────────────
@@ -312,7 +312,7 @@ export default function InvoiceDetailPage() {
       <header className="border-b border-border bg-white">
         <div className="mx-auto max-w-6xl pl-16 pr-6 lg:px-6 py-5 flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-3 min-w-0">
-            <Link href="/admin/invoices" className="inline-flex items-center gap-1.5 text-body-sm text-foreground-muted hover:text-primary">
+            <Link href="/billing/invoices" className="inline-flex items-center gap-1.5 text-body-sm text-foreground-muted hover:text-primary">
               <ArrowLeft className="h-4 w-4" /> Invoices
             </Link>
             <span className="text-foreground-muted">/</span>
@@ -618,7 +618,7 @@ export default function InvoiceDetailPage() {
                 />
                 <p className="mt-1.5 text-caption text-foreground-muted">
                   Goes above the auto-generated summary and Pay-online button. Edit the global default at{' '}
-                  <Link href="/admin/invoices/settings" className="text-gold-dark hover:underline">/admin/invoices/settings</Link>.
+                  <Link href="/billing/invoices/settings" className="text-gold-dark hover:underline">/billing/invoices/settings</Link>.
                 </p>
               </label>
 

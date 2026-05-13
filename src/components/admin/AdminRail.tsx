@@ -1,14 +1,16 @@
 'use client';
 
 /**
- * Left-rail navigation for the entire /admin section.
+ * Left-rail navigation for the /admin section (content management only).
+ *
+ * Billing — invoices, expenses, email template — lives in its own /billing
+ * section behind BillingRail so financial data is mentally and visually
+ * separated from website content. The two sections cross-link at the rail
+ * bottom.
  *
  * Lives in `app/admin/layout.tsx`, so it persists across navigation between
  * admin pages without re-mounting. Active state is derived from the current
- * pathname + the `?tab=` search param — items that point to /admin?tab=X
- * highlight when both the pathname matches and the tab matches; items that
- * point to dedicated routes (/admin/invoices, /admin/invoices/settings)
- * highlight on pathname prefix.
+ * pathname + the `?tab=` search param.
  *
  * On desktop the rail is fixed-position on the left at w-56. On mobile it
  * collapses behind a hamburger button that slides it in as an overlay.
@@ -19,7 +21,7 @@ import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import {
   Home, Building2, CheckCircle2, Users, MapPin, MessageSquare,
-  FileText, Inbox, Receipt, Mail, ExternalLink, LogOut, Menu, X,
+  FileText, Inbox, DollarSign, ExternalLink, LogOut, Menu, X,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
@@ -44,10 +46,10 @@ const PRIMARY_NAV: NavItem[] = [
   { href: '/admin?tab=leads',         label: 'Leads',         icon: Inbox,          matchTab: 'leads' },
 ];
 
-const BUSINESS_NAV: NavItem[] = [
-  { href: '/admin/invoices',          label: 'Invoices',      icon: Receipt,        matchPrefix: '/admin/invoices' },
-  { href: '/admin/invoices/settings', label: 'Email Template', icon: Mail,          matchPrefix: '/admin/invoices/settings' },
-];
+// Billing has moved to its own /billing section with its own rail. Keep
+// a single cross-link in the bottom utility area instead of mixing the
+// two surfaces in one rail.
+const BUSINESS_NAV: NavItem[] = [];
 
 export function AdminRail() {
   const pathname = usePathname() ?? '/admin';
@@ -143,16 +145,18 @@ export function AdminRail() {
               <NavLink key={item.href} item={item} active={isActive(item)} onNavigate={() => setMobileOpen(false)} />
             ))}
           </NavSection>
-
-          <NavSection label="Business">
-            {BUSINESS_NAV.map(item => (
-              <NavLink key={item.href} item={item} active={isActive(item)} onNavigate={() => setMobileOpen(false)} />
-            ))}
-          </NavSection>
         </nav>
 
         {/* Bottom utility */}
         <div className="border-t border-white/10 py-2">
+          <Link
+            href="/billing"
+            onClick={() => setMobileOpen(false)}
+            className="flex items-center gap-3 px-5 py-2.5 text-body-sm text-gold hover:text-gold-light hover:bg-white/5 font-semibold"
+          >
+            <DollarSign className="h-4 w-4" />
+            <span>Billing →</span>
+          </Link>
           <a
             href="/"
             target="_blank"

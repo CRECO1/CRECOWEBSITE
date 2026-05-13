@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * /admin/invoices/settings — edit the default email template.
+ * /billing/invoices/settings — edit the default email template.
  *
  * One row in `invoice_settings` (id=1) holds the global defaults. The
  * Compose modal on each invoice loads these defaults, substitutes
@@ -109,7 +109,7 @@ export default function InvoiceSettingsPage() {
       <header className="border-b border-border bg-white">
         <div className="mx-auto max-w-6xl pl-16 pr-6 lg:px-6 py-5 flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-3">
-            <Link href="/admin/invoices" className="inline-flex items-center gap-1.5 text-body-sm text-foreground-muted hover:text-primary">
+            <Link href="/billing/invoices" className="inline-flex items-center gap-1.5 text-body-sm text-foreground-muted hover:text-primary">
               <ArrowLeft className="h-4 w-4" /> Invoices
             </Link>
             <span className="text-foreground-muted">/</span>
