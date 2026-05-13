@@ -25,6 +25,7 @@ import {
   type Invoice, type InvoiceLineItem,
 } from '@/lib/invoices';
 import { FALLBACK_TEMPLATE, substituteTemplate } from '@/lib/invoice-email';
+import { buildInvoiceEmailPreview } from '@/lib/invoice-email-html';
 import { REMINDER_STAGES, type ReminderStage } from '@/lib/invoice-reminders';
 
 type Editable = Omit<Invoice, 'line_items'> & { line_items: InvoiceLineItem[] };
@@ -49,6 +50,10 @@ export default function InvoiceDetailPage() {
 
   // Reminder history for this invoice
   const [reminders, setReminders] = useState<{ stage: ReminderStage; sent_at: string }[]>([]);
+
+  // Global email template — loaded once on mount, used as the fallback
+  // when this invoice doesn't carry a per-invoice email_subject/message.
+  const [emailTemplate, setEmailTemplate] = useState<{ default_subject: string; default_message: string }>(FALLBACK_TEMPLATE);
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -76,6 +81,19 @@ export default function InvoiceDetailPage() {
   }, [id]);
 
   useEffect(() => { load(); }, [load]);
+
+  // Pull the global email template once on mount (used as fallback for
+  // the live preview when this invoice doesn't have a per-invoice override).
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from('invoice_settings')
+        .select('default_subject, default_message')
+        .eq('id', 1)
+        .single();
+      if (data) setEmailTemplate(data);
+    })();
+  }, []);
 
   const status = invoice ? effectiveStatus(invoice) : 'draft';
   const statusStyle = STATUS_STYLES[status];
@@ -349,6 +367,19 @@ export default function InvoiceDetailPage() {
     () => view ? calculateTotals(view.line_items, view.tax_rate) : { subtotal: 0, tax_amount: 0, total: 0 },
     [view],
   );
+
+  // Compute the effective (subject, message) that would actually send today,
+  // following the same resolution order as the server's send route:
+  //   1. Per-invoice override (email_subject / email_message on the row)
+  //   2. Global template substituted against this invoice
+  //
+  // Then render that into the preview iframe via buildInvoiceEmailPreview.
+  const previewHtml = useMemo(() => {
+    if (!view) return '';
+    const subject = view.email_subject || substituteTemplate(emailTemplate.default_subject, view);
+    const message = view.email_message || substituteTemplate(emailTemplate.default_message, view);
+    return buildInvoiceEmailPreview({ invoice: view, subject, message });
+  }, [view, emailTemplate]);
 
   if (!invoice && !error) {
     return <div className="min-h-screen bg-background-cream flex items-center justify-center text-foreground-muted">Loading…</div>;
@@ -683,6 +714,20 @@ export default function InvoiceDetailPage() {
                     Using the global template. <Link href="/billing/invoices/settings" className="text-gold-dark hover:underline">Edit the default →</Link>
                   </p>
                 )}
+
+                {/* Live preview — same HTML the client would receive right
+                    now. Resolves per-invoice override → global template
+                    substituted, then renders into the sandboxed iframe.
+                    Updates as you edit. */}
+                <div className="pt-2">
+                  <p className="text-caption uppercase tracking-widest text-foreground-muted mb-2">Preview · this is what the client sees</p>
+                  <iframe
+                    srcDoc={previewHtml}
+                    title="Invoice email preview"
+                    sandbox=""
+                    className="w-full h-[640px] rounded-lg border border-border bg-background-cream"
+                  />
+                </div>
               </Card>
             </section>
           </div>
