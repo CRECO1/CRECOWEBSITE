@@ -10,21 +10,20 @@
  *   1. Find or create a `crm_clients` row (deduped by email)
  *   2. Insert a matching `email_lead_imports` row pointing to that client
  *
- * Both projects share the same Supabase, so we just use the service-role
- * key — no HTTP webhook hop needed. This is faster, more reliable, and
- * gives us atomic semantics across the two tables.
+ * CRECO and FORG run on separate Supabase projects. The CRM (crm_clients +
+ * email_lead_imports + the dashboard) lives on the FORG Supabase, but
+ * the CRECO website's NEXT_PUBLIC_SUPABASE_URL points at its own project.
+ * So we use a separate pair of env vars for the CRM write:
+ *
+ *   CRM_SUPABASE_URL                  → FORG Supabase URL
+ *   CRM_SUPABASE_SERVICE_ROLE_KEY     → FORG service role key (DDL/RLS bypass)
+ *
+ * Falls back to the local NEXT_PUBLIC_SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY
+ * if those aren't set — useful for dev environments where the CRM and
+ * website happen to share a database.
  *
  * Failures are logged but never thrown — a CRM outage must not block
  * our own lead-capture flow.
- *
- * Configure via Vercel env (already set on the `creco` project):
- *   NEXT_PUBLIC_SUPABASE_URL
- *   SUPABASE_SERVICE_ROLE_KEY
- *
- * The CRM_WEBHOOK_URL / CRM_WEBHOOK_AUTH env vars are not used by this
- * code path. They were scaffolded for an HTTP webhook approach that we
- * decided not to take (FORG's webhook doesn't populate email_lead_imports,
- * which is what Prospects reads from).
  */
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
@@ -82,10 +81,12 @@ export interface CrmPayload {
   metadata?: Record<string, unknown> | null;
 }
 
-/** Service-role Supabase client; null when env vars aren't configured. */
+/** Service-role Supabase client for the CRM (FORG project). Prefers
+ *  CRM_SUPABASE_* env vars; falls back to the local Supabase if the CRM
+ *  happens to live in the same database (e.g. unified dev). */
 function adminClient(): SupabaseClient | null {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const url = process.env.CRM_SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.CRM_SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) return null;
   return createClient(url, key, { auth: { persistSession: false } });
 }

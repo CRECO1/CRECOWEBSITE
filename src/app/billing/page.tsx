@@ -3,16 +3,20 @@
 /**
  * /billing — financial dashboard.
  *
- * Pulls invoices + expenses to compute revenue (paid invoices in current
- * month), outstanding (sent + overdue), expenses (this month), and net.
- * Shows recent activity from both feeds interleaved.
+ * The "open the app and immediately know how the business is doing" view.
+ * Pulls invoices + expenses, derives the key KPIs (paid this month vs last,
+ * outstanding A/R, expenses, net income), renders an A/R aging snapshot,
+ * a 6-month revenue trend, top expense categories, and a recent activity
+ * feed. Everything is computed client-side via src/lib/billing-reports so
+ * we don't pay a server roundtrip on every metric.
  */
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
-  Receipt, ArrowDownCircle, ArrowUpCircle, TrendingUp,
-  FilePlus2, Plus, AlertTriangle, Loader2,
+  Receipt, ArrowDownCircle, ArrowUpCircle, TrendingUp, TrendingDown,
+  FilePlus2, Plus, AlertTriangle, Loader2, Clock, Wallet, ArrowRight,
+  BarChart3, FileBadge,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
@@ -20,6 +24,10 @@ import {
   type Invoice,
 } from '@/lib/invoices';
 import { categoryStyle, type Expense } from '@/lib/expenses';
+import {
+  computeArAging, computePl, sortCategoriesByAmount, trailing12MonthsRange,
+  BUCKET_LABELS,
+} from '@/lib/billing-reports';
 
 export default function BillingDashboard() {
   const [invoices, setInvoices] = useState<Invoice[] | null>(null);
@@ -52,48 +60,85 @@ export default function BillingDashboard() {
     return () => { cancelled = true; };
   }, []);
 
+  // Core KPI math — current + previous month, then comparisons
   const stats = useMemo(() => {
     const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    let outstanding = 0;
-    let overdue = 0;
-    let paidThisMonth = 0;
-    let expensesThisMonth = 0;
+    const ym = (d: Date) => `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+    const thisMonth = ym(now);
+    const lastMonth = ym(new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1)));
+
+    let paidThisMonth = 0, paidLastMonth = 0;
+    let expensesThisMonth = 0, expensesLastMonth = 0;
 
     for (const inv of invoices ?? []) {
-      const status = effectiveStatus(inv);
-      if (status === 'sent' || status === 'overdue') outstanding += Number(inv.total);
-      if (status === 'overdue') overdue += Number(inv.total);
-      if (status === 'paid' && inv.paid_at) {
-        if (new Date(inv.paid_at) >= startOfMonth) paidThisMonth += Number(inv.paid_amount ?? inv.total);
+      if (inv.status !== 'paid' || !inv.paid_at) continue;
+      const k = inv.paid_at.slice(0, 7);
+      const amt = Number(inv.paid_amount ?? inv.total);
+      if (k === thisMonth) paidThisMonth += amt;
+      else if (k === lastMonth) paidLastMonth += amt;
+    }
+    for (const e of expenses ?? []) {
+      const k = e.expense_date.slice(0, 7);
+      const amt = Number(e.amount);
+      if (k === thisMonth) expensesThisMonth += amt;
+      else if (k === lastMonth) expensesLastMonth += amt;
+    }
+
+    // YTD
+    const yearPrefix = String(now.getUTCFullYear());
+    let revenueYtd = 0, expensesYtd = 0;
+    for (const inv of invoices ?? []) {
+      if (inv.status === 'paid' && inv.paid_at?.startsWith(yearPrefix)) {
+        revenueYtd += Number(inv.paid_amount ?? inv.total);
       }
     }
     for (const e of expenses ?? []) {
-      if (new Date(e.expense_date + 'T12:00:00') >= startOfMonth) {
-        expensesThisMonth += Number(e.amount);
-      }
+      if (e.expense_date.startsWith(yearPrefix)) expensesYtd += Number(e.amount);
     }
+
     return {
-      outstanding,
-      overdue,
       paidThisMonth,
+      paidLastMonth,
+      paidDelta: paidLastMonth === 0 ? null : ((paidThisMonth - paidLastMonth) / paidLastMonth),
       expensesThisMonth,
+      expensesLastMonth,
+      expensesDelta: expensesLastMonth === 0 ? null : ((expensesThisMonth - expensesLastMonth) / expensesLastMonth),
       netThisMonth: paidThisMonth - expensesThisMonth,
+      netLastMonth: paidLastMonth - expensesLastMonth,
+      revenueYtd,
+      expensesYtd,
+      netYtd: revenueYtd - expensesYtd,
     };
   }, [invoices, expenses]);
 
-  // Combined "recent activity" feed — last 10 across both
+  // A/R aging — drives the snapshot card
+  const ar = useMemo(() => computeArAging(invoices ?? []), [invoices]);
+
+  // Trailing 12 months — drives the trend chart
+  const pl = useMemo(
+    () => computePl(invoices ?? [], expenses ?? [], trailing12MonthsRange()),
+    [invoices, expenses],
+  );
+
+  // Top 5 expense categories for the current month
+  const topCategoriesThisMonth = useMemo(() => {
+    const yearPrefix = new Date().getUTCFullYear() + '-' + String(new Date().getUTCMonth() + 1).padStart(2, '0');
+    const byCat: Record<string, number> = {};
+    for (const e of expenses ?? []) {
+      if (!e.expense_date.startsWith(yearPrefix)) continue;
+      byCat[e.category] = (byCat[e.category] ?? 0) + Number(e.amount);
+    }
+    return sortCategoriesByAmount(byCat).slice(0, 5);
+  }, [expenses]);
+
+  // Recent activity (last 10 across invoices + expenses)
   const recent = useMemo(() => {
     type Entry =
       | { kind: 'invoice'; date: string; data: Invoice }
       | { kind: 'expense'; date: string; data: Expense };
     const entries: Entry[] = [];
-    for (const inv of invoices ?? []) {
-      entries.push({ kind: 'invoice', date: inv.created_at, data: inv });
-    }
-    for (const e of expenses ?? []) {
-      entries.push({ kind: 'expense', date: e.created_at, data: e });
-    }
+    for (const inv of invoices ?? []) entries.push({ kind: 'invoice', date: inv.created_at, data: inv });
+    for (const e of expenses ?? []) entries.push({ kind: 'expense', date: e.created_at, data: e });
     entries.sort((a, b) => (a.date < b.date ? 1 : -1));
     return entries.slice(0, 10);
   }, [invoices, expenses]);
@@ -104,7 +149,12 @@ export default function BillingDashboard() {
     <main className="min-h-screen bg-background-cream pb-20">
       <header className="border-b border-border bg-white">
         <div className="mx-auto max-w-6xl pl-16 pr-6 lg:px-6 py-5 flex items-center justify-between gap-4 flex-wrap">
-          <h1 className="font-heading text-heading-md font-bold text-primary">Billing Dashboard</h1>
+          <div>
+            <h1 className="font-heading text-heading-md font-bold text-primary">Dashboard</h1>
+            <p className="text-caption text-foreground-muted">
+              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+            </p>
+          </div>
           <div className="flex items-center gap-2">
             <Link
               href="/billing/expenses/new"
@@ -136,55 +186,170 @@ export default function BillingDashboard() {
           </div>
         ) : (
           <>
-            {/* Stat tiles */}
+            {/* ── Top KPIs ───────────────────────────────────────────── */}
             <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Stat
+              <Kpi
                 icon={ArrowUpCircle}
-                label="Paid this month"
+                label="Revenue this month"
                 value={formatMoney(stats.paidThisMonth)}
                 tone="green"
+                delta={stats.paidDelta}
+                compareLabel="vs last month"
                 href="/billing/invoices?status=paid"
               />
-              <Stat
+              <Kpi
                 icon={Receipt}
-                label="Outstanding"
-                value={formatMoney(stats.outstanding)}
-                sublabel={stats.overdue > 0 ? `${formatMoney(stats.overdue)} overdue` : undefined}
-                tone={stats.overdue > 0 ? 'red' : 'gold'}
-                href="/billing/invoices"
+                label="Outstanding A/R"
+                value={formatMoney(ar.summary.total_outstanding)}
+                tone={ar.summary.total_overdue > 0 ? 'red' : 'gold'}
+                sublabel={ar.summary.total_overdue > 0 ? `${formatMoney(ar.summary.total_overdue)} overdue` : undefined}
+                href="/billing/reports/ar-aging"
               />
-              <Stat
+              <Kpi
                 icon={ArrowDownCircle}
                 label="Expenses this month"
                 value={formatMoney(stats.expensesThisMonth)}
                 tone="slate"
+                delta={stats.expensesDelta}
+                deltaInverted
+                compareLabel="vs last month"
                 href="/billing/expenses"
               />
-              <Stat
-                icon={TrendingUp}
-                label="Net this month"
+              <Kpi
+                icon={Wallet}
+                label="Net income (month)"
                 value={formatMoney(stats.netThisMonth)}
                 tone={stats.netThisMonth >= 0 ? 'green' : 'red'}
+                sublabel={`YTD ${formatMoney(stats.netYtd)}`}
               />
             </section>
 
-            {/* Quick actions */}
-            <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <ActionCard
-                href="/billing/invoices"
-                icon={Receipt}
-                title="Invoices"
-                body="Create, send, and track invoices. Auto-marks overdue past the due date."
-              />
-              <ActionCard
-                href="/billing/expenses"
-                icon={ArrowDownCircle}
-                title="Expenses"
-                body="Record business expenses with category, vendor, and receipt link. Roll up monthly."
-              />
+            {/* ── Trend chart + A/R aging snapshot ──────────────────── */}
+            <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div className="lg:col-span-2 rounded-xl border border-border bg-white p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h2 className="font-heading text-body font-bold text-primary">Revenue vs expenses</h2>
+                    <p className="text-caption text-foreground-muted">Trailing 12 months</p>
+                  </div>
+                  <Link
+                    href="/billing/reports/profit-loss"
+                    className="text-caption text-gold-dark hover:text-gold font-semibold inline-flex items-center gap-1"
+                  >
+                    Full P&L <ArrowRight className="h-3 w-3" />
+                  </Link>
+                </div>
+                <TrendChart
+                  revenueByMonth={pl.revenue_by_month}
+                  expensesByMonth={Object.fromEntries(
+                    Object.entries(pl.expenses_by_month_category).map(([m, cats]) => [
+                      m, Object.values(cats).reduce((a, b) => a + b, 0),
+                    ]),
+                  )}
+                />
+              </div>
+
+              <div className="rounded-xl border border-border bg-white p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-heading text-body font-bold text-primary">A/R aging</h2>
+                  <Link
+                    href="/billing/reports/ar-aging"
+                    className="text-caption text-gold-dark hover:text-gold font-semibold inline-flex items-center gap-1"
+                  >
+                    Details <ArrowRight className="h-3 w-3" />
+                  </Link>
+                </div>
+                {ar.summary.total_outstanding === 0 ? (
+                  <div className="py-8 text-center text-body-sm text-foreground-muted">
+                    All caught up. Nothing outstanding.
+                  </div>
+                ) : (
+                  <div className="space-y-2.5">
+                    {(['current', '1-30', '31-60', '61-90', '90+'] as const).map(b => {
+                      const amt = ar.summary[b];
+                      const pct = ar.summary.total_outstanding > 0
+                        ? (amt / ar.summary.total_outstanding) * 100 : 0;
+                      const overdue = b !== 'current';
+                      return (
+                        <div key={b}>
+                          <div className="flex items-center justify-between text-caption mb-1">
+                            <span className="text-foreground-muted">{BUCKET_LABELS[b]}</span>
+                            <span className={`font-mono font-semibold ${overdue && amt > 0 ? 'text-red-700' : 'text-primary'}`}>
+                              {formatMoney(amt)}
+                            </span>
+                          </div>
+                          <div className="h-1.5 rounded-full bg-background-cream overflow-hidden">
+                            <div
+                              className={`h-full ${
+                                b === 'current'  ? 'bg-blue-400' :
+                                b === '1-30'     ? 'bg-amber-400' :
+                                b === '31-60'    ? 'bg-orange-500' :
+                                b === '61-90'    ? 'bg-red-500'    :
+                                                   'bg-red-700'
+                              }`}
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </section>
 
-            {/* Recent activity */}
+            {/* ── Top expense categories + Quick actions ─────────────── */}
+            <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div className="lg:col-span-2 rounded-xl border border-border bg-white p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-heading text-body font-bold text-primary">Top expense categories (this month)</h2>
+                  <Link
+                    href="/billing/expenses"
+                    className="text-caption text-gold-dark hover:text-gold font-semibold inline-flex items-center gap-1"
+                  >
+                    All expenses <ArrowRight className="h-3 w-3" />
+                  </Link>
+                </div>
+                {topCategoriesThisMonth.length === 0 ? (
+                  <div className="py-8 text-center text-body-sm text-foreground-muted">
+                    No expenses recorded this month.
+                  </div>
+                ) : (
+                  <ul className="space-y-2.5">
+                    {topCategoriesThisMonth.map(c => {
+                      const pct = stats.expensesThisMonth > 0
+                        ? (c.total / stats.expensesThisMonth) * 100 : 0;
+                      return (
+                        <li key={c.category}>
+                          <div className="flex items-center justify-between text-caption mb-1">
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-caption font-medium border ${categoryStyle(c.category)}`}>
+                              {c.category}
+                            </span>
+                            <span className="font-mono font-semibold text-primary">{formatMoney(c.total)}</span>
+                          </div>
+                          <div className="h-1.5 rounded-full bg-background-cream overflow-hidden">
+                            <div className="h-full bg-gold" style={{ width: `${pct}%` }} />
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
+
+              <div className="rounded-xl border border-border bg-white p-5">
+                <h2 className="font-heading text-body font-bold text-primary mb-4">Quick links</h2>
+                <ul className="space-y-2">
+                  <QuickLink href="/billing/invoices" icon={Receipt} label="All invoices" />
+                  <QuickLink href="/billing/recurring" icon={ArrowRight} label="Recurring invoices" />
+                  <QuickLink href="/billing/reports/profit-loss" icon={BarChart3} label="P&L report" />
+                  <QuickLink href="/billing/reports/ar-aging" icon={Clock} label="A/R aging" />
+                  <QuickLink href="/billing/reports/1099" icon={FileBadge} label="1099 export" />
+                </ul>
+              </div>
+            </section>
+
+            {/* ── Recent activity ────────────────────────────────────── */}
             <section className="rounded-xl border border-border bg-white overflow-hidden">
               <div className="px-5 py-4 border-b border-border">
                 <h2 className="font-heading text-body font-bold text-primary">Recent activity</h2>
@@ -253,17 +418,43 @@ export default function BillingDashboard() {
   );
 }
 
-function Stat({
-  icon: Icon, label, value, sublabel, tone, href,
+// ───── Subcomponents ─────────────────────────────────────────────────────────
+
+function Kpi({
+  icon: Icon, label, value, sublabel, tone, delta, deltaInverted, compareLabel, href,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   value: string;
   sublabel?: string;
   tone: 'gold' | 'red' | 'green' | 'slate';
+  /** Decimal change vs the comparison period (e.g. 0.12 for +12%). */
+  delta?: number | null;
+  /** When true, positive delta is treated as bad (used for expenses). */
+  deltaInverted?: boolean;
+  compareLabel?: string;
   href?: string;
 }) {
-  const toneColor = tone === 'red' ? 'text-red-600' : tone === 'green' ? 'text-green-700' : tone === 'slate' ? 'text-slate-700' : 'text-gold-dark';
+  const toneColor =
+    tone === 'red' ? 'text-red-600' :
+    tone === 'green' ? 'text-green-700' :
+    tone === 'slate' ? 'text-slate-700' :
+    'text-gold-dark';
+
+  let deltaEl: React.ReactNode = null;
+  if (delta !== null && delta !== undefined) {
+    const isPositive = delta >= 0;
+    const isGood = deltaInverted ? !isPositive : isPositive;
+    const Arrow = isPositive ? TrendingUp : TrendingDown;
+    const cls = isGood ? 'text-green-700' : 'text-red-600';
+    const pctStr = (Math.abs(delta) * 100).toFixed(0) + '%';
+    deltaEl = (
+      <span className={`inline-flex items-center gap-0.5 text-caption font-medium ${cls}`}>
+        <Arrow className="h-3 w-3" /> {isPositive ? '+' : '−'}{pctStr}
+      </span>
+    );
+  }
+
   const inner = (
     <>
       <div className="flex items-center justify-between mb-2">
@@ -271,7 +462,13 @@ function Stat({
         <Icon className={`h-4 w-4 ${toneColor}`} />
       </div>
       <p className={`font-heading text-display-sm font-bold ${toneColor}`}>{value}</p>
-      {sublabel && <p className="mt-1 text-caption text-red-600 font-medium">{sublabel}</p>}
+      <div className="mt-1 flex items-center gap-2">
+        {deltaEl}
+        {compareLabel && delta !== null && delta !== undefined && (
+          <span className="text-caption text-foreground-muted">{compareLabel}</span>
+        )}
+        {sublabel && <span className="text-caption text-foreground-muted">{sublabel}</span>}
+      </div>
     </>
   );
   return href ? (
@@ -283,25 +480,65 @@ function Stat({
   );
 }
 
-function ActionCard({
-  href, icon: Icon, title, body,
+/** Stacked bar chart: revenue (green) vs expenses (gray) by month. */
+function TrendChart({
+  revenueByMonth, expensesByMonth,
 }: {
-  href: string;
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  body: string;
+  revenueByMonth: Record<string, number>;
+  expensesByMonth: Record<string, number>;
 }) {
+  // Build 12 month columns ending now
+  const now = new Date();
+  const months: string[] = [];
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - i, 1));
+    months.push(`${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`);
+  }
+  const data = months.map(m => ({
+    m,
+    revenue: revenueByMonth[m] ?? 0,
+    expenses: expensesByMonth[m] ?? 0,
+  }));
+  const max = Math.max(1, ...data.map(d => Math.max(d.revenue, d.expenses)));
+
   return (
-    <Link href={href} className="group rounded-xl border border-border bg-white p-6 hover:border-gold hover:shadow-card-hover transition-all">
-      <div className="flex items-start gap-4">
-        <div className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-gold/10 text-gold group-hover:bg-gold group-hover:text-primary transition-colors shrink-0">
-          <Icon className="h-5 w-5" />
-        </div>
-        <div>
-          <h3 className="font-heading text-heading-sm font-bold text-primary group-hover:text-gold transition-colors">{title}</h3>
-          <p className="mt-1 text-body-sm text-foreground-muted">{body}</p>
-        </div>
+    <div>
+      <div className="flex items-end justify-between gap-1 h-40">
+        {data.map(d => {
+          const rH = (d.revenue / max) * 100;
+          const eH = (d.expenses / max) * 100;
+          const label = new Date(d.m + '-01T00:00:00Z')
+            .toLocaleString('en-US', { month: 'short', timeZone: 'UTC' });
+          return (
+            <div key={d.m} className="flex-1 flex flex-col items-center gap-1 min-w-0" title={`${label}: ${formatMoney(d.revenue)} rev / ${formatMoney(d.expenses)} exp`}>
+              <div className="w-full flex items-end justify-center gap-0.5 h-32">
+                <div className="w-1/2 bg-green-500/80 rounded-t" style={{ height: `${rH}%`, minHeight: d.revenue > 0 ? '2px' : '0' }} />
+                <div className="w-1/2 bg-slate-300 rounded-t" style={{ height: `${eH}%`, minHeight: d.expenses > 0 ? '2px' : '0' }} />
+              </div>
+              <span className="text-caption text-foreground-muted">{label}</span>
+            </div>
+          );
+        })}
       </div>
-    </Link>
+      <div className="mt-3 flex items-center justify-center gap-4 text-caption text-foreground-muted">
+        <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-sm bg-green-500/80" /> Revenue (paid)</span>
+        <span className="inline-flex items-center gap-1.5"><span className="h-2 w-2 rounded-sm bg-slate-300" /> Expenses</span>
+      </div>
+    </div>
+  );
+}
+
+function QuickLink({
+  href, icon: Icon, label,
+}: { href: string; icon: React.ComponentType<{ className?: string }>; label: string }) {
+  return (
+    <li>
+      <Link href={href} className="flex items-center justify-between rounded-md px-3 py-2 hover:bg-background-cream/60 text-body-sm text-primary">
+        <span className="inline-flex items-center gap-2.5">
+          <Icon className="h-4 w-4 text-gold-dark" /> {label}
+        </span>
+        <ArrowRight className="h-3.5 w-3.5 text-foreground-muted" />
+      </Link>
+    </li>
   );
 }

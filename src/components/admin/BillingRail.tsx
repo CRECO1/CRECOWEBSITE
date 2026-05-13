@@ -18,6 +18,7 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, Receipt, ArrowDownCircle, Mail,
   ArrowLeft, ExternalLink, LogOut, Menu, X,
+  Clock, BarChart3, FileBadge, Repeat,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
@@ -30,10 +31,15 @@ interface NavItem {
 }
 
 const NAV: NavItem[] = [
-  { href: '/billing',                  label: 'Dashboard',     icon: LayoutDashboard, matchPrefix: '/billing',          matchExact: true },
-  { href: '/billing/invoices',         label: 'Invoices',      icon: Receipt,         matchPrefix: '/billing/invoices' },
-  { href: '/billing/expenses',         label: 'Expenses',      icon: ArrowDownCircle, matchPrefix: '/billing/expenses' },
-  { href: '/billing/invoices/settings', label: 'Email Template', icon: Mail,          matchPrefix: '/billing/invoices/settings' },
+  { href: '/billing',                       label: 'Dashboard',      icon: LayoutDashboard, matchPrefix: '/billing',                       matchExact: true },
+  { href: '/billing/invoices',              label: 'Invoices',       icon: Receipt,         matchPrefix: '/billing/invoices' },
+  { href: '/billing/recurring',             label: 'Recurring',      icon: Repeat,          matchPrefix: '/billing/recurring' },
+  { href: '/billing/expenses',              label: 'Expenses',       icon: ArrowDownCircle, matchPrefix: '/billing/expenses' },
+  { href: '/billing/contractors',           label: 'Contractors',    icon: FileBadge,       matchPrefix: '/billing/contractors' },
+  { href: '/billing/reports/ar-aging',      label: 'A/R Aging',      icon: Clock,           matchPrefix: '/billing/reports/ar-aging' },
+  { href: '/billing/reports/profit-loss',   label: 'Profit & Loss',  icon: BarChart3,       matchPrefix: '/billing/reports/profit-loss' },
+  { href: '/billing/reports/1099',          label: '1099 Export',    icon: FileBadge,       matchPrefix: '/billing/reports/1099' },
+  { href: '/billing/invoices/settings',     label: 'Email Template', icon: Mail,            matchPrefix: '/billing/invoices/settings' },
 ];
 
 export function BillingRail() {

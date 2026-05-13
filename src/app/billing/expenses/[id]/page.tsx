@@ -9,12 +9,12 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   ArrowLeft, ArrowDownCircle, Pencil, Save, X, Trash2,
-  AlertTriangle, ExternalLink,
+  AlertTriangle, ExternalLink, FileBadge,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
   EXPENSE_CATEGORIES, PAYMENT_METHODS, categoryStyle,
-  formatMoney, formatDate, type Expense,
+  formatMoney, formatDate, type Expense, type Contractor,
 } from '@/lib/expenses';
 
 export default function ExpenseDetailPage() {
@@ -27,6 +27,18 @@ export default function ExpenseDetailPage() {
   const [draft, setDraft] = useState<Expense | null>(null);
   const [busy, setBusy] = useState<null | string>(null);
   const [error, setError] = useState<string | null>(null);
+  const [contractors, setContractors] = useState<Contractor[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from('contractors')
+        .select('id, legal_name, display_name, active')
+        .eq('active', true)
+        .order('legal_name');
+      setContractors((data ?? []) as Contractor[]);
+    })();
+  }, []);
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -77,6 +89,8 @@ export default function ExpenseDetailPage() {
         property_reference: draft.property_reference?.trim() || null,
         reimbursable: !!draft.reimbursable,
         internal_notes: draft.internal_notes?.trim() || null,
+        is_1099_eligible: !!draft.is_1099_eligible,
+        contractor_id: draft.contractor_id || null,
       })
       .eq('id', draft.id);
     setBusy(null);
@@ -230,6 +244,58 @@ export default function ExpenseDetailPage() {
                 <div className="text-caption text-foreground-muted">Marked when this expense should be reimbursed.</div>
               </div>
             </label>
+
+            {/* 1099 eligibility */}
+            <div className="rounded-lg border border-border p-3 space-y-3">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  disabled={!editing}
+                  checked={!!view.is_1099_eligible}
+                  onChange={e => setDraft(d => d && ({ ...d, is_1099_eligible: e.target.checked }))}
+                  className="mt-0.5 h-4 w-4 rounded text-gold focus:ring-gold"
+                />
+                <div className="flex-1">
+                  <div className="text-body-sm font-semibold text-primary flex items-center gap-1.5">
+                    <FileBadge className="h-3.5 w-3.5" /> Counts toward a contractor's 1099-NEC
+                  </div>
+                  <div className="text-caption text-foreground-muted">
+                    Used at year-end to total what each contractor was paid.
+                  </div>
+                </div>
+              </label>
+              {view.is_1099_eligible && (
+                <Field label="Contractor (1099 payee)">
+                  {editing ? (
+                    <select
+                      className={inputCls}
+                      value={view.contractor_id ?? ''}
+                      onChange={e => setDraft(d => d && ({ ...d, contractor_id: e.target.value || null }))}
+                    >
+                      <option value="">— Select contractor —</option>
+                      {contractors.map(c => (
+                        <option key={c.id} value={c.id}>
+                          {c.display_name ?? c.legal_name}
+                        </option>
+                      ))}
+                    </select>
+                  ) : view.contractor_id ? (
+                    <Link
+                      href={`/billing/contractors/${view.contractor_id}`}
+                      className="text-body-sm text-gold-dark hover:text-gold"
+                    >
+                      {contractors.find(c => c.id === view.contractor_id)?.display_name ??
+                       contractors.find(c => c.id === view.contractor_id)?.legal_name ??
+                       'View contractor'}
+                    </Link>
+                  ) : (
+                    <p className="text-caption text-amber-700 italic">
+                      Flagged 1099 but no contractor linked. Edit to assign.
+                    </p>
+                  )}
+                </Field>
+              )}
+            </div>
 
             <Field label="Internal notes">
               {editing ? (

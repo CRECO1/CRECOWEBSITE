@@ -4,12 +4,12 @@
  * /billing/expenses/new — record a new expense. Single-screen form.
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Save, AlertTriangle, ArrowDownCircle } from 'lucide-react';
+import { ArrowLeft, Save, AlertTriangle, ArrowDownCircle, FileBadge } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { EXPENSE_CATEGORIES, PAYMENT_METHODS } from '@/lib/expenses';
+import { EXPENSE_CATEGORIES, PAYMENT_METHODS, type Contractor } from '@/lib/expenses';
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
@@ -27,8 +27,22 @@ export default function NewExpensePage() {
   const [propertyReference, setPropertyReference] = useState('');
   const [reimbursable, setReimbursable] = useState(false);
   const [internalNotes, setInternalNotes] = useState('');
+  const [is1099Eligible, setIs1099Eligible] = useState(false);
+  const [contractorId, setContractorId] = useState<string>('');
+  const [contractors, setContractors] = useState<Contractor[]>([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from('contractors')
+        .select('id, legal_name, display_name, active')
+        .eq('active', true)
+        .order('legal_name');
+      setContractors((data ?? []) as Contractor[]);
+    })();
+  }, []);
 
   async function save() {
     setError(null);
@@ -56,6 +70,8 @@ export default function NewExpensePage() {
         property_reference: propertyReference.trim() || null,
         reimbursable,
         internal_notes: internalNotes.trim() || null,
+        is_1099_eligible: is1099Eligible,
+        contractor_id: contractorId || null,
       }])
       .select()
       .single();
@@ -151,6 +167,59 @@ export default function NewExpensePage() {
               <div className="text-caption text-foreground-muted">Paid personally and should be reimbursed by the firm (or vice versa).</div>
             </div>
           </label>
+
+          {/* 1099 contractor tracking */}
+          <div className="rounded-lg border border-border p-3 space-y-3">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={is1099Eligible}
+                onChange={e => setIs1099Eligible(e.target.checked)}
+                className="mt-0.5 h-4 w-4 rounded text-gold focus:ring-gold"
+              />
+              <div className="flex-1">
+                <div className="text-body-sm font-semibold text-primary flex items-center gap-1.5">
+                  <FileBadge className="h-3.5 w-3.5" /> Counts toward a contractor's 1099-NEC
+                </div>
+                <div className="text-caption text-foreground-muted">
+                  Check this for contractor labour, professional services, or rents over $600/year. Goods, software, and meals are <em>not</em> 1099-eligible.
+                </div>
+              </div>
+            </label>
+            {is1099Eligible && (
+              <div>
+                <Field label="Contractor (1099 payee)">
+                  <div className="flex gap-2 items-start">
+                    <select
+                      className={inputCls + ' flex-1'}
+                      value={contractorId}
+                      onChange={e => setContractorId(e.target.value)}
+                    >
+                      <option value="">— Select contractor —</option>
+                      {contractors.map(c => (
+                        <option key={c.id} value={c.id}>
+                          {c.display_name ?? c.legal_name}
+                          {c.display_name && c.display_name !== c.legal_name ? ` (${c.legal_name})` : ''}
+                        </option>
+                      ))}
+                    </select>
+                    <Link
+                      href="/billing/contractors/new"
+                      className="inline-flex items-center gap-1 rounded-md border border-border bg-white px-3 py-2.5 text-caption text-primary hover:border-primary whitespace-nowrap"
+                      title="Add a new contractor"
+                    >
+                      + new
+                    </Link>
+                  </div>
+                </Field>
+                {!contractorId && contractors.length === 0 && (
+                  <p className="mt-2 text-caption text-amber-700">
+                    No contractors yet. Add one first so this expense can roll up to a 1099 at year-end.
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
 
           <Field label="Internal notes">
             <textarea className={inputCls} rows={3} value={internalNotes} onChange={e => setInternalNotes(e.target.value)} placeholder="Optional context — only visible to CRECO admins" />

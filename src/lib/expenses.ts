@@ -17,6 +17,29 @@ export interface Expense {
   property_reference: string | null;
   reimbursable: boolean;
   internal_notes: string | null;
+  /** When set, the vendor is a contractor whose 1099 we track. */
+  contractor_id: string | null;
+  /** Counted toward the year-end 1099-NEC for the linked contractor. */
+  is_1099_eligible: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Contractor {
+  id: string;
+  legal_name: string;
+  display_name: string | null;
+  email: string | null;
+  phone: string | null;
+  tax_id: string | null;
+  tax_id_type: 'SSN' | 'EIN' | null;
+  address_line1: string | null;
+  address_line2: string | null;
+  city: string | null;
+  state: string | null;
+  zip: string | null;
+  notes: string | null;
+  active: boolean;
   created_at: string;
   updated_at: string;
 }
