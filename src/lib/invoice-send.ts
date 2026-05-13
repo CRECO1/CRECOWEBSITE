@@ -58,9 +58,23 @@ export async function sendInvoiceEmail(opts: SendInvoiceOptions): Promise<string
   const safeDue = escapeHtml(formatDate(invoice.due_date));
   const safeNumber = escapeHtml(invoice.invoice_number);
 
+  // Logo: hosted at /images/creco-logo-light.png (dark logo on transparent,
+  // sized for light-background contexts). Absolute URL so email clients can
+  // load it — relative URLs get stripped by most. Width specified twice
+  // (HTML attribute + inline style) so clients that ignore one honor the
+  // other. Alt text falls back if images are blocked.
   const html = `
     <div style="font-family:Helvetica,Arial,sans-serif;max-width:600px;color:#1A1A1A">
-      <h2 style="margin:0 0 16px;color:#1A1A1A">Invoice ${safeNumber} from CRECO</h2>
+      <div style="margin:0 0 20px;padding:0 0 18px;border-bottom:2px solid #C9A962">
+        <a href="https://www.crecotx.com" style="text-decoration:none;display:inline-block">
+          <img src="https://www.crecotx.com/images/creco-logo-light.png"
+               alt="CRECO"
+               width="180"
+               style="display:block;width:180px;max-width:180px;height:auto;border:0" />
+        </a>
+      </div>
+
+      <h2 style="margin:0 0 16px;color:#1A1A1A;font-size:20px">Invoice ${safeNumber}</h2>
 
       <div style="white-space:pre-line;margin:0 0 24px;line-height:1.6">${escapeHtml(message)}</div>
 
@@ -78,7 +92,7 @@ export async function sendInvoiceEmail(opts: SendInvoiceOptions): Promise<string
 
       <br/>
       <p style="color:#525252;margin:0">— The CRECO Team</p>
-      <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367-BB</p>
+      <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367-BB · crecotx.com</p>
     </div>
   `;
 
