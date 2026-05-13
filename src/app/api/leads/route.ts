@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { verifyRecaptcha } from '@/lib/recaptcha';
 import { escapeHtml, clampString, isValidEmail, safePhone, MAX_LEN } from '@/lib/sanitize';
+import { pushToCrm } from '@/lib/crm';
 
 const NOTIFICATION_EMAIL = process.env.LEAD_NOTIFICATION_EMAIL ?? 'info@crecotx.com';
 
@@ -14,6 +15,53 @@ function getFromEmail(): string {
   if (process.env.RESEND_FROM_EMAIL) return process.env.RESEND_FROM_EMAIL;
   if (process.env.RESEND_FROM_VERIFIED === 'true') return 'CRECO <noreply@crecotx.com>';
   return 'onboarding@resend.dev';
+}
+
+/**
+ * Tailored Day-0 confirmation email for valuation-request leads.
+ * The standard "we received your inquiry" is too generic for someone who
+ * just engaged with the cap-rate tool — this email previews what the full
+ * broker valuation will include and primes the response.
+ */
+function valuationConfirmationHtml(name: string): string {
+  const safeName = escapeHtml(name);
+  return `
+    <div style="font-family:Helvetica,Arial,sans-serif;max-width:600px;color:#1A1A1A">
+      <div style="margin:0 0 20px;padding:0 0 18px;border-bottom:2px solid #C9A962">
+        <a href="https://www.crecotx.com" style="text-decoration:none;display:inline-block">
+          <img src="https://www.crecotx.com/images/creco-logo-light.png" alt="CRECO" width="180" style="display:block;width:180px;max-width:180px;height:auto;border:0" />
+        </a>
+      </div>
+      <h2 style="margin:0 0 16px;color:#1A1A1A;font-size:20px">Got it, ${safeName}.</h2>
+      <p style="line-height:1.6">Thanks for using the CRECO valuation tool. A senior broker will follow up within one business day with a more thorough read on your property.</p>
+      <p style="line-height:1.6;margin-top:16px"><strong>What the full broker valuation will cover that the preliminary range can't:</strong></p>
+      <ul style="line-height:1.7;color:#3B3B3B;padding-left:20px">
+        <li>Comparable Texas commercial transactions from the last 12 months in your submarket</li>
+        <li>Lease analysis — WALT, tenant credit, escalators, expense recovery structure</li>
+        <li>Condition adjustment — deferred capex, functional obsolescence, modernization upside</li>
+        <li>Market-timing read — whether the current cycle favours a hold, list, or 1031 strategy</li>
+        <li>Net-to-seller math at multiple price points if you're considering disposition</li>
+      </ul>
+      <p style="line-height:1.6;margin-top:20px">If anything changes about your timeline or what you need, reply to this email or call <a href="tel:+12108173443" style="color:#C9A962">(210) 817-3443</a>.</p>
+      <p style="color:#525252;margin:24px 0 0">— The CRECO Team</p>
+      <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367-BB · 8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015</p>
+    </div>
+  `;
+}
+
+/** Generic confirmation email — for everything that isn't a valuation request. */
+function genericConfirmationHtml(name: string): string {
+  const safeName = escapeHtml(name);
+  return `
+    <div style="font-family:sans-serif;max-width:600px">
+      <h2 style="color:#1A1A1A">Hi ${safeName},</h2>
+      <p>Thank you for reaching out to <strong>CRECO – Commercial Real Estate Company</strong>.</p>
+      <p>A member of our team will be in touch within one business day.</p>
+      <p>Need to talk sooner? Call us at <a href="tel:+12108173443" style="color:#C9A962">(210) 817-3443</a>.</p>
+      <br/>
+      <p>— The CRECO Team<br/>8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015</p>
+    </div>
+  `;
 }
 
 export async function POST(req: NextRequest) {
@@ -57,22 +105,44 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Spam check failed', reason: captcha.reason }, { status: 400 });
     }
 
+    let leadId: string | null = null;
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
     if (supabaseUrl && supabaseKey) {
       const supabase = createClient(supabaseUrl, supabaseKey);
-      await supabase.from('leads').insert([{
+      const { data, error } = await supabase.from('leads').insert([{
         name,
-        company: company || null,
         email,
         phone: phone || null,
+        company: company || null,
         message: message || null,
         property_interest: property_interest || null,
         source,
         status: 'new',
-      }]);
+      }]).select('id').single();
+
+      if (error) {
+        console.error('[leads] DB insert failed:', error.message);
+      } else {
+        leadId = data?.id ?? null;
+      }
     }
+
+    // Mirror to external CRM (noop if CRM_WEBHOOK_URL unset). Awaiting is
+    // fine — the helper has its own 5-second timeout, and we'd rather know
+    // about CRM failures than fire-and-forget into the void.
+    await pushToCrm({
+      event: source === 'valuation-request' ? 'valuation.requested' : 'lead.created',
+      lead_id: leadId,
+      source,
+      name,
+      email,
+      phone: phone || null,
+      company: company || null,
+      message: message || null,
+      property_interest: property_interest || null,
+    });
 
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
@@ -100,24 +170,21 @@ export async function POST(req: NextRequest) {
         `,
       });
 
+      // Prospect-facing confirmation. Tailored copy for valuation requests
+      // (Day 0 of the valuation drip sequence); standard ack for everything
+      // else. Subject line + body differ.
+      const isValuation = source === 'valuation-request';
       await resend.emails.send({
         from: getFromEmail(),
         to: email,
-        subject: 'We received your inquiry — CRECO',
-        html: `
-          <div style="font-family:sans-serif;max-width:600px">
-            <h2 style="color:#1A1A1A">Hi ${escapeHtml(name)},</h2>
-            <p>Thank you for reaching out to <strong>CRECO – Commercial Real Estate Company</strong>.</p>
-            <p>A member of our team will be in touch within one business day.</p>
-            <p>Need to talk sooner? Call us at <a href="tel:+12108173443" style="color:#C9A962">(210) 817-3443</a>.</p>
-            <br/>
-            <p>— The CRECO Team<br/>8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015</p>
-          </div>
-        `,
+        subject: isValuation
+          ? 'Your CRECO broker valuation is on the way'
+          : 'We received your inquiry — CRECO',
+        html: isValuation ? valuationConfirmationHtml(name) : genericConfirmationHtml(name),
       });
     }
 
-    return NextResponse.json({ success: true, message: 'Lead received' });
+    return NextResponse.json({ success: true, message: 'Lead received', lead_id: leadId });
   } catch (err) {
     console.error('Lead submission error:', err);
     return NextResponse.json({ error: 'Failed to submit lead' }, { status: 500 });

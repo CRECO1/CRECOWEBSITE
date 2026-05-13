@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { randomBytes } from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { verifyRecaptcha } from '@/lib/recaptcha';
 import { escapeHtml, clampString, isValidEmail, safePhone, MAX_LEN } from '@/lib/sanitize';
 import { buildIcs } from '@/lib/ics';
+import { pushToCrm } from '@/lib/crm';
 
 /**
  * POST /api/tour-request
@@ -125,6 +127,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Spam check failed' }, { status: 400 });
     }
 
+    // Generate a one-time confirmation token. The broker clicks a tokenized
+    // URL in the notification email to confirm the tour — flips status to
+    // 'tour-scheduled' and notifies the prospect. 32 bytes of random hex is
+    // 256 bits of entropy — collision-resistant and unguessable.
+    const confirmToken = randomBytes(32).toString('hex');
+
     // Save as a lead (reuses the leads table — source='tour-request' lets
     // the broker filter these out in the inbox)
     let leadId: string | null = null;
@@ -141,7 +149,7 @@ export async function POST(req: NextRequest) {
         notes ? `\nNotes: ${notes}` : '',
       ].filter(Boolean).join('\n');
 
-      const { data } = await supabase.from('leads').insert([{
+      const { data, error } = await supabase.from('leads').insert([{
         name,
         email,
         phone,
@@ -149,9 +157,31 @@ export async function POST(req: NextRequest) {
         property_interest: listingTitle || listingSlug || null,
         source: 'tour-request',
         status: 'new',
+        tour_confirmation_token: confirmToken,
       }]).select('id').single();
-      leadId = data?.id ?? null;
+      if (error) console.error('[tour-request] DB insert failed:', error.message);
+      else leadId = data?.id ?? null;
     }
+
+    // Mirror to external CRM (noop if CRM_WEBHOOK_URL unset)
+    await pushToCrm({
+      event: 'tour.requested',
+      lead_id: leadId,
+      source: 'tour-request',
+      name,
+      email,
+      phone,
+      property_interest: listingTitle || listingSlug || null,
+      listing_slug: listingSlug || null,
+      message: notes || null,
+      metadata: {
+        preferred_date: preferredDate,
+        preferred_time: preferredTime,
+        tour_format: tourFormat,
+        listing_title: listingTitle || null,
+        listing_address: listingAddress || null,
+      },
+    });
 
     // Build the calendar invite
     const tourLocation = tourFormat === 'video'
@@ -228,7 +258,10 @@ export async function POST(req: NextRequest) {
         ],
       });
 
-      // 2. Broker notification — internal-only, no ICS attachment needed
+      // 2. Broker notification — internal-only, includes one-click confirm
+      //    URL the broker can hit to flip the lead to 'tour-scheduled' and
+      //    fire a confirmation email to the prospect automatically.
+      const confirmUrl = `https://www.crecotx.com/api/tour-confirm?token=${confirmToken}`;
       await resend.emails.send({
         from: getFromEmail(),
         to: NOTIFICATION_EMAIL,
@@ -246,7 +279,15 @@ export async function POST(req: NextRequest) {
               <tr><td style="padding:8px 12px;background:#FAFAF8;border:1px solid #E8E5E0"><strong>Phone</strong></td><td style="padding:8px 12px;border:1px solid #E8E5E0"><a href="tel:${escapeHtml(phone)}">${escapeHtml(phone)}</a></td></tr>
               ${safeNotes ? `<tr><td style="padding:8px 12px;background:#FAFAF8;border:1px solid #E8E5E0"><strong>Notes</strong></td><td style="padding:8px 12px;border:1px solid #E8E5E0;white-space:pre-line">${safeNotes}</td></tr>` : ''}
             </table>
-            <p style="margin:20px 0;color:#525252">Confirm or reschedule directly with the prospect ASAP.</p>
+            <div style="margin:24px 0;padding:18px 20px;background:#1A1A1A;border-radius:10px;text-align:center">
+              <p style="margin:0 0 12px;color:#FFFFFF;font-size:14px">
+                ✅ <strong>One-click confirm</strong> — sends the prospect a confirmation email + flips the lead to <code style="background:#3B3B3B;padding:2px 6px;border-radius:3px;color:#C9A962">tour-scheduled</code>.
+              </p>
+              <a href="${confirmUrl}" style="display:inline-block;padding:12px 24px;background:#C9A962;color:#1A1A1A;text-decoration:none;border-radius:6px;font-weight:600;font-size:14px">
+                Confirm this tour →
+              </a>
+              <p style="margin:12px 0 0;color:#999;font-size:11px">Link is single-use. If you'd rather reschedule, just call the prospect directly.</p>
+            </div>
           </div>
         `,
         attachments: [

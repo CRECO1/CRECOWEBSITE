@@ -25,6 +25,26 @@ import {
   type PropertyType, type SubmarketTier, type ValuationResult,
 } from '@/lib/valuation';
 
+/**
+ * Fire a GA4 / GTM event if the analytics tag is present. Safe to call from
+ * SSR contexts (no-ops when `window` is undefined). Lets us see calculate-
+ * to-convert dropoff and tune the lead-gate tightness over time.
+ */
+function trackEvent(name: string, params: Record<string, unknown> = {}) {
+  if (typeof window === 'undefined') return;
+  const w = window as unknown as { gtag?: (...args: unknown[]) => void; dataLayer?: unknown[] };
+  try {
+    if (typeof w.gtag === 'function') {
+      w.gtag('event', name, params);
+    } else if (Array.isArray(w.dataLayer)) {
+      // GTM dataLayer push as a fallback
+      w.dataLayer.push({ event: name, ...params });
+    }
+  } catch {
+    // Analytics must never break the form
+  }
+}
+
 const PROPERTY_TYPES: { value: PropertyType; label: string }[] = [
   { value: 'industrial',  label: 'Industrial / Warehouse' },
   { value: 'retail',      label: 'Retail' },
@@ -95,11 +115,26 @@ export function PropertyValuationForm() {
     if (!r) {
       setCalcError("Couldn't compute a range from those inputs.");
       setResult(null);
+      trackEvent('valuation_calculate_failed', { property_type: propertyType, submarket_tier: submarketTier });
       return;
     }
     setResult(r);
     setShowLeadForm(false);
     setLeadSubmitted(false);
+    trackEvent('valuation_calculated', {
+      property_type: propertyType,
+      submarket_tier: submarketTier,
+      // Bucket the midpoint so we can see distribution without leaking raw values
+      midpoint_bucket: r.midpoint >= 10_000_000 ? '10M+'
+        : r.midpoint >= 5_000_000 ? '5M-10M'
+        : r.midpoint >= 2_000_000 ? '2M-5M'
+        : r.midpoint >= 1_000_000 ? '1M-2M'
+        : r.midpoint >= 500_000 ? '500K-1M'
+        : 'under-500K',
+      noi_known: Boolean(noi),
+      gross_income_known: Boolean(grossIncome),
+      sf_rent_known: Boolean(totalSf && rentPerSf),
+    });
   }
 
   async function handleSubmitLead(e: React.FormEvent<HTMLFormElement>) {
@@ -145,8 +180,13 @@ export function PropertyValuationForm() {
         throw new Error(body.error || 'Could not submit request');
       }
       setLeadSubmitted(true);
+      trackEvent('valuation_lead_submitted', {
+        property_type: propertyType,
+        submarket_tier: submarketTier,
+      });
     } catch (err) {
       setLeadError((err as Error).message);
+      trackEvent('valuation_lead_failed', { reason: (err as Error).message?.slice(0, 80) });
     } finally {
       setSubmittingLead(false);
     }
@@ -300,7 +340,10 @@ export function PropertyValuationForm() {
           {!showLeadForm && !leadSubmitted && (
             <button
               type="button"
-              onClick={() => setShowLeadForm(true)}
+              onClick={() => {
+                setShowLeadForm(true);
+                trackEvent('valuation_lead_form_opened', { property_type: propertyType });
+              }}
               className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-gold px-6 py-3.5 text-body-sm font-semibold text-primary hover:bg-gold-light"
             >
               Get the full broker valuation <ArrowRight className="h-4 w-4" />

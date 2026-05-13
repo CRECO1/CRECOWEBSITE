@@ -3,6 +3,9 @@ import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { verifyRecaptcha } from '@/lib/recaptcha';
 import { escapeHtml, clampString, isValidEmail, MAX_LEN } from '@/lib/sanitize';
+import { pushToCrm } from '@/lib/crm';
+import { findGuide } from '@/lib/guides';
+import { renderGuideEmailHtml } from '@/lib/guide-email';
 
 /**
  * Unified subscribe endpoint — handles all 3 subscription types:
@@ -12,6 +15,10 @@ import { escapeHtml, clampString, isValidEmail, MAX_LEN } from '@/lib/sanitize';
  *
  * Inserts into public.subscribers, fires a confirmation email to the new
  * subscriber, and (for property-alerts and lead-magnet) notifies the team.
+ *
+ * For lead-magnet specifically we look up the guide by slug and email
+ * the full content as a styled HTML body — so the prospect has a
+ * keepable artifact in their inbox, not just an unlock-on-page session.
  *
  * Honeypot + reCAPTCHA + email validation all wired in like the leads
  * endpoint. If a subscriber re-submits with the same email + type, the
@@ -88,39 +95,78 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Mirror to CRM under "Prospects" — even newsletter subscribers count,
+    // they're top-of-funnel and the broker may want to see them.
+    await pushToCrm({
+      event: 'subscriber.created',
+      source: source || subscription_type,
+      name: name || null,
+      email,
+      subscription_type,
+      asset_slug: asset_slug || null,
+      filters: filters ?? null,
+    });
+
     // Confirmation email to the subscriber
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
 
-      const subscriberSubjects = {
-        'newsletter': 'Welcome to CRECO Insights',
-        'property-alerts': "We'll send you matching Texas properties",
-        'lead-magnet': 'Your CRECO download is ready',
-      };
+      // Lead-magnet gets the full guide content as a keepable HTML email.
+      // Other types get a short confirmation note.
+      if (subscription_type === 'lead-magnet' && asset_slug) {
+        const guide = findGuide(asset_slug);
+        if (guide) {
+          await resend.emails.send({
+            from: getFromEmail(),
+            to: email,
+            subject: `${guide.title} — your CRECO download`,
+            html: renderGuideEmailHtml({ guide, recipientName: name || '' }),
+          });
+        } else {
+          // Slug didn't match a known guide — fall back to generic ack so
+          // the user still gets *something* and we don't 500 their unlock.
+          console.warn('[subscribe] unknown guide slug:', asset_slug);
+          await resend.emails.send({
+            from: getFromEmail(),
+            to: email,
+            subject: 'Your CRECO download is unlocked',
+            html: `
+              <div style="font-family:sans-serif;max-width:600px">
+                <h2 style="color:#1A1A1A">Hi ${escapeHtml(name || 'there')},</h2>
+                <p>Your CRECO download is unlocked on the page you came from. If you'd like a re-share, just reply to this email.</p>
+                <p>— The CRECO Team</p>
+              </div>
+            `,
+          });
+        }
+      } else {
+        const subjects = {
+          'newsletter': 'Welcome to CRECO Insights',
+          'property-alerts': "We'll send you matching Texas properties",
+        };
+        const bodies = {
+          'newsletter': `<p>Thanks for subscribing to CRECO Insights. You'll receive market analysis, deal commentary, and Texas commercial real estate strategy roughly once a month — no spam, no fluff.</p>`,
+          'property-alerts': `<p>You're set up to receive property alerts. As soon as a Texas commercial property matching your filters hits the CRECO listings, we'll send it your way.</p><p>Filters you set:</p><pre style="background:#FAFAF8;padding:12px;border-radius:4px">${escapeHtml(JSON.stringify(filters ?? {}, null, 2))}</pre>`,
+        };
+        const safeName = name || 'there';
+        await resend.emails.send({
+          from: getFromEmail(),
+          to: email,
+          subject: subjects[subscription_type as keyof typeof subjects],
+          html: `
+            <div style="font-family:sans-serif;max-width:600px">
+              <h2 style="color:#1A1A1A">Hi ${escapeHtml(safeName)},</h2>
+              ${bodies[subscription_type as keyof typeof bodies]}
+              <br/>
+              <p>— The CRECO Team<br/>8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015 · <a href="tel:+12108173443" style="color:#C9A962">(210) 817-3443</a></p>
+            </div>
+          `,
+        });
+      }
 
-      const subscriberBodies = {
-        'newsletter': `<p>Thanks for subscribing to CRECO Insights. You'll receive market analysis, deal commentary, and Texas commercial real estate strategy roughly once a month — no spam, no fluff.</p>`,
-        'property-alerts': `<p>You're set up to receive property alerts. As soon as a Texas commercial property matching your filters hits the CRECO listings, we'll send it your way.</p><p>Filters you set:</p><pre style="background:#FAFAF8;padding:12px;border-radius:4px">${escapeHtml(JSON.stringify(filters ?? {}, null, 2))}</pre>`,
-        'lead-magnet': `<p>Thanks for downloading from CRECO. Your guide is attached / available at the link you came from.</p><p>If you have a specific Texas commercial real estate situation you'd like to discuss, reply to this email or call (210) 817-3443.</p>`,
-      };
-
-      const safeName = name || 'there';
-
-      await resend.emails.send({
-        from: getFromEmail(),
-        to: email,
-        subject: subscriberSubjects[subscription_type as keyof typeof subscriberSubjects],
-        html: `
-          <div style="font-family:sans-serif;max-width:600px">
-            <h2 style="color:#1A1A1A">Hi ${escapeHtml(safeName)},</h2>
-            ${subscriberBodies[subscription_type as keyof typeof subscriberBodies]}
-            <br/>
-            <p>— The CRECO Team<br/>8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015 · <a href="tel:+12108173443" style="color:#C9A962">(210) 817-3443</a></p>
-          </div>
-        `,
-      });
-
-      // Notify the team for property-alerts and lead-magnet (not for newsletter — too noisy)
+      // Notify the team for property-alerts and lead-magnet (not for
+      // newsletter — too noisy). The CRM mirror above handles per-lead
+      // tracking; this email is just the at-a-glance heads up.
       if (subscription_type !== 'newsletter') {
         await resend.emails.send({
           from: getFromEmail(),

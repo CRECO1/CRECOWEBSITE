@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { verifyRecaptcha } from '@/lib/recaptcha';
 import { escapeHtml, clampString, isValidEmail, safePhone, MAX_LEN } from '@/lib/sanitize';
+import { pushToCrm } from '@/lib/crm';
 
 /**
  * Unified inquiry endpoint — handles all 5 paths from /get-started:
@@ -136,11 +137,12 @@ export async function POST(req: NextRequest) {
     const answerSummary = summarizeAnswers(answers);
 
     // Save lead
+    let leadId: string | null = null;
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
     if (supabaseUrl && supabaseKey) {
       const supabase = createClient(supabaseUrl, supabaseKey);
-      await supabase.from('leads').insert([{
+      const { data, error } = await supabase.from('leads').insert([{
         name,
         email,
         phone,
@@ -149,8 +151,23 @@ export async function POST(req: NextRequest) {
         status: 'new',
         intake_data: { path, ...answers },
         message: `${meta.humanLabel}\n\n${answerSummary}`,
-      }]);
+      }]).select('id').single();
+      if (error) console.error('[inquiry] DB insert failed:', error.message);
+      else leadId = data?.id ?? null;
     }
+
+    // Mirror to external CRM (noop if CRM_WEBHOOK_URL unset)
+    await pushToCrm({
+      event: 'inquiry.received',
+      lead_id: leadId,
+      source: meta.source,
+      name,
+      email,
+      phone,
+      company: company || null,
+      message: `${meta.humanLabel}\n\n${answerSummary}`,
+      metadata: { path, answers },
+    });
 
     // Notification email — every interpolated value escaped to block any
     // HTML injection in the broker's inbox.
