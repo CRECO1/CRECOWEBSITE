@@ -98,8 +98,18 @@ export async function POST(
     if (typeof body?.cc === 'string' && isValidEmail(body.cc)) bodyCc = body.cc;
   } catch { /* no body is fine */ }
 
-  // Fall back to the global template (substituted against this invoice) if
-  // the request didn't include explicit subject / message
+  // Resolution order for subject + message:
+  //   1. Request body (Compose modal — admin tweaked something at send time)
+  //   2. Per-invoice override stored on the invoice row (set by the create
+  //      page or detail-page edit)
+  //   3. Global template from invoice_settings → substituted against this
+  //      invoice's variables
+  //   4. Hard-coded FALLBACK_TEMPLATE (covers the case where 0011 hasn't
+  //      been run yet)
+  if (!bodySubject || !bodyMessage) {
+    if (!bodySubject && fullInvoice.email_subject) bodySubject = fullInvoice.email_subject;
+    if (!bodyMessage && fullInvoice.email_message) bodyMessage = fullInvoice.email_message;
+  }
   if (!bodySubject || !bodyMessage) {
     const { data: settings } = await supabase
       .from('invoice_settings')

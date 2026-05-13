@@ -17,12 +17,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Plus, Trash2, Save, Send, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save, Send, AlertTriangle, Mail, RotateCw } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
   calculateTotals, formatMoney, lineAmount, nextInvoiceNumber,
-  type InvoiceLineItem,
+  type Invoice, type InvoiceLineItem,
 } from '@/lib/invoices';
+import { FALLBACK_TEMPLATE, substituteTemplate } from '@/lib/invoice-email';
 
 const DEFAULT_LINE: Omit<InvoiceLineItem, 'sort_order'> = {
   description: '',
@@ -58,6 +59,16 @@ export default function NewInvoicePage() {
   const [internalNotes, setInternalNotes] = useState('');
   const [stripeLink, setStripeLink] = useState('');
   const [items, setItems] = useState<(typeof DEFAULT_LINE)[]>([{ ...DEFAULT_LINE }]);
+
+  // Email content for this specific invoice. Initialized from the global
+  // template at mount + after the auto-generated invoice number lands.
+  // Once the admin edits either field, we stop auto-syncing — `userTouched`
+  // gates the re-render so typing in line items doesn't blow away their
+  // edits. The "Reset to template" button forces a re-render either way.
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailMessage, setEmailMessage] = useState('');
+  const [emailUserTouched, setEmailUserTouched] = useState(false);
+  const [emailTemplate, setEmailTemplate] = useState<{ default_subject: string; default_message: string }>(FALLBACK_TEMPLATE);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -74,7 +85,67 @@ export default function NewInvoicePage() {
     })();
   }, []);
 
+  // Load the global email template once on mount.
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from('invoice_settings')
+        .select('default_subject, default_message')
+        .eq('id', 1)
+        .single();
+      if (data) setEmailTemplate(data);
+    })();
+  }, []);
+
   const totals = useMemo(() => calculateTotals(items, taxRate), [items, taxRate]);
+
+  /**
+   * Build a partial Invoice-shaped object from the current form state so
+   * substituteTemplate() can swap {{variables}} in real-time as the admin
+   * fills the form. Recomputed on every change.
+   */
+  const previewInvoice: Invoice = useMemo(() => ({
+    id: '',
+    invoice_number: invoiceNumber || 'INV-PREVIEW',
+    client_name: clientName,
+    client_email: clientEmail,
+    client_company: clientCompany || null,
+    client_address: clientAddress || null,
+    issue_date: issueDate,
+    due_date: dueDate,
+    status: 'draft',
+    subtotal: totals.subtotal,
+    tax_rate: taxRate,
+    tax_amount: totals.tax_amount,
+    total: totals.total,
+    property_reference: propertyReference || null,
+    notes: notes || null,
+    internal_notes: internalNotes || null,
+    stripe_payment_link_url: stripeLink || null,
+    payment_terms: paymentTerms,
+    sent_at: null,
+    paid_at: null,
+    paid_amount: null,
+    paid_method: null,
+    created_at: '',
+    updated_at: '',
+  }), [invoiceNumber, clientName, clientEmail, clientCompany, clientAddress, issueDate, dueDate, totals, taxRate, propertyReference, notes, internalNotes, stripeLink, paymentTerms]);
+
+  // Keep the email subject + message synced to the substituted template
+  // *until* the admin manually edits them. Once they type in either field,
+  // emailUserTouched flips and we stop auto-syncing (so subsequent edits
+  // to other invoice fields don't clobber their wording).
+  useEffect(() => {
+    if (emailUserTouched) return;
+    setEmailSubject(substituteTemplate(emailTemplate.default_subject, previewInvoice));
+    setEmailMessage(substituteTemplate(emailTemplate.default_message, previewInvoice));
+  }, [previewInvoice, emailTemplate, emailUserTouched]);
+
+  function resetEmailToTemplate() {
+    setEmailUserTouched(false);
+    setEmailSubject(substituteTemplate(emailTemplate.default_subject, previewInvoice));
+    setEmailMessage(substituteTemplate(emailTemplate.default_message, previewInvoice));
+  }
 
   function updateItem(i: number, patch: Partial<typeof DEFAULT_LINE>) {
     setItems(prev => {
@@ -105,6 +176,21 @@ export default function NewInvoicePage() {
 
     setSaving(true);
 
+    // Only persist email_subject/email_message if the admin actually
+    // customized them (or if we want them frozen exactly as they'd render
+    // right now). emailUserTouched is the signal — if the admin never
+    // touched the email fields, leave them null so future global-template
+    // changes apply automatically.
+    const emailOverride = emailUserTouched
+      ? {
+          email_subject: emailSubject.trim() || null,
+          email_message: emailMessage.trim() || null,
+        }
+      : {
+          email_subject: null,
+          email_message: null,
+        };
+
     const { data: created, error: insertErr } = await supabase
       .from('invoices')
       .insert([{
@@ -125,6 +211,7 @@ export default function NewInvoicePage() {
         internal_notes: internalNotes.trim() || null,
         stripe_payment_link_url: stripeLink.trim() || null,
         payment_terms: paymentTerms.trim() || DEFAULT_TERMS,
+        ...emailOverride,
       }])
       .select()
       .single();
@@ -354,6 +441,58 @@ export default function NewInvoicePage() {
               <Field label="Internal notes (admins only)">
                 <textarea className={inputCls} rows={2} value={internalNotes} onChange={e => setInternalNotes(e.target.value)} placeholder="Optional — context for our records" />
               </Field>
+            </Card>
+
+            {/*
+              Email preview + per-invoice override. Pre-filled from the global
+              template (with {{variables}} substituted live against this
+              invoice's fields). Auto-syncs as you fill the form, UNTIL you
+              touch either field — then your wording sticks. "Reset to
+              template" rewinds the override at any time.
+            */}
+            <Card title="Email">
+              <div className="flex items-start justify-between gap-3 -mt-1">
+                <p className="text-caption text-foreground-muted">
+                  This is what the client will see when you click <span className="font-semibold text-primary">Save &amp; send</span>. Edit freely — your changes save with this invoice and override the global template just for this client. <Link href="/billing/invoices/settings" className="text-gold-dark hover:underline">Edit the global default →</Link>
+                </p>
+                <button
+                  type="button"
+                  onClick={resetEmailToTemplate}
+                  className="inline-flex items-center gap-1.5 rounded-md border border-border bg-white px-2.5 py-1 text-caption text-foreground-muted hover:text-primary shrink-0"
+                  title="Reset to global template"
+                >
+                  <RotateCw className="h-3 w-3" /> Reset
+                </button>
+              </div>
+
+              <Field label="Subject">
+                <input
+                  className={inputCls}
+                  value={emailSubject}
+                  onChange={e => { setEmailSubject(e.target.value); setEmailUserTouched(true); }}
+                  placeholder="Subject line the client will see"
+                />
+              </Field>
+
+              <Field label="Message">
+                <textarea
+                  className={`${inputCls} font-mono text-caption`}
+                  rows={9}
+                  value={emailMessage}
+                  onChange={e => { setEmailMessage(e.target.value); setEmailUserTouched(true); }}
+                  placeholder="Personal message that appears at the top of the email"
+                />
+                <p className="mt-1.5 text-caption text-foreground-muted flex items-center gap-1.5">
+                  <Mail className="h-3 w-3 text-gold" />
+                  The auto-generated summary table, "Pay online →" button, mailing address, and PDF attachment all get appended automatically — you don't need to write them.
+                </p>
+              </Field>
+
+              {!emailUserTouched && (
+                <p className="text-caption text-foreground-muted italic">
+                  Showing the global template, substituted with this invoice's values. Start typing to customize for this client.
+                </p>
+              )}
             </Card>
           </section>
         </div>

@@ -48,6 +48,12 @@ export interface Invoice {
   // Per-invoice opt-out for the auto-reminder cron (defaults to true)
   reminders_enabled?: boolean;
 
+  // Per-invoice email overrides — null means "render from global template
+  // at send time". Set when the admin customizes the email for a specific
+  // client.
+  email_subject?: string | null;
+  email_message?: string | null;
+
   sent_at: string | null;
   paid_at: string | null;
   paid_amount: number | null;

@@ -83,27 +83,33 @@ export default function InvoiceDetailPage() {
   // ── Actions ────────────────────────────────────────────────────────────
 
   /**
-   * Step 1 of the send flow — load the global template from invoice_settings,
-   * substitute variables against the current invoice, and pop the Compose
-   * modal pre-filled. The actual send happens in confirmSend() once the
-   * admin clicks Send inside the modal.
+   * Step 1 of the send flow — load the per-invoice override (if set) or
+   * the global template (substituted against this invoice), and pop the
+   * Compose modal pre-filled. The actual send happens in confirmSend()
+   * once the admin clicks Send inside the modal.
+   *
+   * Resolution: per-invoice override → global template → FALLBACK_TEMPLATE.
    */
   async function openCompose() {
     if (!invoice) return;
     setError(null);
     setInfo(null);
 
-    // Pull the saved template; fall back to defaults if the table isn't
-    // populated yet (migration 0011 hasn't been run).
-    const { data: settings } = await supabase
-      .from('invoice_settings')
-      .select('default_subject, default_message')
-      .eq('id', 1)
-      .single();
-    const template = settings ?? FALLBACK_TEMPLATE;
-
-    setComposeSubject(substituteTemplate(template.default_subject, invoice));
-    setComposeMessage(substituteTemplate(template.default_message, invoice));
+    // Prefer per-invoice override
+    if (invoice.email_subject && invoice.email_message) {
+      setComposeSubject(invoice.email_subject);
+      setComposeMessage(invoice.email_message);
+    } else {
+      // Pull the saved template; fall back to defaults if 0011 hasn't run
+      const { data: settings } = await supabase
+        .from('invoice_settings')
+        .select('default_subject, default_message')
+        .eq('id', 1)
+        .single();
+      const template = settings ?? FALLBACK_TEMPLATE;
+      setComposeSubject(invoice.email_subject ?? substituteTemplate(template.default_subject, invoice));
+      setComposeMessage(invoice.email_message ?? substituteTemplate(template.default_message, invoice));
+    }
     setComposeCc('');
     setComposeOpen(true);
   }
@@ -283,6 +289,8 @@ export default function InvoiceDetailPage() {
         notes: draft.notes?.trim() || null,
         internal_notes: draft.internal_notes?.trim() || null,
         stripe_payment_link_url: draft.stripe_payment_link_url?.trim() || null,
+        email_subject: draft.email_subject?.trim() || null,
+        email_message: draft.email_message?.trim() || null,
       })
       .eq('id', draft.id);
     if (e1) { setBusy(null); setError(e1.message); return; }
@@ -627,6 +635,53 @@ export default function InvoiceDetailPage() {
                       </div>
                     )}
                   </div>
+                )}
+              </Card>
+
+              {/* Email override card — what the client sees when this invoice is sent. */}
+              <Card title="Email">
+                {editing ? (
+                  <>
+                    <p className="text-caption text-foreground-muted">
+                      Custom subject + message for this invoice only. Leave blank to use the global template at send time.
+                    </p>
+                    <Field label="Subject">
+                      <input
+                        className={inputCls}
+                        value={view.email_subject ?? ''}
+                        onChange={e => setDraft(d => d && ({ ...d, email_subject: e.target.value }))}
+                        placeholder="Leave blank to use global template"
+                      />
+                    </Field>
+                    <Field label="Message">
+                      <textarea
+                        className={`${inputCls} font-mono text-caption`}
+                        rows={8}
+                        value={view.email_message ?? ''}
+                        onChange={e => setDraft(d => d && ({ ...d, email_message: e.target.value }))}
+                        placeholder="Leave blank to use global template"
+                      />
+                    </Field>
+                  </>
+                ) : view.email_subject || view.email_message ? (
+                  <div className="space-y-3 text-body-sm">
+                    {view.email_subject && (
+                      <div>
+                        <p className="text-caption uppercase tracking-widest text-foreground-muted mb-1">Subject</p>
+                        <p className="text-primary">{view.email_subject}</p>
+                      </div>
+                    )}
+                    {view.email_message && (
+                      <div>
+                        <p className="text-caption uppercase tracking-widest text-foreground-muted mb-1">Message</p>
+                        <p className="text-primary whitespace-pre-line text-caption font-mono">{view.email_message}</p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-caption text-foreground-muted">
+                    Using the global template. <Link href="/billing/invoices/settings" className="text-gold-dark hover:underline">Edit the default →</Link>
+                  </p>
                 )}
               </Card>
             </section>

@@ -41,6 +41,7 @@ const MIGRATIONS = [
   '0011_invoice_settings.sql',
   '0012_expenses.sql',
   '0013_invoice_reminders.sql',
+  '0014_invoice_email_overrides.sql',
 ];
 const MIGRATIONS_DIR = path.join(__dirname, '..', 'supabase', 'migrations');
 
