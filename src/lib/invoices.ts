@@ -17,6 +17,22 @@ export interface InvoiceLineItem {
   rate: number;
   amount: number;
   sort_order: number;
+  /** True when the line was auto-added by the late-fee cron. We use this
+   *  flag to avoid double-adding on the same day and to keep late fees
+   *  visually distinct on the invoice + reports. */
+  is_late_fee?: boolean;
+}
+
+/** Late-fee config lives on the singleton row in invoice_settings. */
+export interface LateFeeSettings {
+  late_fee_enabled: boolean;
+  late_fee_type: 'percent' | 'flat';
+  /** Decimal — 0.05 = 5% for percent type, dollars for flat type. */
+  late_fee_amount: number;
+  /** Days after due_date before the first fee is added. */
+  late_fee_days: number;
+  /** When true, add another fee every N days; otherwise one-shot. */
+  late_fee_recurring: boolean;
 }
 
 export interface Invoice {

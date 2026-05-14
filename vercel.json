@@ -12,6 +12,14 @@
     {
       "path": "/api/cron/recurring-invoices",
       "schedule": "15 14 * * *"
+    },
+    {
+      "path": "/api/cron/late-fees",
+      "schedule": "45 14 * * *"
+    },
+    {
+      "path": "/api/cron/plaid-sync",
+      "schedule": "0 13 * * *"
     }
   ]
 }

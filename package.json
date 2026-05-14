@@ -33,9 +33,11 @@
     "next": "15.4.11",
     "payload": "^3.0.0",
     "pg": "^8.20.0",
+    "plaid": "^42.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-easy-crop": "^5.5.7",
+    "react-plaid-link": "^4.1.1",
     "resend": "^4.0.0",
     "stripe": "^22.1.1",
     "tailwind-merge": "^2.5.4"

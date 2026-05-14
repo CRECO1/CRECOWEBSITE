@@ -15,14 +15,24 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Save, RotateCw, Mail, AlertTriangle, CheckCircle } from 'lucide-react';
+import { ArrowLeft, Save, RotateCw, Mail, AlertTriangle, CheckCircle, AlertOctagon } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { FALLBACK_TEMPLATE, TEMPLATE_VARIABLES } from '@/lib/invoice-email';
 import { REMINDER_STAGES } from '@/lib/invoice-reminders';
+import type { LateFeeSettings } from '@/lib/invoices';
+
+const DEFAULT_LATE_FEE: LateFeeSettings = {
+  late_fee_enabled: false,
+  late_fee_type: 'percent',
+  late_fee_amount: 0.05,    // 5%
+  late_fee_days: 30,
+  late_fee_recurring: false,
+};
 
 export default function InvoiceSettingsPage() {
   const [subject, setSubject] = useState(FALLBACK_TEMPLATE.default_subject);
   const [message, setMessage] = useState(FALLBACK_TEMPLATE.default_message);
+  const [lateFee, setLateFee] = useState<LateFeeSettings>(DEFAULT_LATE_FEE);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,13 +51,22 @@ export default function InvoiceSettingsPage() {
     (async () => {
       const { data, error } = await supabase
         .from('invoice_settings')
-        .select('default_subject, default_message')
+        .select('default_subject, default_message, late_fee_enabled, late_fee_type, late_fee_amount, late_fee_days, late_fee_recurring')
         .eq('id', 1)
         .single();
       if (cancelled) return;
       if (!error && data) {
         setSubject(data.default_subject);
         setMessage(data.default_message);
+        // Late fee fields are present only after migration 0018 has run.
+        // If any are nullish, fall back to defaults.
+        setLateFee({
+          late_fee_enabled:   data.late_fee_enabled   ?? DEFAULT_LATE_FEE.late_fee_enabled,
+          late_fee_type:      data.late_fee_type      ?? DEFAULT_LATE_FEE.late_fee_type,
+          late_fee_amount:    data.late_fee_amount    != null ? Number(data.late_fee_amount) : DEFAULT_LATE_FEE.late_fee_amount,
+          late_fee_days:      data.late_fee_days      ?? DEFAULT_LATE_FEE.late_fee_days,
+          late_fee_recurring: data.late_fee_recurring ?? DEFAULT_LATE_FEE.late_fee_recurring,
+        });
       } else if (error?.message?.includes('does not exist')) {
         setError('Run migration 0011_invoice_settings.sql in the Supabase SQL editor first. Until then, the hard-coded fallback template will be used when sending invoices.');
       }
@@ -95,7 +114,16 @@ export default function InvoiceSettingsPage() {
     setSaved(false);
     const { error } = await supabase
       .from('invoice_settings')
-      .upsert({ id: 1, default_subject: subject, default_message: message });
+      .upsert({
+        id: 1,
+        default_subject: subject,
+        default_message: message,
+        late_fee_enabled: lateFee.late_fee_enabled,
+        late_fee_type: lateFee.late_fee_type,
+        late_fee_amount: lateFee.late_fee_amount,
+        late_fee_days: lateFee.late_fee_days,
+        late_fee_recurring: lateFee.late_fee_recurring,
+      });
     setSaving(false);
     if (error) {
       setError(error.message);
@@ -223,6 +251,99 @@ export default function InvoiceSettingsPage() {
               <p className="mt-4 text-caption text-foreground-muted">
                 Reminder subjects + bodies are hard-coded today. Want to customize them? Tell me and we'll add per-stage template editing.
               </p>
+            </div>
+
+            {/* ── Auto late fees ─────────────────────────────────────── */}
+            <div className="rounded-xl border border-border bg-white p-6">
+              <div className="flex items-start gap-3 mb-4">
+                <AlertOctagon className="h-5 w-5 text-gold shrink-0 mt-0.5" />
+                <div>
+                  <h2 className="font-heading text-body font-bold text-primary">Automatic late fees</h2>
+                  <p className="text-caption text-foreground-muted mt-1">
+                    When enabled, the daily cron adds a late-fee line item to any invoice that's been past due for the specified number of days. Per-invoice opt-out lives on the invoice detail page (same "Payment reminders" toggle).
+                  </p>
+                </div>
+              </div>
+
+              <label className="flex items-start gap-3 rounded-lg border border-border p-3 cursor-pointer hover:border-gold/50 mb-4">
+                <input
+                  type="checkbox"
+                  checked={lateFee.late_fee_enabled}
+                  onChange={e => setLateFee(s => ({ ...s, late_fee_enabled: e.target.checked }))}
+                  className="mt-0.5 h-4 w-4 rounded text-gold focus:ring-gold"
+                />
+                <div>
+                  <div className="text-body-sm font-semibold text-primary">Enable automatic late fees</div>
+                  <div className="text-caption text-foreground-muted">
+                    No fee is ever added if this is off, regardless of how overdue an invoice gets.
+                  </div>
+                </div>
+              </label>
+
+              <div className={`space-y-4 ${lateFee.late_fee_enabled ? '' : 'opacity-50 pointer-events-none'}`}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <label className="block">
+                    <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-1.5">Fee type</span>
+                    <select
+                      value={lateFee.late_fee_type}
+                      onChange={e => setLateFee(s => ({ ...s, late_fee_type: e.target.value as 'percent' | 'flat' }))}
+                      className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+                    >
+                      <option value="percent">Percent of invoice subtotal</option>
+                      <option value="flat">Flat dollar amount</option>
+                    </select>
+                  </label>
+                  <label className="block">
+                    <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-1.5">
+                      {lateFee.late_fee_type === 'percent' ? 'Percentage (e.g. 0.05 = 5%)' : 'Amount (USD)'}
+                    </span>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground-muted">
+                        {lateFee.late_fee_type === 'percent' ? '%' : '$'}
+                      </span>
+                      <input
+                        type="number"
+                        min="0"
+                        step={lateFee.late_fee_type === 'percent' ? '0.005' : '1'}
+                        max={lateFee.late_fee_type === 'percent' ? '1' : undefined}
+                        value={lateFee.late_fee_amount}
+                        onChange={e => setLateFee(s => ({ ...s, late_fee_amount: Number(e.target.value) }))}
+                        className="w-full rounded-lg border border-border bg-white pl-7 pr-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+                      />
+                    </div>
+                    {lateFee.late_fee_type === 'percent' && (
+                      <p className="text-caption text-foreground-muted mt-1">
+                        That's {(lateFee.late_fee_amount * 100).toFixed(2)}% of the invoice subtotal each time.
+                      </p>
+                    )}
+                  </label>
+                  <label className="block">
+                    <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-1.5">Days past due before first fee</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max="365"
+                      value={lateFee.late_fee_days}
+                      onChange={e => setLateFee(s => ({ ...s, late_fee_days: Number(e.target.value) }))}
+                      className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+                    />
+                  </label>
+                  <label className="flex items-center gap-3 rounded-lg border border-border p-3 cursor-pointer hover:border-gold/50 self-end">
+                    <input
+                      type="checkbox"
+                      checked={lateFee.late_fee_recurring}
+                      onChange={e => setLateFee(s => ({ ...s, late_fee_recurring: e.target.checked }))}
+                      className="h-4 w-4 rounded text-gold focus:ring-gold"
+                    />
+                    <div>
+                      <div className="text-body-sm font-semibold text-primary">Recurring</div>
+                      <div className="text-caption text-foreground-muted">
+                        Repeat the fee every {lateFee.late_fee_days} days while still unpaid.
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              </div>
             </div>
           </section>
 
