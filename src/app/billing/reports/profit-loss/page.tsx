@@ -19,7 +19,7 @@ import { supabase } from '@/lib/supabase';
 import { formatMoney, type Invoice } from '@/lib/invoices';
 import { categoryStyle, type Expense } from '@/lib/expenses';
 import {
-  computePl, currentYearRange, trailing12MonthsRange, sortCategoriesByAmount,
+  computePl, currentYearRange, trailing12MonthsRange, sortCategoriesByAmount, csvCell,
   type PlDateRange,
 } from '@/lib/billing-reports';
 
@@ -79,29 +79,29 @@ export default function ProfitLossPage() {
   );
 
   function downloadCsv() {
-    const escape = (v: string | number | null | undefined): string => {
-      if (v === null || v === undefined) return '';
-      const s = String(v);
-      return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-    };
-    const rows: string[] = [];
-    rows.push(`Profit & Loss,${range.start} to ${range.end}`);
-    rows.push('');
-    rows.push('Revenue');
+    // Every cell goes through csvCell() to (a) RFC-4180-quote where needed
+    // and (b) neutralize spreadsheet formula injection from category names
+    // or labels that might start with =, +, -, @ or a tab.
+    const row = (...cells: (string | number | null | undefined)[]) =>
+      cells.map(csvCell).join(',');
+    const lines: string[] = [];
+    lines.push(row('Profit & Loss', `${range.start} to ${range.end}`));
+    lines.push('');
+    lines.push(row('Revenue'));
     for (const [m, amt] of Object.entries(pl.revenue_by_month).sort()) {
-      rows.push(`${m},${amt.toFixed(2)}`);
+      lines.push(row(m, amt.toFixed(2)));
     }
-    rows.push(`Total revenue,${pl.revenue.toFixed(2)}`);
-    rows.push('');
-    rows.push('Expenses');
-    rows.push('Category,Total');
+    lines.push(row('Total revenue', pl.revenue.toFixed(2)));
+    lines.push('');
+    lines.push(row('Expenses'));
+    lines.push(row('Category', 'Total'));
     for (const c of sortedCategories) {
-      rows.push(`${escape(c.category)},${c.total.toFixed(2)}`);
+      lines.push(row(c.category, c.total.toFixed(2)));
     }
-    rows.push(`Total expenses,${pl.expenses_total.toFixed(2)}`);
-    rows.push('');
-    rows.push(`Net income,${pl.net_income.toFixed(2)}`);
-    const csv = rows.join('\r\n');
+    lines.push(row('Total expenses', pl.expenses_total.toFixed(2)));
+    lines.push('');
+    lines.push(row('Net income', pl.net_income.toFixed(2)));
+    const csv = lines.join('\r\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

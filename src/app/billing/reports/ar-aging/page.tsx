@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { formatMoney, formatDate, type Invoice } from '@/lib/invoices';
-import { computeArAging, BUCKET_LABELS, BUCKET_STYLES, type ArBucket } from '@/lib/billing-reports';
+import { computeArAging, BUCKET_LABELS, BUCKET_STYLES, csvCell, type ArBucket } from '@/lib/billing-reports';
 
 const BUCKET_ORDER: ArBucket[] = ['current', '1-30', '31-60', '61-90', '90+'];
 
@@ -48,11 +48,6 @@ export default function ArAgingPage() {
 
   function downloadCsv() {
     const header = ['Invoice', 'Client', 'Email', 'Issued', 'Due', 'Days Overdue', 'Bucket', 'Total', 'Payment Link'];
-    const escape = (v: string | number | null | undefined): string => {
-      if (v === null || v === undefined) return '';
-      const s = String(v);
-      return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-    };
     const rows = ar.rows.map(r => [
       r.invoice.invoice_number,
       r.invoice.client_name,
@@ -63,8 +58,8 @@ export default function ArAgingPage() {
       BUCKET_LABELS[r.bucket],
       Number(r.invoice.total).toFixed(2),
       r.invoice.stripe_payment_link_url ?? '',
-    ].map(escape).join(','));
-    const csv = [header.map(escape).join(','), ...rows].join('\r\n');
+    ].map(csvCell).join(','));
+    const csv = [header.map(csvCell).join(','), ...rows].join('\r\n');
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

@@ -1,27 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { requireAdmin } from '@/lib/api-auth';
 
 /**
  * POST /api/recurring — create a recurring invoice template.
  *
- * Body shape mirrors the table schema. Line items are saved separately into
- * recurring_invoice_line_items. The whole operation is best-effort
- * transactional: if line items fail, we roll back the parent.
+ * Admin-only. Auth verified via the user's Supabase session cookie. The
+ * session-scoped client honors RLS (migration 0017 grants authenticated
+ * users full access to recurring_invoice_templates +
+ * recurring_invoice_line_items).
  *
- * Auth: this route runs inside /billing which is admin-only. We use the
- * service role on the server because the Supabase client in this route
- * never sees the user's session.
+ * Body shape mirrors the table schema. Line items are saved separately
+ * into recurring_invoice_line_items. If line items fail to insert, the
+ * parent template row is rolled back so we don't end up with orphaned
+ * empty templates that the cron would later treat as 0-amount invoices.
  */
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-
-function adminClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) return null;
-  return createClient(url, key, { auth: { persistSession: false } });
-}
 
 interface LineInput {
   description: string;
@@ -31,21 +26,52 @@ interface LineInput {
   sort_order: number;
 }
 
-export async function POST(req: NextRequest) {
-  const supabase = adminClient();
-  if (!supabase) {
-    return NextResponse.json({ error: 'SUPABASE_SERVICE_ROLE_KEY not configured' }, { status: 503 });
+function validateBody(body: Record<string, unknown>): string | null {
+  // Required fields
+  for (const k of ['name', 'client_name', 'client_email', 'frequency', 'next_run_date'] as const) {
+    if (!body[k] || typeof body[k] !== 'string') return `Missing ${k}`;
   }
+  // Frequency must be one of the allowed values
+  if (!['monthly', 'quarterly', 'annually'].includes(body.frequency as string)) {
+    return 'Invalid frequency';
+  }
+  // next_run_date can't be more than 1 day in the past. Otherwise the cron
+  // would generate years of back-dated invoices on the next run.
+  const next = new Date(body.next_run_date as string);
+  if (Number.isNaN(next.getTime())) return 'Invalid next_run_date';
+  const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+  if (next.getTime() < oneDayAgo) return 'next_run_date must be today or in the future';
+  // Tax rate sanity bounds. 0..1 (e.g. 0.0825 for 8.25%). Reject negative
+  // and absurd values; 100% tax is implausible but allowed.
+  if (body.tax_rate !== undefined && body.tax_rate !== null) {
+    const tr = Number(body.tax_rate);
+    if (!Number.isFinite(tr) || tr < 0 || tr > 1) return 'tax_rate must be between 0 and 1';
+  }
+  // due_days bounds
+  if (body.due_days !== undefined && body.due_days !== null) {
+    const dd = Number(body.due_days);
+    if (!Number.isInteger(dd) || dd < 0 || dd > 365) return 'due_days must be 0-365';
+  }
+  return null;
+}
+
+export async function POST(req: NextRequest) {
+  const auth = await requireAdmin();
+  if (auth.error) return auth.error;
+  const { supabase } = auth;
+
   let body: Record<string, unknown>;
   try { body = await req.json(); }
   catch { return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 }); }
 
+  const validationError = validateBody(body);
+  if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
+
   const lineItems = (body.line_items as LineInput[] | undefined) ?? [];
   delete body.line_items;
 
-  // Validate required fields cheaply
-  for (const k of ['name', 'client_name', 'client_email', 'frequency', 'next_run_date']) {
-    if (!body[k]) return NextResponse.json({ error: `Missing ${k}` }, { status: 400 });
+  if (lineItems.length === 0) {
+    return NextResponse.json({ error: 'Add at least one line item' }, { status: 400 });
   }
 
   const { data: tpl, error } = await supabase
@@ -54,18 +80,18 @@ export async function POST(req: NextRequest) {
     .select('id')
     .single();
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('[recurring.POST] template insert failed:', error.message);
+    return NextResponse.json({ error: 'Could not save template' }, { status: 500 });
   }
 
-  if (lineItems.length > 0) {
-    const { error: liErr } = await supabase
-      .from('recurring_invoice_line_items')
-      .insert(lineItems.map(li => ({ ...li, template_id: tpl.id })));
-    if (liErr) {
-      // Roll back the parent
-      await supabase.from('recurring_invoice_templates').delete().eq('id', tpl.id);
-      return NextResponse.json({ error: `Line item insert failed: ${liErr.message}` }, { status: 500 });
-    }
+  const { error: liErr } = await supabase
+    .from('recurring_invoice_line_items')
+    .insert(lineItems.map(li => ({ ...li, template_id: tpl.id })));
+  if (liErr) {
+    // Roll back the parent so we don't leave a header with zero lines.
+    await supabase.from('recurring_invoice_templates').delete().eq('id', tpl.id);
+    console.error('[recurring.POST] line items insert failed:', liErr.message);
+    return NextResponse.json({ error: 'Could not save line items' }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true, id: tpl.id });

@@ -262,7 +262,28 @@ export function compute1099(
     .sort((a, b) => b.total_paid - a.total_paid);
 }
 
-/** CSV builder for the year-end 1099 export. RFC 4180 quoting. */
+/**
+ * RFC 4180 CSV-quote a cell + neuter spreadsheet formula injection.
+ *
+ * Excel / Google Sheets / Numbers treat any cell starting with `=`, `+`,
+ * `-`, `@`, or a tab as a formula. A contractor named `=cmd|'/c...'` or
+ * an invoice client field `@SUM(...)` would execute on open. We prefix
+ * those leading chars with `'` so the spreadsheet renders the literal
+ * text instead.
+ *
+ * Shared by every CSV export on the site — call it from anywhere user-
+ * controlled text might end up in a .csv download.
+ */
+export function csvCell(v: string | number | null | boolean | undefined): string {
+  if (v === null || v === undefined) return '';
+  let s = String(v);
+  // Neutralize formula injection — leading =, +, -, @, or tab/CR/LF
+  if (/^[=+\-@\t\r\n]/.test(s)) s = "'" + s;
+  if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
+  return s;
+}
+
+/** CSV builder for the year-end 1099 export. RFC 4180 quoting + formula safety. */
 export function build1099Csv(rows: ContractorAggregate[], year: number): string {
   const header = [
     'Tax Year',
@@ -273,14 +294,8 @@ export function build1099Csv(rows: ContractorAggregate[], year: number): string 
     'Meets $600 Threshold',
     'Expense Count',
   ];
-  const escape = (v: string | number | null | boolean): string => {
-    if (v === null || v === undefined) return '';
-    const s = String(v);
-    if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
-    return s;
-  };
   const lines = [
-    header.map(escape).join(','),
+    header.map(csvCell).join(','),
     ...rows.map(r => [
       year,
       r.legal_name,
@@ -289,7 +304,7 @@ export function build1099Csv(rows: ContractorAggregate[], year: number): string 
       r.total_paid.toFixed(2),
       r.meets_threshold ? 'YES' : 'no',
       r.expense_count,
-    ].map(escape).join(',')),
+    ].map(csvCell).join(',')),
   ];
   return lines.join('\r\n');
 }
