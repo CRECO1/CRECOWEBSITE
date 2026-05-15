@@ -12,6 +12,7 @@
 
 import type { Invoice } from './invoices';
 import { formatMoney, formatDate } from './invoices';
+import { getLogoLightDataUri, LOGO_ASPECT } from './pdf-logo';
 
 const CRECO_GOLD: [number, number, number] = [201, 169, 98];
 const CRECO_BLACK: [number, number, number] = [26, 26, 26];
@@ -139,15 +140,24 @@ export async function renderStatementPdf(input: StatementInput): Promise<Uint8Ar
   doc.setFillColor(...CRECO_BLACK);
   doc.rect(0, 0, pageWidth, 26, 'F');
 
-  doc.setTextColor(255, 255, 255);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(20);
-  doc.text('CRECO', margin, 15);
+  // Logo image (with text fallback in dev when the file is missing).
+  const logoDataUri = await getLogoLightDataUri();
+  if (logoDataUri) {
+    const logoHeight = 14;
+    const logoWidth = logoHeight * LOGO_ASPECT;
+    const logoY = (26 - logoHeight) / 2;
+    doc.addImage(logoDataUri, 'PNG', margin, logoY, logoWidth, logoHeight);
+  } else {
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(20);
+    doc.text('CRECO', margin, 15);
 
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
-  doc.setTextColor(200, 200, 200);
-  doc.text('Commercial Real Estate Company', margin, 21);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(200, 200, 200);
+    doc.text('Commercial Real Estate Company', margin, 21);
+  }
 
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(18);

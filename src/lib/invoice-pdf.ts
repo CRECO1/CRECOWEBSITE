@@ -10,6 +10,7 @@
 
 import type { Invoice, InvoiceLineItem } from './invoices';
 import { formatMoney, formatDate } from './invoices';
+import { getLogoLightDataUri, LOGO_ASPECT } from './pdf-logo';
 
 const CRECO_GOLD: [number, number, number] = [201, 169, 98];      // #C9A962
 const CRECO_BLACK: [number, number, number] = [26, 26, 26];       // #1A1A1A
@@ -30,15 +31,26 @@ export async function renderInvoicePdf(invoice: Invoice): Promise<Uint8Array> {
   doc.setFillColor(...CRECO_BLACK);
   doc.rect(0, 0, pageWidth, 26, 'F');
 
-  doc.setTextColor(255, 255, 255);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(20);
-  doc.text('CRECO', margin, 15);
+  // Place the actual CRECO logo image (light/white variant) on the
+  // black header. Falls back to text if the file can't be loaded.
+  const logoDataUri = await getLogoLightDataUri();
+  if (logoDataUri) {
+    const logoHeight = 14;                            // mm of vertical space
+    const logoWidth = logoHeight * LOGO_ASPECT;       // preserve aspect
+    const logoY = (26 - logoHeight) / 2;              // vertically centered
+    doc.addImage(logoDataUri, 'PNG', margin, logoY, logoWidth, logoHeight);
+  } else {
+    // Dev-only fallback (file missing). Looks like the old header.
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(20);
+    doc.text('CRECO', margin, 15);
 
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
-  doc.setTextColor(200, 200, 200);
-  doc.text('Commercial Real Estate Company', margin, 21);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(200, 200, 200);
+    doc.text('Commercial Real Estate Company', margin, 21);
+  }
 
   // Right side: INVOICE label + number
   doc.setFont('helvetica', 'bold');
