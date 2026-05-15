@@ -22,6 +22,8 @@ import {
   FREQUENCY_LABELS, ON_GENERATE_LABELS, type RecurringFrequency,
   type RecurringOnGenerate, type RecurringTemplate, type RecurringLineItem,
 } from '@/lib/recurring-invoices';
+import { ClientPicker } from '@/components/billing/ClientPicker';
+import type { ClientLite } from '@/lib/clients';
 
 type DraftLine = Omit<InvoiceLineItem, 'sort_order' | 'invoice_id'>;
 const DEFAULT_LINE: DraftLine = { description: '', quantity: 1, rate: 0, amount: 0 };
@@ -49,6 +51,7 @@ export function RecurringTemplateForm({
   const router = useRouter();
 
   const [name, setName]                       = useState(initial?.name ?? '');
+  const [clientId, setClientId]               = useState<string | null>(initial?.client_id ?? null);
   const [clientName, setClientName]           = useState(initial?.client_name ?? '');
   const [clientEmail, setClientEmail]         = useState(initial?.client_email ?? '');
   const [clientCompany, setClientCompany]     = useState(initial?.client_company ?? '');
@@ -105,6 +108,28 @@ export function RecurringTemplateForm({
 
     setSaving(true);
     try {
+      // Upsert the client by email so they show up in the typeahead for
+      // future invoices/templates. Best-effort — failures don't block
+      // the template save (the snapshot columns still hold the data).
+      let resolvedClientId: string | null = clientId;
+      if (!resolvedClientId && clientEmail.trim()) {
+        try {
+          const cRes = await fetch('/api/clients', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: clientName.trim(),
+              email: clientEmail.trim().toLowerCase(),
+              company: clientCompany?.trim() || null,
+              address: clientAddress?.trim() || null,
+              property_reference: propertyReference?.trim() || null,
+            }),
+          });
+          const cBody = await cRes.json();
+          if (cRes.ok && cBody.id) resolvedClientId = cBody.id;
+        } catch { /* non-fatal */ }
+      }
+
       const url = mode === 'edit' ? `/api/recurring/${initial!.id}` : '/api/recurring';
       const method = mode === 'edit' ? 'PATCH' : 'POST';
       const res = await fetch(url, {
@@ -112,6 +137,7 @@ export function RecurringTemplateForm({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: name.trim(),
+          client_id: resolvedClientId,
           client_name: clientName.trim(),
           client_email: clientEmail.trim().toLowerCase(),
           client_company: clientCompany.trim() || null,
@@ -310,11 +336,25 @@ export function RecurringTemplateForm({
             <section className="rounded-xl border border-border bg-white p-5">
               <h2 className="font-heading text-body font-bold text-primary mb-3">Client</h2>
               <div className="space-y-3">
+                <ClientPicker
+                  selectedId={clientId}
+                  onPick={(c: ClientLite) => {
+                    setClientId(c.id);
+                    setClientName(c.name);
+                    setClientEmail(c.email);
+                    setClientCompany(c.company ?? '');
+                    setClientAddress(c.address ?? '');
+                    if (c.property_reference && !propertyReference) {
+                      setPropertyReference(c.property_reference);
+                    }
+                  }}
+                  onClear={() => setClientId(null)}
+                />
                 <Field label="Name">
-                  <input type="text" value={clientName} onChange={e => setClientName(e.target.value)} className={inputCls} />
+                  <input type="text" value={clientName} onChange={e => { setClientName(e.target.value); setClientId(null); }} className={inputCls} />
                 </Field>
                 <Field label="Email">
-                  <input type="email" value={clientEmail} onChange={e => setClientEmail(e.target.value)} className={inputCls} />
+                  <input type="email" value={clientEmail} onChange={e => { setClientEmail(e.target.value); setClientId(null); }} className={inputCls} />
                 </Field>
                 <Field label="Company">
                   <input type="text" value={clientCompany ?? ''} onChange={e => setClientCompany(e.target.value)} className={inputCls} />

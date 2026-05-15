@@ -26,6 +26,8 @@ import {
 import { FALLBACK_TEMPLATE, substituteTemplate } from '@/lib/invoice-email';
 import { buildInvoiceEmailPreview } from '@/lib/invoice-email-html';
 import { advanceNextRun, type RecurringFrequency } from '@/lib/recurring-invoices';
+import { ClientPicker } from '@/components/billing/ClientPicker';
+import type { ClientLite } from '@/lib/clients';
 
 const DEFAULT_LINE: Omit<InvoiceLineItem, 'sort_order'> = {
   description: '',
@@ -48,6 +50,10 @@ export default function NewInvoicePage() {
   const router = useRouter();
 
   const [invoiceNumber, setInvoiceNumber] = useState('');
+  // Set when the operator picks a saved client from the typeahead.
+  // When null, the bill-to fields are treated as a new client and we
+  // upsert by email on save.
+  const [clientId, setClientId] = useState<string | null>(null);
   const [clientName, setClientName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
   const [clientCompany, setClientCompany] = useState('');
@@ -198,6 +204,38 @@ export default function NewInvoicePage() {
 
     setSaving(true);
 
+    // ── Upsert the client row by email so future invoices can pick
+    //    them from the typeahead. If they picked an existing client
+    //    from the dropdown, we already have client_id. If not, the
+    //    insert below either creates a new clients row or returns the
+    //    existing id when the email is already on file (the API
+    //    handles the 23505 unique-violation case).
+    let resolvedClientId: string | null = clientId;
+    if (!resolvedClientId && clientEmail.trim()) {
+      try {
+        const res = await fetch('/api/clients', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: clientName.trim(),
+            email: clientEmail.trim().toLowerCase(),
+            company: clientCompany.trim() || null,
+            address: clientAddress.trim() || null,
+            property_reference: propertyReference.trim() || null,
+          }),
+        });
+        const body = await res.json();
+        if (res.ok && body.id) {
+          resolvedClientId = body.id;
+        }
+        // Failures here are non-fatal — we still save the invoice,
+        // just without a client_id link. The denormalized snapshot
+        // columns carry the data.
+      } catch {
+        /* swallow — client save is best-effort */
+      }
+    }
+
     // Only persist email_subject/email_message if the admin actually
     // customized them (or if we want them frozen exactly as they'd render
     // right now). emailUserTouched is the signal — if the admin never
@@ -217,6 +255,7 @@ export default function NewInvoicePage() {
       .from('invoices')
       .insert([{
         invoice_number: invoiceNumber,
+        client_id: resolvedClientId,
         client_name: clientName.trim(),
         client_email: clientEmail.trim().toLowerCase(),
         client_company: clientCompany.trim() || null,
@@ -281,6 +320,7 @@ export default function NewInvoicePage() {
         .from('recurring_invoice_templates')
         .insert([{
           name: `${clientCompany || clientName} — ${recurringFreq}`,
+          client_id: resolvedClientId,
           client_name: clientName.trim(),
           client_email: clientEmail.trim().toLowerCase(),
           client_company: clientCompany.trim() || null,
@@ -396,11 +436,30 @@ export default function NewInvoicePage() {
           {/* Client + meta */}
           <section className="lg:col-span-1 space-y-6">
             <Card title="Bill to">
+              <ClientPicker
+                selectedId={clientId}
+                onPick={(c: ClientLite) => {
+                  setClientId(c.id);
+                  setClientName(c.name);
+                  setClientEmail(c.email);
+                  setClientCompany(c.company ?? '');
+                  setClientAddress(c.address ?? '');
+                  if (c.property_reference && !propertyReference) {
+                    setPropertyReference(c.property_reference);
+                  }
+                }}
+                onClear={() => {
+                  setClientId(null);
+                  // Don't clear the bill-to fields — the operator may
+                  // want to start from the prefilled values and tweak.
+                  // They can clear manually if needed.
+                }}
+              />
               <Field label="Client name *">
-                <input className={inputCls} value={clientName} onChange={e => setClientName(e.target.value)} required />
+                <input className={inputCls} value={clientName} onChange={e => { setClientName(e.target.value); setClientId(null); }} required />
               </Field>
               <Field label="Email *">
-                <input className={inputCls} type="email" value={clientEmail} onChange={e => setClientEmail(e.target.value)} required />
+                <input className={inputCls} type="email" value={clientEmail} onChange={e => { setClientEmail(e.target.value); setClientId(null); }} required />
               </Field>
               <Field label="Company">
                 <input className={inputCls} value={clientCompany} onChange={e => setClientCompany(e.target.value)} />

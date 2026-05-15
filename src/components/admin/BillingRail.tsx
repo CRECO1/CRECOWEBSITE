@@ -18,7 +18,7 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard, Receipt, ArrowDownCircle, Mail,
   ArrowLeft, ExternalLink, LogOut, Menu, X,
-  Clock, BarChart3, FileBadge, Repeat, FileText, Landmark,
+  Clock, BarChart3, FileBadge, Repeat, FileText, Landmark, Users,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { BillingSearch } from '@/components/billing/BillingSearch';
@@ -34,6 +34,7 @@ interface NavItem {
 const NAV: NavItem[] = [
   { href: '/billing',                       label: 'Dashboard',      icon: LayoutDashboard, matchPrefix: '/billing',                       matchExact: true },
   { href: '/billing/invoices',              label: 'Invoices',       icon: Receipt,         matchPrefix: '/billing/invoices' },
+  { href: '/billing/clients',               label: 'Clients',        icon: Users,           matchPrefix: '/billing/clients' },
   { href: '/billing/recurring',             label: 'Recurring',      icon: Repeat,          matchPrefix: '/billing/recurring' },
   { href: '/billing/expenses',              label: 'Expenses',       icon: ArrowDownCircle, matchPrefix: '/billing/expenses' },
   { href: '/billing/bank',                  label: 'Bank feed',      icon: Landmark,        matchPrefix: '/billing/bank' },

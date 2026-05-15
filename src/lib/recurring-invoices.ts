@@ -18,6 +18,10 @@ export interface RecurringTemplate {
   id: string;
   name: string;
 
+  /** Link to a reusable clients row when present. Snapshot fields below
+   *  still carry the historical client info so a deleted clients row
+   *  doesn't break the template. */
+  client_id?: string | null;
   client_name: string;
   client_email: string;
   client_company: string | null;
