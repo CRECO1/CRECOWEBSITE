@@ -16,7 +16,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   ArrowLeft, Download, Send, CheckCircle, AlertTriangle, Trash2,
-  Pencil, Save, X, RotateCw, Ban, Mail,
+  Pencil, Save, X, RotateCw, Ban, Mail, Repeat,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
@@ -420,11 +420,20 @@ export default function InvoiceDetailPage() {
               <ArrowLeft className="h-4 w-4" /> Invoices
             </Link>
             <span className="text-foreground-muted">/</span>
-            <h1 className="font-heading text-heading-md font-bold text-primary truncate flex items-center gap-2">
+            <h1 className="font-heading text-heading-md font-bold text-primary truncate flex items-center gap-2 flex-wrap">
               <span className="font-mono">{invoice.invoice_number}</span>
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-caption font-semibold border ${statusStyle.className}`}>
                 {statusStyle.label}
               </span>
+              {invoice.recurring_template_id && (
+                <Link
+                  href={`/billing/recurring/${invoice.recurring_template_id}`}
+                  className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-caption font-semibold border bg-gold/10 text-gold-dark border-gold/30 hover:bg-gold/20"
+                  title="Part of a recurring template"
+                >
+                  <Repeat className="h-3 w-3" /> Recurring
+                </Link>
+              )}
             </h1>
           </div>
           <div className="flex items-center gap-2 flex-wrap">

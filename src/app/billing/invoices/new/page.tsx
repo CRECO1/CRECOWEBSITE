@@ -17,7 +17,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Plus, Trash2, Save, Send, AlertTriangle, Mail, RotateCw } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save, Send, AlertTriangle, Mail, RotateCw, Repeat } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
   calculateTotals, formatMoney, lineAmount, nextInvoiceNumber,
@@ -25,6 +25,7 @@ import {
 } from '@/lib/invoices';
 import { FALLBACK_TEMPLATE, substituteTemplate } from '@/lib/invoice-email';
 import { buildInvoiceEmailPreview } from '@/lib/invoice-email-html';
+import { advanceNextRun, type RecurringFrequency } from '@/lib/recurring-invoices';
 
 const DEFAULT_LINE: Omit<InvoiceLineItem, 'sort_order'> = {
   description: '',
@@ -60,6 +61,14 @@ export default function NewInvoicePage() {
   const [internalNotes, setInternalNotes] = useState('');
   const [stripeLink, setStripeLink] = useState('');
   const [items, setItems] = useState<(typeof DEFAULT_LINE)[]>([{ ...DEFAULT_LINE }]);
+
+  // Recurring schedule — 'none' = one-off invoice (default), anything else
+  // also creates a recurring template that the cron picks up. End date is
+  // optional; auto-send controls whether future generations email
+  // automatically or land in the inbox as drafts for review.
+  const [recurringFreq, setRecurringFreq] = useState<'none' | RecurringFrequency>('none');
+  const [recurringEndDate, setRecurringEndDate] = useState('');
+  const [recurringAutoSend, setRecurringAutoSend] = useState(false);
 
   // Email content for this specific invoice. Initialized from the global
   // template at mount + after the auto-generated invoice number lands.
@@ -255,6 +264,73 @@ export default function NewInvoicePage() {
       }
     }
 
+    // ── Recurring? Set up the template + link the invoice to it ─────────
+    // This invoice IS the first occurrence. The template's next_run_date
+    // is the date the NEXT one should generate — compute it by advancing
+    // from the issue date by one frequency cycle.
+    if (recurringFreq !== 'none') {
+      const nextRun = advanceNextRun(issueDate, recurringFreq);
+      // due_days = number of days between issue_date and due_date on the
+      // invoice the operator just configured. The cron uses this to pick
+      // the due_date for each generated invoice.
+      const issueDateObj = new Date(issueDate + 'T00:00:00Z');
+      const dueDateObj = new Date(dueDate + 'T00:00:00Z');
+      const dueDays = Math.max(0, Math.round((dueDateObj.getTime() - issueDateObj.getTime()) / 86_400_000));
+
+      const { data: tpl, error: tplErr } = await supabase
+        .from('recurring_invoice_templates')
+        .insert([{
+          name: `${clientCompany || clientName} — ${recurringFreq}`,
+          client_name: clientName.trim(),
+          client_email: clientEmail.trim().toLowerCase(),
+          client_company: clientCompany.trim() || null,
+          client_address: clientAddress.trim() || null,
+          property_reference: propertyReference.trim() || null,
+          tax_rate: taxRate,
+          payment_terms: paymentTerms.trim() || DEFAULT_TERMS,
+          notes: notes.trim() || null,
+          internal_notes: internalNotes.trim() || null,
+          frequency: recurringFreq,
+          next_run_date: nextRun,
+          end_date: recurringEndDate || null,
+          on_generate: recurringAutoSend ? 'send_immediately' : 'draft',
+          due_days: dueDays,
+          active: true,
+          last_run_invoice_id: created.id,
+        }])
+        .select('id')
+        .single();
+
+      if (tplErr) {
+        // Don't roll back the invoice — it's still a valid one-off. Just
+        // surface the failure so the operator can retry the recurring
+        // setup from the /billing/recurring page.
+        setSaving(false);
+        setError(`Invoice saved, but recurring setup failed: ${tplErr.message}. Open /billing/recurring/new to set it up manually.`);
+        router.push(`/billing/invoices/${created.id}`);
+        return;
+      }
+
+      // Clone the line items into the template (drop invoice_id, swap in template_id)
+      const tplLines = lineRows.map(li => ({
+        template_id: tpl.id,
+        description: li.description,
+        quantity: li.quantity,
+        rate: li.rate,
+        amount: li.amount,
+        sort_order: li.sort_order,
+      }));
+      if (tplLines.length > 0) {
+        await supabase.from('recurring_invoice_line_items').insert(tplLines);
+      }
+
+      // Back-link the invoice to the template
+      await supabase
+        .from('invoices')
+        .update({ recurring_template_id: tpl.id })
+        .eq('id', created.id);
+    }
+
     if (action === 'send') {
       const res = await fetch(`/api/invoices/${created.id}/send`, {
         method: 'POST',
@@ -347,6 +423,60 @@ export default function NewInvoicePage() {
               <Field label="Property reference">
                 <input className={inputCls} value={propertyReference} onChange={e => setPropertyReference(e.target.value)} placeholder='Optional — e.g. "8000 Fair Oaks Pkwy"' />
               </Field>
+            </Card>
+
+            {/* ── Repeat — turn this into a recurring template ────────── */}
+            <Card title={(
+              <span className="inline-flex items-center gap-2">
+                <Repeat className="h-4 w-4 text-gold-dark" /> Repeat
+              </span>
+            )}>
+              <Field label="Frequency">
+                <select
+                  className={inputCls}
+                  value={recurringFreq}
+                  onChange={e => setRecurringFreq(e.target.value as 'none' | RecurringFrequency)}
+                >
+                  <option value="none">Don't repeat (one-off invoice)</option>
+                  <option value="monthly">Every month</option>
+                  <option value="quarterly">Every quarter</option>
+                  <option value="annually">Every year</option>
+                </select>
+                <p className="mt-1.5 text-caption text-foreground-muted">
+                  Saves this invoice and sets up a template that auto-generates the next one on schedule.
+                </p>
+              </Field>
+
+              {recurringFreq !== 'none' && (
+                <>
+                  <Field label="Stop date (optional)">
+                    <input
+                      className={inputCls}
+                      type="date"
+                      value={recurringEndDate}
+                      onChange={e => setRecurringEndDate(e.target.value)}
+                    />
+                    <p className="mt-1.5 text-caption text-foreground-muted">
+                      Leave blank to repeat indefinitely. You can pause or delete the template later from{' '}
+                      <Link href="/billing/recurring" className="text-gold-dark font-semibold">Recurring</Link>.
+                    </p>
+                  </Field>
+                  <label className="flex items-start gap-3 rounded-lg border border-border p-3 cursor-pointer hover:border-gold/50">
+                    <input
+                      type="checkbox"
+                      checked={recurringAutoSend}
+                      onChange={e => setRecurringAutoSend(e.target.checked)}
+                      className="mt-0.5 h-4 w-4 rounded text-gold focus:ring-gold"
+                    />
+                    <div>
+                      <div className="text-body-sm font-semibold text-primary">Auto-send future invoices</div>
+                      <div className="text-caption text-foreground-muted">
+                        Email each future invoice to the client automatically on its issue date. Off = future invoices land as drafts for you to review first.
+                      </div>
+                    </div>
+                  </label>
+                </>
+              )}
             </Card>
 
             <Card title="Payment link">
@@ -531,7 +661,7 @@ export default function NewInvoicePage() {
 
 const inputCls = "w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold";
 
-function Card({ title, children }: { title: string; children: React.ReactNode }) {
+function Card({ title, children }: { title: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="rounded-xl border border-border bg-white p-5 sm:p-6 space-y-4">
       <h2 className="font-heading text-body font-bold text-primary">{title}</h2>

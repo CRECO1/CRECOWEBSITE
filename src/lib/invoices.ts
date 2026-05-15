@@ -75,6 +75,11 @@ export interface Invoice {
   paid_amount: number | null;
   paid_method: string | null;
 
+  /** Set when the invoice was generated from a recurring template (or
+   *  when the operator chose Repeat on the create-invoice form). Lets
+   *  the detail page show a "Recurring" badge that links to the template. */
+  recurring_template_id?: string | null;
+
   created_at: string;
   updated_at: string;
 
