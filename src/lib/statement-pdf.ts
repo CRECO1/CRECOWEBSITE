@@ -137,39 +137,45 @@ export async function renderStatementPdf(input: StatementInput): Promise<Uint8Ar
   let y = margin;
 
   // ── Header ────────────────────────────────────────────────────────────
+  // 34mm tall so the logo can sit at 22mm — matches the invoice PDF.
+  const headerHeight = 34;
   doc.setFillColor(...CRECO_BLACK);
-  doc.rect(0, 0, pageWidth, 26, 'F');
+  doc.rect(0, 0, pageWidth, headerHeight, 'F');
 
-  // Logo image (with text fallback in dev when the file is missing).
   const logoDataUri = await getLogoLightDataUri();
   if (logoDataUri) {
-    const logoHeight = 14;
+    const logoHeight = 22;
     const logoWidth = logoHeight * LOGO_ASPECT;
-    const logoY = (26 - logoHeight) / 2;
+    const logoY = (headerHeight - logoHeight) / 2;
     doc.addImage(logoDataUri, 'PNG', margin, logoY, logoWidth, logoHeight);
   } else {
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(20);
-    doc.text('CRECO', margin, 15);
+    doc.setFontSize(22);
+    doc.text('CRECO', margin, 19);
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
     doc.setTextColor(200, 200, 200);
-    doc.text('Commercial Real Estate Company', margin, 21);
+    doc.text('Commercial Real Estate Company', margin, 25);
   }
 
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(18);
+  doc.setFontSize(20);
   doc.setTextColor(...CRECO_GOLD);
-  doc.text('STATEMENT', pageWidth - margin, 15, { align: 'right' });
+  doc.text('STATEMENT', pageWidth - margin, 19, { align: 'right' });
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
   doc.setTextColor(200, 200, 200);
-  doc.text(`${formatDate(input.periodStart)} — ${formatDate(input.periodEnd)}`, pageWidth - margin, 21, { align: 'right' });
+  doc.text(`${formatDate(input.periodStart)} — ${formatDate(input.periodEnd)}`, pageWidth - margin, 26, { align: 'right' });
 
-  y = 38;
+  // Gold accent line under the header
+  doc.setDrawColor(...CRECO_GOLD);
+  doc.setLineWidth(0.6);
+  doc.line(0, headerHeight, pageWidth, headerHeight);
+
+  y = headerHeight + 12;
 
   // ── Bill To + From blocks ─────────────────────────────────────────────
   doc.setTextColor(...CRECO_BLACK);

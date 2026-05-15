@@ -28,47 +28,54 @@ export async function renderInvoicePdf(invoice: Invoice): Promise<Uint8Array> {
   let y = margin;
 
   // ── Header — CRECO brand block ────────────────────────────────────────
+  // 34mm tall (up from 26mm) so the logo can sit at 22mm without the
+  // tagline inside it pixelating. The logo file is 1251×430 — at 22mm
+  // tall, the "CRECO" mark is ~11mm and the subtitle is ~6mm, both
+  // legible.
+  const headerHeight = 34;
   doc.setFillColor(...CRECO_BLACK);
-  doc.rect(0, 0, pageWidth, 26, 'F');
+  doc.rect(0, 0, pageWidth, headerHeight, 'F');
 
   // Place the actual CRECO logo image (light/white variant) on the
   // black header. Falls back to text if the file can't be loaded.
   const logoDataUri = await getLogoLightDataUri();
   if (logoDataUri) {
-    const logoHeight = 14;                            // mm of vertical space
-    const logoWidth = logoHeight * LOGO_ASPECT;       // preserve aspect
-    const logoY = (26 - logoHeight) / 2;              // vertically centered
+    const logoHeight = 22;                                  // mm of vertical space
+    const logoWidth = logoHeight * LOGO_ASPECT;             // preserve aspect ratio
+    const logoY = (headerHeight - logoHeight) / 2;          // vertically centered
     doc.addImage(logoDataUri, 'PNG', margin, logoY, logoWidth, logoHeight);
   } else {
     // Dev-only fallback (file missing). Looks like the old header.
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
-    doc.setFontSize(20);
-    doc.text('CRECO', margin, 15);
+    doc.setFontSize(22);
+    doc.text('CRECO', margin, 19);
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
     doc.setTextColor(200, 200, 200);
-    doc.text('Commercial Real Estate Company', margin, 21);
+    doc.text('Commercial Real Estate Company', margin, 25);
   }
 
-  // Right side: INVOICE label + number
+  // Right side: INVOICE label + number, vertically centered in the
+  // taller header so they balance the logo on the left.
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(18);
+  doc.setFontSize(20);
   doc.setTextColor(...CRECO_GOLD);
-  doc.text('INVOICE', pageWidth - margin, 15, { align: 'right' });
+  doc.text('INVOICE', pageWidth - margin, 19, { align: 'right' });
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
   doc.setTextColor(220, 220, 220);
-  doc.text(invoice.invoice_number, pageWidth - margin, 21, { align: 'right' });
+  doc.text(invoice.invoice_number, pageWidth - margin, 26, { align: 'right' });
 
-  // Gold accent line under header
+  // Gold accent line under the header
   doc.setDrawColor(...CRECO_GOLD);
   doc.setLineWidth(0.6);
-  doc.line(0, 26, pageWidth, 26);
+  doc.line(0, headerHeight, pageWidth, headerHeight);
 
-  y = 38;
+  // Push content start down to account for the taller header (was 38)
+  y = headerHeight + 12;
 
   // ── From / Bill To columns ────────────────────────────────────────────
   doc.setTextColor(...MUTED);
