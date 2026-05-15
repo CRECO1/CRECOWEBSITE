@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   ArrowLeft, Plus, Trash2, Save, AlertTriangle, Repeat, Pause, Play, Trash,
+  Send, Loader2,
 } from 'lucide-react';
 import {
   calculateTotals, formatMoney, lineAmount, type InvoiceLineItem,
@@ -188,6 +189,44 @@ export function RecurringTemplateForm({
     }
   }
 
+  /**
+   * Fire the next occurrence right now instead of waiting for the
+   * 9:15 AM Central cron. The /api/recurring/[id]/generate route runs
+   * the same logic the cron runs — issue_date is today, the template's
+   * next_run_date advances by one cycle so we don't bill twice for the
+   * same period. If the template is set to auto-send, the email goes
+   * out as part of this call. On success we redirect straight to the
+   * new invoice so the operator can review it (or see it already sent).
+   */
+  async function handleGenerateNow() {
+    if (!initial?.id) return;
+    const willAutoSend = onGenerate === 'send_immediately';
+    const confirmMsg = willAutoSend
+      ? `Generate AND send an invoice to ${clientEmail} right now? The template's next run date advances by one cycle.`
+      : `Generate a draft invoice from this template right now? It'll appear in /billing/invoices for you to review and send. The template's next run date advances by one cycle.`;
+    if (!confirm(confirmMsg)) return;
+
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/recurring/${initial.id}/generate`, { method: 'POST' });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error ?? `Failed (${res.status})`);
+      // Surface the auto-send failure (if any) to the operator before we
+      // navigate — they'd want to know the email didn't go out.
+      if (body.send_error) {
+        setError(`Invoice ${body.invoice_number} created, but email failed: ${body.send_error}. Resend from the invoice detail page.`);
+        setSaving(false);
+        router.push(`/billing/invoices/${body.invoice_id}`);
+        return;
+      }
+      router.push(`/billing/invoices/${body.invoice_id}`);
+    } catch (err) {
+      setError((err as Error).message);
+      setSaving(false);
+    }
+  }
+
   return (
     <main className="min-h-screen bg-background-cream pb-20">
       <header className="border-b border-border bg-white">
@@ -200,9 +239,19 @@ export function RecurringTemplateForm({
               {mode === 'edit' ? 'Edit recurring template' : 'New recurring template'}
             </h1>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             {mode === 'edit' && (
               <>
+                <button
+                  type="button"
+                  onClick={handleGenerateNow}
+                  disabled={saving || !active}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-gold px-4 py-2 text-body-sm font-semibold text-primary hover:bg-gold-light disabled:opacity-50"
+                  title={active ? 'Generate the next occurrence right now instead of waiting for the cron' : 'Resume the template first'}
+                >
+                  {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                  Generate now
+                </button>
                 <button
                   type="button"
                   onClick={togglePause}
