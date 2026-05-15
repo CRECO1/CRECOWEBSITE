@@ -22,7 +22,7 @@ import { supabase } from '@/lib/supabase';
 import {
   calculateTotals, formatMoney, formatDate, effectiveStatus,
   STATUS_STYLES, lineAmount,
-  type Invoice, type InvoiceLineItem,
+  type Invoice, type InvoiceLineItem, type InvoiceEmailEvent,
 } from '@/lib/invoices';
 import { FALLBACK_TEMPLATE, substituteTemplate } from '@/lib/invoice-email';
 import { buildInvoiceEmailPreview } from '@/lib/invoice-email-html';
@@ -51,6 +51,11 @@ export default function InvoiceDetailPage() {
   // Reminder history for this invoice
   const [reminders, setReminders] = useState<{ stage: ReminderStage; sent_at: string }[]>([]);
 
+  // Resend email events (delivered/opened/clicked/bounced) — powers the
+  // "Email tracking" card. Populated by the Resend webhook; the page
+  // just reads what's already in the DB.
+  const [emailEvents, setEmailEvents] = useState<InvoiceEmailEvent[]>([]);
+
   // Global email template — loaded once on mount, used as the fallback
   // when this invoice doesn't carry a per-invoice email_subject/message.
   const [emailTemplate, setEmailTemplate] = useState<{ default_subject: string; default_message: string }>(FALLBACK_TEMPLATE);
@@ -78,6 +83,16 @@ export default function InvoiceDetailPage() {
       .eq('invoice_id', id)
       .order('sent_at', { ascending: true });
     setReminders((rems ?? []) as { stage: ReminderStage; sent_at: string }[]);
+
+    // Email open/click/bounce events from Resend (populated by the
+    // /api/resend/webhook route). Newest first so the most recent
+    // activity is visible at the top of the activity log.
+    const { data: events } = await supabase
+      .from('invoice_email_events')
+      .select('*')
+      .eq('invoice_id', id)
+      .order('occurred_at', { ascending: false });
+    setEmailEvents((events ?? []) as InvoiceEmailEvent[]);
   }, [id]);
 
   useEffect(() => { load(); }, [load]);
@@ -603,6 +618,60 @@ export default function InvoiceDetailPage() {
                       );
                     })}
                   </div>
+                </Card>
+              )}
+
+              {/* Email open tracking — populated by the Resend webhook.
+                  Only shown after the invoice has been sent at least once. */}
+              {invoice.status !== 'draft' && invoice.status !== 'void' && (
+                <Card title="Email tracking">
+                  {!invoice.last_email_message_id ? (
+                    <p className="text-body-sm text-foreground-muted">
+                      No tracking message id on file. Send (or re-send) the invoice to start tracking opens.
+                    </p>
+                  ) : invoice.open_count && invoice.open_count > 0 ? (
+                    <div className="space-y-2 text-body-sm">
+                      <div className="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-green-50 border border-green-200 text-green-900 font-semibold">
+                        <CheckCircle className="h-4 w-4" />
+                        Opened {invoice.open_count} time{invoice.open_count !== 1 ? 's' : ''}
+                      </div>
+                      <Row label="First open" value={invoice.first_opened_at ? new Date(invoice.first_opened_at).toLocaleString() : '—'} />
+                      <Row label="Most recent" value={invoice.last_opened_at ? new Date(invoice.last_opened_at).toLocaleString() : '—'} />
+                      {emailEvents.length > 0 && (
+                        <details className="mt-3">
+                          <summary className="cursor-pointer text-caption text-gold-dark font-semibold hover:text-gold">
+                            Activity log ({emailEvents.length} event{emailEvents.length !== 1 ? 's' : ''})
+                          </summary>
+                          <ul className="mt-2 space-y-1.5 text-caption">
+                            {emailEvents.map(ev => (
+                              <li key={ev.id} className="flex items-center justify-between gap-2 border-b border-border pb-1.5 last:border-0">
+                                <span className="text-foreground-muted">
+                                  {new Date(ev.occurred_at).toLocaleString()}
+                                </span>
+                                <span className="font-mono text-primary">
+                                  {ev.event_type.replace('email.', '')}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        </details>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-amber-50 border border-amber-200 text-amber-900 font-medium text-body-sm">
+                        Not yet opened
+                      </div>
+                      <p className="text-caption text-foreground-muted">
+                        We'll record the open here as soon as the client loads the email. Some email clients block tracking images for privacy — if you suspect they read it but it doesn't show, that's why.
+                      </p>
+                    </div>
+                  )}
+                  {emailEvents.some(ev => ev.event_type === 'email.bounced' || ev.event_type === 'email.complained') && (
+                    <p className="mt-3 text-caption text-red-700">
+                      ⚠ A bounce or complaint was reported for this invoice. Check the activity log above.
+                    </p>
+                  )}
                 </Card>
               )}
             </section>

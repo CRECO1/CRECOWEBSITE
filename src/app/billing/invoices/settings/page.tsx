@@ -253,6 +253,27 @@ export default function InvoiceSettingsPage() {
               </p>
             </div>
 
+            {/* ── Email open tracking ─────────────────────────────────── */}
+            <div className="rounded-xl border border-border bg-white p-6">
+              <h2 className="font-heading text-body font-bold text-primary mb-1">Email open tracking</h2>
+              <p className="text-caption text-foreground-muted mb-4">
+                Each invoice's detail page can show when (and how many times) the client opened the email. We use Resend's built-in open tracking + a signed webhook, so events flow in automatically without per-send config.
+              </p>
+              <div className="space-y-3 text-body-sm">
+                <p className="font-semibold text-primary">One-time setup on the Resend dashboard:</p>
+                <ol className="list-decimal list-inside space-y-1.5 text-foreground-muted leading-relaxed">
+                  <li><strong className="text-primary">Domains</strong> → click <code className="bg-background-cream px-1.5 py-0.5 rounded text-caption">crecotx.com</code> → toggle <strong>Open tracking</strong> ON.</li>
+                  <li><strong className="text-primary">Webhooks</strong> → <strong>Add endpoint</strong> → URL: <code className="bg-background-cream px-1.5 py-0.5 rounded text-caption break-all">https://www.crecotx.com/api/resend/webhook</code></li>
+                  <li>Subscribe to: <code className="bg-background-cream px-1.5 py-0.5 rounded text-caption">email.delivered</code>, <code className="bg-background-cream px-1.5 py-0.5 rounded text-caption">email.opened</code>, <code className="bg-background-cream px-1.5 py-0.5 rounded text-caption">email.clicked</code>, <code className="bg-background-cream px-1.5 py-0.5 rounded text-caption">email.bounced</code>, <code className="bg-background-cream px-1.5 py-0.5 rounded text-caption">email.complained</code>.</li>
+                  <li>Copy the <strong>signing secret</strong> (starts with <code className="bg-background-cream px-1.5 py-0.5 rounded text-caption">whsec_</code>).</li>
+                  <li>In Vercel → <strong>Settings → Environment Variables</strong> → add <code className="bg-background-cream px-1.5 py-0.5 rounded text-caption">RESEND_WEBHOOK_SECRET</code> with that value → redeploy.</li>
+                </ol>
+                <p className="text-caption text-foreground-muted leading-relaxed">
+                  <strong className="text-foreground">Privacy note:</strong> Some clients (Apple Mail with privacy protection, certain Gmail filters) block tracking images. If a client tells you they read the invoice but the dashboard says "Not opened," that's why — the data is approximate.
+                </p>
+              </div>
+            </div>
+
             {/* ── Auto late fees ─────────────────────────────────────── */}
             <div className="rounded-xl border border-border bg-white p-6">
               <div className="flex items-start gap-3 mb-4">

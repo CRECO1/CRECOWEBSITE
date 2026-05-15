@@ -80,6 +80,17 @@ export interface Invoice {
    *  the detail page show a "Recurring" badge that links to the template. */
   recurring_template_id?: string | null;
 
+  // ── Open tracking (populated by Resend webhook) ─────────────────────
+  /** Resend message_id from the most recent send. The webhook uses
+   *  this to correlate opened/clicked/bounced events back to the row. */
+  last_email_message_id?: string | null;
+  /** First time the recipient opened the email (any send). */
+  first_opened_at?: string | null;
+  /** Most recent open event. */
+  last_opened_at?: string | null;
+  /** Total open events ever recorded for this invoice. */
+  open_count?: number;
+
   created_at: string;
   updated_at: string;
 
@@ -159,6 +170,23 @@ export function effectiveStatus(invoice: Pick<Invoice, 'status' | 'due_date'>): 
 export function nextInvoiceNumber(yearCount: number, year: number = new Date().getFullYear()): string {
   const seq = (1001 + yearCount).toString();
   return `INV-${year}-${seq}`;
+}
+
+/**
+ * One row per webhook event from Resend (delivered, opened, clicked,
+ * bounced, complained). Powers the activity timeline on the invoice
+ * detail page.
+ */
+export interface InvoiceEmailEvent {
+  id: string;
+  invoice_id: string;
+  message_id: string;
+  event_type: string;          // 'email.opened' | 'email.delivered' | etc.
+  occurred_at: string;
+  recipient_email: string | null;
+  user_agent: string | null;
+  ip_address: string | null;
+  created_at: string;
 }
 
 /** Color classes for status badges. Keeps the admin list legible at a glance. */

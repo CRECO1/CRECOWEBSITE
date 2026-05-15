@@ -121,8 +121,11 @@ export async function POST(
     if (!bodyMessage) bodyMessage = substituteTemplate(template.default_message, fullInvoice);
   }
 
+  // Capture the Resend message_id so the webhook can correlate
+  // opened/delivered/bounced events back to this invoice.
+  let messageId: string | undefined;
   try {
-    await sendInvoiceEmail({
+    messageId = await sendInvoiceEmail({
       invoice: fullInvoice,
       subject: bodySubject || `Invoice ${invoice.invoice_number} from CRECO`,
       message: bodyMessage,
@@ -136,14 +139,16 @@ export async function POST(
     );
   }
 
-  // Flip status → 'sent' and stamp sent_at
+  // Flip status → 'sent', stamp sent_at, and stash the message_id so
+  // open-tracking webhook events can find this invoice.
   await supabase
     .from('invoices')
     .update({
       status: 'sent',
       sent_at: new Date().toISOString(),
+      last_email_message_id: messageId ?? null,
     })
     .eq('id', id);
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true, message_id: messageId });
 }
