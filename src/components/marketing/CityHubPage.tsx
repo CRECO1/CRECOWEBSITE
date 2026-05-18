@@ -19,6 +19,11 @@ export interface SubmarketCard {
   description: string;
   /** Primary use case — "Industrial corridor", "Class A office", etc. */
   characterization: string;
+  /** Optional internal link. When set, the card renders as a Link to
+   *  the corresponding submarket detail page (typically a /markets/... child).
+   *  Cross-linking from city pages → submarket pages strengthens internal
+   *  SEO + lets visitors drill into a specific submarket. */
+  href?: string;
 }
 
 export interface MarketStat {
@@ -136,18 +141,38 @@ export function CityHubPage({ config }: { config: CityHubConfig }) {
                 </p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {config.submarkets.map(s => (
-                  <div key={s.name} className="rounded-xl border border-border bg-white p-7 hover:border-gold hover:shadow-card-hover transition-all">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-gold/10 text-gold">
-                        <Building2 className="h-5 w-5" />
+                {config.submarkets.map(s => {
+                  const inner = (
+                    <>
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-gold/10 text-gold">
+                          <Building2 className="h-5 w-5" />
+                        </div>
+                        <span className="text-caption uppercase tracking-widest text-gold">{s.characterization}</span>
                       </div>
-                      <span className="text-caption uppercase tracking-widest text-gold">{s.characterization}</span>
+                      <h3 className="font-heading text-heading-sm font-bold text-primary mb-2 group-hover:text-gold transition-colors">{s.name}</h3>
+                      <p className="text-body-sm text-foreground-muted leading-relaxed">{s.description}</p>
+                      {s.href && (
+                        <span className="mt-3 inline-flex items-center gap-1.5 text-caption font-semibold text-gold-dark group-hover:text-gold">
+                          Explore submarket <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+                        </span>
+                      )}
+                    </>
+                  );
+                  return s.href ? (
+                    <Link
+                      key={s.name}
+                      href={s.href}
+                      className="group rounded-xl border border-border bg-white p-7 hover:border-gold hover:shadow-card-hover transition-all flex flex-col"
+                    >
+                      {inner}
+                    </Link>
+                  ) : (
+                    <div key={s.name} className="group rounded-xl border border-border bg-white p-7 hover:border-gold hover:shadow-card-hover transition-all">
+                      {inner}
                     </div>
-                    <h3 className="font-heading text-heading-sm font-bold text-primary mb-2">{s.name}</h3>
-                    <p className="text-body-sm text-foreground-muted leading-relaxed">{s.description}</p>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </Container>
           </section>

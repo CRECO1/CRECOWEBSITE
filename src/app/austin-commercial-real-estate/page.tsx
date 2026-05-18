@@ -59,6 +59,7 @@ export default function AustinPage() {
             name: 'The Domain & North Austin',
             characterization: 'Class A office + retail',
             description: 'Mixed-use district anchored by The Domain — Austin\'s Class A office concentration with strong retail and lifestyle amenities. Premium rents but tight supply and strong tenant attraction.',
+            href: '/markets/the-domain',
           },
           {
             name: 'Downtown Austin',
@@ -69,6 +70,7 @@ export default function AustinPage() {
             name: 'East Austin',
             characterization: 'Creative + retail + flex',
             description: 'Adaptive reuse, creative office, food and beverage, boutique retail. The Austin market most reflective of the city\'s cultural identity — and increasingly, its premium retail submarket.',
+            href: '/markets/east-austin',
           },
           {
             name: 'South Congress (SoCo) & South Lamar',
@@ -76,14 +78,22 @@ export default function AustinPage() {
             description: 'Walkable retail districts with strong daytime traffic, lifestyle tenants, and growing office demand. Ground-floor retail commands premium rents.',
           },
           {
-            name: 'Round Rock & Pflugerville',
+            name: 'Round Rock',
             characterization: 'Industrial + office',
-            description: "Austin's northern suburban industrial corridor — including Samsung's Taylor expansion. Strong Class A industrial leasing and growing office demand.",
+            description: "Austin's northern industrial corridor — Dell HQ + the Samsung-Taylor adjacency. Strong Class A industrial leasing and growing office demand.",
+            href: '/markets/round-rock',
+          },
+          {
+            name: 'Pflugerville',
+            characterization: 'I-35 industrial growth',
+            description: "Northeast Austin's industrial growth corridor — bulk distribution + small-bay flex serving e-commerce and the Samsung-Taylor supplier ecosystem.",
+            href: '/markets/pflugerville',
           },
           {
             name: 'Cedar Park & Leander',
             characterization: 'Suburban retail + office',
             description: "Suburban growth corridor northwest of Austin. Demographic-driven retail demand, growing healthcare and professional service occupancy.",
+            href: '/markets/cedar-park-leander',
           },
         ],
         whyBullets: [

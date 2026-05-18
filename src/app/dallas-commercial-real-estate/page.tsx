@@ -61,14 +61,28 @@ export default function DallasPage() {
             description: "Trophy office, walkable urban core, premium retail, and high-density mixed-use. Texas's strongest concentration of Class A office demand.",
           },
           {
-            name: 'Frisco / Plano',
-            characterization: 'Corporate campus + retail',
-            description: "Corporate headquarters relocations, master-planned commercial development, and premium retail. Frisco's growth has been the dominant DFW story for the last decade.",
+            name: 'Frisco',
+            characterization: 'Corporate-relocation magnet',
+            description: "DFW's premier corporate-relocation suburb. The Star, PGA HQ, Toyota North America. Class A office holds value, retail premium across Stonebriar and Frisco Square.",
+            href: '/markets/frisco',
           },
           {
-            name: 'DFW Airport Corridor',
-            characterization: 'Industrial + logistics',
-            description: 'Modern bulk distribution, big-box logistics, and air cargo support. Among the strongest industrial submarkets in the United States.',
+            name: 'Plano',
+            characterization: 'Mature corporate-office anchor',
+            description: "Legacy West, the Toyota corridor, JPMorgan campus. 40M+ SF of suburban office — Texas's most-mature corporate-office submarket.",
+            href: '/markets/plano',
+          },
+          {
+            name: 'Allen & McKinney',
+            characterization: 'North Collin growth wave',
+            description: 'The next growth wave north of Frisco/Plano — Watters Creek lifestyle retail, McKinney Town Center, strong demographic-driven demand.',
+            href: '/markets/allen-mckinney',
+          },
+          {
+            name: 'Las Colinas / DFW Airport',
+            characterization: 'Industrial + corporate office',
+            description: 'The corporate-office and logistics crossroads of the Metroplex. Class A Urban Center office plus 200M+ SF of airport-corridor industrial.',
+            href: '/markets/las-colinas',
           },
           {
             name: 'Alliance / North Fort Worth',
@@ -81,9 +95,10 @@ export default function DallasPage() {
             description: "DFW's southeast/south industrial corridors — strong second-generation bulk distribution and growing modern delivery. Generally lower rents than the airport corridor.",
           },
           {
-            name: 'Downtown Fort Worth & Sundance Square',
-            characterization: 'Office + retail',
-            description: "Walkable downtown commercial district with office, retail, and entertainment. Different feel than Dallas — well worth specific submarket understanding.",
+            name: 'Downtown Fort Worth',
+            characterization: 'Office + Sundance Square retail',
+            description: "Mature urban Class A office, Sundance Square premium retail, and an active adaptive-reuse pipeline. The strongest urban submarket in Tarrant County.",
+            href: '/markets/fort-worth-downtown',
           },
         ],
         whyBullets: [

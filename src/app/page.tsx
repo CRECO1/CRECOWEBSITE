@@ -223,7 +223,7 @@ export default async function HomePage() {
         {s.hero_image_url ? (
           <Image
             src={s.hero_image_url}
-            alt="Texas commercial real estate"
+            alt="Texas commercial real estate — office, industrial, and retail property across San Antonio, Austin, Houston, and Dallas–Fort Worth"
             fill
             sizes="100vw"
             className="object-cover opacity-40"
