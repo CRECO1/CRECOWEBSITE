@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 import { sendInvoiceEmail } from '@/lib/invoice-send';
 import {
   REMINDER_STAGES, renderReminderContent,
@@ -24,18 +26,45 @@ import type { Invoice } from '@/lib/invoices';
  * index on invoice_reminders blocks accidental double-sends. If every
  * stage has already fired, we return 409 instead of looping.
  *
- * Auth: requires an authenticated admin session (any signed-in user with
- * write access to invoices, gated by RLS on the read).
+ * Auth: requires an authenticated admin session. We confirm the cookie-
+ * scoped Supabase client returns a real user before doing anything; once
+ * we know the operator is signed in, the actual reads/writes use the
+ * service-role client because we need to bypass RLS on invoice_reminders
+ * inserts (the unique-(invoice_id, stage) reservation must succeed even
+ * if a tightened policy blocks the operator's user from writing it
+ * directly).
  */
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
 
+async function authSupabase() {
+  const cookieStore = await cookies();
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    {
+      cookies: {
+        getAll() { return cookieStore.getAll(); },
+        setAll() { /* read-only in API routes */ },
+      },
+    },
+  );
+}
+
 export async function POST(
   req: NextRequest,
   ctx: { params: Promise<{ id: string }> }
 ) {
+  // Auth gate — must be a signed-in admin. Returns 401 to anonymous
+  // callers, never silently runs.
+  const authClient = await authSupabase();
+  const { data: { user } } = await authClient.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
+  }
+
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) {
