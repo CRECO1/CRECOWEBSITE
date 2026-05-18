@@ -9,9 +9,11 @@ import { Container } from '@/components/ui/Container';
 import { getListingBySlug } from '@/lib/supabase';
 import { formatPrice, formatSqft, formatAcres, formatLeaseRate, transactionLabel, propertyTypeLabel, googleMapsUrl } from '@/lib/utils';
 import { ListingInquiryTabs } from './ListingInquiryTabs';
+import { MobileInquiryBar } from './MobileInquiryBar';
 import { RelatedListings } from '@/components/marketing/RelatedListings';
 import { ListingGallery } from '@/components/marketing/ListingGallery';
 import { CompareToggle } from '@/components/listings/CompareToggle';
+import { Bell } from 'lucide-react';
 
 // Per-listing metadata so each property has a unique <title>, <meta description>,
 // canonical URL, and OG image (instead of inheriting the /listings index meta).
@@ -147,7 +149,9 @@ export default async function ListingDetailPage({ params }: Props) {
         }}
       />
       <Header variant="minimal" />
-      <main className="min-h-screen pt-20">
+      {/* pb-24 lg:pb-0 reserves space under the MobileInquiryBar so the
+          last bit of content (related listings, footer) isn't obscured. */}
+      <main className="min-h-screen pt-20 pb-24 lg:pb-0">
         {/* Back */}
         <div className="border-b border-border bg-background-cream py-4">
           <Container>
@@ -296,9 +300,15 @@ export default async function ListingDetailPage({ params }: Props) {
               )}
             </div>
 
-            {/* Sidebar — tabbed inquiry (Tour | Message) */}
+            {/* Sidebar — tabbed inquiry (Tour | Message). #inquiry anchor is
+                the scroll target for the mobile bottom action bar. The
+                scroll-mt accounts for the fixed Header so the panel doesn't
+                slide under it. */}
             <div className="lg:col-span-1">
-              <div className="sticky top-28 rounded-xl border border-border bg-white p-6 shadow-card">
+              <div
+                id="inquiry"
+                className="sticky top-28 scroll-mt-24 rounded-xl border border-border bg-white p-6 shadow-card"
+              >
                 <ListingInquiryTabs
                   listingTitle={listing!.title}
                   listingSlug={listing!.slug}
@@ -310,6 +320,25 @@ export default async function ListingDetailPage({ params }: Props) {
                     <Phone className="h-5 w-5" />
                     (210) 817-3443
                   </a>
+                </div>
+                {/* Re-engagement CTA — for tenants who looked but aren't ready
+                    to submit an inquiry. Drives them into the Property Alerts
+                    funnel pre-filtered to similar property type. */}
+                <div className="mt-6 pt-6 border-t border-border">
+                  <Link
+                    href={`/property-alerts?type=${encodeURIComponent(listing!.property_type)}${listing!.submarket ? `&submarket=${encodeURIComponent(listing!.submarket)}` : ''}`}
+                    className="flex items-start gap-3 rounded-lg border border-gold/30 bg-gold/5 p-4 text-left transition-colors hover:border-gold hover:bg-gold/10"
+                  >
+                    <Bell className="mt-0.5 h-5 w-5 shrink-0 text-gold" />
+                    <div>
+                      <p className="text-body-sm font-semibold text-primary">
+                        Not quite this one?
+                      </p>
+                      <p className="mt-0.5 text-caption text-foreground-muted">
+                        Get email alerts for similar {propertyTypeLabel(listing!.property_type).toLowerCase()}{listing!.submarket ? ` in ${listing!.submarket}` : ''} as they hit the market.
+                      </p>
+                    </div>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -326,6 +355,7 @@ export default async function ListingDetailPage({ params }: Props) {
           subtitle={`Other Texas commercial real estate currently on the market — prioritized by similar property type${listing!.submarket ? ' and submarket' : ''}.`}
         />
       </main>
+      <MobileInquiryBar />
       <Footer />
     </>
   );

@@ -9,7 +9,7 @@
  * filters JSON saved to subscribers.filters for downstream matching.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowRight, CheckCircle, BellRing } from 'lucide-react';
 import { getRecaptchaToken } from './Recaptcha';
 import { Honeypot } from './Honeypot';
@@ -49,6 +49,30 @@ export function PropertyAlertsForm() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Prefill from query string — used when this form is reached from a listing
+  // detail page's "Get alerts for similar properties" CTA. Saves the visitor
+  // from re-picking the property type / submarket they were already looking at.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const t = params.get('type');
+    if (t && PROPERTY_TYPES.some(p => p.value === t)) {
+      setPropertyTypes([t]);
+    }
+    const sm = params.get('submarket');
+    if (sm) {
+      // Match case-insensitively against the known SUBMARKETS list. Free-form
+      // submarkets from city pages may not match — that's fine, we just don't
+      // prefill in that case.
+      const match = SUBMARKETS.find(s => s.toLowerCase() === sm.toLowerCase());
+      if (match) setSubmarkets([match]);
+    }
+    const txn = params.get('txn');
+    if (txn === 'lease' || txn === 'sale' || txn === 'both') {
+      setTransactionType(txn);
+    }
+  }, []);
 
   function togglePropertyType(value: string) {
     setPropertyTypes(p => p.includes(value) ? p.filter(x => x !== value) : [...p, value]);

@@ -11,9 +11,9 @@ import { Container } from '@/components/ui/Container';
 
 const navLinks = [
   { href: '/listings', label: 'Properties' },
-  { href: '/team', label: 'Team' },
   { href: '/services', label: 'Services' },
   { href: '/owner-services', label: 'Owner Services' },
+  { href: '/property-valuation', label: 'Free Valuation' },
   { href: '/insights', label: 'Insights' },
   { href: '/about', label: 'About' },
   { href: '/get-started', label: 'Get Started', isHighlight: true },
@@ -174,6 +174,13 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
                   {link.label}
                 </Link>
               ))}
+              <Link
+                href="/team"
+                onClick={() => setIsMenuOpen(false)}
+                className="border-b border-border py-4 text-heading font-medium text-primary transition-colors hover:text-gold"
+              >
+                Team
+              </Link>
               <Link
                 href="/contact"
                 onClick={() => setIsMenuOpen(false)}

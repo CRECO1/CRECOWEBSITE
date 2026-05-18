@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { Suspense, useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, SlidersHorizontal, MapPin, Building2, Layers, X } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
@@ -63,12 +64,36 @@ const SIZE_RANGES: { label: string; min: number; max: number }[] = [
   { label: '50,000+ SF', min: 50000, max: Infinity },
 ];
 
+/**
+ * Wrapper required by Next.js 15: useSearchParams() inside the component
+ * forces this branch into the client suspense boundary, otherwise the
+ * static prerender at /listings will fail to bail out cleanly.
+ */
 export default function ListingsPage() {
+  return (
+    <Suspense fallback={null}>
+      <ListingsPageInner />
+    </Suspense>
+  );
+}
+
+function ListingsPageInner() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Hydrate initial state from URL so deep-linked + bookmarked filtered views
+  // ("?type=warehouse&txn=lease&size=2&q=northeast") restore on first paint
+  // instead of mounting empty and snapping to filtered a tick later.
+  const initialType = searchParams.get('type') ?? 'all';
+  const initialTxn = searchParams.get('txn') ?? 'all';
+  const initialSize = Number(searchParams.get('size') ?? '0');
+  const initialQ = searchParams.get('q') ?? '';
+
   const [listings, setListings] = useState<Listing[]>(DEMO_LISTINGS);
-  const [search, setSearch] = useState('');
-  const [propertyType, setPropertyType] = useState<string>('all');
-  const [transactionType, setTransactionType] = useState<string>('all');
-  const [sizeIdx, setSizeIdx] = useState(0);
+  const [search, setSearch] = useState(initialQ);
+  const [propertyType, setPropertyType] = useState<string>(initialType);
+  const [transactionType, setTransactionType] = useState<string>(initialTxn);
+  const [sizeIdx, setSizeIdx] = useState(Number.isFinite(initialSize) ? initialSize : 0);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   // Build dropdown options dynamically: preset values first, then any custom
@@ -94,15 +119,23 @@ export default function ListingsPage() {
     ];
   }, [listings]);
 
-  // Read query string filter (?type=warehouse, ?txn=lease) on first mount
+  // Keep the URL in sync with filter state so a filtered view is shareable
+  // and bookmarkable. Using router.replace (not push) so the back button
+  // doesn't snapshot every keystroke in the search box.
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
-    const t = params.get('type');
-    const txn = params.get('txn');
-    if (t) setPropertyType(t);
-    if (txn) setTransactionType(txn);
-  }, []);
+    const params = new URLSearchParams();
+    if (propertyType !== 'all') params.set('type', propertyType);
+    if (transactionType !== 'all') params.set('txn', transactionType);
+    if (sizeIdx !== 0) params.set('size', String(sizeIdx));
+    if (search) params.set('q', search);
+    const qs = params.toString();
+    const next = qs ? `/listings?${qs}` : '/listings';
+    // Only update if it actually changed — avoids infinite loops with Next router
+    if (`${window.location.pathname}${window.location.search}` !== next) {
+      router.replace(next, { scroll: false });
+    }
+  }, [propertyType, transactionType, sizeIdx, search, router]);
 
   useEffect(() => {
     fetch('/api/listings').then(r => r.json()).then(d => {
@@ -138,9 +171,9 @@ export default function ListingsPage() {
         <div className="bg-primary py-14 text-white">
           <Container>
             <p className="overline mb-2 text-gold">Available Now</p>
-            <h1 className="font-heading text-display-sm font-bold">Commercial Properties</h1>
+            <h1 className="font-heading text-display-sm font-bold">Texas Commercial Properties</h1>
             <p className="mt-2 text-body text-white/60">
-              {listings.length} active listings across the San Antonio market
+              {listings.length} active commercial real estate listings — office, industrial, retail, flex, and land — across San Antonio, Austin, Houston, Dallas–Fort Worth, and the Hill Country.
             </p>
           </Container>
         </div>
