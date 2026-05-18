@@ -39,7 +39,7 @@ export function ClientPicker({
     (async () => {
       const { data } = await supabase
         .from('clients')
-        .select('id, name, email, company, address, property_reference')
+        .select('id, name, email, company, address, property_reference, default_tax_rate, default_payment_terms, reminders_enabled_default, reminder_cadence')
         .eq('active', true)
         .order('name');
       setClients((data ?? []) as ClientLite[]);

@@ -92,9 +92,64 @@ export async function GET(req: NextRequest) {
     sent: [],
   };
 
+  // ── Smart cadence: look up each client's reminder_cadence preference.
+  // The cron is per-invoice, but we pull the client setting once + cache by
+  // client_id below to avoid N round-trips on a long inventory.
+  const clientIds = Array.from(new Set(
+    (invoices ?? []).map(i => i.client_id).filter((x): x is string => Boolean(x))
+  ));
+  const cadenceByClient = new Map<string, 'standard' | 'gentle' | 'firm'>();
+  if (clientIds.length > 0) {
+    const { data: clientRows } = await supabase
+      .from('clients')
+      .select('id, reminder_cadence')
+      .in('id', clientIds);
+    for (const row of clientRows ?? []) {
+      if (row.reminder_cadence === 'gentle' || row.reminder_cadence === 'firm' || row.reminder_cadence === 'standard') {
+        cadenceByClient.set(row.id, row.reminder_cadence);
+      }
+    }
+  }
+
+  /**
+   * Stage-eligibility filter based on the client's reminder_cadence:
+   *   - 'standard' — every stage fires normally (current behavior)
+   *   - 'gentle'   — skip the early heads-up stages. Only fire 3-days past
+   *                  due and later. For trusted slow payers who reliably
+   *                  settle without being pestered.
+   *   - 'firm'     — fire 'due-soon' a week earlier than the schedule
+   *                  (i.e. once 7-day cron picks an invoice up, also count
+   *                  the 14-day-out as if it were today's window). MVP
+   *                  behavior: also include any stage whose offset is
+   *                  within +/- 1 day, so the operator's stricter clients
+   *                  get pinged faster around each milestone.
+   */
+  function stageAllowedForClient(stage: string, cadence: 'standard' | 'gentle' | 'firm'): boolean {
+    if (cadence === 'standard') return true;
+    if (cadence === 'gentle') {
+      // Skip the friendly early stages; only escalate when past due.
+      return stage === 'overdue-3' || stage === 'overdue-7' ||
+             stage === 'overdue-14' || stage === 'overdue-30';
+    }
+    // 'firm' — all stages allowed; the next-day-loose-match below adds
+    // extra opportunities.
+    return true;
+  }
+
   for (const inv of invoices ?? []) {
-    const stage = stageForToday(inv.due_date);
+    let stage = stageForToday(inv.due_date);
+    const cadence = (inv.client_id && cadenceByClient.get(inv.client_id)) || 'standard';
+
+    // 'firm' cadence — also check yesterday/tomorrow so the cron is more
+    // likely to land on a stage milestone for clients we want pressed.
+    if (!stage && cadence === 'firm') {
+      const today = new Date();
+      const yesterday = new Date(today.getTime() - 86_400_000).toISOString().slice(0, 10);
+      const tomorrow = new Date(today.getTime() + 86_400_000).toISOString().slice(0, 10);
+      stage = stageForToday(inv.due_date, yesterday) ?? stageForToday(inv.due_date, tomorrow);
+    }
     if (!stage) continue;
+    if (!stageAllowedForClient(stage, cadence)) continue;
 
     // 4. Reserve the (invoice, stage) slot via the unique index. If a row
     //    already exists we skip — that stage was already handled.

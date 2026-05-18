@@ -16,7 +16,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   ArrowLeft, Download, Send, CheckCircle, AlertTriangle, Trash2,
-  Pencil, Save, X, RotateCw, Ban, Mail, Repeat,
+  Pencil, Save, X, RotateCw, Ban, Mail, Repeat, Copy, BellRing, DollarSign,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
@@ -47,6 +47,16 @@ export default function InvoiceDetailPage() {
   const [composeSubject, setComposeSubject] = useState('');
   const [composeMessage, setComposeMessage] = useState('');
   const [composeCc, setComposeCc] = useState('');
+
+  // Mark-paid modal state. Replaces the old window.prompt flow with a proper
+  // styled form: method pills, amount (defaults to invoice total), payment
+  // date (defaults to today, supports backdating to bank-deposit date), and
+  // optional notes that append to internal_notes for audit context.
+  const [markPaidOpen, setMarkPaidOpen] = useState(false);
+  const [paidMethod, setPaidMethod] = useState<string>('Check');
+  const [paidAmountStr, setPaidAmountStr] = useState<string>('');
+  const [paidDate, setPaidDate] = useState<string>(() => new Date().toISOString().slice(0, 10));
+  const [paidNotes, setPaidNotes] = useState<string>('');
 
   // Reminder history for this invoice
   const [reminders, setReminders] = useState<{ stage: ReminderStage; sent_at: string }[]>([]);
@@ -181,31 +191,56 @@ export default function InvoiceDetailPage() {
     setComposeMessage(substituteTemplate(FALLBACK_TEMPLATE.default_message, invoice));
   }
 
-  async function markPaid() {
+  /**
+   * Step 1 — open the mark-paid modal with sensible defaults (amount =
+   * invoice.total, date = today, method = last-used or "Check"). The actual
+   * write happens in confirmMarkPaid() once the operator clicks Save.
+   *
+   * Decoupling the open from the write lets us validate the amount before
+   * touching the row and lets the operator dismiss without consequence.
+   */
+  function openMarkPaid() {
     if (!invoice) return;
-    const method = window.prompt(
-      'Payment method? (Stripe / ACH / Check / Other)',
-      'Check',
-    );
-    if (method == null) return;
-    const amountStr = window.prompt(
-      `Amount received? Leave blank to use total (${formatMoney(invoice.total)}).`,
-      '',
-    );
-    if (amountStr == null) return;
-    const amount = amountStr.trim() === '' ? invoice.total : Number(amountStr);
-    if (Number.isNaN(amount)) {
-      setError('Amount must be a number.');
+    setError(null);
+    setInfo(null);
+    setPaidAmountStr(String(invoice.total));
+    setPaidDate(new Date().toISOString().slice(0, 10));
+    setPaidMethod('Check');
+    setPaidNotes('');
+    setMarkPaidOpen(true);
+  }
+
+  async function confirmMarkPaid() {
+    if (!invoice) return;
+    const amount = Number(paidAmountStr);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      setError('Amount must be a positive number.');
       return;
     }
     setBusy('paid');
+    // paid_at is the authoritative timestamp. We store the operator's chosen
+    // date at 12:00 UTC noon to avoid timezone drift when displayed back.
+    // If they backdate to "the day the deposit cleared," that's the date
+    // that lands on the invoice / shows in monthly paid totals.
+    const paidAtIso = `${paidDate}T12:00:00.000Z`;
+    // Append the note to internal_notes if provided so we have an audit
+    // trail without needing a separate paid_notes column.
+    const notesPatch = paidNotes.trim()
+      ? {
+          internal_notes: [
+            invoice.internal_notes?.trim(),
+            `[Paid ${paidDate} via ${paidMethod}] ${paidNotes.trim()}`,
+          ].filter(Boolean).join('\n\n'),
+        }
+      : {};
     const { error } = await supabase
       .from('invoices')
       .update({
         status: 'paid',
-        paid_at: new Date().toISOString(),
-        paid_method: method.trim() || 'Other',
+        paid_at: paidAtIso,
+        paid_method: paidMethod || 'Other',
         paid_amount: amount,
+        ...notesPatch,
       })
       .eq('id', invoice.id);
     if (error) {
@@ -221,7 +256,8 @@ export default function InvoiceDetailPage() {
         .catch(err => console.warn('Payment link deactivation failed (non-fatal):', err));
     }
     setBusy(null);
-    setInfo('Marked as paid.');
+    setMarkPaidOpen(false);
+    setInfo(`Marked as paid · ${formatMoney(amount)} via ${paidMethod}.`);
     await load();
   }
 
@@ -253,6 +289,32 @@ export default function InvoiceDetailPage() {
       await load();
     } catch (err) {
       setError((err as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  /**
+   * Manually fire the next unsent reminder stage right now, bypassing the
+   * cron's schedule. Useful when the operator notices the email hasn't
+   * been opened in 5 days and wants to push without editing the schedule.
+   *
+   * Server route picks the next unsent stage automatically based on the
+   * invoice's due_date and the reminder history, so the operator doesn't
+   * need to pick the stage — they just click and we send the right one.
+   */
+  async function sendReminderNow() {
+    if (!invoice) return;
+    setBusy('remind');
+    setError(null);
+    try {
+      const res = await fetch(`/api/invoices/${invoice.id}/remind`, { method: 'POST' });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body?.error ?? 'Could not send reminder');
+      setInfo(`Reminder sent · ${body.stage ?? 'next stage'}.`);
+      await load();
+    } catch (e) {
+      setError((e as Error).message);
     } finally {
       setBusy(null);
     }
@@ -466,6 +528,17 @@ export default function InvoiceDetailPage() {
                 <a href={`/api/invoices/${invoice.id}/pdf`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-4 py-2 text-body-sm text-primary hover:border-primary">
                   <Download className="h-4 w-4" /> PDF
                 </a>
+                {/* Duplicate — always available regardless of status. The
+                    most common use: re-billing the same client for the same
+                    retainer next month without setting up a recurring
+                    template. Carries client + line items + tax to /new. */}
+                <Link
+                  href={`/billing/invoices/new?clone=${invoice.id}`}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-4 py-2 text-body-sm text-primary hover:border-primary"
+                  title="Create a new invoice prefilled with this invoice's client + line items"
+                >
+                  <Copy className="h-4 w-4" /> Duplicate
+                </Link>
                 {status !== 'paid' && status !== 'void' && (
                   <>
                     <button type="button" onClick={startEdit} className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-4 py-2 text-body-sm text-primary hover:border-primary">
@@ -474,7 +547,7 @@ export default function InvoiceDetailPage() {
                     <button type="button" onClick={openCompose} disabled={busy === 'send'} className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-body-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-60">
                       <Send className="h-4 w-4" /> {invoice.sent_at ? 'Resend' : 'Send'}
                     </button>
-                    <button type="button" onClick={markPaid} disabled={busy === 'paid'} className="inline-flex items-center gap-1.5 rounded-lg bg-green-700 px-4 py-2 text-body-sm font-semibold text-white hover:bg-green-800 disabled:opacity-60">
+                    <button type="button" onClick={openMarkPaid} disabled={busy === 'paid'} className="inline-flex items-center gap-1.5 rounded-lg bg-green-700 px-4 py-2 text-body-sm font-semibold text-white hover:bg-green-800 disabled:opacity-60">
                       <CheckCircle className="h-4 w-4" /> Mark paid
                     </button>
                   </>
@@ -618,6 +691,22 @@ export default function InvoiceDetailPage() {
                       );
                     })}
                   </div>
+
+                  {/* Manual fire — picks the next unsent stage server-side
+                      and emails it now. Useful when the cron's schedule is
+                      too patient and the operator wants to nudge the client
+                      ahead of the next trigger date. */}
+                  {invoice.reminders_enabled !== false && reminders.length < REMINDER_STAGES.length && (
+                    <button
+                      type="button"
+                      onClick={sendReminderNow}
+                      disabled={busy === 'remind'}
+                      className="mt-4 inline-flex items-center gap-1.5 rounded-lg border border-gold/40 bg-gold/5 px-3 py-1.5 text-caption font-semibold text-gold-dark hover:bg-gold/10 disabled:opacity-60"
+                    >
+                      <BellRing className="h-3.5 w-3.5" />
+                      {busy === 'remind' ? 'Sending…' : 'Send reminder now'}
+                    </button>
+                  )}
                 </Card>
               )}
 
@@ -950,6 +1039,155 @@ export default function InvoiceDetailPage() {
                   className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-5 py-2 text-body-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-60"
                 >
                   <Send className="h-4 w-4" /> {busy === 'send' ? 'Sending…' : 'Send invoice'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mark-paid modal — replaces the old window.prompt flow. Method pills
+          for the most-common payment channels (Check / ACH / Stripe / Cash /
+          Other), amount input prefilled with the invoice total, date picker
+          for backdating to the day a bank deposit cleared, optional notes
+          that append to internal_notes for audit. */}
+      {markPaidOpen && invoice && (
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm p-4 sm:p-8 overflow-y-auto"
+          onClick={() => !busy && setMarkPaidOpen(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-md my-8"
+            onClick={e => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="markpaid-title"
+          >
+            <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-border">
+              <div className="flex items-center gap-2.5">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-green-100 text-green-800">
+                  <DollarSign className="h-4 w-4" />
+                </span>
+                <div>
+                  <h2 id="markpaid-title" className="font-heading text-body font-bold text-primary">
+                    Mark {invoice.invoice_number} paid
+                  </h2>
+                  <p className="text-caption text-foreground-muted">
+                    Record the payment and close out this invoice
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => !busy && setMarkPaidOpen(false)}
+                disabled={!!busy}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-foreground-muted hover:text-primary hover:bg-background-cream disabled:opacity-50"
+                aria-label="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="px-6 py-5 space-y-4">
+              {/* Method pills — keyboard-navigable, semantic radio behavior */}
+              <div>
+                <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-2">Method</span>
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5" role="radiogroup" aria-label="Payment method">
+                  {['Check', 'ACH', 'Stripe', 'Cash', 'Other'].map(m => {
+                    const selected = paidMethod === m;
+                    return (
+                      <button
+                        key={m}
+                        type="button"
+                        role="radio"
+                        aria-checked={selected}
+                        onClick={() => setPaidMethod(m)}
+                        className={`rounded-lg border-2 px-3 py-2 text-body-sm font-semibold transition-colors ${
+                          selected
+                            ? 'border-gold bg-gold/5 text-primary'
+                            : 'border-border bg-white text-foreground-muted hover:border-gold/50'
+                        }`}
+                      >
+                        {m}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <label className="block">
+                <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-1">
+                  Amount received <span className="text-foreground-muted/60 normal-case">· invoice total {formatMoney(invoice.total)}</span>
+                </span>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground-muted">$</span>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={paidAmountStr}
+                    onChange={e => setPaidAmountStr(e.target.value)}
+                    className={`${inputCls} pl-7 font-mono`}
+                    autoFocus
+                  />
+                </div>
+                {Number(paidAmountStr) > 0 && Math.abs(Number(paidAmountStr) - invoice.total) > 0.005 && (
+                  <p className="mt-1.5 text-caption text-amber-700">
+                    {Number(paidAmountStr) < invoice.total ? '⚠ Partial payment' : '⚠ Overpayment'} — invoice will still mark fully paid. Adjust separately if needed.
+                  </p>
+                )}
+              </label>
+
+              <label className="block">
+                <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-1">Payment date</span>
+                <input
+                  type="date"
+                  value={paidDate}
+                  onChange={e => setPaidDate(e.target.value)}
+                  className={inputCls}
+                />
+                <p className="mt-1.5 text-caption text-foreground-muted">
+                  Backdate to the day the deposit cleared. Defaults to today.
+                </p>
+              </label>
+
+              <label className="block">
+                <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-1">
+                  Notes <span className="text-foreground-muted/60 normal-case">(optional)</span>
+                </span>
+                <textarea
+                  rows={2}
+                  value={paidNotes}
+                  onChange={e => setPaidNotes(e.target.value)}
+                  className={inputCls}
+                  placeholder='Check #1234, deposit batch B-072, etc.'
+                />
+                <p className="mt-1.5 text-caption text-foreground-muted">
+                  Appended to the invoice&apos;s internal notes for audit context.
+                </p>
+              </label>
+            </div>
+
+            <div className="px-6 py-4 border-t border-border bg-background-cream/40 flex items-center justify-between gap-3 rounded-b-2xl">
+              <p className="text-caption text-foreground-muted">
+                Invoice will close as <span className="font-semibold text-green-700">Paid</span>.
+              </p>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setMarkPaidOpen(false)}
+                  disabled={!!busy}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-4 py-2 text-body-sm text-foreground-muted hover:text-primary disabled:opacity-60"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={confirmMarkPaid}
+                  disabled={busy === 'paid' || !Number(paidAmountStr) || Number(paidAmountStr) <= 0}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-green-700 px-5 py-2 text-body-sm font-semibold text-white hover:bg-green-800 disabled:opacity-60"
+                >
+                  <CheckCircle className="h-4 w-4" /> {busy === 'paid' ? 'Saving…' : 'Mark paid'}
                 </button>
               </div>
             </div>

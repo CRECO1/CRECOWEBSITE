@@ -21,6 +21,15 @@ function sanitize(body: Record<string, unknown>): Record<string, unknown> | { er
   if (!isValidEmail(body.email)) return { error: 'Valid email is required' };
   const name = clampString(body.name, MAX_LEN.name);
   if (!name) return { error: 'Name is required' };
+
+  // Defaults — all optional. Clamp numbers, gate enums.
+  const taxRaw = body.default_tax_rate;
+  const taxRate = typeof taxRaw === 'number' && Number.isFinite(taxRaw) && taxRaw >= 0 && taxRaw <= 1
+    ? taxRaw : null;
+  const cadenceRaw = body.reminder_cadence;
+  const cadence = cadenceRaw === 'gentle' || cadenceRaw === 'firm' || cadenceRaw === 'standard'
+    ? cadenceRaw : null;
+
   return {
     name,
     email: (body.email as string).trim().toLowerCase(),
@@ -30,6 +39,10 @@ function sanitize(body: Record<string, unknown>): Record<string, unknown> | { er
     property_reference: body.property_reference ? clampString(body.property_reference, MAX_LEN.shortField) : null,
     notes:              body.notes              ? clampString(body.notes, MAX_LEN.notes) : null,
     active:             body.active === false ? false : true,
+    default_tax_rate:          taxRate,
+    default_payment_terms:     body.default_payment_terms ? clampString(body.default_payment_terms, MAX_LEN.shortField) : null,
+    reminders_enabled_default: body.reminders_enabled_default === false ? false : true,
+    reminder_cadence:          cadence,
   };
 }
 

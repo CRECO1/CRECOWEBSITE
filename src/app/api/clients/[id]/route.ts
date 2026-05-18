@@ -22,6 +22,24 @@ function sanitizePatch(body: Record<string, unknown>): Record<string, unknown> |
   if ('property_reference' in body) out.property_reference = body.property_reference ? clampString(body.property_reference, MAX_LEN.shortField) : null;
   if ('notes' in body)              out.notes              = body.notes              ? clampString(body.notes, MAX_LEN.notes) : null;
   if ('active' in body)             out.active             = !!body.active;
+  if ('default_tax_rate' in body) {
+    const v = body.default_tax_rate;
+    if (v === null || v === undefined || v === '') {
+      out.default_tax_rate = null;
+    } else if (typeof v === 'number' && Number.isFinite(v) && v >= 0 && v <= 1) {
+      out.default_tax_rate = v;
+    }
+  }
+  if ('default_payment_terms' in body) {
+    out.default_payment_terms = body.default_payment_terms ? clampString(body.default_payment_terms, MAX_LEN.shortField) : null;
+  }
+  if ('reminders_enabled_default' in body) out.reminders_enabled_default = !!body.reminders_enabled_default;
+  if ('reminder_cadence' in body) {
+    const c = body.reminder_cadence;
+    if (c === 'standard' || c === 'gentle' || c === 'firm') {
+      out.reminder_cadence = c;
+    }
+  }
   return out;
 }
 

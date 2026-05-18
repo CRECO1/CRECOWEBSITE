@@ -8,8 +8,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Save, AlertTriangle, Users, Trash } from 'lucide-react';
-import type { Client } from '@/lib/clients';
+import { ArrowLeft, Save, AlertTriangle, Users, Trash, Settings, Link2, Copy, RefreshCw } from 'lucide-react';
+import type { Client, ReminderCadence } from '@/lib/clients';
 
 export function ClientForm({
   initial, mode,
@@ -28,6 +28,16 @@ export function ClientForm({
   const [notes, setNotes]   = useState(initial?.notes ?? '');
   const [active, setActive] = useState(initial?.active ?? true);
 
+  // Defaults — empty string means "no override, fall back to global". Tax rate
+  // stored as percent in the form for legibility (8.25), converted to decimal
+  // on save (0.0825). Cadence is one of three preset variants.
+  const [defaultTaxRatePct, setDefaultTaxRatePct] = useState(
+    initial?.default_tax_rate != null ? String(initial.default_tax_rate * 100) : ''
+  );
+  const [defaultPaymentTerms, setDefaultPaymentTerms] = useState(initial?.default_payment_terms ?? '');
+  const [remindersEnabledDefault, setRemindersEnabledDefault] = useState(initial?.reminders_enabled_default ?? true);
+  const [reminderCadence, setReminderCadence] = useState<ReminderCadence>(initial?.reminder_cadence ?? 'standard');
+
   const [saving, setSaving] = useState(false);
   const [error, setError]   = useState<string | null>(null);
 
@@ -40,6 +50,10 @@ export function ClientForm({
     try {
       const url = mode === 'edit' ? `/api/clients/${initial!.id}` : '/api/clients';
       const method = mode === 'edit' ? 'PATCH' : 'POST';
+      // Convert percent string -> decimal. Empty string = null (no override).
+      const taxRateDecimal = defaultTaxRatePct.trim() === ''
+        ? null
+        : Math.min(1, Math.max(0, Number(defaultTaxRatePct) / 100));
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
@@ -52,6 +66,10 @@ export function ClientForm({
           property_reference: propertyReference.trim() || null,
           notes: notes.trim() || null,
           active,
+          default_tax_rate: Number.isFinite(taxRateDecimal as number) ? taxRateDecimal : null,
+          default_payment_terms: defaultPaymentTerms.trim() || null,
+          reminders_enabled_default: remindersEnabledDefault,
+          reminder_cadence: reminderCadence,
         }),
       });
       if (!res.ok) {
@@ -171,6 +189,88 @@ export function ClientForm({
         </section>
 
         <section className="rounded-xl border border-border bg-white p-6 space-y-5">
+          <h2 className="font-heading text-body font-bold text-primary flex items-center gap-2">
+            <Settings className="h-4 w-4 text-gold" />
+            Invoice defaults
+          </h2>
+          <p className="text-caption text-foreground-muted -mt-2">
+            Prefills the invoice form when you pick this client. Leave blank to use the global defaults.
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Field label="Default tax rate (%)">
+              <input
+                type="number"
+                step="0.001"
+                min="0"
+                max="100"
+                className={inputCls}
+                value={defaultTaxRatePct}
+                onChange={e => setDefaultTaxRatePct(e.target.value)}
+                placeholder="e.g. 8.25"
+              />
+              <p className="mt-1 text-caption text-foreground-muted">
+                Empty = use whatever global default is current. Use this for clients in different jurisdictions or tax-exempt entities (set 0).
+              </p>
+            </Field>
+            <Field label="Default payment terms">
+              <input
+                type="text"
+                className={inputCls}
+                value={defaultPaymentTerms}
+                onChange={e => setDefaultPaymentTerms(e.target.value)}
+                placeholder='e.g. "Net 15", "Net 30", "Due on receipt"'
+              />
+            </Field>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Field label="Reminder cadence">
+              <select
+                value={reminderCadence}
+                onChange={e => setReminderCadence(e.target.value as ReminderCadence)}
+                className={inputCls}
+              >
+                <option value="standard">Standard — full 6-stage schedule</option>
+                <option value="gentle">Gentle — skip early stages for trusted slow payers</option>
+                <option value="firm">Firm — earlier + more frequent reminders</option>
+              </select>
+              <p className="mt-1 text-caption text-foreground-muted">
+                Tune for client temperament. Gentle skips the T-7 / T+0 stages; firm fires them earlier.
+              </p>
+            </Field>
+            <Field label="Reminders enabled by default">
+              <label className="flex items-start gap-3 rounded-lg border border-border p-3 cursor-pointer hover:border-gold/50 transition-colors">
+                <input
+                  type="checkbox"
+                  checked={remindersEnabledDefault}
+                  onChange={e => setRemindersEnabledDefault(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border-border accent-primary"
+                />
+                <div>
+                  <div className="text-body-sm font-semibold text-primary">Auto-remind by default</div>
+                  <div className="text-caption text-foreground-muted">
+                    New invoices for this client start with reminders on. Individual invoices can still opt out.
+                  </div>
+                </div>
+              </label>
+            </Field>
+          </div>
+        </section>
+
+        {mode === 'edit' && initial?.portal_token && (
+          <section className="rounded-xl border border-border bg-white p-6 space-y-4">
+            <h2 className="font-heading text-body font-bold text-primary flex items-center gap-2">
+              <Link2 className="h-4 w-4 text-gold" />
+              Client portal link
+            </h2>
+            <p className="text-caption text-foreground-muted -mt-2">
+              Anyone with this URL can view this client&apos;s invoices and payment history at any time —
+              no login required. Paste it into your emails, or share it on request.
+            </p>
+            <PortalLinkRow token={initial.portal_token} clientId={initial.id} />
+          </section>
+        )}
+
+        <section className="rounded-xl border border-border bg-white p-6 space-y-5">
           <Field label="Internal notes">
             <textarea
               className={inputCls}
@@ -198,5 +298,82 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-1.5">{label}</span>
       {children}
     </label>
+  );
+}
+
+/**
+ * Inline copy-link row + rotate action for the client portal URL. Rotate
+ * generates a fresh token server-side, invalidating the old URL — used
+ * when a client says "I think the link got forwarded somewhere it
+ * shouldn't have."
+ */
+function PortalLinkRow({ token, clientId }: { token: string; clientId: string }) {
+  const [currentToken, setCurrentToken] = useState(token);
+  const [copied, setCopied] = useState(false);
+  const [rotating, setRotating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Build the URL — fall back to relative path during SSR
+  const url = typeof window !== 'undefined'
+    ? `${window.location.origin}/client/${currentToken}`
+    : `/client/${currentToken}`;
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setError('Copy failed — select the URL manually.');
+    }
+  }
+
+  async function rotate() {
+    if (!confirm('Generate a new portal link? The current link will stop working immediately.')) return;
+    setRotating(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/clients/${clientId}/rotate-portal-token`, { method: 'POST' });
+      const body = await res.json();
+      if (!res.ok) throw new Error(body.error ?? 'Could not rotate token');
+      setCurrentToken(body.portal_token);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setRotating(false);
+    }
+  }
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
+        <input
+          type="text"
+          value={url}
+          readOnly
+          onFocus={e => e.currentTarget.select()}
+          className="flex-1 rounded-md border border-border bg-background-cream/40 px-3 py-2 text-caption font-mono text-primary focus:outline-none focus:border-gold"
+        />
+        <button
+          type="button"
+          onClick={copy}
+          className="inline-flex items-center gap-1.5 rounded-md border border-border bg-white px-3 py-2 text-body-sm text-primary hover:border-primary whitespace-nowrap"
+        >
+          <Copy className="h-3.5 w-3.5" />
+          {copied ? 'Copied' : 'Copy'}
+        </button>
+        <button
+          type="button"
+          onClick={rotate}
+          disabled={rotating}
+          title="Generate a new link — old link stops working"
+          className="inline-flex items-center gap-1.5 rounded-md border border-border bg-white px-3 py-2 text-body-sm text-foreground-muted hover:text-primary disabled:opacity-50"
+        >
+          <RefreshCw className={`h-3.5 w-3.5 ${rotating ? 'animate-spin' : ''}`} />
+          Rotate
+        </button>
+      </div>
+      {error && <p className="text-caption text-destructive">{error}</p>}
+    </div>
   );
 }

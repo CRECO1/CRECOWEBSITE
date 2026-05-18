@@ -52,8 +52,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   catch { return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 }); }
 
   const action = body.action as string | undefined;
-  if (!action || !['expense', 'ignore', 'reconcile', 'unreview'].includes(action)) {
-    return NextResponse.json({ error: 'action must be expense | ignore | reconcile | unreview' }, { status: 400 });
+  if (!action || !['expense', 'ignore', 'reconcile', 'unreview', 'apply_to_invoice'].includes(action)) {
+    return NextResponse.json({ error: 'action must be expense | ignore | reconcile | unreview | apply_to_invoice' }, { status: 400 });
   }
 
   // Pull the txn so we know its current state and amount
@@ -100,6 +100,97 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       .eq('id', id);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     return NextResponse.json({ ok: true });
+  }
+
+  /**
+   * apply_to_invoice — link this inflow to an open invoice and mark the
+   * invoice paid in one step. Bank reconciliation MVP.
+   *
+   * Required body: { action: 'apply_to_invoice', invoice_id }
+   * Optional:      { method, date }   — defaults to 'ACH' + the txn date
+   *
+   * Side effects (in order):
+   *   1. UPDATE invoices SET status='paid' ...
+   *   2. UPDATE bank_transactions SET status='reconciled', reconciled_invoice_id
+   *   3. Deactivate the Stripe Payment Link if any (best-effort)
+   *
+   * The invoice's paid_amount uses the txn's absolute amount (which may
+   * exceed the invoice total if the deposit covers fees) and paid_at uses
+   * the txn's posted_date so the cash-basis date matches reality.
+   */
+  if (action === 'apply_to_invoice') {
+    const invoiceId = body.invoice_id as string | undefined;
+    if (!invoiceId) {
+      return NextResponse.json({ error: 'invoice_id required for apply_to_invoice' }, { status: 400 });
+    }
+    if (Number(txn.amount) >= 0) {
+      return NextResponse.json(
+        { error: 'apply_to_invoice is only valid for inflows (negative-amount transactions).' },
+        { status: 400 },
+      );
+    }
+    const { data: inv, error: invErr } = await supabase
+      .from('invoices')
+      .select('id, total, status, stripe_payment_link_url, internal_notes')
+      .eq('id', invoiceId)
+      .single();
+    if (invErr || !inv) {
+      return NextResponse.json({ error: 'Invoice not found' }, { status: 404 });
+    }
+    if (inv.status === 'paid' || inv.status === 'void') {
+      return NextResponse.json(
+        { error: `Invoice is already ${inv.status}; reopen it first if you want to reconcile.` },
+        { status: 400 },
+      );
+    }
+
+    const method = clampString(body.method, MAX_LEN.shortField) || 'ACH';
+    const paidAmount = Math.abs(Number(txn.amount));
+    const paidAt = `${txn.posted_date}T12:00:00.000Z`;
+    const txnRef = txn.merchant_name || txn.description || 'bank deposit';
+
+    const internalNotePatch = [
+      inv.internal_notes?.trim(),
+      `[Reconciled ${txn.posted_date} from bank: ${txnRef} · ${method}]`,
+    ].filter(Boolean).join('\n\n');
+
+    // 1. Mark invoice paid
+    const { error: payErr } = await supabase
+      .from('invoices')
+      .update({
+        status: 'paid',
+        paid_at: paidAt,
+        paid_method: method,
+        paid_amount: paidAmount,
+        internal_notes: internalNotePatch,
+      })
+      .eq('id', invoiceId);
+    if (payErr) {
+      return NextResponse.json({ error: payErr.message }, { status: 500 });
+    }
+
+    // 2. Mark txn reconciled + linked
+    const { error: tErr } = await supabase
+      .from('bank_transactions')
+      .update({
+        status: 'reconciled',
+        reconciled_invoice_id: invoiceId,
+        reviewed_at: new Date().toISOString(),
+        reviewed_by: user.id,
+      })
+      .eq('id', id);
+    if (tErr) {
+      return NextResponse.json({ error: tErr.message }, { status: 500 });
+    }
+
+    // 3. Deactivate Stripe payment link (best-effort, non-fatal)
+    if (inv.stripe_payment_link_url) {
+      fetch(`${new URL(req.url).origin}/api/invoices/${invoiceId}/deactivate-payment-link`, {
+        method: 'POST',
+      }).catch(err => console.warn('Payment link deactivation failed (non-fatal):', err));
+    }
+
+    return NextResponse.json({ ok: true, invoice_id: invoiceId, applied_amount: paidAmount });
   }
 
   if (action === 'reconcile') {

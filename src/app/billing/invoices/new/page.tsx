@@ -14,10 +14,10 @@
  * just save again. For a single-user admin this is fine.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { ArrowLeft, Plus, Trash2, Save, Send, AlertTriangle, Mail, RotateCw, Repeat } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { ArrowLeft, Plus, Trash2, Save, Send, AlertTriangle, Mail, RotateCw, Repeat, Copy } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
   calculateTotals, formatMoney, lineAmount, nextInvoiceNumber,
@@ -46,10 +46,28 @@ function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+/**
+ * Wrapper for Next.js 15: useSearchParams() must be inside a Suspense
+ * boundary so the static prerender of /billing/invoices/new doesn't bail.
+ */
 export default function NewInvoicePage() {
+  return (
+    <Suspense fallback={null}>
+      <NewInvoicePageInner />
+    </Suspense>
+  );
+}
+
+function NewInvoicePageInner() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const cloneId = searchParams.get('clone');
 
   const [invoiceNumber, setInvoiceNumber] = useState('');
+  // Banner shown when we successfully prefilled from a previous invoice —
+  // makes it obvious to the operator that this isn't a blank form so they
+  // tweak (rather than think the prefill was a bug and re-enter everything).
+  const [clonedBanner, setClonedBanner] = useState<string | null>(null);
   // Set when the operator picks a saved client from the typeahead.
   // When null, the bill-to fields are treated as a new client and we
   // upsert by email on save.
@@ -112,6 +130,56 @@ export default function NewInvoicePage() {
       if (data) setEmailTemplate(data);
     })();
   }, []);
+
+  // If we were arrived at with ?clone=<id>, pull the source invoice + its
+  // line items and prefill every editable field. Issue date snaps to today
+  // and due date to today+30 — keeping the source's date would surface bugs
+  // ("why is this invoice dated 2 months ago?") that operators have to
+  // correct anyway. Everything else (client, line items, tax, terms, notes)
+  // carries forward.
+  useEffect(() => {
+    if (!cloneId) return;
+    (async () => {
+      const { data: src } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('id', cloneId)
+        .single();
+      if (!src) return;
+      const { data: srcItems } = await supabase
+        .from('invoice_line_items')
+        .select('*')
+        .eq('invoice_id', cloneId)
+        .order('sort_order', { ascending: true });
+
+      setClientId(src.client_id ?? null);
+      setClientName(src.client_name ?? '');
+      setClientEmail(src.client_email ?? '');
+      setClientCompany(src.client_company ?? '');
+      setClientAddress(src.client_address ?? '');
+      setPaymentTerms(src.payment_terms ?? DEFAULT_TERMS);
+      setPropertyReference(src.property_reference ?? '');
+      setTaxRate(Number(src.tax_rate) || 0);
+      setNotes(src.notes ?? '');
+      // Internal notes get a "Duplicated from" stamp at the top so the
+      // operator can trace lineage. They can edit / strip it freely.
+      setInternalNotes(
+        `[Duplicated from ${src.invoice_number}]` +
+        (src.internal_notes ? `\n\n${src.internal_notes}` : '')
+      );
+      if (srcItems && srcItems.length > 0) {
+        setItems(
+          srcItems.map((it: { description: string; quantity: number; rate: number; amount: number }) => ({
+            description: it.description,
+            quantity: Number(it.quantity),
+            rate: Number(it.rate),
+            amount: Number(it.amount),
+          }))
+        );
+      }
+      setClonedBanner(`Duplicated from ${src.invoice_number} · ${src.client_name}. Tweak as needed, then save.`);
+    })();
+  }, [cloneId]);
 
   const totals = useMemo(() => calculateTotals(items, taxRate), [items, taxRate]);
 
@@ -425,6 +493,12 @@ export default function NewInvoicePage() {
       </header>
 
       <div className="mx-auto max-w-6xl px-6 py-8 space-y-6">
+        {clonedBanner && (
+          <div className="flex items-start gap-3 rounded-lg border border-gold/40 bg-gold/5 p-4 text-body-sm text-gold-dark">
+            <Copy className="h-5 w-5 shrink-0 mt-0.5" />
+            <div>{clonedBanner}</div>
+          </div>
+        )}
         {error && (
           <div className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-body-sm text-destructive">
             <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" />
@@ -447,6 +521,11 @@ export default function NewInvoicePage() {
                   if (c.property_reference && !propertyReference) {
                     setPropertyReference(c.property_reference);
                   }
+                  // Apply client billing defaults — these flow through from
+                  // the saved client record into this invoice's form. The
+                  // operator can override any of them per-invoice.
+                  if (c.default_tax_rate != null) setTaxRate(c.default_tax_rate);
+                  if (c.default_payment_terms) setPaymentTerms(c.default_payment_terms);
                 }}
                 onClear={() => {
                   setClientId(null);

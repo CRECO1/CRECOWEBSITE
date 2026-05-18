@@ -14,7 +14,10 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, FilePlus2, Filter, Mail, Receipt, Eye, EyeOff } from 'lucide-react';
+import {
+  ArrowLeft, ArrowRight, FilePlus2, Filter, Mail, Receipt, Eye, EyeOff,
+  CheckCircle, Ban, X, Loader2, DollarSign,
+} from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
   formatMoney, formatDate, effectiveStatus, STATUS_STYLES,
@@ -34,6 +37,16 @@ export default function InvoicesListPage() {
   const [invoices, setInvoices] = useState<Invoice[] | null>(null);
   const [filter, setFilter] = useState<'all' | InvoiceStatus>('all');
   const [error, setError] = useState<string | null>(null);
+
+  // Multi-select state for bulk operations. Set of selected invoice IDs.
+  // Cleared when the filter changes (because the visible set changes) so
+  // we don't accidentally bulk-act on rows the operator can no longer see.
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkOpen, setBulkOpen] = useState<null | 'paid' | 'void'>(null);
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [bulkResult, setBulkResult] = useState<{ updated: number; failed: number } | null>(null);
+  const [bulkMethod, setBulkMethod] = useState<string>('Check');
+  const [bulkDate, setBulkDate] = useState<string>(() => new Date().toISOString().slice(0, 10));
 
   useEffect(() => {
     let cancelled = false;
@@ -65,6 +78,112 @@ export default function InvoicesListPage() {
   const filtered = useMemo(
     () => filter === 'all' ? enriched : enriched.filter(i => i._status === filter),
     [enriched, filter],
+  );
+
+  // Drop any selection that's no longer in the filtered set when the filter
+  // changes. Avoids the trap of "I selected 5 on the All view, switched to
+  // Paid, and bulk-mark-paid silently applied to 5 invoices I can't see."
+  useEffect(() => {
+    setSelected(prev => {
+      const visible = new Set(filtered.map(i => i.id));
+      const next = new Set<string>();
+      prev.forEach(id => { if (visible.has(id)) next.add(id); });
+      return next.size === prev.size ? prev : next;
+    });
+  }, [filtered]);
+
+  // Selection helpers
+  function toggleOne(id: string) {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
+  function toggleAllVisible() {
+    setSelected(prev => {
+      const allOn = filtered.every(i => prev.has(i.id));
+      if (allOn) return new Set();
+      const next = new Set<string>();
+      filtered.forEach(i => next.add(i.id));
+      return next;
+    });
+  }
+  function clearSelection() {
+    setSelected(new Set());
+  }
+
+  /**
+   * Bulk-mark-paid. Stripe links can't be deactivated in a single SQL update
+   * (they're per-invoice API calls), so we iterate and fire deactivation in
+   * parallel after the DB writes land. Failures don't block — they're
+   * counted and surfaced as "X failed" in the result banner.
+   */
+  async function applyBulkPaid() {
+    setBulkBusy(true);
+    const ids = Array.from(selected);
+    const now = `${bulkDate}T12:00:00.000Z`;
+    let updated = 0;
+    let failed = 0;
+    for (const inv of filtered.filter(i => ids.includes(i.id))) {
+      const { error: e } = await supabase
+        .from('invoices')
+        .update({
+          status: 'paid',
+          paid_at: now,
+          paid_method: bulkMethod,
+          paid_amount: inv.total,
+        })
+        .eq('id', inv.id);
+      if (e) { failed++; continue; }
+      updated++;
+      if (inv.stripe_payment_link_url) {
+        fetch(`/api/invoices/${inv.id}/deactivate-payment-link`, { method: 'POST' })
+          .catch(err => console.warn('Payment link deactivation failed:', err));
+      }
+    }
+    // Refresh the list
+    const { data } = await supabase
+      .from('invoices').select('*')
+      .order('created_at', { ascending: false });
+    setInvoices((data ?? []) as Invoice[]);
+    setBulkResult({ updated, failed });
+    setBulkBusy(false);
+    setBulkOpen(null);
+    clearSelection();
+    setTimeout(() => setBulkResult(null), 6000);
+  }
+
+  async function applyBulkVoid() {
+    setBulkBusy(true);
+    const ids = Array.from(selected);
+    let updated = 0;
+    let failed = 0;
+    for (const id of ids) {
+      const { error: e } = await supabase
+        .from('invoices')
+        .update({ status: 'void' })
+        .eq('id', id);
+      if (e) failed++; else updated++;
+    }
+    const { data } = await supabase
+      .from('invoices').select('*')
+      .order('created_at', { ascending: false });
+    setInvoices((data ?? []) as Invoice[]);
+    setBulkResult({ updated, failed });
+    setBulkBusy(false);
+    setBulkOpen(null);
+    clearSelection();
+    setTimeout(() => setBulkResult(null), 6000);
+  }
+
+  const selectedRows = useMemo(
+    () => filtered.filter(i => selected.has(i.id)),
+    [filtered, selected],
+  );
+  const selectedTotal = useMemo(
+    () => selectedRows.reduce((s, i) => s + Number(i.total), 0),
+    [selectedRows],
   );
 
   // Stats: outstanding (sent + overdue, not paid), overdue, paid this month
@@ -182,6 +301,22 @@ export default function InvoicesListPage() {
             <table className="w-full min-w-[720px]">
               <thead className="bg-background-cream border-b border-border">
                 <tr className="text-left text-caption uppercase tracking-widest text-foreground-muted">
+                  <th className="px-3 py-3 w-10">
+                    <input
+                      type="checkbox"
+                      aria-label="Select all visible"
+                      checked={filtered.length > 0 && filtered.every(i => selected.has(i.id))}
+                      ref={el => {
+                        if (el) {
+                          const some = filtered.some(i => selected.has(i.id));
+                          const all = filtered.every(i => selected.has(i.id));
+                          el.indeterminate = some && !all;
+                        }
+                      }}
+                      onChange={toggleAllVisible}
+                      className="h-4 w-4 rounded border-border accent-primary cursor-pointer"
+                    />
+                  </th>
                   <th className="px-5 py-3 font-semibold">Invoice</th>
                   <th className="px-5 py-3 font-semibold">Client</th>
                   <th className="px-5 py-3 font-semibold">Issued</th>
@@ -195,7 +330,21 @@ export default function InvoicesListPage() {
                 {filtered.map(inv => {
                   const style = STATUS_STYLES[inv._status];
                   return (
-                    <tr key={inv.id} className="border-b border-border last:border-0 hover:bg-background-cream/50 transition-colors">
+                    <tr
+                      key={inv.id}
+                      className={`border-b border-border last:border-0 transition-colors ${
+                        selected.has(inv.id) ? 'bg-gold/5 hover:bg-gold/10' : 'hover:bg-background-cream/50'
+                      }`}
+                    >
+                      <td className="px-3 py-4" onClick={e => e.stopPropagation()}>
+                        <input
+                          type="checkbox"
+                          aria-label={`Select ${inv.invoice_number}`}
+                          checked={selected.has(inv.id)}
+                          onChange={() => toggleOne(inv.id)}
+                          className="h-4 w-4 rounded border-border accent-primary cursor-pointer"
+                        />
+                      </td>
                       <td className="px-5 py-4">
                         <Link href={`/billing/invoices/${inv.id}`} className="font-mono text-body-sm font-semibold text-primary hover:text-gold-dark">
                           {inv.invoice_number}
@@ -262,7 +411,196 @@ export default function InvoicesListPage() {
             </div>
           )}
         </section>
+
+        {bulkResult && (
+          <div className="rounded-lg border border-green-200 bg-green-50 p-4 text-body-sm text-green-800 inline-flex items-center gap-2">
+            <CheckCircle className="h-4 w-4" />
+            Updated {bulkResult.updated} invoice{bulkResult.updated !== 1 ? 's' : ''}
+            {bulkResult.failed > 0 && <span className="text-red-700">— {bulkResult.failed} failed</span>}.
+          </div>
+        )}
       </div>
+
+      {/* Floating bulk-action bar — only shown when 1+ invoices are selected.
+          Sticky bottom-center so it's always within thumb-reach without
+          scrolling. Mirrors the patterns Gmail / Stripe / FreshBooks use
+          for multi-select. */}
+      {selected.size > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 rounded-full bg-primary text-white shadow-2xl border border-gold/40 pl-5 pr-2 py-2 max-w-[95vw]">
+          <span className="text-body-sm font-semibold whitespace-nowrap">
+            {selected.size} selected · {formatMoney(selectedTotal)}
+          </span>
+          <span className="hidden sm:block h-5 w-px bg-white/20 mx-1" />
+          <button
+            type="button"
+            onClick={() => setBulkOpen('paid')}
+            className="inline-flex items-center gap-1.5 rounded-full bg-green-600 hover:bg-green-700 px-4 py-2 text-body-sm font-semibold"
+          >
+            <CheckCircle className="h-4 w-4" /> Mark paid
+          </button>
+          <button
+            type="button"
+            onClick={() => setBulkOpen('void')}
+            className="inline-flex items-center gap-1.5 rounded-full bg-white/10 hover:bg-white/20 px-4 py-2 text-body-sm font-semibold"
+          >
+            <Ban className="h-4 w-4" /> Void
+          </button>
+          <button
+            type="button"
+            onClick={clearSelection}
+            aria-label="Clear selection"
+            title="Clear selection"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full text-white/70 hover:bg-white/10 hover:text-white"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      )}
+
+      {/* Bulk mark-paid modal */}
+      {bulkOpen === 'paid' && (
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm p-4 sm:p-8 overflow-y-auto"
+          onClick={() => !bulkBusy && setBulkOpen(null)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-md my-8"
+            onClick={e => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-border">
+              <div className="flex items-center gap-2.5">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-green-100 text-green-800">
+                  <DollarSign className="h-4 w-4" />
+                </span>
+                <div>
+                  <h2 className="font-heading text-body font-bold text-primary">
+                    Mark {selected.size} invoice{selected.size !== 1 ? 's' : ''} paid
+                  </h2>
+                  <p className="text-caption text-foreground-muted">
+                    Total: {formatMoney(selectedTotal)}
+                  </p>
+                </div>
+              </div>
+              <button onClick={() => !bulkBusy && setBulkOpen(null)} disabled={bulkBusy} className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-foreground-muted hover:text-primary hover:bg-background-cream disabled:opacity-50" aria-label="Close">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="px-6 py-5 space-y-4">
+              <p className="text-body-sm text-foreground-muted">
+                Each invoice will be marked paid for its full total. Payment date and method below apply to all.
+                For mixed methods or partial payments, mark them individually.
+              </p>
+
+              <div>
+                <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-2">Method</span>
+                <div className="grid grid-cols-5 gap-1.5" role="radiogroup">
+                  {['Check', 'ACH', 'Stripe', 'Cash', 'Other'].map(m => {
+                    const selected = bulkMethod === m;
+                    return (
+                      <button
+                        key={m}
+                        type="button"
+                        role="radio"
+                        aria-checked={selected}
+                        onClick={() => setBulkMethod(m)}
+                        className={`rounded-lg border-2 px-2 py-1.5 text-caption font-semibold transition-colors ${
+                          selected ? 'border-gold bg-gold/5 text-primary' : 'border-border bg-white text-foreground-muted hover:border-gold/50'
+                        }`}
+                      >
+                        {m}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <label className="block">
+                <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-1">Payment date</span>
+                <input
+                  type="date"
+                  value={bulkDate}
+                  onChange={e => setBulkDate(e.target.value)}
+                  className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+                />
+              </label>
+
+              <div className="rounded-lg bg-background-cream border border-border p-3 max-h-40 overflow-y-auto">
+                <p className="text-caption uppercase tracking-widest text-foreground-muted mb-1">Selected</p>
+                <ul className="text-caption text-primary space-y-0.5">
+                  {selectedRows.map(r => (
+                    <li key={r.id} className="font-mono flex justify-between gap-3">
+                      <span>{r.invoice_number}</span>
+                      <span className="text-foreground-muted">{formatMoney(r.total)}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className="px-6 py-4 border-t border-border bg-background-cream/40 flex items-center justify-end gap-2 rounded-b-2xl">
+              <button onClick={() => setBulkOpen(null)} disabled={bulkBusy} className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-4 py-2 text-body-sm text-foreground-muted hover:text-primary disabled:opacity-60">
+                Cancel
+              </button>
+              <button onClick={applyBulkPaid} disabled={bulkBusy} className="inline-flex items-center gap-1.5 rounded-lg bg-green-700 px-5 py-2 text-body-sm font-semibold text-white hover:bg-green-800 disabled:opacity-60">
+                {bulkBusy ? <><Loader2 className="h-4 w-4 animate-spin" /> Saving…</> : <><CheckCircle className="h-4 w-4" /> Mark {selected.size} paid</>}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk void modal */}
+      {bulkOpen === 'void' && (
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm p-4 sm:p-8 overflow-y-auto"
+          onClick={() => !bulkBusy && setBulkOpen(null)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-md my-8"
+            onClick={e => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-border">
+              <div className="flex items-center gap-2.5">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-amber-100 text-amber-800">
+                  <Ban className="h-4 w-4" />
+                </span>
+                <h2 className="font-heading text-body font-bold text-primary">
+                  Void {selected.size} invoice{selected.size !== 1 ? 's' : ''}?
+                </h2>
+              </div>
+              <button onClick={() => !bulkBusy && setBulkOpen(null)} disabled={bulkBusy} className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-foreground-muted hover:text-primary hover:bg-background-cream disabled:opacity-50">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="px-6 py-5 space-y-3">
+              <p className="text-body-sm text-foreground-muted">
+                Voids are reversible — you can reopen any voided invoice later. Stripe payment links (if any) will be deactivated separately.
+              </p>
+              <ul className="text-caption text-primary space-y-0.5 max-h-40 overflow-y-auto rounded-lg bg-background-cream border border-border p-3">
+                {selectedRows.map(r => (
+                  <li key={r.id} className="font-mono flex justify-between gap-3">
+                    <span>{r.invoice_number}</span>
+                    <span className="text-foreground-muted">{r.client_name}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="px-6 py-4 border-t border-border bg-background-cream/40 flex items-center justify-end gap-2 rounded-b-2xl">
+              <button onClick={() => setBulkOpen(null)} disabled={bulkBusy} className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-4 py-2 text-body-sm text-foreground-muted hover:text-primary disabled:opacity-60">
+                Cancel
+              </button>
+              <button onClick={applyBulkVoid} disabled={bulkBusy} className="inline-flex items-center gap-1.5 rounded-lg bg-amber-700 px-5 py-2 text-body-sm font-semibold text-white hover:bg-amber-800 disabled:opacity-60">
+                {bulkBusy ? <><Loader2 className="h-4 w-4 animate-spin" /> Voiding…</> : <><Ban className="h-4 w-4" /> Void all</>}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
