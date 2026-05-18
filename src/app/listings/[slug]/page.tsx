@@ -13,6 +13,7 @@ import { MobileInquiryBar } from './MobileInquiryBar';
 import { RelatedListings } from '@/components/marketing/RelatedListings';
 import { ListingGallery } from '@/components/marketing/ListingGallery';
 import { CompareToggle } from '@/components/listings/CompareToggle';
+import { ListingDetailMap } from '@/components/listings/ListingDetailMap';
 import { Bell } from 'lucide-react';
 
 // Per-listing metadata so each property has a unique <title>, <meta description>,
@@ -140,6 +141,15 @@ export default async function ListingDetailPage({ params }: Props) {
                 postalCode: listing!.zip,
                 addressCountry: 'US',
               },
+              // geo block gives Google the lat/lng so the listing can show in
+              // local pack / map-based rich results. Only emit when geocoded.
+              geo: listing!.latitude != null && listing!.longitude != null
+                ? {
+                    '@type': 'GeoCoordinates',
+                    latitude: Number(listing!.latitude),
+                    longitude: Number(listing!.longitude),
+                  }
+                : undefined,
               floorSize: listing!.sqft
                 ? { '@type': 'QuantitativeValue', value: listing!.sqft, unitCode: 'FTK' }
                 : undefined,
@@ -282,6 +292,22 @@ export default async function ListingDetailPage({ params }: Props) {
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* Location map — only renders when the listing has been
+                  geocoded (latitude+longitude present). Includes a "Get
+                  directions" link as the conversion CTA next to the map. */}
+              {listing!.latitude != null && listing!.longitude != null && (
+                <div className="mb-8">
+                  <h2 className="mb-4 font-heading text-heading-lg font-semibold text-primary">Location</h2>
+                  <ListingDetailMap
+                    latitude={Number(listing!.latitude)}
+                    longitude={Number(listing!.longitude)}
+                    address={`${listing!.address}, ${listing!.city}, ${listing!.state} ${listing!.zip ?? ''}`.trim()}
+                    title={listing!.title}
+                    propertyType={listing!.property_type}
+                  />
                 </div>
               )}
 

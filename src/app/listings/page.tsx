@@ -1,16 +1,33 @@
 'use client';
 
 import { Suspense, useState, useEffect, useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Search, SlidersHorizontal, MapPin, Building2, Layers, X } from 'lucide-react';
+import { Search, SlidersHorizontal, MapPin, Building2, Layers, X, Grid3x3, Map as MapIcon } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Input } from '@/components/ui/Input';
 import { CompareToggle } from '@/components/listings/CompareToggle';
 import { formatSqft, formatLeaseRate, formatPrice, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 import type { Listing } from '@/lib/supabase';
+
+// Map view is heavy (Google Maps JS API + @vis.gl bundle) — only loaded when
+// the user opts in, so grid view keeps a tight first-load bundle for SEO.
+const ListingsMap = dynamic(
+  () => import('@/components/listings/ListingsMap').then(m => m.ListingsMap),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center bg-background-cream rounded-xl border border-border" style={{ height: '70vh' }}>
+        <p className="text-body-sm text-foreground-muted">Loading map…</p>
+      </div>
+    ),
+  }
+);
+
+type View = 'grid' | 'map';
 
 const DEMO_LISTINGS: Listing[] = [
   {
@@ -23,7 +40,9 @@ const DEMO_LISTINGS: Listing[] = [
     headline: '16,100 SF warehouse with dock and grade doors',
     description: null, features: ['Dock-high loading', 'Grade-level door', 'Fenced yard'],
     images: null, brochure_url: null, virtual_tour_url: null, status: 'active',
-    listing_date: '2026-04-10', closed_date: null, submarket: 'Northeast', featured: false, created_at: '', updated_at: '',
+    listing_date: '2026-04-10', closed_date: null, submarket: 'Northeast', featured: false,
+    latitude: 29.498, longitude: -98.367, geocoded_at: null,
+    created_at: '', updated_at: '',
   },
   {
     id: '2', title: '1346 Parkridge Dr', slug: '1346-parkridge-dr',
@@ -35,7 +54,9 @@ const DEMO_LISTINGS: Listing[] = [
     headline: '1.7 acres with 2,475 SF office building',
     description: null, features: ['Stand-alone building', 'Ample parking', 'Highway visibility'],
     images: null, brochure_url: null, virtual_tour_url: null, status: 'active',
-    listing_date: '2026-03-22', closed_date: null, submarket: 'North Central', featured: false, created_at: '', updated_at: '',
+    listing_date: '2026-03-22', closed_date: null, submarket: 'North Central', featured: false,
+    latitude: 29.526, longitude: -98.491, geocoded_at: null,
+    created_at: '', updated_at: '',
   },
   {
     id: '3', title: '2250 Chipley Circle', slug: '2250-chipley-circle',
@@ -47,7 +68,9 @@ const DEMO_LISTINGS: Listing[] = [
     headline: '26,400 SF warehouse, I-1 zoning',
     description: null, features: ['Heavy power', 'Cross-dock layout', 'Fenced & secured'],
     images: null, brochure_url: null, virtual_tour_url: null, status: 'active',
-    listing_date: '2026-04-01', closed_date: null, submarket: 'Northeast', featured: false, created_at: '', updated_at: '',
+    listing_date: '2026-04-01', closed_date: null, submarket: 'Northeast', featured: false,
+    latitude: 29.503, longitude: -98.372, geocoded_at: null,
+    created_at: '', updated_at: '',
   },
 ];
 
@@ -88,6 +111,7 @@ function ListingsPageInner() {
   const initialTxn = searchParams.get('txn') ?? 'all';
   const initialSize = Number(searchParams.get('size') ?? '0');
   const initialQ = searchParams.get('q') ?? '';
+  const initialView: View = searchParams.get('view') === 'map' ? 'map' : 'grid';
 
   const [listings, setListings] = useState<Listing[]>(DEMO_LISTINGS);
   const [search, setSearch] = useState(initialQ);
@@ -95,6 +119,7 @@ function ListingsPageInner() {
   const [transactionType, setTransactionType] = useState<string>(initialTxn);
   const [sizeIdx, setSizeIdx] = useState(Number.isFinite(initialSize) ? initialSize : 0);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [view, setView] = useState<View>(initialView);
 
   // Build dropdown options dynamically: preset values first, then any custom
   // values found in the actual listing data. This way custom types added in
@@ -129,13 +154,14 @@ function ListingsPageInner() {
     if (transactionType !== 'all') params.set('txn', transactionType);
     if (sizeIdx !== 0) params.set('size', String(sizeIdx));
     if (search) params.set('q', search);
+    if (view !== 'grid') params.set('view', view);
     const qs = params.toString();
     const next = qs ? `/listings?${qs}` : '/listings';
     // Only update if it actually changed — avoids infinite loops with Next router
     if (`${window.location.pathname}${window.location.search}` !== next) {
       router.replace(next, { scroll: false });
     }
-  }, [propertyType, transactionType, sizeIdx, search, router]);
+  }, [propertyType, transactionType, sizeIdx, search, view, router]);
 
   useEffect(() => {
     fetch('/api/listings').then(r => r.json()).then(d => {
@@ -225,6 +251,34 @@ function ListingsPageInner() {
                   <X className="h-3 w-3" /> Clear
                 </button>
               )}
+
+              {/* View toggle — Grid (default) vs Map. The map view is the
+                  defining UX upgrade for CRE shoppers, who hunt by location
+                  more than by spec. URL persists so views are shareable. */}
+              <div className="ml-auto inline-flex h-11 items-center rounded-lg border border-border bg-background-cream p-1">
+                <button
+                  onClick={() => setView('grid')}
+                  className={`flex items-center gap-1.5 rounded-md px-3 h-full text-body-sm font-semibold transition-colors ${
+                    view === 'grid' ? 'bg-white text-primary shadow-sm' : 'text-foreground-muted hover:text-primary'
+                  }`}
+                  aria-pressed={view === 'grid'}
+                  aria-label="Grid view"
+                >
+                  <Grid3x3 className="h-4 w-4" />
+                  <span className="hidden sm:inline">Grid</span>
+                </button>
+                <button
+                  onClick={() => setView('map')}
+                  className={`flex items-center gap-1.5 rounded-md px-3 h-full text-body-sm font-semibold transition-colors ${
+                    view === 'map' ? 'bg-white text-primary shadow-sm' : 'text-foreground-muted hover:text-primary'
+                  }`}
+                  aria-pressed={view === 'map'}
+                  aria-label="Map view"
+                >
+                  <MapIcon className="h-4 w-4" />
+                  <span className="hidden sm:inline">Map</span>
+                </button>
+              </div>
             </div>
 
             {filtersOpen && (
@@ -248,7 +302,7 @@ function ListingsPageInner() {
           </Container>
         </div>
 
-        {/* Grid */}
+        {/* Grid or Map */}
         <div className="py-10">
           <Container>
             {filtered.length === 0 ? (
@@ -257,6 +311,16 @@ function ListingsPageInner() {
                 <h2 className="font-heading text-heading font-semibold text-primary">No properties found</h2>
                 <p className="mt-2 text-body text-foreground-muted">Try adjusting your filters — or <Link href="/get-started" className="text-gold hover:text-gold-dark">submit your tenant needs</Link> and we&apos;ll bring options to you.</p>
               </div>
+            ) : view === 'map' ? (
+              <>
+                <p className="mb-4 text-body-sm text-foreground-muted">
+                  Showing {filtered.length} {filtered.length === 1 ? 'property' : 'properties'} on the map — click a pin for details.
+                </p>
+                <ListingsMap listings={filtered} />
+                <p className="mt-3 text-caption text-foreground-muted text-center">
+                  Some properties may not appear on the map until their location has been geocoded. Switch to Grid view to see the full inventory.
+                </p>
+              </>
             ) : (
               <>
                 <p className="mb-6 text-body-sm text-foreground-muted">

@@ -55,6 +55,12 @@ export interface Listing {
   closed_date: string | null;
   submarket: string | null;
   featured: boolean;
+  // Geocoded coordinates — populated by /api/admin/geocode-listings or the
+  // Supabase trigger on insert. NULL means "not yet geocoded" — those listings
+  // won't render a pin on the map view but still appear in grid.
+  latitude: number | null;
+  longitude: number | null;
+  geocoded_at: string | null;
   created_at: string;
   updated_at: string;
 }
