@@ -1,20 +1,26 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Contact CRECO | San Antonio Commercial Real Estate',
+  title: 'Contact CRECO | Texas Commercial Real Estate Brokers',
   description:
-    'Contact CRECO — San Antonio\'s commercial real estate company. Schedule a consultation, ask about a property, or get tenant representation.',
+    'Contact CRECO — Texas commercial real estate brokers serving San Antonio, Austin, Houston, Dallas–Fort Worth, and the Hill Country. Tenant representation, investment advisory, leasing & sales, owner services, and property management. (210) 817-3443.',
   keywords: [
     'contact CRECO',
-    'San Antonio commercial real estate contact',
-    'commercial real estate broker San Antonio',
+    'texas commercial real estate broker',
+    'commercial real estate broker san antonio',
+    'commercial real estate broker austin',
+    'commercial real estate broker houston',
+    'commercial real estate broker dallas',
+    'commercial real estate broker fair oaks ranch',
+    'commercial real estate consultation texas',
+    'tenant representation contact texas',
+    'commercial property management contact texas',
     'CRECO phone number',
-    'San Antonio CRE consultation',
   ],
   openGraph: {
-    title: 'Contact CRECO | Commercial Real Estate San Antonio',
+    title: 'Contact CRECO | Texas Commercial Real Estate',
     description:
-      'Reach out to CRECO for tenant representation, investment advisory, leasing & sales, or property management services.',
+      'Reach out to CRECO for tenant representation, investment advisory, leasing & sales, owner services, and property management across Texas.',
     url: 'https://www.crecotx.com/contact',
     type: 'website',
   },

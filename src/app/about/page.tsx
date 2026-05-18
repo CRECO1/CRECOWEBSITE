@@ -7,10 +7,29 @@ import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
 
 export const metadata: Metadata = {
-  title: 'About CRECO | San Antonio Commercial Real Estate Company',
+  title: 'About CRECO | Texas Commercial Real Estate Company',
   description:
-    'CRECO is a trailblazing commercial real estate company in San Antonio. Learn about our mission, principals, and the values that drive every engagement.',
+    'CRECO is a trailblazing Texas commercial real estate brokerage and advisory firm. Headquartered in Fair Oaks Ranch, serving San Antonio, Austin, Houston, Dallas–Fort Worth, and the Hill Country. Principal-led tenant rep, owner services, and investment advisory.',
+  keywords: [
+    'CRECO commercial real estate',
+    'texas commercial real estate company',
+    'texas commercial real estate brokerage',
+    'san antonio commercial real estate firm',
+    'fair oaks ranch commercial real estate',
+    'hill country commercial real estate broker',
+    'principal-led commercial real estate texas',
+    'commercial real estate advisory texas',
+    'tenant representation firm texas',
+    'investment advisory commercial real estate texas',
+  ],
   alternates: { canonical: 'https://www.crecotx.com/about' },
+  openGraph: {
+    title: 'About CRECO | Texas Commercial Real Estate',
+    description:
+      'Principal-led Texas commercial real estate brokerage and advisory firm. Tenant rep, owner services, and investment advisory across San Antonio, Austin, Houston, and DFW.',
+    url: 'https://www.crecotx.com/about',
+    type: 'website',
+  },
 };
 
 const VALUES = [
