@@ -213,35 +213,38 @@ export default function InvoicesListPage() {
                         {formatMoney(inv.total)}
                       </td>
                       <td className="px-5 py-4">
-                        <div className="flex flex-col items-start gap-1">
+                        {/* Combined status + open-tracking pill. Once an
+                            invoice has been emailed (sent_at is set) and
+                            isn't a draft/void, we append a slash + open
+                            state. Drafts / voids show the status alone.
+                            Color comes from the base status — opened
+                            state is conveyed via icon + suffix text. */}
+                        {inv.sent_at && inv._status !== 'void' && inv._status !== 'draft' ? (
+                          (inv.open_count ?? 0) > 0 ? (
+                            <span
+                              className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-caption font-semibold border ${style.className}`}
+                              title={inv.last_opened_at
+                                ? `Opened ${inv.open_count} time${inv.open_count !== 1 ? 's' : ''} — most recent ${new Date(inv.last_opened_at).toLocaleString()}`
+                                : `Opened ${inv.open_count} time${inv.open_count !== 1 ? 's' : ''}`}
+                            >
+                              {style.label} / Opened
+                              <Eye className="h-3 w-3" />
+                              {inv.open_count && inv.open_count > 1 ? <span className="font-mono">×{inv.open_count}</span> : null}
+                            </span>
+                          ) : (
+                            <span
+                              className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-caption font-semibold border ${style.className}`}
+                              title="Sent but the recipient hasn't opened the email yet (or their client blocks tracking)"
+                            >
+                              {style.label} / Not Opened
+                              <EyeOff className="h-3 w-3 opacity-60" />
+                            </span>
+                          )
+                        ) : (
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-caption font-semibold border ${style.className}`}>
                             {style.label}
                           </span>
-                          {/* Open-tracking indicator — only meaningful once an
-                              invoice has actually been emailed. Drafts and
-                              voids get nothing; sent/overdue/paid show a
-                              green eye + count when opened, a muted eye-off
-                              when sent but not yet opened. */}
-                          {inv.sent_at && inv._status !== 'void' && (
-                            (inv.open_count ?? 0) > 0 ? (
-                              <span
-                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-semibold border bg-green-50 text-green-800 border-green-200"
-                                title={inv.last_opened_at
-                                  ? `Opened ${inv.open_count} time${inv.open_count !== 1 ? 's' : ''} — most recent ${new Date(inv.last_opened_at).toLocaleString()}`
-                                  : `Opened ${inv.open_count} time${inv.open_count !== 1 ? 's' : ''}`}
-                              >
-                                <Eye className="h-3 w-3" /> Opened{inv.open_count && inv.open_count > 1 ? ` ×${inv.open_count}` : ''}
-                              </span>
-                            ) : (
-                              <span
-                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-medium border bg-background-cream/50 text-foreground-muted border-border"
-                                title="Sent but the recipient hasn't opened the email yet (or their client blocks tracking)"
-                              >
-                                <EyeOff className="h-3 w-3" /> Not opened
-                              </span>
-                            )
-                          )}
-                        </div>
+                        )}
                       </td>
                       <td className="px-5 py-4 text-right">
                         <Link
