@@ -14,7 +14,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, FilePlus2, Filter, Mail, Receipt } from 'lucide-react';
+import { ArrowLeft, ArrowRight, FilePlus2, Filter, Mail, Receipt, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
   formatMoney, formatDate, effectiveStatus, STATUS_STYLES,
@@ -213,9 +213,35 @@ export default function InvoicesListPage() {
                         {formatMoney(inv.total)}
                       </td>
                       <td className="px-5 py-4">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-caption font-semibold border ${style.className}`}>
-                          {style.label}
-                        </span>
+                        <div className="flex flex-col items-start gap-1">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-caption font-semibold border ${style.className}`}>
+                            {style.label}
+                          </span>
+                          {/* Open-tracking indicator — only meaningful once an
+                              invoice has actually been emailed. Drafts and
+                              voids get nothing; sent/overdue/paid show a
+                              green eye + count when opened, a muted eye-off
+                              when sent but not yet opened. */}
+                          {inv.sent_at && inv._status !== 'void' && (
+                            (inv.open_count ?? 0) > 0 ? (
+                              <span
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-semibold border bg-green-50 text-green-800 border-green-200"
+                                title={inv.last_opened_at
+                                  ? `Opened ${inv.open_count} time${inv.open_count !== 1 ? 's' : ''} — most recent ${new Date(inv.last_opened_at).toLocaleString()}`
+                                  : `Opened ${inv.open_count} time${inv.open_count !== 1 ? 's' : ''}`}
+                              >
+                                <Eye className="h-3 w-3" /> Opened{inv.open_count && inv.open_count > 1 ? ` ×${inv.open_count}` : ''}
+                              </span>
+                            ) : (
+                              <span
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-medium border bg-background-cream/50 text-foreground-muted border-border"
+                                title="Sent but the recipient hasn't opened the email yet (or their client blocks tracking)"
+                              >
+                                <EyeOff className="h-3 w-3" /> Not opened
+                              </span>
+                            )
+                          )}
+                        </div>
                       </td>
                       <td className="px-5 py-4 text-right">
                         <Link
