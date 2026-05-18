@@ -150,25 +150,40 @@ export async function POST(req: NextRequest) {
   //   (a) invoices.last_email_message_id (initial send)
   //   (b) invoice_reminders.email_id      (auto-reminder cron)
   // Try (a) first since it covers the common case.
+  //
+  // We DO want to surface Supabase errors here. A bad SUPABASE_SERVICE_ROLE_KEY
+  // historically failed silently because the destructure ignored `error`,
+  // and the webhook just kept logging "no invoice for message_id" for every
+  // event — which looked identical to "Resend sent us an event for an
+  // email we don't own". Log loudly when the DB itself complained.
   let invoiceId: string | null = null;
-  const { data: inv } = await supabase
-    .from('invoices')
-    .select('id')
-    .eq('last_email_message_id', messageId)
-    .single();
-  if (inv) invoiceId = inv.id;
+  {
+    const { data: inv, error: invErr } = await supabase
+      .from('invoices')
+      .select('id')
+      .eq('last_email_message_id', messageId)
+      .maybeSingle();
+    if (invErr) {
+      console.error('[resend/webhook] invoices lookup failed:', invErr.message, invErr.code ?? '');
+      return NextResponse.json({ error: 'DB lookup failed' }, { status: 500 });
+    }
+    if (inv) invoiceId = inv.id;
+  }
   if (!invoiceId) {
-    const { data: rem } = await supabase
+    const { data: rem, error: remErr } = await supabase
       .from('invoice_reminders')
       .select('invoice_id')
       .eq('email_id', messageId)
-      .single();
+      .maybeSingle();
+    if (remErr) {
+      console.error('[resend/webhook] invoice_reminders lookup failed:', remErr.message, remErr.code ?? '');
+      return NextResponse.json({ error: 'DB lookup failed' }, { status: 500 });
+    }
     if (rem) invoiceId = rem.invoice_id;
   }
 
   if (!invoiceId) {
-    // Event for an email we didn't send (or one we lost the link to).
-    // Accept silently so Resend doesn't retry forever — log for forensics.
+    // Genuinely no match — accept silently so Resend doesn't retry forever.
     console.warn('[resend/webhook] no invoice for message_id:', messageId, 'type:', event.type);
     return NextResponse.json({ ok: true, ignored: 'no invoice for this email' });
   }
