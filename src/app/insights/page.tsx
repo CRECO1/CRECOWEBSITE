@@ -29,8 +29,40 @@ export default function InsightsIndex() {
   const featured = SORTED_POSTS[0];
   const rest = SORTED_POSTS.slice(1);
 
+  // CollectionPage + ItemList — gives Google + Bing the same context
+  // we already provide on /guides. Each insight post then carries its
+  // own Article schema (added per-page elsewhere).
+  const collectionSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'CRECO Insights — Texas Commercial Real Estate Analysis',
+    description: 'Texas commercial real estate insights and market analysis from CRECO.',
+    url: 'https://www.crecotx.com/insights',
+    breadcrumb: {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home',     item: 'https://www.crecotx.com' },
+        { '@type': 'ListItem', position: 2, name: 'Insights', item: 'https://www.crecotx.com/insights' },
+      ],
+    },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: SORTED_POSTS.length,
+      itemListElement: SORTED_POSTS.map((p, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `https://www.crecotx.com/insights/${p.slug}`,
+        name: p.title,
+      })),
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
+      />
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}

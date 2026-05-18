@@ -13,7 +13,7 @@ import { getLandingPage } from '@/lib/supabase';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Texas Commercial Property Owner Services | Multi-Property Portfolio | CRECO',
+  title: 'Texas Commercial Property Owner Services | CRECO',
   description:
     'Owner services for Texas commercial property investors with multi-property portfolios. Hold/sell analysis, repositioning strategy, 1031 exchange, tenant mix optimization, property management, and asset management — built for owners with 5 to 100+ Texas commercial properties.',
   keywords: [

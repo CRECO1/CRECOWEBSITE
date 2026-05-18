@@ -31,8 +31,39 @@ export default function GuidesIndex() {
   const marketReports = SORTED_GUIDES.filter(isMarketReport);
   const playbooks = SORTED_GUIDES.filter(g => !isMarketReport(g));
 
+  // CollectionPage + ItemList schema so Google sees this page as a hub
+  // and can surface our guides in rich results.
+  const collectionSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Texas Commercial Real Estate Guides & Market Reports',
+    description: "CRECO's free guides and quarterly market reports for Texas commercial real estate.",
+    url: 'https://www.crecotx.com/guides',
+    breadcrumb: {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home',   item: 'https://www.crecotx.com' },
+        { '@type': 'ListItem', position: 2, name: 'Guides', item: 'https://www.crecotx.com/guides' },
+      ],
+    },
+    mainEntity: {
+      '@type': 'ItemList',
+      numberOfItems: SORTED_GUIDES.length,
+      itemListElement: SORTED_GUIDES.map((g, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `https://www.crecotx.com/guides/${g.slug}`,
+        name: g.title,
+      })),
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
+      />
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}

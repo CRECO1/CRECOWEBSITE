@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { supabase } from '@/lib/supabase';
+import { SUBMARKETS } from '@/lib/submarkets-content';
 
 const BASE_URL = 'https://www.crecotx.com';
 
@@ -29,6 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/tenant-needs`,                lastModified: new Date(), changeFrequency: 'monthly', priority: 0.5  }, // legacy redirect
     { url: `${BASE_URL}/contact`,                     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
     { url: `${BASE_URL}/submarkets`,                  lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.85 },
+    { url: `${BASE_URL}/markets`,                     lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.9  },
     { url: `${BASE_URL}/sold`,                        lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.75 },
     { url: `${BASE_URL}/team`,                        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7  },
     { url: `${BASE_URL}/about`,                       lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7  },
@@ -106,5 +108,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   } catch {}
 
-  return [...staticPages, ...servicePages, ...insightPages, ...guidePages, ...listingPages, ...submarketPages];
+  // Static submarket hub pages (file-backed in src/lib/submarkets-content.ts)
+  const marketHubPages: MetadataRoute.Sitemap = SUBMARKETS.map(s => ({
+    url: `${BASE_URL}/markets/${s.slug}`,
+    lastModified: new Date(),
+    changeFrequency: 'weekly' as const,
+    priority: 0.85,
+  }));
+
+  return [...staticPages, ...servicePages, ...insightPages, ...guidePages, ...marketHubPages, ...listingPages, ...submarketPages];
 }
