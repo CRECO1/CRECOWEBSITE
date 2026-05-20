@@ -118,18 +118,38 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
 
           {/* CTA Buttons */}
           <div className="flex items-center gap-3">
-            <a
-              href={`tel:${phone.replace(/\D/g, '')}`}
-              className={cn(
-                'flex items-center gap-2 font-semibold transition-colors',
-                isTransparent ? 'text-white' : 'text-primary',
-                'hover:text-gold'
-              )}
-              style={textShadowStyle}
-            >
-              <Phone className="h-5 w-5" />
-              <span className="hidden sm:inline">{phone}</span>
-            </a>
+            {/* Phone — stacked two-line display: "(210)" above "817-3443".
+                Defends against accidental wrap at narrow desktop widths
+                (the unstacked rendering was breaking under the building
+                icon on the Get Started pill). The tel: href keeps the full
+                number for the dialer. Parser is tolerant of dashes, dots,
+                spaces, parens — falls back to the raw string if it doesn't
+                match the 10-digit shape. */}
+            {(() => {
+              const m = phone.match(/^[(]?(\d{3})[)]?[\s.-]*(\d{3})[\s.-]*(\d{4})$/);
+              const area = m ? `(${m[1]})` : null;
+              const rest = m ? `${m[2]}-${m[3]}` : phone;
+              return (
+                <a
+                  href={`tel:+1${phone.replace(/\D/g, '')}`}
+                  className={cn(
+                    'flex items-center gap-2 font-semibold transition-colors leading-none',
+                    isTransparent ? 'text-white' : 'text-primary',
+                    'hover:text-gold'
+                  )}
+                  style={textShadowStyle}
+                  aria-label={`Call CRECO at ${phone}`}
+                >
+                  <Phone className="h-5 w-5 shrink-0" />
+                  <span className="hidden sm:flex flex-col items-start whitespace-nowrap">
+                    {area && (
+                      <span className="text-caption font-medium opacity-80">{area}</span>
+                    )}
+                    <span className="text-body-sm">{rest}</span>
+                  </span>
+                </a>
+              );
+            })()}
 
             <Button
               variant="primary"
