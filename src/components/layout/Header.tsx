@@ -67,22 +67,30 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
           </Link>
 
           {/* Desktop Navigation */}
+          {/* Desktop nav. Bumped the breakpoint from lg (1024px) to xl
+              (1280px) — at 7 items + the highlight CTA + phone + Schedule
+              button + logo on the same row, lg was too tight and labels
+              like "Free Valuation" and "Owner Services" wrapped to two
+              lines. Below xl we surface the hamburger instead.
+              whitespace-nowrap on every link is a belt-and-suspenders
+              guarantee against text wrapping even at the narrowest xl
+              widths. */}
           {variant !== 'minimal' && (
-            <div className="hidden items-center gap-6 lg:flex">
+            <div className="hidden items-center gap-5 xl:flex">
               {navLinks.map((link) => (
                 'isHighlight' in link && link.isHighlight ? (
                   <Link
                     key={link.href}
                     href={link.href}
                     className={cn(
-                      'flex items-center gap-1.5 px-4 py-2 rounded-full text-body-sm font-semibold transition-all',
+                      'flex items-center gap-1.5 px-4 py-2 rounded-full text-body-sm font-semibold transition-all whitespace-nowrap',
                       isTransparent
                         ? 'bg-gold text-primary hover:bg-gold-light'
                         : 'bg-gold/10 text-gold-dark hover:bg-gold hover:text-primary',
                       pathname === link.href && 'bg-gold text-primary'
                     )}
                   >
-                    <Building2 className="h-4 w-4" />
+                    <Building2 className="h-4 w-4 shrink-0" />
                     {link.label}
                   </Link>
                 ) : (
@@ -90,7 +98,7 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
                     key={link.href}
                     href={link.href}
                     className={cn(
-                      'relative text-body-sm font-medium transition-colors',
+                      'relative text-body-sm font-medium transition-colors whitespace-nowrap',
                       isTransparent
                         ? 'text-white hover:text-gold-light'
                         : 'text-primary hover:text-gold',
@@ -138,7 +146,7 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
             {variant !== 'minimal' && (
               <button
                 className={cn(
-                  'ml-2 p-2 lg:hidden',
+                  'ml-2 p-2 xl:hidden',
                   isTransparent ? 'text-white' : 'text-primary'
                 )}
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -157,7 +165,7 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
 
       {/* Mobile Menu */}
       {isMenuOpen && variant !== 'minimal' && (
-        <div className="fixed inset-0 top-20 z-40 bg-white lg:hidden">
+        <div className="fixed inset-0 top-20 z-40 bg-white xl:hidden">
           <Container>
             <nav className="flex flex-col py-8">
               {navLinks.filter(link => !('isHighlight' in link && link.isHighlight)).map((link) => (
