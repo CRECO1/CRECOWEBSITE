@@ -49,6 +49,11 @@ export function PropertyAlertsForm() {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Tracks whether a prefill attempt actually applied. If we got URL params
+  // but none of them matched our known values, we render a subtle notice
+  // so a visitor following a stale/broken bookmark knows they're seeing a
+  // blank form rather than thinking the form failed to load preferences.
+  const [prefillNotice, setPrefillNotice] = useState<string | null>(null);
 
   // Prefill from query string — used when this form is reached from a listing
   // detail page's "Get alerts for similar properties" CTA. Saves the visitor
@@ -57,20 +62,43 @@ export function PropertyAlertsForm() {
     if (typeof window === 'undefined') return;
     const params = new URLSearchParams(window.location.search);
     const t = params.get('type');
-    if (t && PROPERTY_TYPES.some(p => p.value === t)) {
-      setPropertyTypes([t]);
-    }
     const sm = params.get('submarket');
+    const txn = params.get('txn');
+    if (!t && !sm && !txn) return; // no prefill attempted
+
+    let applied = 0;
+    let attempted = 0;
+
+    if (t) {
+      attempted++;
+      if (PROPERTY_TYPES.some(p => p.value === t)) {
+        setPropertyTypes([t]);
+        applied++;
+      }
+    }
     if (sm) {
+      attempted++;
       // Match case-insensitively against the known SUBMARKETS list. Free-form
       // submarkets from city pages may not match — that's fine, we just don't
       // prefill in that case.
       const match = SUBMARKETS.find(s => s.toLowerCase() === sm.toLowerCase());
-      if (match) setSubmarkets([match]);
+      if (match) {
+        setSubmarkets([match]);
+        applied++;
+      }
     }
-    const txn = params.get('txn');
-    if (txn === 'lease' || txn === 'sale' || txn === 'both') {
-      setTransactionType(txn);
+    if (txn) {
+      attempted++;
+      if (txn === 'lease' || txn === 'sale' || txn === 'both') {
+        setTransactionType(txn);
+        applied++;
+      }
+    }
+
+    if (attempted > 0 && applied === 0) {
+      setPrefillNotice(
+        "We tried to prefill your search from the link you followed, but the values weren't recognized. Pick your filters below.",
+      );
     }
   }, []);
 
@@ -141,6 +169,12 @@ export function PropertyAlertsForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       <Honeypot />
+
+      {prefillNotice && (
+        <div className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-body-sm text-amber-900">
+          {prefillNotice}
+        </div>
+      )}
 
       {/* Identity */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -23,6 +23,7 @@ import {
   formatMoney, formatDate, effectiveStatus, STATUS_STYLES,
   type Invoice, type InvoiceStatus,
 } from '@/lib/invoices';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 const FILTERS: { label: string; value: 'all' | InvoiceStatus }[] = [
   { label: 'All', value: 'all' },
@@ -47,6 +48,11 @@ export default function InvoicesListPage() {
   const [bulkResult, setBulkResult] = useState<{ updated: number; failed: number } | null>(null);
   const [bulkMethod, setBulkMethod] = useState<string>('Check');
   const [bulkDate, setBulkDate] = useState<string>(() => new Date().toISOString().slice(0, 10));
+
+  // Escape closes whichever bulk modal is open. Gated on !bulkBusy so a
+  // mid-write keypress doesn't tear down state while a row update is in
+  // flight (the action handlers control the close themselves on success).
+  useEscapeKey(() => { if (!bulkBusy) setBulkOpen(null); }, bulkOpen !== null);
 
   useEffect(() => {
     let cancelled = false;
@@ -156,15 +162,22 @@ export default function InvoicesListPage() {
 
   async function applyBulkVoid() {
     setBulkBusy(true);
-    const ids = Array.from(selected);
+    // Skip invoices that are already void — silently passing them through
+    // the UPDATE is a no-op but the operator's success count would lie.
+    // Filter first so "Updated N" matches what actually changed.
+    const targets = filtered.filter(i => selected.has(i.id) && i._status !== 'void');
+    const skipped = selected.size - targets.length;
     let updated = 0;
     let failed = 0;
-    for (const id of ids) {
+    for (const inv of targets) {
       const { error: e } = await supabase
         .from('invoices')
         .update({ status: 'void' })
-        .eq('id', id);
+        .eq('id', inv.id);
       if (e) failed++; else updated++;
+    }
+    if (skipped > 0) {
+      console.info(`[bulk-void] Skipped ${skipped} already-void invoice${skipped !== 1 ? 's' : ''}.`);
     }
     const { data } = await supabase
       .from('invoices').select('*')

@@ -53,9 +53,13 @@ interface Props {
   listings: Listing[];
   /** Optional fixed height; default fills available space inside parent. */
   height?: string;
+  /** Optional — wired in by /listings so the empty state can clear active filters in one click. */
+  onClearFilters?: () => void;
+  /** Whether any filters are currently applied — used to gate the "Clear filters" button on the empty state. */
+  hasFilters?: boolean;
 }
 
-export function ListingsMap({ listings, height = '70vh' }: Props) {
+export function ListingsMap({ listings, height = '70vh', onClearFilters, hasFilters }: Props) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
@@ -95,9 +99,18 @@ export function ListingsMap({ listings, height = '70vh' }: Props) {
       <div className="flex flex-col items-center justify-center bg-background-cream rounded-xl border border-border p-12 text-center" style={{ height }}>
         <MapPin className="h-10 w-10 text-foreground-subtle mb-3" />
         <h3 className="font-heading text-heading-sm font-semibold text-primary mb-1">No mapped properties match</h3>
-        <p className="text-body-sm text-foreground-muted max-w-md">
-          Properties matching your filters don&apos;t have map coordinates yet, or the filter set is empty. Try clearing filters or switch back to grid view.
+        <p className="text-body-sm text-foreground-muted max-w-md mb-4">
+          Properties matching your filters don&apos;t have map coordinates yet, or the filter set is empty.
         </p>
+        {hasFilters && onClearFilters && (
+          <button
+            type="button"
+            onClick={onClearFilters}
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-body-sm font-semibold text-white hover:bg-primary/90"
+          >
+            Clear filters
+          </button>
+        )}
       </div>
     );
   }

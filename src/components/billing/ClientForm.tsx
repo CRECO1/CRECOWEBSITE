@@ -203,9 +203,19 @@ export function ClientForm({
                 step="0.001"
                 min="0"
                 max="100"
+                inputMode="decimal"
                 className={inputCls}
                 value={defaultTaxRatePct}
-                onChange={e => setDefaultTaxRatePct(e.target.value)}
+                onChange={e => {
+                  const v = e.target.value;
+                  // Soft-clamp to [0,100] on input. Number() of an empty string
+                  // is 0; we let the empty case through so users can clear the
+                  // field. Out-of-range values get blocked silently — the
+                  // typed character just doesn't take.
+                  if (v === '' || (Number(v) >= 0 && Number(v) <= 100)) {
+                    setDefaultTaxRatePct(v);
+                  }
+                }}
                 placeholder="e.g. 8.25"
               />
               <p className="mt-1 text-caption text-foreground-muted">

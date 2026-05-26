@@ -52,8 +52,17 @@ export default async function ClientPortalPage({ params }: PageProps) {
     notFound();
   }
 
-  // Service-role client for the read — RLS would otherwise hide everything
-  // because the visitor isn't authed. The token IS the credential.
+  // Service-role client. Rationale:
+  //   * The visitor is anonymous — no auth session, no RLS-evaluable JWT —
+  //     so the default anon client would return no rows.
+  //   * The portal_token in the URL IS the credential. We validate it by
+  //     matching the row in `clients` first; only if a row matches do we
+  //     proceed to read invoices for that client.
+  //   * SELECT is explicitly allowlisted to non-sensitive columns. Do NOT
+  //     `select('*')` here — future column additions (e.g. internal_notes,
+  //     api keys, billing tokens) should not auto-leak through this surface.
+  //     If we ever need a new field on the portal, add it to the allowlist
+  //     deliberately.
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) {

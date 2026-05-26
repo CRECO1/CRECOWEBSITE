@@ -27,6 +27,7 @@ import {
 import { FALLBACK_TEMPLATE, substituteTemplate } from '@/lib/invoice-email';
 import { buildInvoiceEmailPreview } from '@/lib/invoice-email-html';
 import { REMINDER_STAGES, type ReminderStage } from '@/lib/invoice-reminders';
+import { useEscapeKey } from '@/hooks/useEscapeKey';
 
 type Editable = Omit<Invoice, 'line_items'> & { line_items: InvoiceLineItem[] };
 
@@ -57,6 +58,17 @@ export default function InvoiceDetailPage() {
   const [paidAmountStr, setPaidAmountStr] = useState<string>('');
   const [paidDate, setPaidDate] = useState<string>(() => new Date().toISOString().slice(0, 10));
   const [paidNotes, setPaidNotes] = useState<string>('');
+
+  // Escape-to-close on both modals — matches platform convention. Gated on
+  // !busy so a mid-send keypress doesn't cancel the in-flight request.
+  useEscapeKey(() => { if (!busy) setComposeOpen(false); }, composeOpen);
+  useEscapeKey(() => { if (!busy) setMarkPaidOpen(false); }, markPaidOpen);
+
+  // Future-date warning for the mark-paid date picker. Backdating is a
+  // legitimate feature (matching the bank-deposit clear date), but a date
+  // in the future is almost always a fat-finger — surface it before save.
+  const todayIso = new Date().toISOString().slice(0, 10);
+  const paidDateIsFuture = paidDate > todayIso;
 
   // Reminder history for this invoice
   const [reminders, setReminders] = useState<{ stage: ReminderStage; sent_at: string }[]>([]);
@@ -1146,9 +1158,15 @@ export default function InvoiceDetailPage() {
                   onChange={e => setPaidDate(e.target.value)}
                   className={inputCls}
                 />
-                <p className="mt-1.5 text-caption text-foreground-muted">
-                  Backdate to the day the deposit cleared. Defaults to today.
-                </p>
+                {paidDateIsFuture ? (
+                  <p className="mt-1.5 text-caption text-amber-700">
+                    ⚠ This date is in the future. Cash-basis reports treat the invoice as paid on this date — usually you want today or the deposit-clear date.
+                  </p>
+                ) : (
+                  <p className="mt-1.5 text-caption text-foreground-muted">
+                    Backdate to the day the deposit cleared. Defaults to today.
+                  </p>
+                )}
               </label>
 
               <label className="block">

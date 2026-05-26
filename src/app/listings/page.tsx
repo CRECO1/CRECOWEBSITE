@@ -316,7 +316,16 @@ function ListingsPageInner() {
                 <p className="mb-4 text-body-sm text-foreground-muted">
                   Showing {filtered.length} {filtered.length === 1 ? 'property' : 'properties'} on the map — click a pin for details.
                 </p>
-                <ListingsMap listings={filtered} />
+                <ListingsMap
+                  listings={filtered}
+                  hasFilters={hasFilters}
+                  onClearFilters={() => {
+                    setSearch('');
+                    setPropertyType('all');
+                    setTransactionType('all');
+                    setSizeIdx(0);
+                  }}
+                />
                 <p className="mt-3 text-caption text-foreground-muted text-center">
                   Some properties may not appear on the map until their location has been geocoded. Switch to Grid view to see the full inventory.
                 </p>
