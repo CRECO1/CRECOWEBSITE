@@ -144,8 +144,15 @@ function NewInvoicePageInner() {
         .from('invoices')
         .select('*')
         .eq('id', cloneId)
-        .single();
-      if (!src) return;
+        .maybeSingle();
+      if (!src) {
+        // Source invoice doesn't exist (or RLS hid it). Don't silently render
+        // a blank form — surface the failure so the operator knows the link
+        // they followed was stale.
+        setClonedBanner(null);
+        setError(`Could not clone: invoice ${cloneId} not found. Starting from a blank form.`);
+        return;
+      }
       const { data: srcItems } = await supabase
         .from('invoice_line_items')
         .select('*')

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/api-auth';
 import { clampString, MAX_LEN } from '@/lib/sanitize';
+import { deactivatePaymentLink, isStripeConfigured } from '@/lib/stripe';
 
 /**
  * PATCH /api/plaid/transactions/[id]
@@ -129,6 +130,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         { status: 400 },
       );
     }
+
+    // Belt-and-suspenders numeric guard. Number() accepts Infinity / NaN /
+    // out-of-range strings; this catches anything Postgres / Plaid might
+    // throw us before we write a garbage paid_amount.
+    const paidAmount = Math.abs(Number(txn.amount));
+    if (!Number.isFinite(paidAmount) || paidAmount <= 0 || paidAmount > 1_000_000_000) {
+      return NextResponse.json({ error: 'Invalid transaction amount' }, { status: 400 });
+    }
+
     const { data: inv, error: invErr } = await supabase
       .from('invoices')
       .select('id, total, status, stripe_payment_link_url, internal_notes')
@@ -145,7 +155,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
 
     const method = clampString(body.method, MAX_LEN.shortField) || 'ACH';
-    const paidAmount = Math.abs(Number(txn.amount));
     const paidAt = `${txn.posted_date}T12:00:00.000Z`;
     const txnRef = txn.merchant_name || txn.description || 'bank deposit';
 
@@ -183,11 +192,25 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       return NextResponse.json({ error: tErr.message }, { status: 500 });
     }
 
-    // 3. Deactivate Stripe payment link (best-effort, non-fatal)
+    // 3. Deactivate Stripe payment link inline. The previous version did a
+    //    server-to-server fetch to /api/invoices/[id]/deactivate-payment-link
+    //    which silently returned 401 because the operator's session cookies
+    //    don't propagate on internal fetches — net effect: invoice was
+    //    marked paid but the Stripe link stayed live, exposing a
+    //    double-payment risk. Calling the lib directly bypasses the broken
+    //    self-auth path. Failures stay non-fatal but now surface in logs.
     if (inv.stripe_payment_link_url) {
-      fetch(`${new URL(req.url).origin}/api/invoices/${invoiceId}/deactivate-payment-link`, {
-        method: 'POST',
-      }).catch(err => console.warn('Payment link deactivation failed (non-fatal):', err));
+      try {
+        if (isStripeConfigured()) {
+          await deactivatePaymentLink(inv.stripe_payment_link_url);
+        }
+        await supabase
+          .from('invoices')
+          .update({ stripe_payment_link_url: null })
+          .eq('id', invoiceId);
+      } catch (err) {
+        console.warn('[apply_to_invoice] Stripe link deactivation failed (continuing):', err);
+      }
     }
 
     return NextResponse.json({ ok: true, invoice_id: invoiceId, applied_amount: paidAmount });

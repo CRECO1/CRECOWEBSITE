@@ -112,12 +112,18 @@ export async function GET(req: NextRequest) {
         })
         .eq('id', l.id);
       if (upErr) {
-        failures.push({ id: l.id, address: addr, status: `UPDATE_FAILED: ${upErr.message}` });
+        // Don't echo raw Supabase error text — it can include column names /
+        // table structure that has no business being in a response body even
+        // behind CRON_SECRET. Log the full thing server-side instead.
+        console.error('[geocode-listings] update failed', { id: l.id, code: (upErr as { code?: string }).code, msg: upErr.message });
+        failures.push({ id: l.id, address: addr, status: `UPDATE_FAILED: ${(upErr as { code?: string }).code ?? 'unknown'}` });
         continue;
       }
       geocoded++;
     } catch (e) {
-      failures.push({ id: l.id, address: addr, status: `FETCH_ERROR: ${(e as Error).message}` });
+      const msg = (e as Error).message?.slice(0, 100) ?? 'unknown';
+      console.error('[geocode-listings] fetch failed', { id: l.id, msg });
+      failures.push({ id: l.id, address: addr, status: 'FETCH_ERROR' });
     }
   }
 
