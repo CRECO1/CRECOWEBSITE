@@ -144,6 +144,14 @@ export function PropertyAlertsForm() {
         throw new Error(body.error || 'Could not subscribe');
       }
       setSubmitted(true);
+      const { trackEvent, readUtmsFromCookie } = await import('@/lib/analytics');
+      const attribution = readUtmsFromCookie();
+      trackEvent('property_alerts_subscribed', {
+        property_types_count: propertyTypes.length,
+        submarkets_count: submarkets.length,
+        transaction_type: transactionType,
+        attribution_source: attribution.utm_source ?? 'direct',
+      });
     } catch (err) {
       setError((err as Error).message);
     } finally {

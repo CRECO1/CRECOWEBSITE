@@ -28,6 +28,9 @@ export default function ContactPage() {
     setLoading(true);
     const data = new FormData(e.currentTarget);
     const recaptchaToken = await getRecaptchaToken('submit_contact');
+    const reason = String(data.get('reason') ?? '');
+    const { trackEvent, readUtmsFromCookie } = await import('@/lib/analytics');
+    const attribution = readUtmsFromCookie();
     await fetch('/api/leads', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -36,12 +39,17 @@ export default function ContactPage() {
         company: data.get('company'),
         email: data.get('email'),
         phone: data.get('phone'),
-        message: `Reason: ${data.get('reason')}\n\n${data.get('message')}`,
+        message: `Reason: ${reason}\n\n${data.get('message')}`,
         source: 'contact',
         recaptchaToken,
         website: data.get('website'),  // honeypot field
+        ...attribution,
       }),
     }).catch(() => {});
+    trackEvent('contact_form_submitted', {
+      reason,
+      attribution_source: attribution.utm_source ?? 'direct',
+    });
     setLoading(false);
     setSubmitted(true);
   }

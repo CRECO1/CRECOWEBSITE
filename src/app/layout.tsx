@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
+import { Suspense } from 'react';
 import { MobileStickyCTA } from '@/components/layout/MobileStickyCTA';
 import { CompareBar } from '@/components/listings/CompareBar';
 import { ChatWidget } from '@/components/chat/ChatWidget';
 import { RecaptchaScript } from '@/components/forms/Recaptcha';
+import { UtmCapture } from '@/components/analytics/UtmCapture';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -236,6 +238,12 @@ export default function RootLayout({
             `}
           </Script>
         )}
+        {/* UTM + referrer attribution capture — wrapped in Suspense
+            because useSearchParams() inside is a Next.js requirement
+            for static-export safety. Renders nothing. */}
+        <Suspense fallback={null}>
+          <UtmCapture />
+        </Suspense>
         {children}
         <MobileStickyCTA />
         <CompareBar />

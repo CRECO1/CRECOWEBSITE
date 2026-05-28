@@ -161,6 +161,8 @@ export function PropertyValuationForm() {
         leadNotes ? `\nNotes from owner: ${leadNotes}` : null,
       ].filter(Boolean) as string[];
 
+      const { readUtmsFromCookie } = await import('@/lib/analytics');
+      const attribution = readUtmsFromCookie();
       const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -173,6 +175,7 @@ export function PropertyValuationForm() {
           source: 'valuation-request',
           recaptchaToken,
           website: honeypot,
+          ...attribution,
         }),
       });
       if (!res.ok) {

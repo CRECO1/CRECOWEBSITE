@@ -117,6 +117,8 @@ export function DevelopmentInterestForm() {
         notes ? `\nNotes: ${notes}` : '',
       ].filter(Boolean).join('\n');
 
+      const { trackEvent, readUtmsFromCookie } = await import('@/lib/analytics');
+      const attribution = readUtmsFromCookie();
       const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -130,6 +132,7 @@ export function DevelopmentInterestForm() {
           source: `8000-fair-oaks-pkwy-${interest}`,
           recaptchaToken,
           website: honeypot,
+          ...attribution,
         }),
       });
       if (!res.ok) {
@@ -137,6 +140,10 @@ export function DevelopmentInterestForm() {
         throw new Error(body.error || 'Could not send inquiry');
       }
       setSubmitted(true);
+      trackEvent('development_inquiry_submitted', {
+        interest,
+        attribution_source: attribution.utm_source ?? 'direct',
+      });
     } catch (err) {
       setError((err as Error).message);
     } finally {

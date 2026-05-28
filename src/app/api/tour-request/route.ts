@@ -81,6 +81,11 @@ export async function POST(req: NextRequest) {
       preferredDate, preferredTime,
       tourFormat: rawFormat, notes: rawNotes,
       recaptchaToken, website,
+      // Attribution payload from the creco_attr cookie via the client form.
+      utm_source: rawUtmSource, utm_medium: rawUtmMedium,
+      utm_campaign: rawUtmCampaign, utm_term: rawUtmTerm,
+      utm_content: rawUtmContent, referrer: rawReferrer,
+      landing_page: rawLandingPage,
     } = body;
 
     // Honeypot — silent success on bot
@@ -149,6 +154,16 @@ export async function POST(req: NextRequest) {
         notes ? `\nNotes: ${notes}` : '',
       ].filter(Boolean).join('\n');
 
+      // Attribution — clamped before persistence; trusted-but-verified
+      // input from the client-side cookie.
+      const utm_source   = clampString(rawUtmSource,   MAX_LEN.shortField) || null;
+      const utm_medium   = clampString(rawUtmMedium,   MAX_LEN.shortField) || null;
+      const utm_campaign = clampString(rawUtmCampaign, MAX_LEN.shortField) || null;
+      const utm_term     = clampString(rawUtmTerm,     MAX_LEN.shortField) || null;
+      const utm_content  = clampString(rawUtmContent,  MAX_LEN.shortField) || null;
+      const referrer     = clampString(rawReferrer,    MAX_LEN.shortField) || null;
+      const landing_page = clampString(rawLandingPage, MAX_LEN.shortField) || null;
+
       const { data, error } = await supabase.from('leads').insert([{
         name,
         email,
@@ -158,6 +173,8 @@ export async function POST(req: NextRequest) {
         source: 'tour-request',
         status: 'new',
         tour_confirmation_token: confirmToken,
+        utm_source, utm_medium, utm_campaign, utm_term, utm_content,
+        referrer, landing_page,
       }]).select('id').single();
       if (error) console.error('[tour-request] DB insert failed:', error.message);
       else leadId = data?.id ?? null;

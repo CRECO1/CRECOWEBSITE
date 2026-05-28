@@ -14,6 +14,7 @@ import { RelatedListings } from '@/components/marketing/RelatedListings';
 import { ListingGallery } from '@/components/marketing/ListingGallery';
 import { CompareToggle } from '@/components/listings/CompareToggle';
 import { ListingDetailMap } from '@/components/listings/ListingDetailMap';
+import { BrochureRequestForm } from '@/components/forms/BrochureRequestForm';
 import { Bell } from 'lucide-react';
 
 // Per-listing metadata so each property has a unique <title>, <meta description>,
@@ -335,6 +336,16 @@ export default async function ListingDetailPage({ params }: Props) {
                 id="inquiry"
                 className="sticky top-28 scroll-mt-24 rounded-xl border border-border bg-white p-6 shadow-card"
               >
+                {/* Lowest-commitment ask first — capture the email-only crowd
+                    before they bounce. Tour scheduling is one step heavier
+                    (name + phone + date + format) and lives below in the tabs. */}
+                <div className="mb-5">
+                  <BrochureRequestForm
+                    listingSlug={listing!.slug}
+                    listingTitle={listing!.title}
+                    brochureUrl={listing!.brochure_url}
+                  />
+                </div>
                 <ListingInquiryTabs
                   listingTitle={listing!.title}
                   listingSlug={listing!.slug}

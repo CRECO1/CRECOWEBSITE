@@ -47,6 +47,7 @@ import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import { getListings, getTestimonials, supabase } from '@/lib/supabase';
+import { HeroQuickCapture } from '@/components/forms/HeroQuickCapture';
 
 const DEMO_LISTINGS = [
   {
@@ -248,12 +249,21 @@ export default async function HomePage() {
           <p className="mx-auto mb-10 max-w-2xl animate-fade-in text-body-lg text-white/80 delay-200 fill-both">
             {s.hero_subheadline}
           </p>
-          <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center animate-fade-in delay-300 fill-both">
+          {/* Above-the-fold single-field capture — lowest-friction
+              conversion path. Visitors who'd bounce off a full-form
+              "Get Started" still drop an email here. The two buttons
+              below preserve the multi-step paths for visitors with more
+              specific intent. */}
+          <div className="mb-6 animate-fade-in delay-200 fill-both">
+            <HeroQuickCapture />
+          </div>
+
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center animate-fade-in delay-300 fill-both">
             <Button size="lg" asChild>
-              <Link href="/listings">View Texas Properties <ArrowRight className="ml-2 h-5 w-5" /></Link>
+              <Link href="/listings">Browse Texas Properties <ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary" asChild>
-              <Link href="/get-started"><Building2 className="mr-2 h-5 w-5" />Get Started</Link>
+              <Link href="/get-started"><Building2 className="mr-2 h-5 w-5" />Tell us what you need</Link>
             </Button>
           </div>
 

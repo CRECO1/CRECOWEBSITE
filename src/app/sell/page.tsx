@@ -34,6 +34,8 @@ export default function SellPage() {
     setLoading(true);
     const data = new FormData(e.currentTarget);
     const recaptchaToken = await getRecaptchaToken('submit_sell');
+    const { trackEvent, readUtmsFromCookie } = await import('@/lib/analytics');
+    const attribution = readUtmsFromCookie();
     await fetch('/api/leads', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -46,8 +48,15 @@ export default function SellPage() {
         source: 'owner-inquiry',
         recaptchaToken,
         website: data.get('website'),  // honeypot
+        ...attribution,
       }),
     }).catch(() => {});
+    trackEvent('owner_inquiry_submitted', {
+      property_type: String(data.get('property_type') ?? ''),
+      goal: String(data.get('goal') ?? ''),
+      timeline: String(data.get('timeline') ?? ''),
+      attribution_source: attribution.utm_source ?? 'direct',
+    });
     setLoading(false);
     setSubmitted(true);
   }

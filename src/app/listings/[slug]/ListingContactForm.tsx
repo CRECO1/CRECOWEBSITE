@@ -5,6 +5,7 @@ import { CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { Honeypot } from '@/components/forms/Honeypot';
+import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
 
 export function ListingContactForm({ listingTitle }: { listingTitle: string }) {
   const [submitting, setSubmitting] = useState(false);
@@ -21,6 +22,7 @@ export function ListingContactForm({ listingTitle }: { listingTitle: string }) {
 
     try {
       const recaptchaToken = await getRecaptchaToken('submit_listing_inquiry');
+      const attribution = readUtmsFromCookie();
       const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -34,6 +36,7 @@ export function ListingContactForm({ listingTitle }: { listingTitle: string }) {
           source: 'listing',
           recaptchaToken,
           website: data.get('website'),  // honeypot
+          ...attribution,
         }),
       });
 
@@ -44,8 +47,13 @@ export function ListingContactForm({ listingTitle }: { listingTitle: string }) {
 
       form.reset();
       setSubmitted(true);
+      trackEvent('listing_inquiry_submitted', {
+        listing_title: listingTitle,
+        attribution_source: attribution.utm_source ?? 'direct',
+      });
     } catch (err) {
       setError((err as Error).message);
+      trackEvent('listing_inquiry_failed', { reason: (err as Error).message?.slice(0, 80) });
     } finally {
       setSubmitting(false);
     }

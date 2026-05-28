@@ -16,6 +16,7 @@ import { useState } from 'react';
 import { ArrowRight, CalendarClock, CheckCircle, Phone, Video } from 'lucide-react';
 import { getRecaptchaToken } from './Recaptcha';
 import { Honeypot } from './Honeypot';
+import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
 
 interface Props {
   listingSlug: string;
@@ -57,6 +58,7 @@ export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress }:
     try {
       const recaptchaToken = await getRecaptchaToken('schedule_tour');
       const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
+      const attribution = readUtmsFromCookie();
       const res = await fetch('/api/tour-request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -73,6 +75,7 @@ export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress }:
           notes,
           recaptchaToken,
           website: honeypot,
+          ...attribution,
         }),
       });
       if (!res.ok) {
@@ -80,8 +83,14 @@ export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress }:
         throw new Error(body.error || 'Could not submit tour request');
       }
       setSubmitted(true);
+      trackEvent('tour_request_submitted', {
+        listing_slug: listingSlug,
+        tour_format: tourFormat,
+        attribution_source: attribution.utm_source ?? 'direct',
+      });
     } catch (err) {
       setError((err as Error).message);
+      trackEvent('tour_request_failed', { reason: (err as Error).message?.slice(0, 80) });
     } finally {
       setSubmitting(false);
     }

@@ -71,6 +71,13 @@ export async function POST(req: NextRequest) {
       name: rawName, company: rawCompany, email: rawEmail, phone: rawPhone,
       message: rawMessage, property_interest: rawPropertyInterest,
       source: rawSource, recaptchaToken, website,
+      // Attribution payload — set by the client's analytics lib reading
+      // the creco_attr cookie at submit time. All fields are optional;
+      // anonymous direct visits will carry nothing here.
+      utm_source: rawUtmSource, utm_medium: rawUtmMedium,
+      utm_campaign: rawUtmCampaign, utm_term: rawUtmTerm,
+      utm_content: rawUtmContent, referrer: rawReferrer,
+      landing_page: rawLandingPage,
     } = body;
 
     // Honeypot — `website` is an invisible field; if filled it's almost
@@ -99,6 +106,17 @@ export async function POST(req: NextRequest) {
     const property_interest = clampString(rawPropertyInterest, MAX_LEN.shortField);
     const source = clampString(rawSource, MAX_LEN.shortField) || 'contact';
 
+    // Clamp every attribution field to a safe length. These are user-
+    // controllable (anyone can hand-craft utm_*), so we treat them as
+    // unsafe strings and never interpolate raw into emails or HTML.
+    const utm_source   = clampString(rawUtmSource,   MAX_LEN.shortField) || null;
+    const utm_medium   = clampString(rawUtmMedium,   MAX_LEN.shortField) || null;
+    const utm_campaign = clampString(rawUtmCampaign, MAX_LEN.shortField) || null;
+    const utm_term     = clampString(rawUtmTerm,     MAX_LEN.shortField) || null;
+    const utm_content  = clampString(rawUtmContent,  MAX_LEN.shortField) || null;
+    const referrer     = clampString(rawReferrer,    MAX_LEN.shortField) || null;
+    const landing_page = clampString(rawLandingPage, MAX_LEN.shortField) || null;
+
     // Anti-spam: reCAPTCHA v3 score check (no-op if RECAPTCHA_SECRET_KEY unset)
     const captcha = await verifyRecaptcha(recaptchaToken);
     if (!captcha.ok) {
@@ -120,6 +138,8 @@ export async function POST(req: NextRequest) {
         property_interest: property_interest || null,
         source,
         status: 'new',
+        utm_source, utm_medium, utm_campaign, utm_term, utm_content,
+        referrer, landing_page,
       }]).select('id').single();
 
       if (error) {
