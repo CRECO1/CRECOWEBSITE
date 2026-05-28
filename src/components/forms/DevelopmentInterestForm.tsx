@@ -146,7 +146,7 @@ export function DevelopmentInterestForm() {
 
   if (submitted) {
     return (
-      <div className="rounded-2xl border border-gold/30 bg-gold/5 p-8 text-center">
+      <div className="form-success-box text-center">
         <CheckCircle className="mx-auto h-12 w-12 text-gold mb-4" />
         <h2 className="font-heading text-heading-md font-bold text-primary mb-2">Got it — we'll be in touch.</h2>
         <p className="text-body text-foreground-muted max-w-md mx-auto">

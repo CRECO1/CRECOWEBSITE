@@ -89,7 +89,7 @@ export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress }:
 
   if (submitted) {
     return (
-      <div className="rounded-2xl border border-gold/30 bg-gold/5 p-6 text-center">
+      <div className="form-success-box text-center">
         <CheckCircle className="mx-auto h-10 w-10 text-gold mb-3" />
         <h3 className="font-heading text-heading-sm font-bold text-primary mb-2">Tour request sent.</h3>
         <p className="text-body-sm text-foreground-muted max-w-md mx-auto">

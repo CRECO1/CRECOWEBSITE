@@ -217,7 +217,10 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
                 Contact
               </Link>
 
-              <div className="mt-8 space-y-4">
+              {/* Action button stack — extra top margin clears the link
+                  stack visually, space-y-3 keeps the three buttons reading
+                  as a single group rather than three drifting CTAs. */}
+              <div className="mt-10 space-y-3">
                 <Button
                   size="lg"
                   fullWidth

@@ -19,7 +19,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="mb-2.5 block text-body-sm font-semibold text-primary"
+            className="mb-2 block text-body-sm font-semibold text-primary"
           >
             {label}
             {props.required && <span className="ml-1 text-destructive">*</span>}
@@ -36,9 +36,11 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             // Stronger focus state for visibility
             'focus:border-gold focus:outline-none focus:ring-4 focus:ring-gold/20',
             'disabled:cursor-not-allowed disabled:opacity-50',
-            // Increased heights for better touch targets
-            inputSize === 'md' && 'h-14',           // Was h-12 (48px → 56px)
-            inputSize === 'lg' && 'h-16 text-body-lg', // Was h-14 (56px → 64px)
+            // Heights normalized to match Button: md = 52px (matches Button md),
+            // lg = 60px (matches Button lg). Previously diverged at 56/64px,
+            // making side-by-side input + button rows visually unaligned.
+            inputSize === 'md' && 'h-13',
+            inputSize === 'lg' && 'h-[3.75rem] text-body-lg',
             error && 'border-destructive focus:border-destructive focus:ring-destructive/20',
             className
           )}

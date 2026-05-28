@@ -74,7 +74,7 @@ export function LeadMagnetForm({
   }
 
   return (
-    <div className="rounded-2xl border-2 border-gold/40 bg-gradient-to-br from-gold/5 to-transparent p-7 sm:p-10 my-8">
+    <div className="form-success-box bg-gradient-to-br from-gold/5 to-transparent p-7 sm:p-10 my-8">
       <div className="flex items-center gap-2 mb-3">
         <Lock className="h-4 w-4 text-gold" />
         <p className="overline text-gold">Read the rest free</p>

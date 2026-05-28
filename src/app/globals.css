@@ -174,6 +174,41 @@
     transform: scale(1.05);
   }
 
+  /* When a card-luxury contains an image-luxury, image scaling follows
+     the card's hover state too — not just direct image hover. Fixes the
+     "card lifts but image stays still" disconnect on listing grid cards. */
+  .card-luxury:hover .image-luxury img {
+    transform: scale(1.05);
+  }
+
+  /* Unified surface treatment for content cards that aren't full-bleed
+     image cards (submarket cards, property-type link cards, insight
+     cards, etc.). Centralizes border + radius + padding so we don't
+     copy `rounded-xl border border-border bg-white p-7 hover:...` into
+     every component. */
+  .surface-card {
+    @apply rounded-xl border border-border bg-white p-7 transition-all;
+    transition-duration: var(--duration-normal);
+    transition-timing-function: var(--ease-luxury);
+  }
+
+  .surface-card-hover {
+    @apply hover:border-gold hover:shadow-card-hover hover:-translate-y-0.5;
+  }
+
+  /* Success / confirmation state for forms (post-submit thank-you,
+     tour scheduled, valuation calculated, etc.). One treatment instead
+     of three near-duplicates across the form components. */
+  .form-success-box {
+    @apply rounded-2xl border border-gold/30 bg-gold/5 p-7 sm:p-8;
+  }
+
+  /* Subtle gold rule for major section transitions — applied as a
+     bottom border on a parent section, OR as a freestanding divider. */
+  .section-divider {
+    @apply h-px w-full bg-gradient-to-r from-transparent via-gold/40 to-transparent;
+  }
+
   /* Gold Gradient Text */
   .text-gradient-gold {
     background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-light) 50%, var(--gold-primary) 100%);

@@ -96,8 +96,11 @@ export function Footer() {
                 </a>
               </div>
 
-              {/* Newsletter signup */}
-              <div className="mt-8">
+              {/* Newsletter signup — extra top margin so the social icons +
+                  this block don't visually crash into each other in the brand
+                  column. Heading uses the same uppercase-widest treatment as
+                  the other column titles for consistent rhythm. */}
+              <div className="mt-10">
                 <h3 className="mb-3 text-body-sm font-semibold uppercase tracking-widest text-gold">CRECO Insights</h3>
                 <NewsletterSignup />
               </div>
@@ -182,8 +185,10 @@ export function Footer() {
         </Container>
       </div>
 
-      {/* Markets We Serve */}
-      <div className="border-t border-white/10 py-6 bg-primary/80">
+      {/* Markets band — now also carries the sister-site line at the bottom
+          so the previously-separate band collapses into the same surface.
+          One visual block instead of two stacked nearly-identical ones. */}
+      <div className="border-t border-white/10 py-7 bg-primary/80">
         <Container>
           <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
             <p className="text-caption uppercase tracking-widest text-gold text-center md:text-left">Texas Markets We Serve</p>
@@ -217,61 +222,55 @@ export function Footer() {
               </Link>
             ))}
           </div>
-        </Container>
-      </div>
 
-      {/* Sister Site */}
-      <div className="border-t border-white/10 py-5 bg-primary/80">
-        <Container>
-          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-center">
+          {/* Sister site — small inline note at the foot of the Markets band
+              instead of its own full-width band. Less visual weight, stays
+              discoverable. */}
+          <div className="mt-5 pt-4 border-t border-white/5 flex flex-wrap items-center justify-center md:justify-start gap-x-2 gap-y-1 text-center md:text-left">
             <span className="text-caption text-white/40">Looking for residential?</span>
             <a
               href="https://www.fairoaksrealtygroup.com"
               target="_blank" rel="noopener noreferrer"
-              className="text-caption font-semibold text-gold transition-colors hover:text-gold-light">
-              Visit our sister company, Fair Oaks Realty Group →
+              className="text-caption font-semibold text-gold/90 transition-colors hover:text-gold-light">
+              Visit Fair Oaks Realty Group →
             </a>
           </div>
         </Container>
       </div>
 
-      {/* Disclosure Notices */}
-      <div className="border-t border-white/10 py-5 bg-primary/80">
+      {/* Bottom bar — single combined strip carrying legal + disclosures +
+          copyright. The previous design split these across three near-
+          identical bands; this collapses them into one quieter footer
+          strip with a clear two-column treatment on desktop. */}
+      <div className="border-t border-white/10 py-5 bg-primary">
         <Container>
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-            <span className="text-caption font-semibold uppercase tracking-widest text-white/40">Disclosure Notices:</span>
-            <a
-              href="https://www.dropbox.com/scl/fi/f2mtiupgx22xhzx81vnwn/IABSCRECOTX.pdf?rlkey=7fs8jtl92j3pq97he11blehwm&e=1&dl=0"
-              target="_blank" rel="noopener noreferrer"
-              className="text-caption text-gold/70 transition-colors hover:text-gold">
-              TREC Information About Brokerage Services
-            </a>
-            <a
-              href="https://www.trec.texas.gov/sites/default/files/pdf-forms/CN%201-4_1.pdf"
-              target="_blank" rel="noopener noreferrer"
-              className="text-caption text-gold/70 transition-colors hover:text-gold">
-              Consumer Protection Notice
-            </a>
-            <Link href="/privacy"
-              className="text-caption text-gold/70 transition-colors hover:text-gold">
-              Privacy Policy
-            </Link>
-          </div>
-        </Container>
-      </div>
-
-      {/* Bottom Bar */}
-      <div className="border-t border-white/10 py-6">
-        <Container>
-          <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            <p className="text-caption text-white/40">
-              © {currentYear} CRECO – Commercial Real Estate Company. All rights reserved.
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            {/* Copyright + license */}
+            <p className="text-caption text-white/40 text-center md:text-left">
+              © {currentYear} CRECO – Commercial Real Estate Company · Licensed Texas Real Estate Brokerage · TREC #9014367-BB
             </p>
-            <div className="flex flex-wrap items-center gap-6">
-              <Link href="/terms" className="text-caption text-white/40 transition-colors hover:text-white/70">
-                Terms of Service
+            {/* Disclosure + policy links */}
+            <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-4 gap-y-1">
+              <a
+                href="https://www.dropbox.com/scl/fi/f2mtiupgx22xhzx81vnwn/IABSCRECOTX.pdf?rlkey=7fs8jtl92j3pq97he11blehwm&e=1&dl=0"
+                target="_blank" rel="noopener noreferrer"
+                className="text-caption text-white/50 transition-colors hover:text-gold"
+              >
+                Brokerage Services Notice
+              </a>
+              <a
+                href="https://www.trec.texas.gov/sites/default/files/pdf-forms/CN%201-4_1.pdf"
+                target="_blank" rel="noopener noreferrer"
+                className="text-caption text-white/50 transition-colors hover:text-gold"
+              >
+                Consumer Protection
+              </a>
+              <Link href="/privacy" className="text-caption text-white/50 transition-colors hover:text-gold">
+                Privacy
               </Link>
-              <span className="text-caption text-white/40">Licensed Texas Real Estate Brokerage · TREC #9014367-BB</span>
+              <Link href="/terms" className="text-caption text-white/50 transition-colors hover:text-gold">
+                Terms
+              </Link>
             </div>
           </div>
         </Container>

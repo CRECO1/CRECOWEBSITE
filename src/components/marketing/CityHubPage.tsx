@@ -93,14 +93,16 @@ export function CityHubPage({ config }: { config: CityHubConfig }) {
           </Container>
         </section>
 
-        {/* Market Stats Strip */}
+        {/* Market Stats Strip — explicit 1→2→4 column ladder + nowrap on
+            the value so currency / abbreviation strings like "$4.2B" never
+            break mid-character on tight viewports. */}
         {config.marketStats.length > 0 && (
-          <section className="bg-gold py-8 sm:py-10 text-primary">
+          <section className="bg-gold py-10 sm:py-12 text-primary">
             <Container>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8">
                 {config.marketStats.map(stat => (
                   <div key={stat.label} className="text-center md:text-left">
-                    <div className="font-heading text-display-sm font-bold">{stat.value}</div>
+                    <div className="font-heading text-display-sm font-bold whitespace-nowrap">{stat.value}</div>
                     <div className="text-body-sm font-semibold mt-1">{stat.label}</div>
                     {stat.context && <div className="text-caption opacity-70 mt-0.5">{stat.context}</div>}
                   </div>
@@ -163,12 +165,12 @@ export function CityHubPage({ config }: { config: CityHubConfig }) {
                     <Link
                       key={s.name}
                       href={s.href}
-                      className="group rounded-xl border border-border bg-white p-7 hover:border-gold hover:shadow-card-hover transition-all flex flex-col"
+                      className="group surface-card surface-card-hover flex flex-col"
                     >
                       {inner}
                     </Link>
                   ) : (
-                    <div key={s.name} className="group rounded-xl border border-border bg-white p-7 hover:border-gold hover:shadow-card-hover transition-all">
+                    <div key={s.name} className="group surface-card">
                       {inner}
                     </div>
                   );
@@ -205,13 +207,29 @@ export function CityHubPage({ config }: { config: CityHubConfig }) {
                 <h3 className="font-heading text-heading-lg font-bold text-primary mb-5">
                   What you get working with us.
                 </h3>
-                <ul className="space-y-3">
-                  {config.whyBullets.map(b => (
-                    <li key={b} className="flex items-start gap-3 text-body text-foreground">
-                      <CheckCircle className="h-5 w-5 text-gold shrink-0 mt-0.5" />
-                      <span>{b}</span>
-                    </li>
-                  ))}
+                <ul className="space-y-3.5">
+                  {config.whyBullets.map(b => {
+                    // Split each bullet on the first em-dash, hyphen, or colon
+                    // so the lead phrase reads stronger than the explanation.
+                    // Tested separators in priority order — first match wins.
+                    // If no separator: render the whole line plainly.
+                    const sep = [' — ', ' – ', ': '].find(s => b.includes(s));
+                    const [lead, rest] = sep ? b.split(sep) as [string, string] : [b, ''];
+                    return (
+                      <li key={b} className="flex items-start gap-3 text-body text-foreground leading-relaxed">
+                        <CheckCircle className="h-5 w-5 text-gold shrink-0 mt-1" />
+                        <span>
+                          <span className="font-semibold text-primary">{lead}</span>
+                          {rest && (
+                            <>
+                              <span className="text-foreground-muted"> {sep!.trim()} </span>
+                              <span className="text-foreground">{rest}</span>
+                            </>
+                          )}
+                        </span>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             </div>
@@ -232,7 +250,7 @@ export function CityHubPage({ config }: { config: CityHubConfig }) {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="group rounded-xl border border-border bg-white p-7 hover:border-gold hover:shadow-card-hover transition-all flex items-start gap-5"
+                  className="group surface-card surface-card-hover flex items-start gap-5"
                 >
                   <div className="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gold/10 text-gold group-hover:bg-gold group-hover:text-primary transition-colors shrink-0">
                     <Building2 className="h-6 w-6" />
@@ -265,7 +283,7 @@ export function CityHubPage({ config }: { config: CityHubConfig }) {
                   <Link
                     key={post.slug}
                     href={`/insights/${post.slug}`}
-                    className="group rounded-xl border border-border bg-white p-7 hover:border-gold hover:shadow-card-hover transition-all flex flex-col"
+                    className="group surface-card surface-card-hover flex flex-col"
                   >
                     <BookOpen className="h-7 w-7 text-gold mb-4" />
                     <p className="text-caption uppercase tracking-widest text-gold mb-2">{post.category}</p>

@@ -304,7 +304,7 @@ export function PropertyValuationForm() {
 
       {/* Step 2 — Result */}
       {result && (
-        <div className="rounded-2xl border-2 border-gold/40 bg-gradient-to-br from-gold/5 to-transparent p-6 sm:p-8 space-y-5">
+        <div className="form-success-box bg-gradient-to-br from-gold/5 to-transparent space-y-5">
           <div className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5 text-gold" />
             <p className="overline text-gold">Preliminary valuation range</p>
