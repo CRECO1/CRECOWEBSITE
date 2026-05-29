@@ -23,7 +23,7 @@ import {
   formatMoney, formatDate, effectiveStatus, STATUS_STYLES,
   type Invoice, type InvoiceStatus,
 } from '@/lib/invoices';
-import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { ModalBase } from '@/components/ui/ModalBase';
 
 const FILTERS: { label: string; value: 'all' | InvoiceStatus }[] = [
   { label: 'All', value: 'all' },
@@ -49,10 +49,9 @@ export default function InvoicesListPage() {
   const [bulkMethod, setBulkMethod] = useState<string>('Check');
   const [bulkDate, setBulkDate] = useState<string>(() => new Date().toISOString().slice(0, 10));
 
-  // Escape closes whichever bulk modal is open. Gated on !bulkBusy so a
-  // mid-write keypress doesn't tear down state while a row update is in
-  // flight (the action handlers control the close themselves on success).
-  useEscapeKey(() => { if (!bulkBusy) setBulkOpen(null); }, bulkOpen !== null);
+  // Note: ModalBase handles Escape-to-close + focus trap, gated on its
+  // own `disableClose` prop. Each bulk modal below passes `bulkBusy` so
+  // mid-write keypresses don't tear down state.
 
   useEffect(() => {
     let cancelled = false;
@@ -471,17 +470,13 @@ export default function InvoicesListPage() {
       )}
 
       {/* Bulk mark-paid modal */}
-      {bulkOpen === 'paid' && (
-        <div
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm p-4 sm:p-8 overflow-y-auto"
-          onClick={() => !bulkBusy && setBulkOpen(null)}
-        >
-          <div
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-md my-8"
-            onClick={e => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-          >
+      <ModalBase
+        open={bulkOpen === 'paid'}
+        onClose={() => setBulkOpen(null)}
+        disableClose={bulkBusy}
+        size="md"
+        backdropClassName="bg-black/50"
+      >
             <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-border">
               <div className="flex items-center gap-2.5">
                 <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-green-100 text-green-800">
@@ -561,22 +556,16 @@ export default function InvoicesListPage() {
                 {bulkBusy ? <><Loader2 className="h-4 w-4 animate-spin" /> Saving…</> : <><CheckCircle className="h-4 w-4" /> Mark {selected.size} paid</>}
               </button>
             </div>
-          </div>
-        </div>
-      )}
+      </ModalBase>
 
       {/* Bulk void modal */}
-      {bulkOpen === 'void' && (
-        <div
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm p-4 sm:p-8 overflow-y-auto"
-          onClick={() => !bulkBusy && setBulkOpen(null)}
-        >
-          <div
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-md my-8"
-            onClick={e => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-          >
+      <ModalBase
+        open={bulkOpen === 'void'}
+        onClose={() => setBulkOpen(null)}
+        disableClose={bulkBusy}
+        size="md"
+        backdropClassName="bg-black/50"
+      >
             <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-border">
               <div className="flex items-center gap-2.5">
                 <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-amber-100 text-amber-800">
@@ -611,9 +600,7 @@ export default function InvoicesListPage() {
                 {bulkBusy ? <><Loader2 className="h-4 w-4 animate-spin" /> Voiding…</> : <><Ban className="h-4 w-4" /> Void all</>}
               </button>
             </div>
-          </div>
-        </div>
-      )}
+      </ModalBase>
     </main>
   );
 }

@@ -14,18 +14,16 @@
  *   - Specific to this listing, so the source attribution is rich
  *
  * Posts to /api/leads with source='brochure-request' + property_interest
- * carrying the listing slug/title so the operator knows which property
- * triggered the lead. The lead flow then ships the brochure via the
- * existing notification email path; the operator can attach + send
- * manually or we add an auto-send later.
+ * carrying the listing slug/title. Submit pipeline is in the shared
+ * useEmailCapture hook — this file owns only the UI shape (intro
+ * copy, input + button layout, success-state design).
  */
 
 import { useState } from 'react';
 import { ArrowRight, CheckCircle2, FileDown } from 'lucide-react';
-import { getRecaptchaToken } from './Recaptcha';
 import { Honeypot } from './Honeypot';
-import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
-import { isClientEmailValid } from '@/lib/validation';
+import { trackEvent } from '@/lib/analytics';
+import { useEmailCapture } from '@/hooks/useEmailCapture';
 
 interface Props {
   listingSlug: string;
@@ -35,64 +33,21 @@ interface Props {
 
 export function BrochureRequestForm({ listingSlug, listingTitle, brochureUrl }: Props) {
   const [email, setEmail] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    // Hard guard against double-submission. The button is also disabled
-    // during the in-flight request, but a fast double-click can land
-    // between event dispatch and setState committing. This guard runs
-    // synchronously inside the same event tick so the second click
-    // bails before the second fetch goes out.
-    if (submitting) return;
-    setError(null);
-
-    if (!isClientEmailValid(email)) {
-      setError('Enter a valid email.');
-      return;
-    }
-    setSubmitting(true);
-    try {
-      const recaptchaToken = await getRecaptchaToken('brochure_request');
-      const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
-      const attribution = readUtmsFromCookie();
-
-      const res = await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: '—',
-          email: email.trim().toLowerCase(),
-          message: `Requested the marketing brochure for ${listingTitle}. ${brochureUrl ? 'Brochure URL is on file.' : 'No PDF on file yet — send the offering memo manually.'}`,
-          property_interest: `${listingTitle} (${listingSlug})`,
-          source: 'brochure-request',
-          recaptchaToken,
-          website: honeypot,
-          ...attribution,
-        }),
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || 'Could not submit');
-      }
-      setSubmitted(true);
-      trackEvent('brochure_requested', {
-        listing_slug: listingSlug,
-        has_brochure: !!brochureUrl,
-        attribution_source: attribution.utm_source ?? 'direct',
-      });
-    } catch (err) {
-      setError((err as Error).message);
-      trackEvent('brochure_request_failed', {
-        listing_slug: listingSlug,
-        reason: (err as Error).message?.slice(0, 80),
-      });
-    } finally {
-      setSubmitting(false);
-    }
-  }
+  const { submit, submitting, submitted, error } = useEmailCapture({
+    endpoint: '/api/leads',
+    recaptchaAction: 'brochure_request',
+    successEvent: 'brochure_requested',
+    failureEvent: 'brochure_request_failed',
+    successEventParams: { listing_slug: listingSlug, has_brochure: !!brochureUrl },
+    buildPayload: (cleanEmail) => ({
+      name: '—',
+      email: cleanEmail,
+      message: `Requested the marketing brochure for ${listingTitle}. ${brochureUrl ? 'Brochure URL is on file.' : 'No PDF on file yet — send the offering memo manually.'}`,
+      property_interest: `${listingTitle} (${listingSlug})`,
+      source: 'brochure-request',
+    }),
+  });
 
   if (submitted) {
     return (
@@ -127,7 +82,7 @@ export function BrochureRequestForm({ listingSlug, listingTitle, brochureUrl }: 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="rounded-xl border border-border bg-background-cream/50 p-4">
+    <form onSubmit={(e) => submit(e, email)} className="rounded-xl border border-border bg-background-cream/50 p-4">
       <Honeypot />
       <div className="flex items-center gap-2 mb-2">
         <FileDown className="h-4 w-4 text-gold" />
@@ -140,6 +95,7 @@ export function BrochureRequestForm({ listingSlug, listingTitle, brochureUrl }: 
         <input
           type="email"
           required
+          aria-required="true"
           autoComplete="email"
           inputMode="email"
           value={email}

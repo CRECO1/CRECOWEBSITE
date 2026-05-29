@@ -18,14 +18,12 @@
  *   email field = 3-5x conversion vs. the full form.
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { X, BellRing, CheckCircle2, ArrowRight } from 'lucide-react';
-import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { Honeypot } from '@/components/forms/Honeypot';
-import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
-import { isClientEmailValid } from '@/lib/validation';
+import { ModalBase } from '@/components/ui/ModalBase';
+import { useEmailCapture } from '@/hooks/useEmailCapture';
 import { propertyTypeLabel, transactionLabel } from '@/lib/utils';
-import { useFocusTrap } from '@/hooks/useFocusTrap';
 
 interface SaveSearchFilters {
   search: string;
@@ -46,119 +44,65 @@ interface Props {
 
 export function SaveSearchModal({ open, onClose, filters }: Props) {
   const [email, setEmail] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
-  // Trap focus inside the dialog while it's open so Tab can't escape
-  // to the page underneath (a11y + UX).
-  useFocusTrap(dialogRef, open);
 
-  // Escape closes. Gated on !submitting so a mid-write keypress doesn't
-  // tear down state while the subscribe POST is in flight.
-  useEffect(() => {
-    if (!open) return;
-    function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape' && !submitting) onClose();
-    }
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [open, submitting, onClose]);
+  // Submit pipeline (validation, recaptcha, honeypot, UTM, fetch,
+  // trackEvent) is owned by the shared hook. Filter normalization +
+  // payload assembly stay here because they're specific to this surface.
+  // Infinity normalized to null explicitly — JSON.stringify(Infinity)
+  // silently produces null which works but is implicit.
+  const normalizedMax = filters.sizeMax === Infinity || filters.sizeMax === null
+    ? null
+    : Number.isFinite(filters.sizeMax) ? filters.sizeMax : null;
+  const normalizedMin = filters.sizeMin === null || !Number.isFinite(filters.sizeMin)
+    ? null
+    : filters.sizeMin;
 
-  // Reset state when the modal re-opens (otherwise a previous success
-  // banner persists on a second click).
-  useEffect(() => {
-    if (open) {
-      setSubmitted(false);
-      setError(null);
-    }
-  }, [open]);
-
-  if (!open) return null;
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    // Synchronous guard against double-submit before the button-disabled
-    // state lands — a fast double-click can fire two POSTs between the
-    // first event dispatch and the setState that disables the button.
-    if (submitting) return;
-    setError(null);
-    if (!isClientEmailValid(email)) {
-      setError('Enter a valid email.');
-      return;
-    }
-    setSubmitting(true);
-    try {
-      const recaptchaToken = await getRecaptchaToken('save_search');
-      const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
-      const attribution = readUtmsFromCookie();
-      // Filter payload matches what /property-alerts sends so downstream
-      // matching logic stays unified. propertyType='all' means "any" and
-      // becomes an empty array (no constraint). Infinity is explicitly
-      // normalized to null — JSON.stringify(Infinity) silently produces
-      // null, which works but is implicit. Doing it here makes the
-      // serialization deterministic + documented for future readers.
-      const normalizedMax = filters.sizeMax === Infinity || filters.sizeMax === null
-        ? null
-        : Number.isFinite(filters.sizeMax) ? filters.sizeMax : null;
-      const normalizedMin = filters.sizeMin === null || !Number.isFinite(filters.sizeMin)
-        ? null
-        : filters.sizeMin;
-      const filterPayload = {
+  const { submit, submitting, submitted, error, reset } = useEmailCapture({
+    endpoint: '/api/subscribe',
+    recaptchaAction: 'save_search',
+    successEvent: 'save_search_submitted',
+    failureEvent: 'save_search_failed',
+    successEventParams: {
+      property_type: filters.propertyType,
+      transaction_type: filters.transactionType,
+      size_label: filters.sizeLabel,
+      has_search_text: !!filters.search,
+    },
+    buildPayload: (cleanEmail) => ({
+      email: cleanEmail,
+      name: '—',
+      subscription_type: 'property-alerts',
+      source: 'save-search',
+      filters: {
         property_types: filters.propertyType !== 'all' ? [filters.propertyType] : [],
         transaction_type: filters.transactionType !== 'all' ? filters.transactionType : 'both',
         submarkets: [] as string[],
         size_min: normalizedMin,
         size_max: normalizedMax,
         search_terms: filters.search ? filters.search.slice(0, 200) : null,
-      };
-      const res = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: email.trim().toLowerCase(),
-          name: '—',
-          subscription_type: 'property-alerts',
-          source: 'save-search',
-          filters: filterPayload,
-          recaptchaToken,
-          website: honeypot,
-          ...attribution,
-        }),
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || 'Could not save search');
-      }
-      setSubmitted(true);
-      trackEvent('save_search_submitted', {
-        property_type: filters.propertyType,
-        transaction_type: filters.transactionType,
-        size_label: filters.sizeLabel,
-        has_search_text: !!filters.search,
-        attribution_source: attribution.utm_source ?? 'direct',
-      });
-    } catch (err) {
-      setError((err as Error).message);
-      trackEvent('save_search_failed', { reason: (err as Error).message?.slice(0, 80) });
-    } finally {
-      setSubmitting(false);
-    }
-  }
+      },
+    }),
+  });
+
+  // ModalBase handles Escape, focus trap, backdrop click — we just own
+  // the content. Reset hook state on every reopen so a previous success
+  // banner doesn't persist into a fresh save attempt.
+  useEffect(() => {
+    if (open) reset();
+    // reset is stable across renders (useState setter); eslint-no-deps
+    // complaint here would be a false positive. The intent is to fire
+    // exactly when `open` flips true.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/55 backdrop-blur-sm p-4 sm:p-8 overflow-y-auto"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="save-search-title"
-      onClick={() => !submitting && onClose()}
+    <ModalBase
+      open={open}
+      onClose={onClose}
+      disableClose={submitting}
+      size="md"
+      labelledBy="save-search-title"
     >
-      <div
-        ref={dialogRef}
-        className="relative w-full max-w-md my-8 rounded-2xl bg-white shadow-2xl overflow-hidden"
-        onClick={e => e.stopPropagation()}
-      >
         {/* Header */}
         <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-border">
           <div className="flex items-center gap-2.5">
@@ -206,7 +150,7 @@ export function SaveSearchModal({ open, onClose, filters }: Props) {
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
+          <form onSubmit={(e) => submit(e, email)} className="px-6 py-5 space-y-4">
             <Honeypot />
             {/* Filter chip preview — so the visitor can confirm exactly what
                 they're saving and trust the system isn't subscribing them
@@ -290,7 +234,6 @@ export function SaveSearchModal({ open, onClose, filters }: Props) {
             </div>
           </form>
         )}
-      </div>
-    </div>
+    </ModalBase>
   );
 }

@@ -24,6 +24,7 @@ import {
 } from '@/lib/recurring-invoices';
 import { ClientPicker } from '@/components/billing/ClientPicker';
 import type { ClientLite } from '@/lib/clients';
+import { formInputCls as inputCls } from '@/lib/form-styles';
 
 type DraftLine = Omit<InvoiceLineItem, 'sort_order' | 'invoice_id'>;
 const DEFAULT_LINE: DraftLine = { description: '', quantity: 1, rate: 0, amount: 0 };
@@ -525,7 +526,6 @@ export function RecurringTemplateForm({
   );
 }
 
-const inputCls = 'w-full rounded-md border border-border bg-white px-3 py-2 text-body-sm text-primary focus:outline-none focus:border-primary';
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (

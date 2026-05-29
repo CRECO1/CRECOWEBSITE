@@ -26,8 +26,9 @@ import {
 } from '@/lib/invoices';
 import { FALLBACK_TEMPLATE, substituteTemplate } from '@/lib/invoice-email';
 import { buildInvoiceEmailPreview } from '@/lib/invoice-email-html';
+import { formInputCls as inputCls } from '@/lib/form-styles';
 import { REMINDER_STAGES, type ReminderStage } from '@/lib/invoice-reminders';
-import { useEscapeKey } from '@/hooks/useEscapeKey';
+import { ModalBase } from '@/components/ui/ModalBase';
 
 type Editable = Omit<Invoice, 'line_items'> & { line_items: InvoiceLineItem[] };
 
@@ -61,8 +62,9 @@ export default function InvoiceDetailPage() {
 
   // Escape-to-close on both modals — matches platform convention. Gated on
   // !busy so a mid-send keypress doesn't cancel the in-flight request.
-  useEscapeKey(() => { if (!busy) setComposeOpen(false); }, composeOpen);
-  useEscapeKey(() => { if (!busy) setMarkPaidOpen(false); }, markPaidOpen);
+  // ModalBase handles Escape + focus trap on each modal below — the
+  // `disableClose={busy === '...'}` gates close attempts while the
+  // matching write is in flight, matching the old useEscapeKey pattern.
 
   // Future-date warning for the mark-paid date picker. Backdating is a
   // legitimate feature (matching the bank-deposit clear date), but a date
@@ -932,19 +934,18 @@ export default function InvoiceDetailPage() {
         )}
       </div>
 
-      {/* Compose-before-send modal */}
-      {composeOpen && invoice && (
-        <div
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm p-4 sm:p-8 overflow-y-auto"
-          onClick={() => !busy && setComposeOpen(false)}
-        >
-          <div
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl my-8"
-            onClick={e => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="compose-title"
-          >
+      {/* Compose-before-send modal — wrapped in {invoice && ...} so the
+          inner JSX (which dereferences invoice.X freely) is never built
+          when invoice is null. ModalBase itself still gates on `open`. */}
+      {invoice && (
+      <ModalBase
+        open={composeOpen}
+        onClose={() => setComposeOpen(false)}
+        disableClose={busy === 'send'}
+        size="2xl"
+        labelledBy="compose-title"
+        backdropClassName="bg-black/50"
+      >
             {/* Header */}
             <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-border">
               <div className="flex items-center gap-2.5">
@@ -1054,27 +1055,20 @@ export default function InvoiceDetailPage() {
                 </button>
               </div>
             </div>
-          </div>
-        </div>
+      </ModalBase>
       )}
 
-      {/* Mark-paid modal — replaces the old window.prompt flow. Method pills
-          for the most-common payment channels (Check / ACH / Stripe / Cash /
-          Other), amount input prefilled with the invoice total, date picker
-          for backdating to the day a bank deposit cleared, optional notes
-          that append to internal_notes for audit. */}
-      {markPaidOpen && invoice && (
-        <div
-          className="fixed inset-0 z-50 flex items-start justify-center bg-black/50 backdrop-blur-sm p-4 sm:p-8 overflow-y-auto"
-          onClick={() => !busy && setMarkPaidOpen(false)}
-        >
-          <div
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-md my-8"
-            onClick={e => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="markpaid-title"
-          >
+      {/* Mark-paid modal — same {invoice && ...} guard as above so the body
+          can dereference invoice.X freely. */}
+      {invoice && (
+      <ModalBase
+        open={markPaidOpen}
+        onClose={() => setMarkPaidOpen(false)}
+        disableClose={busy === 'paid'}
+        size="md"
+        labelledBy="markpaid-title"
+        backdropClassName="bg-black/50"
+      >
             <div className="flex items-center justify-between gap-3 px-6 py-4 border-b border-border">
               <div className="flex items-center gap-2.5">
                 <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-green-100 text-green-800">
@@ -1209,14 +1203,12 @@ export default function InvoiceDetailPage() {
                 </button>
               </div>
             </div>
-          </div>
-        </div>
+      </ModalBase>
       )}
     </main>
   );
 }
 
-const inputCls = "w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold";
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (

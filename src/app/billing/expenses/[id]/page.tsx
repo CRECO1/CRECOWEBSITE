@@ -12,6 +12,7 @@ import {
   AlertTriangle, ExternalLink, FileBadge,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { formInputCls as inputCls } from '@/lib/form-styles';
 import {
   EXPENSE_CATEGORIES, PAYMENT_METHODS, categoryStyle,
   formatMoney, formatDate, type Expense, type Contractor,
@@ -309,7 +310,6 @@ export default function ExpenseDetailPage() {
   );
 }
 
-const inputCls = "w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (

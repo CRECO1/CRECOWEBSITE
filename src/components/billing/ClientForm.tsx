@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save, AlertTriangle, Users, Trash, Settings, Link2, Copy, RefreshCw } from 'lucide-react';
 import type { Client, ReminderCadence } from '@/lib/clients';
+import { formInputCls as inputCls } from '@/lib/form-styles';
 
 export function ClientForm({
   initial, mode,
@@ -300,7 +301,6 @@ export function ClientForm({
   );
 }
 
-const inputCls = 'w-full rounded-md border border-border bg-white px-3 py-2 text-body-sm text-primary focus:outline-none focus:border-primary';
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (

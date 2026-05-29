@@ -30,11 +30,10 @@
 import { useEffect, useState, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { X, FileText, CheckCircle2, ArrowRight } from 'lucide-react';
-import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { Honeypot } from '@/components/forms/Honeypot';
-import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
-import { isClientEmailValid } from '@/lib/validation';
-import { useFocusTrap } from '@/hooks/useFocusTrap';
+import { ModalBase } from '@/components/ui/ModalBase';
+import { trackEvent } from '@/lib/analytics';
+import { useEmailCapture } from '@/hooks/useEmailCapture';
 
 const SESSION_KEY = 'creco_exit_shown';
 const PERSISTENT_KEY = 'creco_exit_subscribed';
@@ -45,18 +44,37 @@ export function ExitIntentModal() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // Submit pipeline (validation, recaptcha, honeypot, UTM, fetch, trackEvent)
+  // is owned by the shared hook. The consumer only manages email input state
+  // and the side-effect of stamping the persistent localStorage flag once
+  // the submission lands.
+  const { submit, submitting, submitted, error } = useEmailCapture({
+    endpoint: '/api/subscribe',
+    recaptchaAction: 'exit_intent',
+    successEvent: 'exit_intent_submitted',
+    failureEvent: 'exit_intent_failed',
+    successEventParams: { path: pathname ?? '/' },
+    buildPayload: (cleanEmail) => ({
+      email: cleanEmail,
+      name: '—',
+      subscription_type: 'market-report',
+      source: 'exit-intent',
+      filters: { offer: 'q2-2026-texas-market-report' },
+    }),
+  });
+  // Persistent suppression — never ask this visitor again after a successful
+  // submit. sessionStorage is set when the modal is shown; this is the
+  // "I gave you my email, leave me alone" longer-term flag.
+  useEffect(() => {
+    if (submitted) {
+      try { localStorage.setItem(PERSISTENT_KEY, '1'); } catch { /* private mode */ }
+    }
+  }, [submitted]);
+
   // Refs keep listener state stable across re-renders without re-binding.
   const dwellStartRef = useRef<number>(Date.now());
   const lastScrollYRef = useRef<number>(0);
   const lastScrollTRef = useRef<number>(Date.now());
-  const dialogRef = useRef<HTMLDivElement>(null);
-
-  // Trap focus inside the modal so Tab can't escape onto the page
-  // underneath. Only engages when the modal is open.
-  useFocusTrap(dialogRef, open);
 
   // Suppression — paths the operator never wants this on top of
   const shouldSuppress = SUPPRESS_PATHS.some(p => pathname?.startsWith(p));
@@ -113,68 +131,11 @@ export function ExitIntentModal() {
     };
   }, [pathname, shouldSuppress]);
 
-  // Close on Escape
-  useEffect(() => {
-    if (!open) return;
-    function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') {
-        setOpen(false);
-        trackEvent('exit_intent_dismissed', { method: 'escape' });
-      }
-    }
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [open]);
+  // Note: ModalBase handles Escape-to-close + focus trap. We don't
+  // independently track 'exit_intent_dismissed via escape' separately
+  // anymore; the dismiss handler below fires on backdrop click + close
+  // button + Escape, which captures the broader signal.
 
-  if (!open) return null;
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    // Synchronous guard against double-submit before the button-disabled
-    // state lands. Re-clicking before setState commits could otherwise
-    // fire two POSTs from the same form open.
-    if (submitting) return;
-    setError(null);
-    if (!isClientEmailValid(email)) {
-      setError('Enter a valid email.');
-      return;
-    }
-    setSubmitting(true);
-    try {
-      const recaptchaToken = await getRecaptchaToken('exit_intent');
-      const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
-      const attribution = readUtmsFromCookie();
-      const res = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: email.trim().toLowerCase(),
-          name: '—',
-          subscription_type: 'market-report',
-          source: 'exit-intent',
-          filters: { offer: 'q2-2026-texas-market-report' },
-          recaptchaToken,
-          website: honeypot,
-          ...attribution,
-        }),
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || 'Could not subscribe');
-      }
-      setSubmitted(true);
-      localStorage.setItem(PERSISTENT_KEY, '1');
-      trackEvent('exit_intent_submitted', {
-        path: pathname ?? '/',
-        attribution_source: attribution.utm_source ?? 'direct',
-      });
-    } catch (err) {
-      setError((err as Error).message);
-      trackEvent('exit_intent_failed', { reason: (err as Error).message?.slice(0, 80) });
-    } finally {
-      setSubmitting(false);
-    }
-  }
 
   function dismiss() {
     setOpen(false);
@@ -182,18 +143,14 @@ export function ExitIntentModal() {
   }
 
   return (
-    <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="exit-intent-title"
-      onClick={dismiss}
+    <ModalBase
+      open={open}
+      onClose={dismiss}
+      disableClose={submitting}
+      size="md"
+      labelledBy="exit-intent-title"
+      backdropClassName="bg-black/60 animate-fade-in"
     >
-      <div
-        ref={dialogRef}
-        className="relative w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden"
-        onClick={e => e.stopPropagation()}
-      >
         <button
           type="button"
           onClick={dismiss}
@@ -225,7 +182,7 @@ export function ExitIntentModal() {
               Cap rates, vacancy by submarket, and what we&apos;re seeing in active deal flow across San Antonio, Austin, Houston, and DFW. Free. No call.
             </p>
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={(e) => submit(e, email)}>
               <Honeypot />
               <div className="flex flex-col sm:flex-row gap-2">
                 <input
@@ -264,7 +221,6 @@ export function ExitIntentModal() {
             </form>
           </div>
         )}
-      </div>
-    </div>
+    </ModalBase>
   );
 }

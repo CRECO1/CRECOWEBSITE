@@ -28,6 +28,7 @@ import { buildInvoiceEmailPreview } from '@/lib/invoice-email-html';
 import { advanceNextRun, type RecurringFrequency } from '@/lib/recurring-invoices';
 import { ClientPicker } from '@/components/billing/ClientPicker';
 import type { ClientLite } from '@/lib/clients';
+import { formInputCls as inputCls } from '@/lib/form-styles';
 
 const DEFAULT_LINE: Omit<InvoiceLineItem, 'sort_order'> = {
   description: '',
@@ -804,7 +805,6 @@ function NewInvoicePageInner() {
   );
 }
 
-const inputCls = "w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold";
 
 function Card({ title, children }: { title: React.ReactNode; children: React.ReactNode }) {
   return (

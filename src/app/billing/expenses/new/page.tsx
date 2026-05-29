@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Save, AlertTriangle, ArrowDownCircle, FileBadge } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { EXPENSE_CATEGORIES, PAYMENT_METHODS, type Contractor } from '@/lib/expenses';
+import { formInputCls as inputCls } from '@/lib/form-styles';
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
@@ -230,7 +231,6 @@ export default function NewExpensePage() {
   );
 }
 
-const inputCls = "w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold";
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
