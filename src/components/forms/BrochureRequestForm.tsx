@@ -25,6 +25,7 @@ import { ArrowRight, CheckCircle2, FileDown } from 'lucide-react';
 import { getRecaptchaToken } from './Recaptcha';
 import { Honeypot } from './Honeypot';
 import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
+import { isClientEmailValid } from '@/lib/validation';
 
 interface Props {
   listingSlug: string;
@@ -40,11 +41,15 @@ export function BrochureRequestForm({ listingSlug, listingTitle, brochureUrl }: 
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // Synchronous guard — see HeroQuickCapture for the same rationale.
+    // Hard guard against double-submission. The button is also disabled
+    // during the in-flight request, but a fast double-click can land
+    // between event dispatch and setState committing. This guard runs
+    // synchronously inside the same event tick so the second click
+    // bails before the second fetch goes out.
     if (submitting) return;
     setError(null);
 
-    if (!email.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())) {
+    if (!isClientEmailValid(email)) {
       setError('Enter a valid email.');
       return;
     }

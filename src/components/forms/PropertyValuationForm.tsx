@@ -24,26 +24,7 @@ import {
   CAP_RATE_BANDS, SUBMARKETS_BY_TIER, valueProperty,
   type PropertyType, type SubmarketTier, type ValuationResult,
 } from '@/lib/valuation';
-
-/**
- * Fire a GA4 / GTM event if the analytics tag is present. Safe to call from
- * SSR contexts (no-ops when `window` is undefined). Lets us see calculate-
- * to-convert dropoff and tune the lead-gate tightness over time.
- */
-function trackEvent(name: string, params: Record<string, unknown> = {}) {
-  if (typeof window === 'undefined') return;
-  const w = window as unknown as { gtag?: (...args: unknown[]) => void; dataLayer?: unknown[] };
-  try {
-    if (typeof w.gtag === 'function') {
-      w.gtag('event', name, params);
-    } else if (Array.isArray(w.dataLayer)) {
-      // GTM dataLayer push as a fallback
-      w.dataLayer.push({ event: name, ...params });
-    }
-  } catch {
-    // Analytics must never break the form
-  }
-}
+import { trackEvent } from '@/lib/analytics';
 
 const PROPERTY_TYPES: { value: PropertyType; label: string }[] = [
   { value: 'industrial',  label: 'Industrial / Warehouse' },

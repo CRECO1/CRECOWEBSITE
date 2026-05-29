@@ -23,6 +23,7 @@ import { X, BellRing, CheckCircle2, ArrowRight } from 'lucide-react';
 import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { Honeypot } from '@/components/forms/Honeypot';
 import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
+import { isClientEmailValid } from '@/lib/validation';
 import { propertyTypeLabel, transactionLabel } from '@/lib/utils';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
 
@@ -78,10 +79,11 @@ export function SaveSearchModal({ open, onClose, filters }: Props) {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     // Synchronous guard against double-submit before the button-disabled
-    // state lands. See HeroQuickCapture for full rationale.
+    // state lands — a fast double-click can fire two POSTs between the
+    // first event dispatch and the setState that disables the button.
     if (submitting) return;
     setError(null);
-    if (!email.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())) {
+    if (!isClientEmailValid(email)) {
       setError('Enter a valid email.');
       return;
     }

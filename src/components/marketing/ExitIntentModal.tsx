@@ -33,6 +33,7 @@ import { X, FileText, CheckCircle2, ArrowRight } from 'lucide-react';
 import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { Honeypot } from '@/components/forms/Honeypot';
 import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
+import { isClientEmailValid } from '@/lib/validation';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
 
 const SESSION_KEY = 'creco_exit_shown';
@@ -129,10 +130,12 @@ export function ExitIntentModal() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // Synchronous guard — see HeroQuickCapture for rationale.
+    // Synchronous guard against double-submit before the button-disabled
+    // state lands. Re-clicking before setState commits could otherwise
+    // fire two POSTs from the same form open.
     if (submitting) return;
     setError(null);
-    if (!email.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())) {
+    if (!isClientEmailValid(email)) {
       setError('Enter a valid email.');
       return;
     }
