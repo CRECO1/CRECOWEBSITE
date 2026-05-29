@@ -18,6 +18,7 @@ import { supabase } from '@/lib/supabase';
 import { formatMoney, formatDate, effectiveStatus, type Invoice } from '@/lib/invoices';
 import type { Client } from '@/lib/clients';
 import { useToast } from '@/components/billing/Toast';
+import { BillingFallback } from '@/components/billing/BillingFallback';
 import {
   consumePendingToast, describePendingToast, usePostSaveBust,
 } from '@/lib/post-save-feedback';
@@ -36,11 +37,7 @@ interface ClientWithStats extends Client {
  */
 export default function ClientsListPage() {
   return (
-    <Suspense fallback={
-      <main className="min-h-screen bg-background-cream flex items-center justify-center text-foreground-muted">
-        <Loader2 className="h-6 w-6 animate-spin text-gold" />
-      </main>
-    }>
+    <Suspense fallback={<BillingFallback />}>
       <ClientsListPageInner />
     </Suspense>
   );

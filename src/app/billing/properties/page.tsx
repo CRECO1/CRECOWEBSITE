@@ -13,7 +13,7 @@
 
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, FilePlus2, Building2, Filter, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, FilePlus2, Building2, Filter, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
   PROPERTY_STATUS_STYLES,
@@ -21,6 +21,7 @@ import {
   type PropertyStatus,
 } from '@/lib/properties';
 import { useToast } from '@/components/billing/Toast';
+import { BillingFallback } from '@/components/billing/BillingFallback';
 import {
   consumePendingToast, describePendingToast, usePostSaveBust,
 } from '@/lib/post-save-feedback';
@@ -37,11 +38,7 @@ const FILTERS: { label: string; value: FilterValue }[] = [
 // during prerender — see the matching pattern in /billing/clients.
 export default function PropertiesListPage() {
   return (
-    <Suspense fallback={
-      <main className="min-h-screen bg-background-cream flex items-center justify-center text-foreground-muted">
-        <Loader2 className="h-6 w-6 animate-spin text-gold" />
-      </main>
-    }>
+    <Suspense fallback={<BillingFallback />}>
       <PropertiesListPageInner />
     </Suspense>
   );

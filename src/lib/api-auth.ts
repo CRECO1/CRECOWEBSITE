@@ -7,6 +7,16 @@
  * middleware matcher — those need their own auth check, otherwise a curl
  * call with no cookie hits the handler unauthenticated.
  *
+ * Two gates, both required:
+ *   1. A valid Supabase session (signed cookie → JWT → auth.users row).
+ *   2. The session user's email is on the admin_users allowlist.
+ *
+ * The second gate is the defense-in-depth piece: if the Supabase project's
+ * Auth settings ever permit self-signups, a visitor could mint a JWT but
+ * still wouldn't pass the admin-membership check. RLS on every billing
+ * table layers the same check (see migration 0029) so even a route that
+ * forgot to call this helper would still get RLS-denied at the DB.
+ *
  * Usage:
  *
  *   import { requireAdmin } from '@/lib/api-auth';
@@ -20,11 +30,7 @@
  *   }
  *
  * Returns the session-scoped Supabase client + the authenticated user, OR
- * a NextResponse(401) the caller can return directly.
- *
- * Note: this protects against *unauthenticated* access. If you ever need
- * role-based access (e.g. some routes only for super-admins), layer a
- * roles check on top by looking up `admin_users.role` for `user.id`.
+ * a NextResponse(401/403) the caller can return directly.
  */
 
 import { NextResponse } from 'next/server';
@@ -62,6 +68,33 @@ export async function requireAdmin(): Promise<RequireAdminResult> {
       error: NextResponse.json(
         { error: 'Not authorized' },
         { status: 401 },
+      ),
+    };
+  }
+
+  // Defense in depth: a valid Supabase JWT is necessary but not
+  // sufficient. The user must also be on the admin_users allowlist.
+  // This prevents a visitor who slipped through self-signup (if project
+  // Auth settings ever permit it) from hitting admin endpoints. The
+  // billing-table RLS in migration 0029 layers the same gate at the DB.
+  if (!user.email) {
+    return {
+      error: NextResponse.json(
+        { error: 'Not authorized' },
+        { status: 403 },
+      ),
+    };
+  }
+  const { data: adminRow } = await supabase
+    .from('admin_users')
+    .select('email')
+    .ilike('email', user.email)
+    .maybeSingle();
+  if (!adminRow) {
+    return {
+      error: NextResponse.json(
+        { error: 'Not authorized' },
+        { status: 403 },
       ),
     };
   }

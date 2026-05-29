@@ -9,7 +9,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   ArrowLeft, ArrowDownCircle, Pencil, Save, X, Trash2,
-  AlertTriangle, ExternalLink, FileBadge, Loader2,
+  AlertTriangle, ExternalLink, FileBadge,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { formInputCls as inputCls } from '@/lib/form-styles';
@@ -20,6 +20,7 @@ import {
   formatMoney, formatDate, type Expense, type Contractor,
 } from '@/lib/expenses';
 import { useToast } from '@/components/billing/Toast';
+import { BillingFallback } from '@/components/billing/BillingFallback';
 import {
   consumePendingToast, describePendingToast, pushPendingToast,
   usePostSaveBust, withBust,
@@ -29,11 +30,7 @@ import {
 // during prerender — mirrors the pattern on every other billing page.
 export default function ExpenseDetailPage() {
   return (
-    <Suspense fallback={
-      <main className="min-h-screen bg-background-cream flex items-center justify-center text-foreground-muted">
-        <Loader2 className="h-6 w-6 animate-spin text-gold" />
-      </main>
-    }>
+    <Suspense fallback={<BillingFallback />}>
       <ExpenseDetailPageInner />
     </Suspense>
   );

@@ -37,13 +37,43 @@ export async function middleware(request: NextRequest) {
 
   try {
     // Update session and get user
-    const { supabaseResponse, user } = await updateSession(request);
+    const { supabaseResponse, user, supabase } = await updateSession(request);
 
     // If no user, redirect to login
     if (!user) {
       const loginUrl = new URL('/manage/login', request.url);
       loginUrl.searchParams.set('redirect', pathname);
       return NextResponse.redirect(loginUrl);
+    }
+
+    // Defense in depth: for /admin and /billing surfaces, also verify
+    // the user is on the admin_users allowlist. A bare valid Supabase
+    // JWT isn't enough — if the project's Auth settings ever permit
+    // self-signups, this stops a stranger from reaching the admin UI.
+    // RLS on the underlying tables enforces the same gate at the DB
+    // (migration 0029) so the two layers are independent.
+    //
+    // /manage/* paths skip this check by design — login + password reset
+    // need to be reachable BY admins who don't yet have a session.
+    const needsAdminCheck = pathname.startsWith('/admin') || pathname.startsWith('/billing');
+    if (needsAdminCheck) {
+      if (!user.email) {
+        // Anonymous JWT or magic-link without an email — definitely
+        // not an admin. Bounce to login.
+        const loginUrl = new URL('/manage/login', request.url);
+        loginUrl.searchParams.set('redirect', pathname);
+        return NextResponse.redirect(loginUrl);
+      }
+      const { data: adminRow } = await supabase
+        .from('admin_users')
+        .select('email')
+        .ilike('email', user.email)
+        .maybeSingle();
+      if (!adminRow) {
+        // Authenticated but not authorized. 404 the surface so we don't
+        // confirm the URL exists to a casual prober.
+        return new NextResponse('Not found', { status: 404 });
+      }
     }
 
     return supabaseResponse;

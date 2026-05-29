@@ -19,12 +19,13 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   ArrowLeft, Pencil, Building2, Receipt, ArrowDownCircle,
-  TrendingUp, TrendingDown, DollarSign, Repeat, Calendar, Loader2,
+  TrendingUp, TrendingDown, DollarSign, Repeat, Calendar,
 } from 'lucide-react';
 import {
   consumePendingToast, describePendingToast, usePostSaveBust,
 } from '@/lib/post-save-feedback';
 import { useToast } from '@/components/billing/Toast';
+import { BillingFallback } from '@/components/billing/BillingFallback';
 import { supabase } from '@/lib/supabase';
 import {
   formatPropertyLabel, PROPERTY_STATUS_STYLES, type Property,
@@ -80,11 +81,7 @@ function rangeToDates(range: DateRange, customFrom: string, customTo: string): [
 // useSearchParams (inside usePostSaveBust) requires Suspense during prerender.
 export default function PropertyDetailPage() {
   return (
-    <Suspense fallback={
-      <main className="min-h-screen bg-background-cream flex items-center justify-center text-foreground-muted">
-        <Loader2 className="h-6 w-6 animate-spin text-gold" />
-      </main>
-    }>
+    <Suspense fallback={<BillingFallback />}>
       <PropertyDetailPageInner />
     </Suspense>
   );
