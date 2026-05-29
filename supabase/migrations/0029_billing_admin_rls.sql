@@ -27,6 +27,92 @@
 -- to read or insert there. UPDATE/DELETE remain absent (append-only).
 -- ============================================================================
 
+-- ── admin_users bootstrap ───────────────────────────────────────────────────
+-- The billing project doesn't have an admin_users table yet (it was only
+-- in the website project where the original CRECO admin UI was built).
+-- Create it with the same shape so the codebase's existing reads still
+-- work, and backfill from auth.users so the broker isn't locked out the
+-- moment the new policies activate.
+--
+-- Idempotent: `if not exists` + insert on conflict do nothing means
+-- re-running this migration is safe and won't overwrite manual edits
+-- to admin_users (e.g. name or role changes).
+
+create table if not exists public.admin_users (
+  id         uuid primary key default gen_random_uuid(),
+  email      text not null,
+  name       text not null,
+  role       text not null default 'admin',
+  avatar_url text,
+  created_at timestamptz default now()
+);
+
+-- Unique on lower(email) so the membership check in is_billing_admin()
+-- is deterministic (no duplicate-with-different-case rows).
+create unique index if not exists admin_users_email_unique_idx
+  on public.admin_users (lower(email));
+
+-- Backfill: every existing auth.users row that's NOT already in
+-- admin_users becomes an admin. In a fresh billing project there's
+-- exactly one auth.users row (the broker), so this seeds the broker
+-- as admin. Use coalesce on raw_user_meta_data->>'name' / email as
+-- the display name so the not-null column is satisfied.
+insert into public.admin_users (email, name, role)
+select
+  au.email,
+  coalesce(au.raw_user_meta_data->>'name', split_part(au.email, '@', 1)),
+  'admin'
+from auth.users au
+where au.email is not null
+on conflict (lower((email))) do nothing;
+
+-- RLS on admin_users itself. SELECT must be readable by any
+-- authenticated user (otherwise the is_billing_admin() lookup can't
+-- resolve, even via SECURITY DEFINER on most setups). INSERT/UPDATE/
+-- DELETE are restricted to existing admins so a non-admin who somehow
+-- authenticated can't add themselves.
+alter table public.admin_users enable row level security;
+
+drop policy if exists admin_users_select on public.admin_users;
+create policy admin_users_select on public.admin_users
+  for select to authenticated using (true);
+
+drop policy if exists admin_users_self_admin_only on public.admin_users;
+create policy admin_users_self_admin_only on public.admin_users
+  for insert to authenticated
+  with check (
+    exists (
+      select 1 from public.admin_users a
+      where lower(a.email) = lower(coalesce(auth.jwt() ->> 'email', ''))
+    )
+  );
+
+drop policy if exists admin_users_update_admin_only on public.admin_users;
+create policy admin_users_update_admin_only on public.admin_users
+  for update to authenticated
+  using (
+    exists (
+      select 1 from public.admin_users a
+      where lower(a.email) = lower(coalesce(auth.jwt() ->> 'email', ''))
+    )
+  )
+  with check (
+    exists (
+      select 1 from public.admin_users a
+      where lower(a.email) = lower(coalesce(auth.jwt() ->> 'email', ''))
+    )
+  );
+
+drop policy if exists admin_users_delete_admin_only on public.admin_users;
+create policy admin_users_delete_admin_only on public.admin_users
+  for delete to authenticated
+  using (
+    exists (
+      select 1 from public.admin_users a
+      where lower(a.email) = lower(coalesce(auth.jwt() ->> 'email', ''))
+    )
+  );
+
 -- ── Helper function ─────────────────────────────────────────────────────────
 create or replace function public.is_billing_admin()
 returns boolean
