@@ -17,6 +17,7 @@ import Link from 'next/link';
 import {
   ArrowLeft, ArrowRight, FilePlus2, Filter, Mail, Receipt, Eye, EyeOff,
   CheckCircle, Ban, X, Loader2, DollarSign, Bookmark, SlidersHorizontal, Trash2,
+  Download,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
@@ -29,6 +30,7 @@ import { logActivity } from '@/lib/activity-log';
 import {
   addSavedView, readSavedViews, removeSavedView, type SavedView,
 } from '@/lib/saved-views';
+import { downloadCsv, timestampedFilename } from '@/lib/csv-export';
 
 const FILTERS: { label: string; value: 'all' | InvoiceStatus }[] = [
   { label: 'All', value: 'all' },
@@ -334,6 +336,43 @@ export default function InvoicesListPage() {
     [selectedRows],
   );
 
+  /**
+   * Export currently-filtered invoices to CSV. Snapshots the visible
+   * rows verbatim — saved views, status filter, advanced filter inputs,
+   * and the show-deleted toggle all flow through. Sequence the columns
+   * to match what a CPA expects on a deposit reconciliation: identifier,
+   * dates, who, what, money in/out, status.
+   */
+  function exportInvoicesCsv() {
+    if (filtered.length === 0) {
+      toast.show({ message: 'Nothing to export — clear filters or add invoices first.' });
+      return;
+    }
+    downloadCsv(
+      timestampedFilename('invoices'),
+      filtered,
+      [
+        { header: 'Invoice number',  value: i => i.invoice_number },
+        { header: 'Status',          value: i => STATUS_STYLES[i._status].label },
+        { header: 'Issued',          value: i => i.issue_date },
+        { header: 'Due',             value: i => i.due_date },
+        { header: 'Paid at',         value: i => i.paid_at ? i.paid_at.slice(0, 10) : '' },
+        { header: 'Paid method',     value: i => i.paid_method ?? '' },
+        { header: 'Client name',     value: i => i.client_name },
+        { header: 'Client company',  value: i => i.client_company ?? '' },
+        { header: 'Client email',    value: i => i.client_email },
+        { header: 'Property',        value: i => i.property_reference ?? '' },
+        { header: 'Subtotal',        value: i => Number(i.subtotal).toFixed(2) },
+        { header: 'Tax rate',        value: i => Number(i.tax_rate ?? 0).toFixed(4) },
+        { header: 'Tax',             value: i => Number(i.tax_amount ?? 0).toFixed(2) },
+        { header: 'Total',           value: i => Number(i.total).toFixed(2) },
+        { header: 'Amount paid',     value: i => i.paid_amount != null ? Number(i.paid_amount).toFixed(2) : '' },
+        { header: 'Notes',           value: i => i.notes ?? '' },
+      ],
+    );
+    toast.show({ message: `Exported ${filtered.length} invoice${filtered.length === 1 ? '' : 's'}.` });
+  }
+
   // Stats: outstanding (sent + overdue, not paid), overdue, paid this month
   const stats = useMemo(() => {
     let outstanding = 0;
@@ -479,6 +518,14 @@ export default function InvoicesListPage() {
                 Save view
               </button>
             )}
+            <button
+              type="button"
+              onClick={exportInvoicesCsv}
+              className="inline-flex items-center gap-1 text-caption text-foreground-muted hover:text-primary"
+              title="Export the currently-filtered list to a spreadsheet (CSV)"
+            >
+              <Download className="h-3.5 w-3.5" /> Export CSV
+            </button>
             <button
               type="button"
               onClick={() => setShowDeleted(s => !s)}

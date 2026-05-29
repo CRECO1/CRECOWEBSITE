@@ -16,7 +16,8 @@ import {
 import { supabase } from '@/lib/supabase';
 import { formatMoney, formatDate } from '@/lib/invoices';
 import {
-  FREQUENCY_LABELS, type RecurringTemplate, type RecurringLineItem,
+  FREQUENCY_LABELS, advanceNextRun,
+  type RecurringFrequency, type RecurringTemplate, type RecurringLineItem,
 } from '@/lib/recurring-invoices';
 import { useToast } from '@/components/billing/Toast';
 import {
@@ -227,6 +228,29 @@ function RecurringTemplatesPageInner() {
                           <td className="px-5 py-3">
                             <div className="text-primary">{formatDate(t.next_run_date)}</div>
                             <div className="text-caption text-foreground-muted">{t.on_generate === 'draft' ? 'create as draft' : 'auto-send'}</div>
+                            {/* Look-ahead preview — only when the template is
+                                active. Paused templates show no projected runs
+                                because nothing will actually fire. */}
+                            {t.active && (() => {
+                              const upcoming = projectUpcomingRuns(
+                                t.next_run_date, t.frequency, t.end_date ?? null, 3,
+                              );
+                              if (upcoming.length === 0) {
+                                return (
+                                  <div className="text-caption text-amber-700 mt-1">
+                                    End date reached — no further runs scheduled.
+                                  </div>
+                                );
+                              }
+                              return (
+                                <div
+                                  className="text-caption text-foreground-muted mt-1 truncate"
+                                  title={`Next ${upcoming.length} after this one`}
+                                >
+                                  Then: {upcoming.map(formatShortDate).join(' · ')}
+                                </div>
+                              );
+                            })()}
                           </td>
                           <td className="px-5 py-3 text-right font-mono font-semibold text-primary">
                             {formatMoney(t.monthly_value)}
@@ -264,4 +288,40 @@ function RecurringTemplatesPageInner() {
       </div>
     </main>
   );
+}
+
+/**
+ * Project the next N occurrences from a template's current next_run_date.
+ * Used to render the "Then: Jun 30 · Jul 31 · Aug 31" preview row on the
+ * list. Stops early when end_date is reached so we don't promise runs
+ * that won't actually fire.
+ *
+ * The first element of the returned array is the date AFTER next_run —
+ * the next_run itself is already shown separately. So `count: 3` gives
+ * the operator a 3-cycle look-ahead beyond what's already visible.
+ */
+function projectUpcomingRuns(
+  nextRunDate: string,
+  frequency: RecurringFrequency,
+  endDate: string | null,
+  count: number,
+): string[] {
+  const out: string[] = [];
+  let cursor = nextRunDate;
+  for (let i = 0; i < count; i++) {
+    cursor = advanceNextRun(cursor, frequency);
+    if (endDate && cursor > endDate) break;
+    out.push(cursor);
+  }
+  return out;
+}
+
+/** Compact date format for the inline preview row — "Jun 30" beats
+ *  "06/30/2026" when we're packing three of them into a table cell. */
+function formatShortDate(iso: string): string {
+  const [y, m, d] = iso.split('-').map(Number);
+  const date = new Date(Date.UTC(y, m - 1, d));
+  return date.toLocaleDateString('en-US', {
+    month: 'short', day: 'numeric', timeZone: 'UTC',
+  });
 }

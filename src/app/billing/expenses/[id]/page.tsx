@@ -4,12 +4,12 @@
  * /billing/expenses/[id] — view + edit + delete one expense.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   ArrowLeft, ArrowDownCircle, Pencil, Save, X, Trash2,
-  AlertTriangle, ExternalLink, FileBadge,
+  AlertTriangle, ExternalLink, FileBadge, Loader2,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { formInputCls as inputCls } from '@/lib/form-styles';
@@ -19,11 +19,32 @@ import {
   EXPENSE_CATEGORIES, PAYMENT_METHODS, categoryStyle,
   formatMoney, formatDate, type Expense, type Contractor,
 } from '@/lib/expenses';
+import { useToast } from '@/components/billing/Toast';
+import {
+  consumePendingToast, describePendingToast, pushPendingToast,
+  usePostSaveBust, withBust,
+} from '@/lib/post-save-feedback';
 
+// useSearchParams (inside usePostSaveBust) needs a Suspense boundary
+// during prerender — mirrors the pattern on every other billing page.
 export default function ExpenseDetailPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-background-cream flex items-center justify-center text-foreground-muted">
+        <Loader2 className="h-6 w-6 animate-spin text-gold" />
+      </main>
+    }>
+      <ExpenseDetailPageInner />
+    </Suspense>
+  );
+}
+
+function ExpenseDetailPageInner() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const id = params?.id;
+  const bust = usePostSaveBust();
+  const toast = useToast();
 
   const [expense, setExpense] = useState<Expense | null>(null);
   const [editing, setEditing] = useState(false);
@@ -31,6 +52,16 @@ export default function ExpenseDetailPage() {
   const [busy, setBusy] = useState<null | string>(null);
   const [error, setError] = useState<string | null>(null);
   const [contractors, setContractors] = useState<Contractor[]>([]);
+
+  // Toast handoff from /billing/expenses/new (create) or the editor below
+  // re-entering after save. Runs once on mount.
+  useEffect(() => {
+    const payload = consumePendingToast();
+    if (payload?.entity === 'expense') {
+      toast.show({ message: describePendingToast(payload) });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -54,7 +85,10 @@ export default function ExpenseDetailPage() {
     setExpense(data as Expense);
   }, [id]);
 
-  useEffect(() => { load(); }, [load]);
+  // Re-load when the bust param flips (post-save from this same page or
+  // from /new). load() is the trigger; the load callback itself only
+  // changes when id changes.
+  useEffect(() => { load(); }, [load, bust]);
 
   function startEdit() {
     if (!expense) return;
@@ -100,7 +134,14 @@ export default function ExpenseDetailPage() {
     if (e1) { setError(e1.message); return; }
     setEditing(false);
     setDraft(null);
-    await load();
+    pushPendingToast({
+      entity: 'expense',
+      mode: 'edit',
+      name: `${draft.vendor.trim()} · $${amt.toFixed(2)}`,
+      id: draft.id,
+    });
+    // Stay on the page; bust forces load() to re-run with fresh data.
+    router.replace(withBust(`/billing/expenses/${draft.id}`));
   }
 
   async function destroy() {
@@ -110,7 +151,13 @@ export default function ExpenseDetailPage() {
     const { error } = await supabase.from('expenses').delete().eq('id', expense.id);
     setBusy(null);
     if (error) { setError(error.message); return; }
-    router.push('/billing/expenses');
+    pushPendingToast({
+      entity: 'expense',
+      mode: 'delete',
+      name: `${expense.vendor} · ${formatMoney(expense.amount)}`,
+      id: expense.id,
+    });
+    router.push(withBust('/billing/expenses'));
   }
 
   const view = editing && draft ? draft : expense;

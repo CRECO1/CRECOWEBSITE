@@ -16,6 +16,7 @@ import { PropertyPicker } from '@/components/billing/PropertyPicker';
 import { deleteReceiptFile, isStoragePath } from '@/lib/receipts';
 import type { PropertyLite } from '@/lib/properties';
 import { logActivity } from '@/lib/activity-log';
+import { pushPendingToast, withBust } from '@/lib/post-save-feedback';
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
@@ -100,7 +101,13 @@ export default function NewExpensePage() {
       entity_id: data.id,
       entity_label: `${vendor.trim()} · $${amt.toFixed(2)}`,
     });
-    router.push(`/billing/expenses/${data.id}`);
+    pushPendingToast({
+      entity: 'expense',
+      mode: 'create',
+      name: `${vendor.trim()} · $${amt.toFixed(2)}`,
+      id: data.id,
+    });
+    router.push(withBust(`/billing/expenses/${data.id}`));
   }
 
   return (
