@@ -47,7 +47,6 @@ import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import { getListings, getTestimonials, supabase } from '@/lib/supabase';
-import { HeroQuickCapture } from '@/components/forms/HeroQuickCapture';
 import { TrustStrip } from '@/components/marketing/TrustStrip';
 
 const DEMO_LISTINGS = [
@@ -220,7 +219,12 @@ export default async function HomePage() {
       <Header variant="transparent" />
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
-      <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-primary pt-28 md:pt-0 pb-12 md:pb-0">
+      {/* pt-32 md:pt-24 guarantees the eyebrow + headline never crash into
+          the fixed Header zone regardless of viewport height. Previously
+          we relied on `min-h-screen items-center` to center content, but
+          on shorter viewports the centered block could push the top
+          eyebrow up behind the transparent header. */}
+      <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-primary pt-32 md:pt-24 pb-12 md:pb-16">
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-primary/80" />
         {s.hero_image_url ? (
           <Image
@@ -250,14 +254,6 @@ export default async function HomePage() {
           <p className="mx-auto mb-10 max-w-2xl animate-fade-in text-body-lg text-white/80 delay-200 fill-both">
             {s.hero_subheadline}
           </p>
-          {/* Above-the-fold single-field capture — lowest-friction
-              conversion path. Visitors who'd bounce off a full-form
-              "Get Started" still drop an email here. The two buttons
-              below preserve the multi-step paths for visitors with more
-              specific intent. */}
-          <div className="mb-6 animate-fade-in delay-200 fill-both">
-            <HeroQuickCapture />
-          </div>
 
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center animate-fade-in delay-300 fill-both">
             <Button size="lg" asChild>
