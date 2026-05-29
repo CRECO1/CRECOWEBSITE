@@ -420,6 +420,7 @@ function NewInvoicePageInner() {
           client_email: clientEmail.trim().toLowerCase(),
           client_company: clientCompany.trim() || null,
           client_address: clientAddress.trim() || null,
+          property_id: propertyId,
           property_reference: propertyReference.trim() || null,
           tax_rate: taxRate,
           payment_terms: paymentTerms.trim() || DEFAULT_TERMS,

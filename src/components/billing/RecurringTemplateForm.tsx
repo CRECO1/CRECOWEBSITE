@@ -23,6 +23,7 @@ import {
   type RecurringOnGenerate, type RecurringTemplate, type RecurringLineItem,
 } from '@/lib/recurring-invoices';
 import { ClientPicker } from '@/components/billing/ClientPicker';
+import { PropertyPicker } from '@/components/billing/PropertyPicker';
 import type { ClientLite } from '@/lib/clients';
 import { formInputCls as inputCls } from '@/lib/form-styles';
 
@@ -57,6 +58,7 @@ export function RecurringTemplateForm({
   const [clientEmail, setClientEmail]         = useState(initial?.client_email ?? '');
   const [clientCompany, setClientCompany]     = useState(initial?.client_company ?? '');
   const [clientAddress, setClientAddress]     = useState(initial?.client_address ?? '');
+  const [propertyId, setPropertyId] = useState<string | null>(initial?.property_id ?? null);
   const [propertyReference, setPropertyReference] = useState(initial?.property_reference ?? '');
   const [taxRate, setTaxRate]                 = useState<number>(Number(initial?.tax_rate ?? 0));
   const [paymentTerms, setPaymentTerms]       = useState(initial?.payment_terms ?? 'Net 30');
@@ -143,6 +145,7 @@ export function RecurringTemplateForm({
           client_email: clientEmail.trim().toLowerCase(),
           client_company: clientCompany.trim() || null,
           client_address: clientAddress.trim() || null,
+          property_id: propertyId,
           property_reference: propertyReference.trim() || null,
           tax_rate: taxRate,
           payment_terms: paymentTerms.trim() || null,
@@ -363,9 +366,24 @@ export function RecurringTemplateForm({
                 <Field label="Address">
                   <textarea value={clientAddress ?? ''} onChange={e => setClientAddress(e.target.value)} rows={3} className={inputCls} />
                 </Field>
-                <Field label="Property reference">
-                  <input type="text" value={propertyReference ?? ''} onChange={e => setPropertyReference(e.target.value)} placeholder="optional" className={inputCls} />
-                </Field>
+                {/* Property tagging — picker is primary, free-form
+                    text shown only when no property is selected. When
+                    set, every generated invoice inherits this property
+                    so the property's P&L correctly includes the
+                    recurring revenue. */}
+                <PropertyPicker
+                  selectedId={propertyId}
+                  onPick={(p) => {
+                    setPropertyId(p.id);
+                    setPropertyReference(p.name);
+                  }}
+                  onClear={() => setPropertyId(null)}
+                />
+                {!propertyId && (
+                  <Field label="Property reference (free-form)">
+                    <input type="text" value={propertyReference ?? ''} onChange={e => setPropertyReference(e.target.value)} placeholder="optional one-off note" className={inputCls} />
+                  </Field>
+                )}
               </div>
             </section>
 

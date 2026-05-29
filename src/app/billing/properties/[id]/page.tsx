@@ -19,7 +19,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   ArrowLeft, Pencil, Building2, AlertTriangle, Receipt, ArrowDownCircle,
-  TrendingUp, TrendingDown, DollarSign,
+  TrendingUp, TrendingDown, DollarSign, Repeat,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
@@ -32,6 +32,7 @@ import {
 import {
   categoryStyle, type Expense,
 } from '@/lib/expenses';
+import { FREQUENCY_LABELS, type RecurringFrequency } from '@/lib/recurring-invoices';
 
 export default function PropertyDetailPage() {
   const params = useParams<{ id: string }>();
@@ -40,22 +41,29 @@ export default function PropertyDetailPage() {
   const [property, setProperty] = useState<Property | null>(null);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [recurring, setRecurring] = useState<RecurringRow[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
     (async () => {
-      const [propR, invR, expR] = await Promise.all([
+      const [propR, invR, expR, recR] = await Promise.all([
         supabase.from('properties').select('*').eq('id', id).maybeSingle(),
         supabase.from('invoices').select('*').eq('property_id', id).is('deleted_at', null).order('issue_date', { ascending: false }),
         supabase.from('expenses').select('*').eq('property_id', id).is('deleted_at', null).order('expense_date', { ascending: false }),
+        supabase.from('recurring_invoice_templates')
+          .select('id, name, frequency, next_run_date, end_date, active, client_name')
+          .eq('property_id', id)
+          .order('active', { ascending: false })
+          .order('next_run_date', { ascending: true }),
       ]);
       if (cancelled) return;
       if (propR.error) setError(propR.error.message);
       setProperty((propR.data ?? null) as Property | null);
       setInvoices((invR.data ?? []) as Invoice[]);
       setExpenses((expR.data ?? []) as Expense[]);
+      setRecurring((recR.data ?? []) as RecurringRow[]);
     })();
     return () => { cancelled = true; };
   }, [id]);
@@ -228,6 +236,50 @@ export default function PropertyDetailPage() {
           )}
         </section>
 
+        {/* Recurring templates attached — projected future invoicing */}
+        {recurring.length > 0 && (
+          <section className="rounded-xl border border-border bg-white overflow-hidden">
+            <div className="px-5 py-4 border-b border-border flex items-center justify-between flex-wrap gap-2">
+              <h2 className="font-heading text-body font-bold text-primary inline-flex items-center gap-2">
+                <Repeat className="h-4 w-4 text-gold" /> Recurring billing
+              </h2>
+              <p className="text-caption text-foreground-muted">{recurring.length} template{recurring.length === 1 ? '' : 's'} attached</p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-body-sm min-w-[640px]">
+                <thead className="bg-background-cream/50 text-caption uppercase tracking-widest text-foreground-muted">
+                  <tr>
+                    <th className="px-5 py-2.5 text-left font-semibold">Template</th>
+                    <th className="px-5 py-2.5 text-left font-semibold">Client</th>
+                    <th className="px-5 py-2.5 text-left font-semibold">Frequency</th>
+                    <th className="px-5 py-2.5 text-left font-semibold">Next run</th>
+                    <th className="px-5 py-2.5 text-left font-semibold">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {recurring.map(r => (
+                    <tr key={r.id} className={`hover:bg-background-cream/40 ${!r.active ? 'opacity-60' : ''}`}>
+                      <td className="px-5 py-3">
+                        <Link href={`/billing/recurring/${r.id}`} className="text-primary hover:text-gold-dark">
+                          {r.name}
+                        </Link>
+                      </td>
+                      <td className="px-5 py-3 text-foreground-muted">{r.client_name}</td>
+                      <td className="px-5 py-3 text-foreground-muted">{FREQUENCY_LABELS[r.frequency]}</td>
+                      <td className="px-5 py-3 text-foreground-muted">{formatDate(r.next_run_date)}</td>
+                      <td className="px-5 py-3">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-caption font-semibold border ${r.active ? 'bg-green-50 text-green-800 border-green-200' : 'bg-gray-100 text-gray-700 border-gray-300'}`}>
+                          {r.active ? 'Active' : 'Paused'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+
         {/* Expenses attached */}
         <section className="rounded-xl border border-border bg-white overflow-hidden">
           <div className="px-5 py-4 border-b border-border flex items-center justify-between flex-wrap gap-2">
@@ -315,4 +367,17 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function round2(n: number): number {
   return Math.round((n + Number.EPSILON) * 100) / 100;
+}
+
+/** Trimmed shape for the recurring-template rollup table on the
+ *  property detail page. Distinct from the full RecurringTemplate type
+ *  in lib/recurring-invoices.ts since we only need a few columns here. */
+interface RecurringRow {
+  id: string;
+  name: string;
+  frequency: RecurringFrequency;
+  next_run_date: string;
+  end_date: string | null;
+  active: boolean;
+  client_name: string;
 }

@@ -26,6 +26,10 @@ export interface RecurringTemplate {
   client_email: string;
   client_company: string | null;
   client_address: string | null;
+  /** Optional FK to properties.id — set when the operator tagged the
+   *  template to a property in the picker. Generated invoices inherit
+   *  this so the property's P&L correctly includes recurring revenue. */
+  property_id?: string | null;
   property_reference: string | null;
 
   tax_rate: number;
