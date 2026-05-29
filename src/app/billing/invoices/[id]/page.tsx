@@ -30,12 +30,14 @@ import { formInputCls as inputCls } from '@/lib/form-styles';
 import { REMINDER_STAGES, type ReminderStage } from '@/lib/invoice-reminders';
 import { ModalBase } from '@/components/ui/ModalBase';
 import { logActivity } from '@/lib/activity-log';
+import { useToast } from '@/components/billing/Toast';
 
 type Editable = Omit<Invoice, 'line_items'> & { line_items: InvoiceLineItem[] };
 
 export default function InvoiceDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
+  const toast = useToast();
   const id = params?.id;
 
   const [invoice, setInvoice] = useState<Editable | null>(null);
@@ -279,13 +281,35 @@ export default function InvoiceDetailPage() {
     }
     setBusy(null);
     setMarkPaidOpen(false);
-    setInfo(`Marked as paid · ${formatMoney(amount)} via ${paidMethod}.`);
     logActivity({
       action: 'marked_paid',
       entity_type: 'invoice',
       entity_id: invoice.id,
       entity_label: invoice.invoice_number,
       diff: { amount, method: paidMethod, date: paidDate },
+    });
+    // Capture the pre-paid snapshot for undo so the operator can roll
+    // back an accidental click. We don't try to revert the Stripe link
+    // deactivation — that's a one-way operation; the undo just resets
+    // the invoice state.
+    const prevStatus = invoice.sent_at ? 'sent' : 'draft';
+    toast.show({
+      message: `Marked ${invoice.invoice_number} paid · ${formatMoney(amount)} via ${paidMethod}.`,
+      undo: async () => {
+        const { error: undoErr } = await supabase
+          .from('invoices')
+          .update({ status: prevStatus, paid_at: null, paid_method: null, paid_amount: null })
+          .eq('id', invoice.id);
+        if (undoErr) return;
+        logActivity({
+          action: 'reopened',
+          entity_type: 'invoice',
+          entity_id: invoice.id,
+          entity_label: invoice.invoice_number,
+          diff: { via: 'undo' },
+        });
+        await load();
+      },
     });
     await load();
   }
@@ -388,6 +412,25 @@ export default function InvoiceDetailPage() {
       entity_id: invoice.id,
       entity_label: invoice.invoice_number,
     });
+    const prevStatus = invoice.status;
+    toast.show({
+      message: `Voided ${invoice.invoice_number}.`,
+      undo: async () => {
+        const { error: undoErr } = await supabase
+          .from('invoices')
+          .update({ status: prevStatus })
+          .eq('id', invoice.id);
+        if (undoErr) return;
+        logActivity({
+          action: 'reopened',
+          entity_type: 'invoice',
+          entity_id: invoice.id,
+          entity_label: invoice.invoice_number,
+          diff: { via: 'undo' },
+        });
+        await load();
+      },
+    });
     await load();
   }
 
@@ -419,6 +462,17 @@ export default function InvoiceDetailPage() {
       entity_id: invoice.id,
       entity_label: invoice.invoice_number,
     });
+    // Toast lives on the list page so the operator can undo from there.
+    // We pre-shove the toast via sessionStorage so the list pickup it
+    // up on mount — bouncing through the router would lose the in-
+    // memory toast state.
+    try {
+      sessionStorage.setItem('billing.pending_toast', JSON.stringify({
+        kind: 'invoice_deleted',
+        id: invoice.id,
+        label: invoice.invoice_number,
+      }));
+    } catch { /* private mode — fine, no undo toast */ }
     router.push('/billing/invoices');
   }
 

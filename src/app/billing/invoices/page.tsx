@@ -24,6 +24,8 @@ import {
   type Invoice, type InvoiceStatus,
 } from '@/lib/invoices';
 import { ModalBase } from '@/components/ui/ModalBase';
+import { useToast } from '@/components/billing/Toast';
+import { logActivity } from '@/lib/activity-log';
 
 const FILTERS: { label: string; value: 'all' | InvoiceStatus }[] = [
   { label: 'All', value: 'all' },
@@ -38,6 +40,51 @@ export default function InvoicesListPage() {
   const [invoices, setInvoices] = useState<Invoice[] | null>(null);
   const [filter, setFilter] = useState<'all' | InvoiceStatus>('all');
   const [error, setError] = useState<string | null>(null);
+  const toast = useToast();
+
+  // Pick up an in-flight toast pushed via sessionStorage when the
+  // operator arrived here from a destructive action on the detail page
+  // (e.g. "Moved INV-001 to trash"). The detail page can't show its
+  // own toast because it navigates away mid-action.
+  useEffect(() => {
+    let payload: { kind: string; id: string; label: string } | null = null;
+    try {
+      const raw = sessionStorage.getItem('billing.pending_toast');
+      if (raw) {
+        payload = JSON.parse(raw);
+        sessionStorage.removeItem('billing.pending_toast');
+      }
+    } catch { /* private mode etc — skip */ }
+    if (payload?.kind === 'invoice_deleted') {
+      const targetId = payload.id;
+      const targetLabel = payload.label;
+      toast.show({
+        message: `Moved ${targetLabel} to trash.`,
+        undo: async () => {
+          const { error: e } = await supabase
+            .from('invoices')
+            .update({ deleted_at: null })
+            .eq('id', targetId);
+          if (e) return;
+          logActivity({
+            action: 'restored',
+            entity_type: 'invoice',
+            entity_id: targetId,
+            entity_label: targetLabel,
+            diff: { via: 'undo' },
+          });
+          // Refresh so the row reappears in the list
+          const reloadQ = supabase
+            .from('invoices').select('*')
+            .order('created_at', { ascending: false });
+          const { data } = await reloadQ.is('deleted_at', null);
+          setInvoices((data ?? []) as Invoice[]);
+        },
+      });
+    }
+  // We only want this to fire once on mount.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Multi-select state for bulk operations. Set of selected invoice IDs.
   // Cleared when the filter changes (because the visible set changes) so
