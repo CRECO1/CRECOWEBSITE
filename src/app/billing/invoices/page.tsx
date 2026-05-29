@@ -16,7 +16,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft, ArrowRight, FilePlus2, Filter, Mail, Receipt, Eye, EyeOff,
-  CheckCircle, Ban, X, Loader2, DollarSign,
+  CheckCircle, Ban, X, Loader2, DollarSign, Bookmark, SlidersHorizontal, Trash2,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
@@ -26,6 +26,9 @@ import {
 import { ModalBase } from '@/components/ui/ModalBase';
 import { useToast } from '@/components/billing/Toast';
 import { logActivity } from '@/lib/activity-log';
+import {
+  addSavedView, readSavedViews, removeSavedView, type SavedView,
+} from '@/lib/saved-views';
 
 const FILTERS: { label: string; value: 'all' | InvoiceStatus }[] = [
   { label: 'All', value: 'all' },
@@ -36,11 +39,73 @@ const FILTERS: { label: string; value: 'all' | InvoiceStatus }[] = [
   { label: 'Void', value: 'void' },
 ];
 
+/**
+ * Filter state snapshot for the invoice list. Saved views serialize
+ * exactly this shape, so any field added here automatically becomes
+ * part of the save/restore contract.
+ */
+interface InvoiceFilters {
+  status: 'all' | InvoiceStatus;
+  dateFrom: string;        // YYYY-MM-DD or ''
+  dateTo: string;          // YYYY-MM-DD or ''
+  clientQuery: string;     // case-insensitive substring match
+  amountMin: string;       // empty = no lower bound
+  amountMax: string;       // empty = no upper bound
+  propertyQuery: string;   // matches property_reference (text snapshot)
+}
+
+const EMPTY_FILTERS: InvoiceFilters = {
+  status: 'all',
+  dateFrom: '',
+  dateTo: '',
+  clientQuery: '',
+  amountMin: '',
+  amountMax: '',
+  propertyQuery: '',
+};
+
 export default function InvoicesListPage() {
   const [invoices, setInvoices] = useState<Invoice[] | null>(null);
-  const [filter, setFilter] = useState<'all' | InvoiceStatus>('all');
+  const [filters, setFilters] = useState<InvoiceFilters>(EMPTY_FILTERS);
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [savedViews, setSavedViews] = useState<SavedView<InvoiceFilters>[]>([]);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [newViewName, setNewViewName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const toast = useToast();
+
+  // Single-source-of-truth `filter` alias for code that hasn't been
+  // migrated to read filters.status directly. Kept until the rest of
+  // the page is refactored — change one, change both.
+  const filter = filters.status;
+  const setFilter = (s: 'all' | InvoiceStatus) =>
+    setFilters(f => ({ ...f, status: s }));
+
+  // Load saved views once on mount. localStorage is sync but we treat
+  // it as effectful so SSR doesn't error.
+  useEffect(() => {
+    setSavedViews(readSavedViews<InvoiceFilters>('invoices'));
+  }, []);
+
+  function applyView(view: SavedView<InvoiceFilters>) {
+    setFilters(view.filters);
+  }
+  function saveCurrentView() {
+    const name = newViewName.trim();
+    if (!name) return;
+    const next = addSavedView<InvoiceFilters>('invoices', { name, filters });
+    setSavedViews(next);
+    setNewViewName('');
+    setShowSaveDialog(false);
+    toast.show({ message: `Saved view "${name}".` });
+  }
+  function deleteSavedView(id: string) {
+    setSavedViews(removeSavedView('invoices', id));
+  }
+  const filtersAreDefault =
+    filters.status === 'all' && !filters.dateFrom && !filters.dateTo
+    && !filters.clientQuery && !filters.amountMin && !filters.amountMax
+    && !filters.propertyQuery;
 
   // Pick up an in-flight toast pushed via sessionStorage when the
   // operator arrived here from a destructive action on the detail page
@@ -133,8 +198,25 @@ export default function InvoicesListPage() {
   );
 
   const filtered = useMemo(
-    () => filter === 'all' ? enriched : enriched.filter(i => i._status === filter),
-    [enriched, filter],
+    () => {
+      const amountMin = filters.amountMin === '' ? null : Number(filters.amountMin);
+      const amountMax = filters.amountMax === '' ? null : Number(filters.amountMax);
+      const clientQ = filters.clientQuery.trim().toLowerCase();
+      const propQ = filters.propertyQuery.trim().toLowerCase();
+      return enriched.filter(inv => {
+        if (filters.status !== 'all' && inv._status !== filters.status) return false;
+        if (filters.dateFrom && inv.issue_date < filters.dateFrom) return false;
+        if (filters.dateTo && inv.issue_date > filters.dateTo) return false;
+        if (clientQ && !(inv.client_name.toLowerCase().includes(clientQ)
+                      || (inv.client_company ?? '').toLowerCase().includes(clientQ)
+                      || (inv.client_email ?? '').toLowerCase().includes(clientQ))) return false;
+        if (amountMin !== null && Number(inv.total) < amountMin) return false;
+        if (amountMax !== null && Number(inv.total) > amountMax) return false;
+        if (propQ && !(inv.property_reference ?? '').toLowerCase().includes(propQ)) return false;
+        return true;
+      });
+    },
+    [enriched, filters],
   );
 
   // Drop any selection that's no longer in the filtered set when the filter
@@ -315,7 +397,36 @@ export default function InvoicesListPage() {
           <StatCard label="Paid this month" value={formatMoney(stats.paidThisMonth)} accent="green" />
         </section>
 
-        {/* Filters */}
+        {/* Saved views — only shown when at least one exists. Click a
+            chip to apply, click the small × to delete. */}
+        {savedViews.length > 0 && (
+          <section className="flex items-center gap-2 flex-wrap">
+            <span className="text-caption uppercase tracking-widest text-foreground-muted mr-1 flex items-center gap-1">
+              <Bookmark className="h-3 w-3" /> Saved
+            </span>
+            {savedViews.map(v => (
+              <span key={v.id} className="inline-flex items-center rounded-full bg-gold/10 border border-gold/30 pl-3 pr-1 py-1 text-caption font-medium text-gold-dark">
+                <button
+                  type="button"
+                  onClick={() => applyView(v)}
+                  className="hover:underline"
+                >
+                  {v.name}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => deleteSavedView(v.id)}
+                  aria-label={`Delete saved view "${v.name}"`}
+                  className="ml-1.5 inline-flex h-5 w-5 items-center justify-center rounded-full text-gold-dark/70 hover:text-destructive hover:bg-white/40"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            ))}
+          </section>
+        )}
+
+        {/* Status pills + utility actions */}
         <section className="flex items-center gap-2 flex-wrap">
           <span className="text-caption uppercase tracking-widest text-foreground-muted mr-1 flex items-center gap-1">
             <Filter className="h-3 w-3" /> Filter
@@ -336,14 +447,122 @@ export default function InvoicesListPage() {
           ))}
           <button
             type="button"
-            onClick={() => setShowDeleted(s => !s)}
-            className="ml-auto inline-flex items-center gap-1.5 text-caption text-foreground-muted hover:text-primary"
-            title={showDeleted ? 'Hide soft-deleted invoices' : 'Show soft-deleted invoices (Trash)'}
+            onClick={() => setAdvancedOpen(a => !a)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-body-sm font-medium border transition-colors ${
+              !filtersAreDefault || advancedOpen
+                ? 'bg-gold/10 border-gold/40 text-gold-dark'
+                : 'bg-white border-border text-foreground-muted hover:border-primary'
+            }`}
           >
-            {showDeleted ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
-            {showDeleted ? 'Hiding deleted' : 'Show deleted'}
+            <SlidersHorizontal className="h-3.5 w-3.5" />
+            More filters
+            {!filtersAreDefault && <span className="h-1.5 w-1.5 rounded-full bg-gold" />}
           </button>
+          {!filtersAreDefault && (
+            <button
+              type="button"
+              onClick={() => setFilters(EMPTY_FILTERS)}
+              className="text-caption text-foreground-muted hover:text-destructive"
+            >
+              Clear all
+            </button>
+          )}
+          <div className="ml-auto flex items-center gap-2">
+            {!filtersAreDefault && (
+              <button
+                type="button"
+                onClick={() => setShowSaveDialog(true)}
+                className="inline-flex items-center gap-1 text-caption text-gold-dark hover:text-gold"
+                title="Save current filters as a view"
+              >
+                <Bookmark className="h-3.5 w-3.5" />
+                Save view
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setShowDeleted(s => !s)}
+              className="inline-flex items-center gap-1.5 text-caption text-foreground-muted hover:text-primary"
+              title={showDeleted ? 'Hide soft-deleted invoices' : 'Show soft-deleted invoices (Trash)'}
+            >
+              {showDeleted ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
+              {showDeleted ? 'Hiding deleted' : 'Show deleted'}
+            </button>
+          </div>
         </section>
+
+        {/* Advanced filters drawer — collapsed by default to keep the
+            common case (just status pills) clean. */}
+        {advancedOpen && (
+          <section className="rounded-xl border border-border bg-white p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div>
+              <label className="block text-caption uppercase tracking-widest text-foreground-muted mb-1">Issue date from</label>
+              <input
+                type="date"
+                value={filters.dateFrom}
+                onChange={e => setFilters(f => ({ ...f, dateFrom: e.target.value }))}
+                className="w-full rounded-lg border border-border bg-white px-3 py-2 text-body-sm text-primary focus:outline-none focus:border-gold"
+              />
+            </div>
+            <div>
+              <label className="block text-caption uppercase tracking-widest text-foreground-muted mb-1">Issue date to</label>
+              <input
+                type="date"
+                value={filters.dateTo}
+                onChange={e => setFilters(f => ({ ...f, dateTo: e.target.value }))}
+                className="w-full rounded-lg border border-border bg-white px-3 py-2 text-body-sm text-primary focus:outline-none focus:border-gold"
+              />
+            </div>
+            <div>
+              <label className="block text-caption uppercase tracking-widest text-foreground-muted mb-1">Client</label>
+              <input
+                type="text"
+                value={filters.clientQuery}
+                onChange={e => setFilters(f => ({ ...f, clientQuery: e.target.value }))}
+                placeholder="name, company, or email"
+                className="w-full rounded-lg border border-border bg-white px-3 py-2 text-body-sm text-primary focus:outline-none focus:border-gold"
+              />
+            </div>
+            <div>
+              <label className="block text-caption uppercase tracking-widest text-foreground-muted mb-1">Amount min</label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground-muted text-body-sm">$</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={filters.amountMin}
+                  onChange={e => setFilters(f => ({ ...f, amountMin: e.target.value }))}
+                  className="w-full rounded-lg border border-border bg-white pl-7 pr-3 py-2 text-body-sm text-primary focus:outline-none focus:border-gold"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-caption uppercase tracking-widest text-foreground-muted mb-1">Amount max</label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground-muted text-body-sm">$</span>
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={filters.amountMax}
+                  onChange={e => setFilters(f => ({ ...f, amountMax: e.target.value }))}
+                  className="w-full rounded-lg border border-border bg-white pl-7 pr-3 py-2 text-body-sm text-primary focus:outline-none focus:border-gold"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-caption uppercase tracking-widest text-foreground-muted mb-1">Property</label>
+              <input
+                type="text"
+                value={filters.propertyQuery}
+                onChange={e => setFilters(f => ({ ...f, propertyQuery: e.target.value }))}
+                placeholder="property reference"
+                className="w-full rounded-lg border border-border bg-white px-3 py-2 text-body-sm text-primary focus:outline-none focus:border-gold"
+              />
+            </div>
+          </section>
+        )}
 
         {/* Table */}
         <section className="rounded-xl border border-border bg-white overflow-hidden">
@@ -372,8 +591,12 @@ export default function InvoicesListPage() {
               )}
             </div>
           ) : (
-            <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px]">
+            <>
+            {/* Desktop / tablet table. Hidden on mobile in favor of the
+                stacked card list below — too many columns to squeeze into
+                a phone width without sacrificing readability. */}
+            <div className="hidden sm:block overflow-x-auto">
+            <table className="w-full">
               <thead className="bg-background-cream border-b border-border">
                 <tr className="text-left text-caption uppercase tracking-widest text-foreground-muted">
                   <th className="px-3 py-3 w-10">
@@ -394,11 +617,11 @@ export default function InvoicesListPage() {
                   </th>
                   <th className="px-5 py-3 font-semibold">Invoice</th>
                   <th className="px-5 py-3 font-semibold">Client</th>
-                  <th className="px-5 py-3 font-semibold">Issued</th>
-                  <th className="px-5 py-3 font-semibold">Due</th>
+                  <th className="px-5 py-3 font-semibold hidden md:table-cell">Issued</th>
+                  <th className="px-5 py-3 font-semibold hidden lg:table-cell">Due</th>
                   <th className="px-5 py-3 font-semibold text-right">Total</th>
                   <th className="px-5 py-3 font-semibold">Status</th>
-                  <th className="px-5 py-3" />
+                  <th className="px-5 py-3 hidden md:table-cell" />
                 </tr>
               </thead>
               <tbody>
@@ -433,8 +656,8 @@ export default function InvoicesListPage() {
                           <div className="text-caption text-foreground-muted">{inv.client_company}</div>
                         )}
                       </td>
-                      <td className="px-5 py-4 text-body-sm text-foreground-muted">{formatDate(inv.issue_date)}</td>
-                      <td className="px-5 py-4 text-body-sm text-foreground-muted">{formatDate(inv.due_date)}</td>
+                      <td className="px-5 py-4 text-body-sm text-foreground-muted hidden md:table-cell">{formatDate(inv.issue_date)}</td>
+                      <td className="px-5 py-4 text-body-sm text-foreground-muted hidden lg:table-cell">{formatDate(inv.due_date)}</td>
                       <td className="px-5 py-4 text-body-sm font-semibold text-primary text-right">
                         {formatMoney(inv.total)}
                       </td>
@@ -472,7 +695,7 @@ export default function InvoicesListPage() {
                           </span>
                         )}
                       </td>
-                      <td className="px-5 py-4 text-right">
+                      <td className="px-5 py-4 text-right hidden md:table-cell">
                         <Link
                           href={`/billing/invoices/${inv.id}`}
                           className="inline-flex items-center gap-1 text-body-sm text-gold-dark hover:text-gold"
@@ -486,6 +709,57 @@ export default function InvoicesListPage() {
               </tbody>
             </table>
             </div>
+
+            {/* Mobile stacked cards. One row → one tappable card. Shows the
+                fields that matter at a phone glance: number, client,
+                total, status. Date drops down a line so the card stays
+                short. */}
+            <ul className="sm:hidden divide-y divide-border">
+              {filtered.map(inv => {
+                const style = STATUS_STYLES[inv._status];
+                return (
+                  <li
+                    key={inv.id}
+                    className={`flex items-start gap-3 px-4 py-3 ${
+                      inv.deleted_at ? 'opacity-60' : ''
+                    } ${selected.has(inv.id) ? 'bg-gold/5' : ''}`}
+                  >
+                    <input
+                      type="checkbox"
+                      aria-label={`Select ${inv.invoice_number}`}
+                      checked={selected.has(inv.id)}
+                      onChange={() => toggleOne(inv.id)}
+                      className="mt-1.5 h-4 w-4 rounded border-border accent-primary shrink-0"
+                    />
+                    <Link href={`/billing/invoices/${inv.id}`} className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-mono text-body-sm font-semibold text-primary truncate">
+                          {inv.invoice_number}
+                        </span>
+                        <span className="text-body-sm font-semibold text-primary whitespace-nowrap">
+                          {formatMoney(inv.total)}
+                        </span>
+                      </div>
+                      <div className="text-body-sm text-primary truncate mt-0.5">
+                        {inv.client_name}
+                        {inv.client_company && (
+                          <span className="text-foreground-muted"> · {inv.client_company}</span>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between gap-2 mt-1.5">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-caption font-semibold border ${style.className}`}>
+                          {style.label}
+                        </span>
+                        <span className="text-caption text-foreground-muted">
+                          Due {formatDate(inv.due_date)}
+                        </span>
+                      </div>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+            </>
           )}
         </section>
 
@@ -665,6 +939,50 @@ export default function InvoicesListPage() {
                 {bulkBusy ? <><Loader2 className="h-4 w-4 animate-spin" /> Voiding…</> : <><Ban className="h-4 w-4" /> Void all</>}
               </button>
             </div>
+      </ModalBase>
+
+      {/* Save-view dialog. Single-field — the filters snapshot is
+          already in state; we just need a name. */}
+      <ModalBase
+        open={showSaveDialog}
+        onClose={() => setShowSaveDialog(false)}
+        size="md"
+        labelledBy="save-view-title"
+      >
+        <div className="px-6 py-5 border-b border-border">
+          <h2 id="save-view-title" className="font-heading text-body font-bold text-primary inline-flex items-center gap-2">
+            <Bookmark className="h-4 w-4 text-gold" /> Save current filters as a view
+          </h2>
+          <p className="text-caption text-foreground-muted mt-1">
+            Recall this filter combo in one click — saved per device.
+          </p>
+        </div>
+        <div className="px-6 py-5">
+          <label className="block">
+            <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-1.5">Name</span>
+            <input
+              type="text"
+              value={newViewName}
+              onChange={e => setNewViewName(e.target.value)}
+              placeholder='e.g. "Overdue this month" or "Acme invoices"'
+              autoFocus
+              onKeyDown={e => { if (e.key === 'Enter') saveCurrentView(); }}
+              className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+            />
+          </label>
+        </div>
+        <div className="px-6 py-4 border-t border-border bg-background-cream/40 flex items-center justify-end gap-2">
+          <button onClick={() => setShowSaveDialog(false)} className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-4 py-2 text-body-sm text-foreground-muted hover:text-primary">
+            Cancel
+          </button>
+          <button
+            onClick={saveCurrentView}
+            disabled={!newViewName.trim()}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-5 py-2 text-body-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-60"
+          >
+            Save view
+          </button>
+        </div>
       </ModalBase>
     </main>
   );

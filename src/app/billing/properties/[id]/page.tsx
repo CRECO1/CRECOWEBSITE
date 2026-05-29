@@ -18,8 +18,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
-  ArrowLeft, Pencil, Building2, AlertTriangle, Receipt, ArrowDownCircle,
-  TrendingUp, TrendingDown, DollarSign, Repeat,
+  ArrowLeft, Pencil, Building2, Receipt, ArrowDownCircle,
+  TrendingUp, TrendingDown, DollarSign, Repeat, Calendar,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
@@ -34,6 +34,45 @@ import {
 } from '@/lib/expenses';
 import { FREQUENCY_LABELS, type RecurringFrequency } from '@/lib/recurring-invoices';
 
+/**
+ * Date-range preset for the P&L. Custom lets the operator pick exact
+ * dates; everything else is computed from "today" at render time. All
+ * computations are date-only (YYYY-MM-DD) — no timezone games — so
+ * "this month" matches what the operator sees on their calendar.
+ */
+type DateRange = 'this-month' | 'last-month' | 'ytd' | 'last-12mo' | 'all' | 'custom';
+
+const RANGE_LABELS: Record<DateRange, string> = {
+  'this-month': 'This month',
+  'last-month': 'Last month',
+  'ytd':        'Year to date',
+  'last-12mo':  'Last 12 months',
+  'all':        'All time',
+  'custom':     'Custom',
+};
+
+/** Returns [from, to] inclusive YYYY-MM-DD strings, or [null, null] for 'all'. */
+function rangeToDates(range: DateRange, customFrom: string, customTo: string): [string | null, string | null] {
+  const today = new Date();
+  const y = today.getFullYear();
+  const m = today.getMonth();
+  const fmt = (d: Date) => d.toISOString().slice(0, 10);
+  switch (range) {
+    case 'this-month':
+      return [fmt(new Date(y, m, 1)), fmt(new Date(y, m + 1, 0))];
+    case 'last-month':
+      return [fmt(new Date(y, m - 1, 1)), fmt(new Date(y, m, 0))];
+    case 'ytd':
+      return [fmt(new Date(y, 0, 1)), fmt(today)];
+    case 'last-12mo':
+      return [fmt(new Date(y - 1, m, today.getDate())), fmt(today)];
+    case 'all':
+      return [null, null];
+    case 'custom':
+      return [customFrom || null, customTo || null];
+  }
+}
+
 export default function PropertyDetailPage() {
   const params = useParams<{ id: string }>();
   const id = params?.id;
@@ -43,6 +82,14 @@ export default function PropertyDetailPage() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [recurring, setRecurring] = useState<RecurringRow[]>([]);
   const [error, setError] = useState<string | null>(null);
+
+  // Date range filter for the P&L. Defaults to YTD — sensible at-a-glance
+  // window for a property owner doing their quarterly check-in. The 'all'
+  // option matches the original always-include behavior for forensic use.
+  const [range, setRange] = useState<DateRange>('ytd');
+  const [customFrom, setCustomFrom] = useState('');
+  const [customTo, setCustomTo] = useState('');
+  const [from, to] = rangeToDates(range, customFrom, customTo);
 
   useEffect(() => {
     if (!id) return;
@@ -68,6 +115,33 @@ export default function PropertyDetailPage() {
     return () => { cancelled = true; };
   }, [id]);
 
+  // Filtered invoice + expense sets for the active date window. Revenue
+  // counts the paid_at date (cash basis); outstanding counts the
+  // issue_date (it's a forward-looking commitment, not a realized event).
+  // Expenses count their expense_date. Drill-down tables below also use
+  // these filtered sets so the totals match what's visible.
+  const filteredInvoices = useMemo(() => {
+    if (!from && !to) return invoices;
+    return invoices.filter(inv => {
+      const eff = effectiveStatus(inv);
+      const refDate = eff === 'paid' && inv.paid_at
+        ? inv.paid_at.slice(0, 10)
+        : inv.issue_date;
+      if (from && refDate < from) return false;
+      if (to && refDate > to) return false;
+      return true;
+    });
+  }, [invoices, from, to]);
+
+  const filteredExpenses = useMemo(() => {
+    if (!from && !to) return expenses;
+    return expenses.filter(e => {
+      if (from && e.expense_date < from) return false;
+      if (to && e.expense_date > to) return false;
+      return true;
+    });
+  }, [expenses, from, to]);
+
   // P&L roll-up. Revenue = paid_amount on paid invoices (falls back to
   // total if paid_amount is null). Expenses = sum of expense.amount.
   // Outstanding shown separately — operator can see what's still
@@ -75,19 +149,19 @@ export default function PropertyDetailPage() {
   const pnl = useMemo(() => {
     let revenue = 0;
     let outstanding = 0;
-    for (const inv of invoices) {
+    for (const inv of filteredInvoices) {
       const eff = effectiveStatus(inv);
       if (eff === 'paid') revenue += Number(inv.paid_amount ?? inv.total);
       else if (eff === 'sent' || eff === 'overdue') outstanding += Number(inv.total);
     }
-    const expenseTotal = expenses.reduce((s, e) => s + Number(e.amount), 0);
+    const expenseTotal = filteredExpenses.reduce((s, e) => s + Number(e.amount), 0);
     return {
       revenue: round2(revenue),
       outstanding: round2(outstanding),
       expenseTotal: round2(expenseTotal),
       net: round2(revenue - expenseTotal),
     };
-  }, [invoices, expenses]);
+  }, [filteredInvoices, filteredExpenses]);
 
   if (!property && !error) {
     return <main className="min-h-screen bg-background-cream flex items-center justify-center text-foreground-muted">Loading…</main>;
@@ -155,6 +229,54 @@ export default function PropertyDetailPage() {
           )}
         </section>
 
+        {/* Date range picker for the P&L. Presets cover the common
+            check-in cadences; "Custom" reveals two date inputs. The
+            chosen range applies to the four summary cards + the
+            drill-down tables below. */}
+        <section className="rounded-xl border border-border bg-white p-4 flex items-center gap-2 flex-wrap">
+          <span className="text-caption uppercase tracking-widest text-foreground-muted mr-1 inline-flex items-center gap-1">
+            <Calendar className="h-3 w-3" /> Range
+          </span>
+          {(Object.keys(RANGE_LABELS) as DateRange[]).map(r => (
+            <button
+              key={r}
+              type="button"
+              onClick={() => setRange(r)}
+              className={`px-3 py-1.5 rounded-full text-caption font-medium border transition-colors ${
+                range === r
+                  ? 'bg-primary border-primary text-white'
+                  : 'bg-white border-border text-foreground-muted hover:border-primary'
+              }`}
+            >
+              {RANGE_LABELS[r]}
+            </button>
+          ))}
+          {range === 'custom' && (
+            <div className="flex items-center gap-2 ml-2">
+              <input
+                type="date"
+                value={customFrom}
+                onChange={e => setCustomFrom(e.target.value)}
+                className="rounded-lg border border-border bg-white px-2 py-1 text-caption text-primary focus:outline-none focus:border-gold"
+                aria-label="From"
+              />
+              <span className="text-caption text-foreground-muted">→</span>
+              <input
+                type="date"
+                value={customTo}
+                onChange={e => setCustomTo(e.target.value)}
+                className="rounded-lg border border-border bg-white px-2 py-1 text-caption text-primary focus:outline-none focus:border-gold"
+                aria-label="To"
+              />
+            </div>
+          )}
+          {(from || to) && (
+            <span className="ml-auto text-caption text-foreground-muted">
+              {from ?? '…'} → {to ?? '…'}
+            </span>
+          )}
+        </section>
+
         {/* P&L summary */}
         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <PnlCard
@@ -190,11 +312,18 @@ export default function PropertyDetailPage() {
             <h2 className="font-heading text-body font-bold text-primary inline-flex items-center gap-2">
               <Receipt className="h-4 w-4 text-gold" /> Invoices
             </h2>
-            <p className="text-caption text-foreground-muted">{invoices.length} attached</p>
+            <p className="text-caption text-foreground-muted">
+              {filteredInvoices.length} in range
+              {filteredInvoices.length !== invoices.length && (
+                <span className="text-foreground-subtle"> · {invoices.length} total</span>
+              )}
+            </p>
           </div>
-          {invoices.length === 0 ? (
+          {filteredInvoices.length === 0 ? (
             <div className="p-8 text-center text-body-sm text-foreground-muted">
-              No invoices attached to this property yet. Create an invoice and pick this property from the dropdown.
+              {invoices.length === 0
+                ? 'No invoices attached to this property yet. Create an invoice and pick this property from the dropdown.'
+                : 'No invoices fall in this date range. Widen the range above to see more.'}
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -209,7 +338,7 @@ export default function PropertyDetailPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {invoices.map(inv => {
+                  {filteredInvoices.map(inv => {
                     const eff = effectiveStatus(inv);
                     const style = STATUS_STYLES[eff];
                     return (
@@ -286,11 +415,18 @@ export default function PropertyDetailPage() {
             <h2 className="font-heading text-body font-bold text-primary inline-flex items-center gap-2">
               <ArrowDownCircle className="h-4 w-4 text-gold" /> Expenses
             </h2>
-            <p className="text-caption text-foreground-muted">{expenses.length} attached</p>
+            <p className="text-caption text-foreground-muted">
+              {filteredExpenses.length} in range
+              {filteredExpenses.length !== expenses.length && (
+                <span className="text-foreground-subtle"> · {expenses.length} total</span>
+              )}
+            </p>
           </div>
-          {expenses.length === 0 ? (
+          {filteredExpenses.length === 0 ? (
             <div className="p-8 text-center text-body-sm text-foreground-muted">
-              No expenses attached to this property yet.
+              {expenses.length === 0
+                ? 'No expenses attached to this property yet.'
+                : 'No expenses fall in this date range. Widen the range above to see more.'}
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -304,7 +440,7 @@ export default function PropertyDetailPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {expenses.map(e => {
+                  {filteredExpenses.map(e => {
                     const catClass = categoryStyle(e.category);
                     return (
                       <tr key={e.id} className="hover:bg-background-cream/40">
