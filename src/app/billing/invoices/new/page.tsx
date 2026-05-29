@@ -27,7 +27,10 @@ import { FALLBACK_TEMPLATE, substituteTemplate } from '@/lib/invoice-email';
 import { buildInvoiceEmailPreview } from '@/lib/invoice-email-html';
 import { advanceNextRun, type RecurringFrequency } from '@/lib/recurring-invoices';
 import { ClientPicker } from '@/components/billing/ClientPicker';
+import { PropertyPicker } from '@/components/billing/PropertyPicker';
 import type { ClientLite } from '@/lib/clients';
+import type { PropertyLite } from '@/lib/properties';
+import { logActivity } from '@/lib/activity-log';
 import { formInputCls as inputCls } from '@/lib/form-styles';
 
 const DEFAULT_LINE: Omit<InvoiceLineItem, 'sort_order'> = {
@@ -81,6 +84,10 @@ function NewInvoicePageInner() {
   const [dueDate, setDueDate] = useState(defaultDueDate());
   const [paymentTerms, setPaymentTerms] = useState(DEFAULT_TERMS);
   const [propertyReference, setPropertyReference] = useState('');
+  // Optional FK to a property record. When set, the invoice also writes
+  // property_reference (denormalized text snapshot) so legacy reports
+  // and the picker-fallback display continue to work.
+  const [propertyId, setPropertyId] = useState<string | null>(null);
   const [taxRate, setTaxRate] = useState(0);             // store as decimal (0.0825 = 8.25%)
   const [notes, setNotes] = useState('');
   const [internalNotes, setInternalNotes] = useState('');
@@ -166,6 +173,7 @@ function NewInvoicePageInner() {
       setClientCompany(src.client_company ?? '');
       setClientAddress(src.client_address ?? '');
       setPaymentTerms(src.payment_terms ?? DEFAULT_TERMS);
+      setPropertyId(src.property_id ?? null);
       setPropertyReference(src.property_reference ?? '');
       setTaxRate(Number(src.tax_rate) || 0);
       setNotes(src.notes ?? '');
@@ -343,6 +351,7 @@ function NewInvoicePageInner() {
         tax_rate: taxRate,
         tax_amount: totals.tax_amount,
         total: totals.total,
+        property_id: propertyId,
         property_reference: propertyReference.trim() || null,
         notes: notes.trim() || null,
         internal_notes: internalNotes.trim() || null,
@@ -358,6 +367,16 @@ function NewInvoicePageInner() {
       setError(insertErr?.message ?? 'Could not save invoice.');
       return;
     }
+
+    // Activity log: log creation immediately after the row lands. Fire
+    // and forget — the helper is best-effort.
+    logActivity({
+      action: cloneId ? 'duplicated' : 'created',
+      entity_type: 'invoice',
+      entity_id: created.id,
+      entity_label: invoiceNumber,
+      diff: cloneId ? { duplicated_from: cloneId } : null,
+    });
 
     // Insert line items (filter blanks)
     const lineRows = items
@@ -566,9 +585,32 @@ function NewInvoicePageInner() {
               <Field label="Payment terms">
                 <input className={inputCls} value={paymentTerms} onChange={e => setPaymentTerms(e.target.value)} placeholder="Net 30" />
               </Field>
-              <Field label="Property reference">
-                <input className={inputCls} value={propertyReference} onChange={e => setPropertyReference(e.target.value)} placeholder='Optional — e.g. "8000 Fair Oaks Pkwy"' />
-              </Field>
+              <PropertyPicker
+                selectedId={propertyId}
+                onPick={(p: PropertyLite) => {
+                  setPropertyId(p.id);
+                  // Auto-sync the text snapshot so reports + legacy
+                  // displays (where property_id might not be joined)
+                  // still surface the right name.
+                  setPropertyReference(p.name);
+                }}
+                onClear={() => {
+                  setPropertyId(null);
+                  // Leave propertyReference alone — the operator may
+                  // want to keep a free-form note that isn't tied to a
+                  // registered property.
+                }}
+              />
+              {!propertyId && (
+                <Field label="Property reference (free-form)">
+                  <input
+                    className={inputCls}
+                    value={propertyReference}
+                    onChange={e => setPropertyReference(e.target.value)}
+                    placeholder='Or type a one-off reference — e.g. "8000 Fair Oaks Pkwy"'
+                  />
+                </Field>
+              )}
             </Card>
 
             {/* ── Repeat — turn this into a recurring template ────────── */}

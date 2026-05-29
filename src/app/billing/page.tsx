@@ -16,7 +16,7 @@ import Link from 'next/link';
 import {
   Receipt, ArrowDownCircle, ArrowUpCircle, TrendingUp, TrendingDown,
   FilePlus2, Plus, AlertTriangle, Loader2, Clock, Wallet, ArrowRight,
-  BarChart3, FileBadge,
+  BarChart3, FileBadge, Building2, History,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
@@ -28,6 +28,8 @@ import {
   computeArAging, computePl, sortCategoriesByAmount, trailing12MonthsRange,
   BUCKET_LABELS,
 } from '@/lib/billing-reports';
+import { CashFlowWidget } from '@/components/billing/CashFlowWidget';
+import { ActivityFeedWidget } from '@/components/billing/ActivityFeedWidget';
 
 export default function BillingDashboard() {
   const [invoices, setInvoices] = useState<Invoice[] | null>(null);
@@ -38,8 +40,12 @@ export default function BillingDashboard() {
     let cancelled = false;
     (async () => {
       const [invRes, expRes] = await Promise.all([
-        supabase.from('invoices').select('*').order('created_at', { ascending: false }),
-        supabase.from('expenses').select('*').order('expense_date', { ascending: false }),
+        // Exclude soft-deleted rows from the dashboard rollups — those
+        // numbers should match the visible-by-default invoice/expense
+        // lists. To see deleted rows the operator flips the "Show
+        // deleted" toggle on the list pages.
+        supabase.from('invoices').select('*').is('deleted_at', null).order('created_at', { ascending: false }),
+        supabase.from('expenses').select('*').is('deleted_at', null).order('expense_date', { ascending: false }),
       ]);
       if (cancelled) return;
       const errs: string[] = [];
@@ -341,10 +347,12 @@ export default function BillingDashboard() {
                 <h2 className="font-heading text-body font-bold text-primary mb-4">Quick links</h2>
                 <ul className="space-y-2">
                   <QuickLink href="/billing/invoices" icon={Receipt} label="All invoices" />
+                  <QuickLink href="/billing/properties" icon={Building2} label="Properties / deals" />
                   <QuickLink href="/billing/recurring" icon={ArrowRight} label="Recurring invoices" />
                   <QuickLink href="/billing/reports/profit-loss" icon={BarChart3} label="P&L report" />
                   <QuickLink href="/billing/reports/ar-aging" icon={Clock} label="A/R aging" />
                   <QuickLink href="/billing/reports/1099" icon={FileBadge} label="1099 export" />
+                  <QuickLink href="/billing/activity" icon={History} label="Activity log" />
                 </ul>
               </div>
             </section>
@@ -410,6 +418,17 @@ export default function BillingDashboard() {
                   ))}
                 </ul>
               )}
+            </section>
+
+            {/* Cash forecast + activity feed — both client-side widgets
+                that read their own data on mount. Keep them at the
+                bottom of the dashboard so the existing "today" view
+                stays the top-of-page anchor. */}
+            <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <div className="lg:col-span-2">
+                <CashFlowWidget />
+              </div>
+              <ActivityFeedWidget limit={8} />
             </section>
           </>
         )}

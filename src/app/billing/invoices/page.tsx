@@ -53,13 +53,18 @@ export default function InvoicesListPage() {
   // own `disableClose` prop. Each bulk modal below passes `bulkBusy` so
   // mid-write keypresses don't tear down state.
 
+  // Soft-deleted invoices hide by default. The "Show deleted" toggle
+  // below reveals them so the operator can restore from trash.
+  const [showDeleted, setShowDeleted] = useState(false);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const { data, error } = await supabase
+      const query = supabase
         .from('invoices')
         .select('*')
         .order('created_at', { ascending: false });
+      const { data, error } = showDeleted ? await query : await query.is('deleted_at', null);
       if (cancelled) return;
       if (error) {
         setError(
@@ -73,7 +78,7 @@ export default function InvoicesListPage() {
       }
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [showDeleted]);
 
   const enriched = useMemo(
     () => (invoices ?? []).map(inv => ({ ...inv, _status: effectiveStatus(inv) })),
@@ -148,9 +153,10 @@ export default function InvoicesListPage() {
       }
     }
     // Refresh the list
-    const { data } = await supabase
+    const reloadQ = supabase
       .from('invoices').select('*')
       .order('created_at', { ascending: false });
+    const { data } = showDeleted ? await reloadQ : await reloadQ.is('deleted_at', null);
     setInvoices((data ?? []) as Invoice[]);
     setBulkResult({ updated, failed });
     setBulkBusy(false);
@@ -178,9 +184,10 @@ export default function InvoicesListPage() {
     if (skipped > 0) {
       console.info(`[bulk-void] Skipped ${skipped} already-void invoice${skipped !== 1 ? 's' : ''}.`);
     }
-    const { data } = await supabase
+    const reloadQ = supabase
       .from('invoices').select('*')
       .order('created_at', { ascending: false });
+    const { data } = showDeleted ? await reloadQ : await reloadQ.is('deleted_at', null);
     setInvoices((data ?? []) as Invoice[]);
     setBulkResult({ updated, failed });
     setBulkBusy(false);
@@ -280,6 +287,15 @@ export default function InvoicesListPage() {
               {f.label}
             </button>
           ))}
+          <button
+            type="button"
+            onClick={() => setShowDeleted(s => !s)}
+            className="ml-auto inline-flex items-center gap-1.5 text-caption text-foreground-muted hover:text-primary"
+            title={showDeleted ? 'Hide soft-deleted invoices' : 'Show soft-deleted invoices (Trash)'}
+          >
+            {showDeleted ? <Eye className="h-3.5 w-3.5" /> : <EyeOff className="h-3.5 w-3.5" />}
+            {showDeleted ? 'Hiding deleted' : 'Show deleted'}
+          </button>
         </section>
 
         {/* Table */}
@@ -345,6 +361,8 @@ export default function InvoicesListPage() {
                     <tr
                       key={inv.id}
                       className={`border-b border-border last:border-0 transition-colors ${
+                        inv.deleted_at ? 'opacity-60' : ''
+                      } ${
                         selected.has(inv.id) ? 'bg-gold/5 hover:bg-gold/10' : 'hover:bg-background-cream/50'
                       }`}
                     >

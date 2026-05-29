@@ -12,7 +12,10 @@ import { supabase } from '@/lib/supabase';
 import { EXPENSE_CATEGORIES, PAYMENT_METHODS, type Contractor } from '@/lib/expenses';
 import { formInputCls as inputCls } from '@/lib/form-styles';
 import { ReceiptCapture } from '@/components/billing/ReceiptCapture';
+import { PropertyPicker } from '@/components/billing/PropertyPicker';
 import { deleteReceiptFile, isStoragePath } from '@/lib/receipts';
+import type { PropertyLite } from '@/lib/properties';
+import { logActivity } from '@/lib/activity-log';
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
@@ -33,6 +36,7 @@ export default function NewExpensePage() {
   // isn't cluttered.
   const [receiptMode, setReceiptMode] = useState<'photo' | 'url'>('photo');
   const [propertyReference, setPropertyReference] = useState('');
+  const [propertyId, setPropertyId] = useState<string | null>(null);
   const [reimbursable, setReimbursable] = useState(false);
   const [internalNotes, setInternalNotes] = useState('');
   const [is1099Eligible, setIs1099Eligible] = useState(false);
@@ -75,6 +79,7 @@ export default function NewExpensePage() {
         payment_method: paymentMethod.trim() || null,
         description: description.trim() || null,
         receipt_url: receiptUrl.trim() || null,
+        property_id: propertyId,
         property_reference: propertyReference.trim() || null,
         reimbursable,
         internal_notes: internalNotes.trim() || null,
@@ -89,6 +94,12 @@ export default function NewExpensePage() {
       setError(insertErr?.message ?? 'Could not save expense.');
       return;
     }
+    logActivity({
+      action: 'created',
+      entity_type: 'expense',
+      entity_id: data.id,
+      entity_label: `${vendor.trim()} · $${amt.toFixed(2)}`,
+    });
     router.push(`/billing/expenses/${data.id}`);
   }
 
@@ -147,10 +158,23 @@ export default function NewExpensePage() {
                 {PAYMENT_METHODS.map(m => <option key={m} value={m}>{m}</option>)}
               </select>
             </Field>
-            <Field label="Property reference">
-              <input type="text" className={inputCls} value={propertyReference} onChange={e => setPropertyReference(e.target.value)} placeholder='Optional — e.g. "8000 Fair Oaks Pkwy"' />
-            </Field>
           </div>
+
+          {/* Property tagging — picker is the primary path; fall back to
+              a free-form text field for one-off references. */}
+          <PropertyPicker
+            selectedId={propertyId}
+            onPick={(p: PropertyLite) => {
+              setPropertyId(p.id);
+              setPropertyReference(p.name);
+            }}
+            onClear={() => setPropertyId(null)}
+          />
+          {!propertyId && (
+            <Field label="Property reference (free-form)">
+              <input type="text" className={inputCls} value={propertyReference} onChange={e => setPropertyReference(e.target.value)} placeholder='Or a one-off note — e.g. "8000 Fair Oaks Pkwy"' />
+            </Field>
+          )}
 
           <Field label="Description">
             <input type="text" className={inputCls} value={description} onChange={e => setDescription(e.target.value)} placeholder="Short note about the purchase" />

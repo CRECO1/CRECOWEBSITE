@@ -29,6 +29,7 @@ import { buildInvoiceEmailPreview } from '@/lib/invoice-email-html';
 import { formInputCls as inputCls } from '@/lib/form-styles';
 import { REMINDER_STAGES, type ReminderStage } from '@/lib/invoice-reminders';
 import { ModalBase } from '@/components/ui/ModalBase';
+import { logActivity } from '@/lib/activity-log';
 
 type Editable = Omit<Invoice, 'line_items'> & { line_items: InvoiceLineItem[] };
 
@@ -191,6 +192,13 @@ export default function InvoiceDetailPage() {
       }
       setComposeOpen(false);
       setInfo(`Invoice sent to ${invoice.client_email}.`);
+      logActivity({
+        action: invoice.sent_at ? 'sent' : 'sent',
+        entity_type: 'invoice',
+        entity_id: invoice.id,
+        entity_label: invoice.invoice_number,
+        diff: { to: invoice.client_email, resend: !!invoice.sent_at },
+      });
       await load();
     } catch (e) {
       setError((e as Error).message);
@@ -272,6 +280,13 @@ export default function InvoiceDetailPage() {
     setBusy(null);
     setMarkPaidOpen(false);
     setInfo(`Marked as paid · ${formatMoney(amount)} via ${paidMethod}.`);
+    logActivity({
+      action: 'marked_paid',
+      entity_type: 'invoice',
+      entity_id: invoice.id,
+      entity_label: invoice.invoice_number,
+      diff: { amount, method: paidMethod, date: paidDate },
+    });
     await load();
   }
 
@@ -287,6 +302,12 @@ export default function InvoiceDetailPage() {
       setError(error.message);
       return;
     }
+    logActivity({
+      action: 'reopened',
+      entity_type: 'invoice',
+      entity_id: invoice.id,
+      entity_label: invoice.invoice_number,
+    });
     await load();
   }
 
@@ -361,22 +382,43 @@ export default function InvoiceDetailPage() {
         .catch(err => console.warn('Payment link deactivation failed (non-fatal):', err));
     }
     setBusy(null);
+    logActivity({
+      action: 'voided',
+      entity_type: 'invoice',
+      entity_id: invoice.id,
+      entity_label: invoice.invoice_number,
+    });
     await load();
   }
 
+  /**
+   * Soft delete — sets deleted_at instead of removing the row. The
+   * operator can restore from the Trash view. Hard-delete is reserved
+   * for never-sent drafts; the destroy() flow now confirms with the
+   * "soft delete + restore later" framing to encourage the safer path.
+   */
   async function destroy() {
     if (!invoice) return;
-    if (!window.confirm(`Permanently delete invoice ${invoice.invoice_number}? This cannot be undone.`)) return;
+    if (!window.confirm(`Move invoice ${invoice.invoice_number} to trash? You can restore it from the "Show deleted" toggle on the invoice list.`)) return;
     setBusy('delete');
-    // Deactivate the Stripe link BEFORE deleting the row — once the row is
-    // gone we lose the stored URL and can't reach back into Stripe.
+    // Deactivate the Stripe link BEFORE soft-deleting the row — once
+    // it's in trash we still don't want anyone hitting the pay URL.
     if (invoice.stripe_payment_link_url) {
       await fetch(`/api/invoices/${invoice.id}/deactivate-payment-link`, { method: 'POST' })
         .catch(err => console.warn('Payment link deactivation failed (non-fatal):', err));
     }
-    const { error } = await supabase.from('invoices').delete().eq('id', invoice.id);
+    const { error } = await supabase
+      .from('invoices')
+      .update({ deleted_at: new Date().toISOString() })
+      .eq('id', invoice.id);
     setBusy(null);
     if (error) { setError(error.message); return; }
+    logActivity({
+      action: 'deleted',
+      entity_type: 'invoice',
+      entity_id: invoice.id,
+      entity_label: invoice.invoice_number,
+    });
     router.push('/billing/invoices');
   }
 
@@ -576,9 +618,36 @@ export default function InvoiceDetailPage() {
                     <Ban className="h-4 w-4" /> Void
                   </button>
                 )}
-                <button type="button" onClick={destroy} disabled={busy === 'delete'} className="inline-flex items-center justify-center h-9 w-9 rounded-lg border border-border bg-white text-foreground-muted hover:text-destructive hover:border-destructive disabled:opacity-60" aria-label="Delete invoice">
-                  <Trash2 className="h-4 w-4" />
-                </button>
+                {invoice.deleted_at ? (
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setBusy('restore');
+                      const { error: e } = await supabase
+                        .from('invoices')
+                        .update({ deleted_at: null })
+                        .eq('id', invoice.id);
+                      setBusy(null);
+                      if (e) { setError(e.message); return; }
+                      logActivity({
+                        action: 'restored',
+                        entity_type: 'invoice',
+                        entity_id: invoice.id,
+                        entity_label: invoice.invoice_number,
+                      });
+                      setInfo('Restored from trash.');
+                      await load();
+                    }}
+                    disabled={busy === 'restore'}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-green-300 bg-white px-4 py-2 text-body-sm text-green-700 hover:bg-green-50 disabled:opacity-60"
+                  >
+                    Restore
+                  </button>
+                ) : (
+                  <button type="button" onClick={destroy} disabled={busy === 'delete'} className="inline-flex items-center justify-center h-9 w-9 rounded-lg border border-border bg-white text-foreground-muted hover:text-destructive hover:border-destructive disabled:opacity-60" aria-label="Move invoice to trash">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                )}
               </>
             )}
           </div>

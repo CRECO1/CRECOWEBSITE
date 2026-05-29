@@ -21,6 +21,13 @@ export interface Expense {
   contractor_id: string | null;
   /** Counted toward the year-end 1099-NEC for the linked contractor. */
   is_1099_eligible: boolean;
+  /** Optional FK to properties.id — links the expense to a deal for
+   *  property-level P&L. Falls back to property_reference (text) when
+   *  null, so legacy rows still surface in reports. */
+  property_id: string | null;
+  /** Soft-delete timestamp. List queries filter on `IS NULL`; the
+   *  Trash view sets `IS NOT NULL`. Restored entries set this to NULL. */
+  deleted_at: string | null;
   created_at: string;
   updated_at: string;
 }

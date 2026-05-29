@@ -55,6 +55,11 @@ export interface Invoice {
   total: number;
 
   property_reference: string | null;
+  /** Optional FK to properties.id for property-level P&L. Falls back to
+   *  property_reference (text) when null. */
+  property_id?: string | null;
+  /** Soft-delete timestamp. List queries filter on `IS NULL`. */
+  deleted_at?: string | null;
   notes: string | null;
   internal_notes: string | null;
 
