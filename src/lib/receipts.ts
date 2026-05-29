@@ -22,9 +22,15 @@
  */
 
 import { supabase } from '@/lib/supabase';
+import { processReceiptImage } from '@/lib/image-processing';
 
 const STORAGE_PREFIX = 'receipts/';
 const DEFAULT_EXPIRY_SECONDS = 60 * 60; // 1 hour
+// Raw input cap. Real iPhone Pro Max shots top out around 12MB; HEIC
+// files from a multi-shot burst can occasionally hit 25MB. 30MB gives
+// plenty of headroom. The processed result (downscaled + JPEG-encoded)
+// is typically 200-800KB regardless of the input.
+const MAX_RAW_FILE_BYTES = 30 * 1024 * 1024;
 
 export function isStoragePath(receiptUrl: string | null | undefined): boolean {
   if (!receiptUrl) return false;
@@ -70,28 +76,46 @@ export async function getReceiptDisplayUrl(
  * during operator support / tax-prep scans. Random UUID per file
  * prevents collisions on rapid-fire captures.
  */
+/**
+ * Two-stage progress callback. Lets the caller paint a different
+ * spinner/message during the (potentially multi-second) HEIC
+ * convert + downscale stage vs. the network upload. Optional —
+ * callers that don't care can skip it.
+ */
+export type ReceiptUploadStage = 'processing' | 'uploading' | 'done';
+
 export async function uploadReceiptFile(
   file: File,
+  onStageChange?: (stage: ReceiptUploadStage) => void,
 ): Promise<{ ok: true; path: string } | { ok: false; error: string }> {
   if (!file) return { ok: false, error: 'No file selected' };
-  // Browsers may report image/heic for iPhone shots — keep them, the
-  // server stores the bytes and we'll convert at display time if needed.
-  if (!file.type.startsWith('image/')) {
+  // MIME-or-extension check — iOS HEIC files sometimes arrive with an
+  // empty file.type but a .heic name, so we look at both. The image-
+  // processing pipeline will validate decodability separately.
+  const looksLikeImage = file.type.startsWith('image/')
+    || /\.(jpe?g|png|heic|heif|webp|gif)$/i.test(file.name);
+  if (!looksLikeImage) {
     return { ok: false, error: 'Receipts must be an image (JPEG, PNG, HEIC)' };
   }
-  // 10MB cap. iPhone Pro Max raw shots can exceed this; the operator
-  // can downscale by tapping "Use small size" in iOS Photos before
-  // uploading, or we can add client-side downscale later.
-  if (file.size > 10 * 1024 * 1024) {
-    return { ok: false, error: 'File too large (max 10MB)' };
+  if (file.size > MAX_RAW_FILE_BYTES) {
+    return { ok: false, error: 'File too large (max 30MB before processing)' };
   }
 
-  // Random filename — never trust the original. ext from MIME type, not
-  // filename, since iOS provides unreliable extensions for camera shots.
-  const ext = file.type === 'image/jpeg' ? 'jpg'
-    : file.type === 'image/png' ? 'png'
-    : file.type === 'image/heic' ? 'heic'
-    : file.type === 'image/webp' ? 'webp'
+  // Pre-process: HEIC → JPEG + downscale to 1920px long edge. Output is
+  // always a JPEG File ready for storage. On failure the helper returns
+  // the original — we still try the upload because some browsers can
+  // display HEIC fine and the CPA can convert downstream.
+  onStageChange?.('processing');
+  const processed = await processReceiptImage(file);
+  onStageChange?.('uploading');
+
+  // Random filename — never trust the original. Extension derived from
+  // the processed MIME, which is reliably JPEG after the pipeline runs
+  // (except in the rare case where processing failed and bailed).
+  const ext = processed.type === 'image/jpeg' ? 'jpg'
+    : processed.type === 'image/png' ? 'png'
+    : processed.type === 'image/heic' || processed.type === 'image/heif' ? 'heic'
+    : processed.type === 'image/webp' ? 'webp'
     : 'bin';
   const uuid = (typeof crypto !== 'undefined' && 'randomUUID' in crypto)
     ? crypto.randomUUID()
@@ -104,14 +128,15 @@ export async function uploadReceiptFile(
   const { error } = await supabase
     .storage
     .from('receipts')
-    .upload(storagePath, file, {
-      contentType: file.type,
+    .upload(storagePath, processed, {
+      contentType: processed.type || 'image/jpeg',
       cacheControl: '3600',
       upsert: false,
     });
   if (error) {
     return { ok: false, error: error.message };
   }
+  onStageChange?.('done');
   return { ok: true, path: `${STORAGE_PREFIX}${storagePath}` };
 }
 

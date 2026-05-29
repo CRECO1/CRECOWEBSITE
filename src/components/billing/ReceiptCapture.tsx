@@ -59,6 +59,11 @@ export function ReceiptCapture({ value, onChange }: Props) {
   const [localPreview, setLocalPreview] = useState<string | null>(null);
   const [resolvedUrl, setResolvedUrl] = useState<string | null>(null);
 
+  // Two-stage status. `processing` covers HEIC→JPEG conversion +
+  // downscale, which can take 1-3s on a fresh iPhone shot. `uploading`
+  // covers the network round trip. We surface both distinctly so the
+  // operator doesn't think the page froze during the pre-process stage.
+  const [processing, setProcessing] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -91,13 +96,27 @@ export function ReceiptCapture({ value, onChange }: Props) {
   async function handleFile(file: File | null) {
     if (!file) return;
     setError(null);
-    // Immediate preview — operator sees the shot before upload finishes.
+    // Immediate preview — operator sees the shot before processing or
+    // upload finishes. The pre-process pipeline (HEIC convert + resize)
+    // works on the file in the background; we keep showing the original
+    // capture in the preview so it doesn't visibly change mid-flow.
     const preview = URL.createObjectURL(file);
     if (localPreview) URL.revokeObjectURL(localPreview);
     setLocalPreview(preview);
 
-    setUploading(true);
-    const result = await uploadReceiptFile(file);
+    const result = await uploadReceiptFile(file, (stage) => {
+      if (stage === 'processing') {
+        setProcessing(true);
+        setUploading(false);
+      } else if (stage === 'uploading') {
+        setProcessing(false);
+        setUploading(true);
+      } else {
+        setProcessing(false);
+        setUploading(false);
+      }
+    });
+    setProcessing(false);
     setUploading(false);
     if (!result.ok) {
       setError(result.error);
@@ -174,15 +193,18 @@ export function ReceiptCapture({ value, onChange }: Props) {
             ) : (
               <Loader2 className="h-8 w-8 text-foreground-muted animate-spin" />
             )}
-            {uploading && (
+            {(processing || uploading) && (
               <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-body-sm font-semibold gap-2">
-                <Loader2 className="h-5 w-5 animate-spin" /> Uploading…
+                <Loader2 className="h-5 w-5 animate-spin" />
+                {processing ? 'Processing photo…' : 'Uploading…'}
               </div>
             )}
           </div>
           <div className="flex items-center justify-between gap-3 px-4 py-3 bg-white border-t border-border">
             <div className="text-caption text-foreground-muted flex items-center gap-1.5">
-              {uploading ? (
+              {processing ? (
+                <span>Processing photo…</span>
+              ) : uploading ? (
                 <span>Uploading receipt…</span>
               ) : value ? (
                 <><CheckCircle2 className="h-3.5 w-3.5 text-green-600" /> Receipt saved</>
@@ -194,7 +216,7 @@ export function ReceiptCapture({ value, onChange }: Props) {
               <button
                 type="button"
                 onClick={handleRetake}
-                disabled={uploading}
+                disabled={processing || uploading}
                 className="inline-flex items-center gap-1.5 rounded-md border border-border bg-white px-3 py-1.5 text-caption text-primary hover:border-primary disabled:opacity-50"
               >
                 <RotateCcw className="h-3.5 w-3.5" /> Retake
@@ -202,7 +224,7 @@ export function ReceiptCapture({ value, onChange }: Props) {
               <button
                 type="button"
                 onClick={handleClear}
-                disabled={uploading}
+                disabled={processing || uploading}
                 aria-label="Remove receipt"
                 className="inline-flex items-center justify-center h-8 w-8 rounded-md text-foreground-muted hover:text-destructive hover:bg-destructive/5 disabled:opacity-50"
               >
