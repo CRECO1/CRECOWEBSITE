@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { ArrowLeft, Save, AlertTriangle, FileBadge, Trash } from 'lucide-react';
 import type { Contractor } from '@/lib/expenses';
 import { formInputCls as inputCls } from '@/lib/form-styles';
+import { pushPendingToast, withBust } from '@/lib/post-save-feedback';
 
 export function ContractorForm({
   initial, mode,
@@ -68,11 +69,17 @@ export function ContractorForm({
           active,
         }),
       });
+      const body = await res.json().catch(() => ({} as Record<string, unknown>));
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error ?? `Failed (${res.status})`);
+        throw new Error((body as { error?: string }).error ?? `Failed (${res.status})`);
       }
-      router.push('/billing/contractors');
+      pushPendingToast({
+        entity: 'contractor',
+        mode,
+        name: legalName.trim(),
+        id: (body as { id?: string }).id,
+      });
+      router.push(withBust('/billing/contractors'));
       router.refresh();
     } catch (err) {
       setError((err as Error).message);
@@ -90,7 +97,13 @@ export function ContractorForm({
         const body = await res.json().catch(() => ({}));
         throw new Error(body.error ?? `Failed (${res.status})`);
       }
-      router.push('/billing/contractors');
+      pushPendingToast({
+        entity: 'contractor',
+        mode: 'delete',
+        name: initial.legal_name,
+        id: initial.id,
+      });
+      router.push(withBust('/billing/contractors'));
       router.refresh();
     } catch (err) {
       setError((err as Error).message);

@@ -9,22 +9,49 @@
  * threshold and needs a W-9 on file.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
   Loader2, AlertTriangle, Plus, FileBadge, ArrowLeft, CheckCircle2, PauseCircle,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { formatMoney, type Contractor, type Expense } from '@/lib/expenses';
+import { useToast } from '@/components/billing/Toast';
+import {
+  consumePendingToast, describePendingToast, usePostSaveBust,
+} from '@/lib/post-save-feedback';
 
 interface ContractorWithYtd extends Contractor {
   ytd_paid: number;
   ytd_expense_count: number;
 }
 
+// useSearchParams requires Suspense during prerender.
 export default function ContractorsListPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-background-cream flex items-center justify-center text-foreground-muted">
+        <Loader2 className="h-6 w-6 animate-spin text-gold" />
+      </main>
+    }>
+      <ContractorsListPageInner />
+    </Suspense>
+  );
+}
+
+function ContractorsListPageInner() {
   const [contractors, setContractors] = useState<ContractorWithYtd[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const bust = usePostSaveBust();
+  const toast = useToast();
+
+  useEffect(() => {
+    const payload = consumePendingToast();
+    if (payload?.entity === 'contractor') {
+      toast.show({ message: describePendingToast(payload) });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -63,7 +90,8 @@ export default function ContractorsListPage() {
       setContractors(enriched);
     })();
     return () => { cancelled = true; };
-  }, []);
+    // bust forces re-fetch after a ContractorForm save.
+  }, [bust]);
 
   const summary = useMemo(() => {
     if (!contractors) return { activeCount: 0, totalYtd: 0, overThreshold: 0 };

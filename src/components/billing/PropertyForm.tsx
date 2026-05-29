@@ -12,6 +12,7 @@ import { ArrowLeft, Save, AlertTriangle, Building2, Trash } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { formInputCls as inputCls } from '@/lib/form-styles';
 import { logActivity } from '@/lib/activity-log';
+import { pushPendingToast, withBust } from '@/lib/post-save-feedback';
 import {
   PROPERTY_TYPES,
   type Property,
@@ -58,12 +59,14 @@ export function PropertyForm({
         const { error: e } = await supabase.from('properties').update(payload).eq('id', initial.id);
         if (e) throw new Error(e.message);
         logActivity({ action: 'updated', entity_type: 'property', entity_id: initial.id, entity_label: name.trim() });
-        router.push(`/billing/properties/${initial.id}`);
+        pushPendingToast({ entity: 'property', mode: 'edit', name: name.trim(), id: initial.id });
+        router.push(withBust(`/billing/properties/${initial.id}`));
       } else {
         const { data, error: e } = await supabase.from('properties').insert([payload]).select('id').single();
         if (e || !data) throw new Error(e?.message ?? 'Could not create property');
         logActivity({ action: 'created', entity_type: 'property', entity_id: data.id, entity_label: name.trim() });
-        router.push(`/billing/properties/${data.id}`);
+        pushPendingToast({ entity: 'property', mode: 'create', name: name.trim(), id: data.id });
+        router.push(withBust(`/billing/properties/${data.id}`));
       }
       router.refresh();
     } catch (err) {
@@ -82,7 +85,8 @@ export function PropertyForm({
       .eq('id', initial.id);
     if (e) { setError(e.message); setSaving(false); return; }
     logActivity({ action: 'deleted', entity_type: 'property', entity_id: initial.id, entity_label: initial.name });
-    router.push('/billing/properties');
+    pushPendingToast({ entity: 'property', mode: 'delete', name: initial.name, id: initial.id });
+    router.push(withBust('/billing/properties'));
     router.refresh();
   }
 
@@ -95,6 +99,7 @@ export function PropertyForm({
       .eq('id', initial.id);
     if (e) { setError(e.message); setSaving(false); return; }
     logActivity({ action: 'restored', entity_type: 'property', entity_id: initial.id, entity_label: initial.name });
+    pushPendingToast({ entity: 'property', mode: 'restore', name: initial.name, id: initial.id });
     router.refresh();
     setSaving(false);
   }

@@ -26,6 +26,7 @@ import { ClientPicker } from '@/components/billing/ClientPicker';
 import { PropertyPicker } from '@/components/billing/PropertyPicker';
 import type { ClientLite } from '@/lib/clients';
 import { formInputCls as inputCls } from '@/lib/form-styles';
+import { pushPendingToast, withBust } from '@/lib/post-save-feedback';
 
 type DraftLine = Omit<InvoiceLineItem, 'sort_order' | 'invoice_id'>;
 const DEFAULT_LINE: DraftLine = { description: '', quantity: 1, rate: 0, amount: 0 };
@@ -168,11 +169,17 @@ export function RecurringTemplateForm({
             })),
         }),
       });
+      const body = await res.json().catch(() => ({} as Record<string, unknown>));
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error ?? `Failed (${res.status})`);
+        throw new Error((body as { error?: string }).error ?? `Failed (${res.status})`);
       }
-      router.push('/billing/recurring');
+      pushPendingToast({
+        entity: 'recurring',
+        mode,
+        name: name.trim(),
+        id: (body as { id?: string }).id,
+      });
+      router.push(withBust('/billing/recurring'));
       router.refresh();
     } catch (err) {
       setError((err as Error).message);
@@ -190,7 +197,13 @@ export function RecurringTemplateForm({
         const body = await res.json().catch(() => ({}));
         throw new Error(body.error ?? `Failed (${res.status})`);
       }
-      router.push('/billing/recurring');
+      pushPendingToast({
+        entity: 'recurring',
+        mode: 'delete',
+        name: initial.name ?? 'template',
+        id: initial.id,
+      });
+      router.push(withBust('/billing/recurring'));
       router.refresh();
     } catch (err) {
       setError((err as Error).message);

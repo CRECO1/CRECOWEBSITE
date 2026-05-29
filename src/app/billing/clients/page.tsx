@@ -10,7 +10,6 @@
  */
 
 import { Suspense, useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   Loader2, AlertTriangle, Plus, Users, ArrowLeft, Search, Receipt,
@@ -19,6 +18,9 @@ import { supabase } from '@/lib/supabase';
 import { formatMoney, formatDate, effectiveStatus, type Invoice } from '@/lib/invoices';
 import type { Client } from '@/lib/clients';
 import { useToast } from '@/components/billing/Toast';
+import {
+  consumePendingToast, describePendingToast, usePostSaveBust,
+} from '@/lib/post-save-feedback';
 
 interface ClientWithStats extends Client {
   invoice_count: number;
@@ -48,34 +50,20 @@ function ClientsListPageInner() {
   const [clients, setClients] = useState<ClientWithStats[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
-  // Read the URL bust param ClientForm sets on save (?t=<ts>). When it
-  // changes we refetch — works around Next.js's router cache, which
-  // otherwise keeps the previously-fetched list mounted and makes new
-  // rows look missing.
-  const searchParams = useSearchParams();
-  const bust = searchParams?.get('t') ?? '';
+  // The ?t=<ts> ClientForm appends on redirect — changing it forces the
+  // fetch effect below to re-run past Next.js's router cache. Without
+  // this, the previously-mounted list component stays put and the new
+  // row looks invisible.
+  const bust = usePostSaveBust();
   const toast = useToast();
 
-  // Pick up the post-save toast handoff from ClientForm. Runs once on
-  // mount — if the operator just created/edited a client, we tell them
-  // whether it was a fresh insert or an existing-email overlap. Without
-  // this the form just bounces to the list with no signal and the
-  // operator wonders if anything happened.
+  // Pop the post-save toast handoff on mount. Tells the operator
+  // whether their save was a fresh insert, an update, a duplicate-email
+  // overlap, or a delete.
   useEffect(() => {
-    let payload: { kind: string; mode: string; existed: boolean; name: string; id?: string } | null = null;
-    try {
-      const raw = sessionStorage.getItem('billing.pending_toast');
-      if (raw) {
-        payload = JSON.parse(raw);
-        sessionStorage.removeItem('billing.pending_toast');
-      }
-    } catch { /* private mode etc — skip */ }
-    if (payload?.kind === 'client_saved') {
-      const verb = payload.mode === 'edit' ? 'Updated' : payload.existed ? 'Already saved' : 'Created';
-      const tail = payload.existed
-        ? ` — opened the existing record.`
-        : '.';
-      toast.show({ message: `${verb} ${payload.name}${tail}` });
+    const payload = consumePendingToast();
+    if (payload?.entity === 'client') {
+      toast.show({ message: describePendingToast(payload) });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

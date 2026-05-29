@@ -11,15 +11,19 @@
  * default and can be revealed via a "Show deleted" toggle for restore.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, FilePlus2, Building2, Filter, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, ArrowRight, FilePlus2, Building2, Filter, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
   PROPERTY_STATUS_STYLES,
   type Property,
   type PropertyStatus,
 } from '@/lib/properties';
+import { useToast } from '@/components/billing/Toast';
+import {
+  consumePendingToast, describePendingToast, usePostSaveBust,
+} from '@/lib/post-save-feedback';
 
 type FilterValue = 'all' | PropertyStatus;
 const FILTERS: { label: string; value: FilterValue }[] = [
@@ -29,11 +33,36 @@ const FILTERS: { label: string; value: FilterValue }[] = [
   { label: 'Inactive', value: 'inactive' },
 ];
 
+// useSearchParams (inside usePostSaveBust) requires a Suspense boundary
+// during prerender — see the matching pattern in /billing/clients.
 export default function PropertiesListPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-background-cream flex items-center justify-center text-foreground-muted">
+        <Loader2 className="h-6 w-6 animate-spin text-gold" />
+      </main>
+    }>
+      <PropertiesListPageInner />
+    </Suspense>
+  );
+}
+
+function PropertiesListPageInner() {
   const [properties, setProperties] = useState<Property[] | null>(null);
   const [filter, setFilter] = useState<FilterValue>('all');
   const [showDeleted, setShowDeleted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const bust = usePostSaveBust();
+  const toast = useToast();
+
+  // Post-save toast pickup (delete / soft-restore land here from the form).
+  useEffect(() => {
+    const payload = consumePendingToast();
+    if (payload?.entity === 'property') {
+      toast.show({ message: describePendingToast(payload) });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -45,7 +74,8 @@ export default function PropertiesListPage() {
       setProperties((data ?? []) as Property[]);
     })();
     return () => { cancelled = true; };
-  }, [showDeleted]);
+    // bust dep busts the router cache after a form-save redirect.
+  }, [showDeleted, bust]);
 
   const filtered = useMemo(
     () => (properties ?? []).filter(p => filter === 'all' || p.status === filter),

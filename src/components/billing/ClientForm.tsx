@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { ArrowLeft, Save, AlertTriangle, Users, Trash, Settings, Link2, Copy, RefreshCw } from 'lucide-react';
 import type { Client, ReminderCadence } from '@/lib/clients';
 import { formInputCls as inputCls } from '@/lib/form-styles';
+import { pushPendingToast, withBust } from '@/lib/post-save-feedback';
 
 export function ClientForm({
   initial, mode,
@@ -83,24 +84,17 @@ export function ClientForm({
         throw new Error((body as { error?: string }).error ?? `Failed (${res.status})`);
       }
 
-      // Hand a marker to the list page so it can (a) show a confirmation
-      // toast and (b) force-refresh past Next.js's router cache, which
-      // otherwise serves the stale list and makes the new row look missing.
-      try {
-        sessionStorage.setItem('billing.pending_toast', JSON.stringify({
-          kind: 'client_saved',
-          mode,
-          existed: (body as { existed?: boolean }).existed === true,
-          name: name.trim(),
-          id: (body as { id?: string }).id,
-        }));
-      } catch { /* private mode etc — skip */ }
-
-      // The ?t= query string changes the URL identity so the list page's
-      // useSearchParams reads a fresh value, which we use as a useEffect
-      // dependency to re-fetch reliably even when the route segment is
-      // cached. router.refresh() alone doesn't re-run client-side effects.
-      router.push(`/billing/clients?t=${Date.now()}`);
+      // Hand the result to the destination via the shared post-save helper.
+      // The toast pickup + ?t= cache-bust pattern is identical across all
+      // billing forms — see src/lib/post-save-feedback.ts.
+      pushPendingToast({
+        entity: 'client',
+        mode,
+        existed: (body as { existed?: boolean }).existed === true,
+        name: name.trim(),
+        id: (body as { id?: string }).id,
+      });
+      router.push(withBust('/billing/clients'));
       router.refresh();
     } catch (err) {
       setError((err as Error).message);
@@ -118,7 +112,8 @@ export function ClientForm({
         const body = await res.json().catch(() => ({}));
         throw new Error(body.error ?? `Failed (${res.status})`);
       }
-      router.push('/billing/clients');
+      pushPendingToast({ entity: 'client', mode: 'delete', name: initial.name, id: initial.id });
+      router.push(withBust('/billing/clients'));
       router.refresh();
     } catch (err) {
       setError((err as Error).message);

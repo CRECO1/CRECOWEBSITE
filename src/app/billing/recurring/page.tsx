@@ -8,7 +8,7 @@
  * and quick stats on what it has generated.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
   Loader2, AlertTriangle, Plus, Repeat, ArrowLeft, CheckCircle2, PauseCircle,
@@ -18,6 +18,10 @@ import { formatMoney, formatDate } from '@/lib/invoices';
 import {
   FREQUENCY_LABELS, type RecurringTemplate, type RecurringLineItem,
 } from '@/lib/recurring-invoices';
+import { useToast } from '@/components/billing/Toast';
+import {
+  consumePendingToast, describePendingToast, usePostSaveBust,
+} from '@/lib/post-save-feedback';
 
 interface TemplateWithStats extends RecurringTemplate {
   generated_count: number;
@@ -25,9 +29,32 @@ interface TemplateWithStats extends RecurringTemplate {
   monthly_value: number;     // estimated based on line items + frequency
 }
 
+// useSearchParams requires Suspense during prerender.
 export default function RecurringTemplatesPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-background-cream flex items-center justify-center text-foreground-muted">
+        <Loader2 className="h-6 w-6 animate-spin text-gold" />
+      </main>
+    }>
+      <RecurringTemplatesPageInner />
+    </Suspense>
+  );
+}
+
+function RecurringTemplatesPageInner() {
   const [templates, setTemplates] = useState<TemplateWithStats[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const bust = usePostSaveBust();
+  const toast = useToast();
+
+  useEffect(() => {
+    const payload = consumePendingToast();
+    if (payload?.entity === 'recurring') {
+      toast.show({ message: describePendingToast(payload) });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -89,7 +116,8 @@ export default function RecurringTemplatesPage() {
       setTemplates(enriched);
     })();
     return () => { cancelled = true; };
-  }, []);
+    // bust forces re-fetch after a RecurringTemplateForm save.
+  }, [bust]);
 
   const summary = useMemo(() => {
     if (!templates) return { activeCount: 0, mrr: 0 };

@@ -14,13 +14,17 @@
  * default. The operator can toggle them on for forensic lookups.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   ArrowLeft, Pencil, Building2, Receipt, ArrowDownCircle,
-  TrendingUp, TrendingDown, DollarSign, Repeat, Calendar,
+  TrendingUp, TrendingDown, DollarSign, Repeat, Calendar, Loader2,
 } from 'lucide-react';
+import {
+  consumePendingToast, describePendingToast, usePostSaveBust,
+} from '@/lib/post-save-feedback';
+import { useToast } from '@/components/billing/Toast';
 import { supabase } from '@/lib/supabase';
 import {
   formatPropertyLabel, PROPERTY_STATUS_STYLES, type Property,
@@ -73,9 +77,24 @@ function rangeToDates(range: DateRange, customFrom: string, customTo: string): [
   }
 }
 
+// useSearchParams (inside usePostSaveBust) requires Suspense during prerender.
 export default function PropertyDetailPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-background-cream flex items-center justify-center text-foreground-muted">
+        <Loader2 className="h-6 w-6 animate-spin text-gold" />
+      </main>
+    }>
+      <PropertyDetailPageInner />
+    </Suspense>
+  );
+}
+
+function PropertyDetailPageInner() {
   const params = useParams<{ id: string }>();
   const id = params?.id;
+  const bust = usePostSaveBust();
+  const toast = useToast();
 
   const [property, setProperty] = useState<Property | null>(null);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -90,6 +109,17 @@ export default function PropertyDetailPage() {
   const [customFrom, setCustomFrom] = useState('');
   const [customTo, setCustomTo] = useState('');
   const [from, to] = rangeToDates(range, customFrom, customTo);
+
+  // Pick up the toast handoff from PropertyForm (create + edit + restore
+  // land here). The list page handles 'delete' since that's where the
+  // form redirects on soft-delete.
+  useEffect(() => {
+    const payload = consumePendingToast();
+    if (payload?.entity === 'property') {
+      toast.show({ message: describePendingToast(payload) });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -113,7 +143,8 @@ export default function PropertyDetailPage() {
       setRecurring((recR.data ?? []) as RecurringRow[]);
     })();
     return () => { cancelled = true; };
-  }, [id]);
+    // bust forces a re-fetch after a form save when the route is cached.
+  }, [id, bust]);
 
   // Filtered invoice + expense sets for the active date window. Revenue
   // counts the paid_at date (cash basis); outstanding counts the
