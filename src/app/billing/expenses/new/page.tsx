@@ -7,10 +7,12 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Save, AlertTriangle, ArrowDownCircle, FileBadge } from 'lucide-react';
+import { ArrowLeft, Save, AlertTriangle, ArrowDownCircle, FileBadge, Link as LinkIcon } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { EXPENSE_CATEGORIES, PAYMENT_METHODS, type Contractor } from '@/lib/expenses';
 import { formInputCls as inputCls } from '@/lib/form-styles';
+import { ReceiptCapture } from '@/components/billing/ReceiptCapture';
+import { deleteReceiptFile, isStoragePath } from '@/lib/receipts';
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
@@ -25,6 +27,11 @@ export default function NewExpensePage() {
   const [paymentMethod, setPaymentMethod] = useState<string>(PAYMENT_METHODS[0]);
   const [description, setDescription] = useState('');
   const [receiptUrl, setReceiptUrl] = useState('');
+  // Operator can choose "snap a photo" (the primary path on mobile) or
+  // "paste a URL" (the legacy path — still useful for receipts already
+  // in Drive/Dropbox). We render only one input at a time so the form
+  // isn't cluttered.
+  const [receiptMode, setReceiptMode] = useState<'photo' | 'url'>('photo');
   const [propertyReference, setPropertyReference] = useState('');
   const [reimbursable, setReimbursable] = useState(false);
   const [internalNotes, setInternalNotes] = useState('');
@@ -149,12 +156,47 @@ export default function NewExpensePage() {
             <input type="text" className={inputCls} value={description} onChange={e => setDescription(e.target.value)} placeholder="Short note about the purchase" />
           </Field>
 
-          <Field label="Receipt URL">
-            <input type="url" className={inputCls} value={receiptUrl} onChange={e => setReceiptUrl(e.target.value)} placeholder="https://drive.google.com/... — paste a link to the receipt" />
-            <p className="mt-1.5 text-caption text-foreground-muted">
-              Direct file uploads land in v2 — for now paste a Google Drive, Dropbox, or direct file URL.
-            </p>
-          </Field>
+          {/* Receipt — camera capture is primary, URL paste is the fallback.
+              Mobile operators tap "Take photo" and the rear camera opens
+              directly. Desktop operators can drop a file or paste a Drive
+              link via the URL toggle. */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="block text-caption uppercase tracking-widest text-foreground-muted">Receipt</span>
+              <button
+                type="button"
+                onClick={() => {
+                  // Switching modes clears any in-progress receipt — we
+                  // don't want a half-uploaded blob lingering or a typed
+                  // URL conflicting with a captured photo.
+                  if (receiptUrl && isStoragePath(receiptUrl)) {
+                    deleteReceiptFile(receiptUrl).catch(() => { /* swallow */ });
+                  }
+                  setReceiptUrl('');
+                  setReceiptMode(m => m === 'photo' ? 'url' : 'photo');
+                }}
+                className="text-caption text-gold-dark hover:text-gold inline-flex items-center gap-1"
+              >
+                {receiptMode === 'photo' ? <><LinkIcon className="h-3 w-3" /> Paste a URL instead</> : <>← Snap a photo instead</>}
+              </button>
+            </div>
+            {receiptMode === 'photo' ? (
+              <ReceiptCapture value={receiptUrl} onChange={setReceiptUrl} />
+            ) : (
+              <>
+                <input
+                  type="url"
+                  className={inputCls}
+                  value={receiptUrl}
+                  onChange={e => setReceiptUrl(e.target.value)}
+                  placeholder="https://drive.google.com/... — paste a link to the receipt"
+                />
+                <p className="text-caption text-foreground-muted">
+                  Useful when the receipt is already saved in Google Drive, Dropbox, or a shared inbox.
+                </p>
+              </>
+            )}
+          </div>
 
           <label className="flex items-start gap-3 rounded-lg border border-border p-3 cursor-pointer hover:border-gold/50 transition-colors">
             <input

@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { formInputCls as inputCls } from '@/lib/form-styles';
+import { ReceiptCapture } from '@/components/billing/ReceiptCapture';
+import { getReceiptDisplayUrl, isStoragePath } from '@/lib/receipts';
 import {
   EXPENSE_CATEGORIES, PAYMENT_METHODS, categoryStyle,
   formatMoney, formatDate, type Expense, type Contractor,
@@ -224,11 +226,12 @@ export default function ExpenseDetailPage() {
 
             <Field label="Receipt">
               {editing ? (
-                <input type="url" className={inputCls} value={view.receipt_url ?? ''} onChange={e => setDraft(d => d && ({ ...d, receipt_url: e.target.value }))} placeholder="https://..." />
+                <ReceiptCapture
+                  value={view.receipt_url ?? ''}
+                  onChange={(next) => setDraft(d => d && ({ ...d, receipt_url: next }))}
+                />
               ) : view.receipt_url ? (
-                <a href={view.receipt_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-body-sm text-gold-dark hover:text-gold break-all">
-                  {view.receipt_url} <ExternalLink className="h-3 w-3 shrink-0" />
-                </a>
+                <ReceiptViewer receiptUrl={view.receipt_url} />
               ) : <p className="text-body text-foreground-muted">No receipt attached.</p>}
             </Field>
 
@@ -317,5 +320,70 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-1.5">{label}</span>
       {children}
     </div>
+  );
+}
+
+/**
+ * Read-only receipt display. Resolves the stored value to a usable URL
+ * (signed URL for storage paths, passthrough for external URLs) and
+ * shows either a thumbnail image (assumed image MIME for now) or a
+ * link affordance. Clicking opens the full receipt in a new tab.
+ */
+function ReceiptViewer({ receiptUrl }: { receiptUrl: string }) {
+  const [resolved, setResolved] = useState<string | null>(null);
+  const [pending, setPending] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setPending(true);
+    (async () => {
+      const url = await getReceiptDisplayUrl(receiptUrl);
+      if (!cancelled) {
+        setResolved(url);
+        setPending(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [receiptUrl]);
+
+  if (pending) {
+    return <p className="text-caption text-foreground-muted">Loading receipt…</p>;
+  }
+  if (!resolved) {
+    return <p className="text-caption text-amber-700">Receipt unavailable.</p>;
+  }
+  // Storage-path receipts are always images we captured. External URLs
+  // may be PDFs or Drive links — show as a link, not an inline image.
+  if (isStoragePath(receiptUrl)) {
+    return (
+      <a
+        href={resolved}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Open receipt in a new tab"
+        className="block rounded-xl border border-border bg-background-cream/40 overflow-hidden hover:border-gold transition-colors"
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={resolved}
+          alt="Receipt"
+          className="block w-full max-h-80 object-contain bg-white"
+        />
+        <div className="flex items-center justify-between gap-2 px-4 py-2 text-caption text-foreground-muted bg-white border-t border-border">
+          <span>Tap to open full size</span>
+          <ExternalLink className="h-3 w-3" />
+        </div>
+      </a>
+    );
+  }
+  return (
+    <a
+      href={resolved}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1.5 text-body-sm text-gold-dark hover:text-gold break-all"
+    >
+      {resolved} <ExternalLink className="h-3 w-3 shrink-0" />
+    </a>
   );
 }
