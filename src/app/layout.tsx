@@ -6,6 +6,7 @@ import { CompareBar } from '@/components/listings/CompareBar';
 import { ChatWidget } from '@/components/chat/ChatWidget';
 import { RecaptchaScript } from '@/components/forms/Recaptcha';
 import { UtmCapture } from '@/components/analytics/UtmCapture';
+import { ExitIntentModal } from '@/components/marketing/ExitIntentModal';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -245,6 +246,13 @@ export default function RootLayout({
           <UtmCapture />
         </Suspense>
         {children}
+        {/* Exit-intent modal — internally suppresses on operator routes
+            and respects sessionStorage. Suspense because it reads
+            usePathname() under the hood. Single shared instance for
+            the whole site. */}
+        <Suspense fallback={null}>
+          <ExitIntentModal />
+        </Suspense>
         <MobileStickyCTA />
         <CompareBar />
         {/*

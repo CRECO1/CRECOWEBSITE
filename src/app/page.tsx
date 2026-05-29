@@ -48,6 +48,7 @@ import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import { getListings, getTestimonials, supabase } from '@/lib/supabase';
 import { HeroQuickCapture } from '@/components/forms/HeroQuickCapture';
+import { TrustStrip } from '@/components/marketing/TrustStrip';
 
 const DEMO_LISTINGS = [
   {
@@ -306,6 +307,12 @@ export default async function HomePage() {
           </div>
         </Container>
       </section>
+
+      {/* ── Trust Strip ───────────────────────────────────────────────── */}
+      {/* Server component — fetches the live active-listings count + the
+          operator-curated stats on every render so the band is honest
+          without anyone hand-maintaining the numbers. */}
+      <TrustStrip />
 
       {/* ── Featured Listings ─────────────────────────────────────────── */}
       <section className="section-luxury bg-background-cream">

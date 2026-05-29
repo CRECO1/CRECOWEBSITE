@@ -5,11 +5,12 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Search, SlidersHorizontal, MapPin, Building2, Layers, X, Grid3x3, Map as MapIcon } from 'lucide-react';
+import { Search, SlidersHorizontal, MapPin, Building2, Layers, X, Grid3x3, Map as MapIcon, BellRing } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Input } from '@/components/ui/Input';
 import { CompareToggle } from '@/components/listings/CompareToggle';
+import { SaveSearchModal } from '@/components/listings/SaveSearchModal';
 import { formatSqft, formatLeaseRate, formatPrice, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 import type { Listing } from '@/lib/supabase';
 
@@ -120,6 +121,7 @@ function ListingsPageInner() {
   const [sizeIdx, setSizeIdx] = useState(Number.isFinite(initialSize) ? initialSize : 0);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [view, setView] = useState<View>(initialView);
+  const [saveSearchOpen, setSaveSearchOpen] = useState(false);
 
   // Build dropdown options dynamically: preset values first, then any custom
   // values found in the actual listing data. This way custom types added in
@@ -249,6 +251,21 @@ function ListingsPageInner() {
                   className="flex items-center gap-1 text-caption text-foreground-muted hover:text-primary transition-colors"
                 >
                   <X className="h-3 w-3" /> Clear
+                </button>
+              )}
+
+              {/* Save-search → property-alerts in one click. Only shown when
+                  the visitor has at least one filter active — otherwise the
+                  CTA reads as "subscribe to literally everything" and is
+                  worth deferring to the full /property-alerts form. */}
+              {hasFilters && (
+                <button
+                  onClick={() => setSaveSearchOpen(true)}
+                  className="flex h-11 items-center gap-1.5 rounded-lg border border-gold/40 bg-gold/5 px-3 text-caption font-semibold text-gold-dark hover:bg-gold/10 hover:border-gold transition-colors"
+                  title="Get alerts for properties matching these filters"
+                >
+                  <BellRing className="h-3.5 w-3.5" />
+                  Save search
                 </button>
               )}
 
@@ -388,6 +405,24 @@ function ListingsPageInner() {
           </Container>
         </div>
       </main>
+
+      {/* Save-search modal. Mounted at the page root so it overlays
+          everything (filter bar, view toggle, footer). State controlled
+          from the Save search button up above. Filters are derived from
+          the same source-of-truth state the grid/map use. */}
+      <SaveSearchModal
+        open={saveSearchOpen}
+        onClose={() => setSaveSearchOpen(false)}
+        filters={{
+          search,
+          propertyType,
+          transactionType,
+          sizeLabel: SIZE_RANGES[sizeIdx]?.label ?? '',
+          sizeMin: SIZE_RANGES[sizeIdx]?.min === 0 && SIZE_RANGES[sizeIdx]?.max === Infinity ? null : (SIZE_RANGES[sizeIdx]?.min ?? null),
+          sizeMax: SIZE_RANGES[sizeIdx]?.max === Infinity ? null : (SIZE_RANGES[sizeIdx]?.max ?? null),
+        }}
+      />
+
       <Footer />
     </>
   );
