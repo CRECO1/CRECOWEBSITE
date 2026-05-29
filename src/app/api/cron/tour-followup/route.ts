@@ -180,6 +180,15 @@ export async function GET(req: NextRequest) {
   };
 
   for (const lead of (leads ?? []) as FollowupRow[]) {
+    // Defensive: a lead row without a usable email can't be followed up.
+    // The schema column is NOT NULL but the type widens to string|null
+    // through the .select() helper; skip + log instead of crashing the
+    // run. This also catches whitespace-only entries that slipped past
+    // earlier validation.
+    if (!lead.email || !lead.email.trim()) {
+      result.errors.push({ lead_id: lead.id, error: 'EMPTY_EMAIL' });
+      continue;
+    }
     const ageDays = Math.floor((Date.now() - new Date(lead.created_at).getTime()) / (24 * 60 * 60 * 1000));
     const stage = nextStageFor(lead.follow_up_stage, ageDays);
     if (!stage) continue;

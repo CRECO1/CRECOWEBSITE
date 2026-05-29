@@ -30,6 +30,12 @@ export function HeroQuickCapture() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    // Hard guard against double-submission: the button is also disabled
+    // during the in-flight request, but a fast double-click can land
+    // between event dispatch and setState committing. This guard runs
+    // synchronously inside the same event tick so the second click
+    // bails before the second fetch goes out.
+    if (submitting) return;
     setError(null);
 
     if (!email.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())) {
@@ -121,7 +127,15 @@ export function HeroQuickCapture() {
           {submitting ? 'Sending…' : <>Get matched <ArrowRight className="h-4 w-4" /></>}
         </button>
       </div>
-      {error && <p className="mt-2 text-caption text-amber-300">{error}</p>}
+      {error && (
+        <p
+          role="alert"
+          aria-live="polite"
+          className="mt-2 text-caption text-amber-300"
+        >
+          {error}
+        </p>
+      )}
       <p className="mt-2 text-caption text-white/60">
         Free, no obligation. Broker will follow up within one business day.
       </p>

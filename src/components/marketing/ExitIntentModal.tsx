@@ -31,7 +31,9 @@ import { useEffect, useState, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { X, FileText, CheckCircle2, ArrowRight } from 'lucide-react';
 import { getRecaptchaToken } from '@/components/forms/Recaptcha';
+import { Honeypot } from '@/components/forms/Honeypot';
 import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 
 const SESSION_KEY = 'creco_exit_shown';
 const PERSISTENT_KEY = 'creco_exit_subscribed';
@@ -49,6 +51,11 @@ export function ExitIntentModal() {
   const dwellStartRef = useRef<number>(Date.now());
   const lastScrollYRef = useRef<number>(0);
   const lastScrollTRef = useRef<number>(Date.now());
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  // Trap focus inside the modal so Tab can't escape onto the page
+  // underneath. Only engages when the modal is open.
+  useFocusTrap(dialogRef, open);
 
   // Suppression — paths the operator never wants this on top of
   const shouldSuppress = SUPPRESS_PATHS.some(p => pathname?.startsWith(p));
@@ -122,6 +129,8 @@ export function ExitIntentModal() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    // Synchronous guard — see HeroQuickCapture for rationale.
+    if (submitting) return;
     setError(null);
     if (!email.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())) {
       setError('Enter a valid email.');
@@ -130,6 +139,7 @@ export function ExitIntentModal() {
     setSubmitting(true);
     try {
       const recaptchaToken = await getRecaptchaToken('exit_intent');
+      const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
       const attribution = readUtmsFromCookie();
       const res = await fetch('/api/subscribe', {
         method: 'POST',
@@ -141,6 +151,7 @@ export function ExitIntentModal() {
           source: 'exit-intent',
           filters: { offer: 'q2-2026-texas-market-report' },
           recaptchaToken,
+          website: honeypot,
           ...attribution,
         }),
       });
@@ -176,6 +187,7 @@ export function ExitIntentModal() {
       onClick={dismiss}
     >
       <div
+        ref={dialogRef}
         className="relative w-full max-w-md rounded-2xl bg-white shadow-2xl overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
@@ -211,10 +223,12 @@ export function ExitIntentModal() {
             </p>
 
             <form onSubmit={handleSubmit}>
+              <Honeypot />
               <div className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="email"
                   required
+                  aria-required="true"
                   autoComplete="email"
                   inputMode="email"
                   value={email}
@@ -232,7 +246,15 @@ export function ExitIntentModal() {
                   {submitting ? 'Sending…' : <>Send me the report <ArrowRight className="h-4 w-4" /></>}
                 </button>
               </div>
-              {error && <p className="mt-2 text-caption text-destructive">{error}</p>}
+              {error && (
+                <p
+                  role="alert"
+                  aria-live="polite"
+                  className="mt-2 text-caption text-destructive"
+                >
+                  {error}
+                </p>
+              )}
               <p className="mt-3 text-caption text-foreground-muted">
                 We never sell your info. One report now, then quarterly market updates. Unsubscribe anytime.
               </p>

@@ -73,11 +73,16 @@ export async function TrustStrip() {
     >
       <Container>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-6 py-7 sm:py-8">
+          {/* When the active count is 0 we swap to a non-numeric label
+              ("Statewide") rather than displaying "0 active." Avoids the
+              visual width drift caused by mixing a 1-char number with
+              the other cells' wider values. Keeps the cell honest while
+              the inventory ramps. */}
           <TrustCell
             icon={<Building2 className="h-5 w-5 text-gold" />}
-            value={data.activeListings > 0 ? String(data.activeListings) : 'Active'}
-            label={data.activeListings > 0 ? 'Active Texas listings' : 'Texas listings'}
-            sublabel="Updated daily"
+            value={data.activeListings > 0 ? String(data.activeListings) : 'Statewide'}
+            label={data.activeListings > 0 ? 'Active Texas listings' : 'Texas coverage'}
+            sublabel={data.activeListings > 0 ? 'Updated daily' : 'San Antonio · Austin · Houston · DFW'}
           />
           <TrustCell
             icon={<ShieldCheck className="h-5 w-5 text-gold" />}

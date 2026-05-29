@@ -70,6 +70,22 @@ export async function POST(req: NextRequest) {
     const source = clampString(rawSource, MAX_LEN.shortField);
     const asset_slug = clampString(rawAssetSlug, MAX_LEN.shortField);
 
+    // Cap the filters JSONB payload size so a poisoned URL can't write
+    // a multi-megabyte blob into subscribers.filters. 2KB is generous
+    // for legitimate filters (property_types + submarkets + size range +
+    // a search term is well under 500 bytes in practice).
+    if (filters !== null && filters !== undefined) {
+      let filtersJson: string;
+      try {
+        filtersJson = JSON.stringify(filters);
+      } catch {
+        return NextResponse.json({ error: 'Invalid filters payload' }, { status: 400 });
+      }
+      if (filtersJson.length > 2048) {
+        return NextResponse.json({ error: 'Filters payload too large' }, { status: 413 });
+      }
+    }
+
     // reCAPTCHA — fail-open if not configured
     const captcha = await verifyRecaptcha(recaptchaToken);
     if (!captcha.ok) {

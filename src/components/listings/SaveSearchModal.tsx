@@ -18,11 +18,13 @@
  *   email field = 3-5x conversion vs. the full form.
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { X, BellRing, CheckCircle2, ArrowRight } from 'lucide-react';
 import { getRecaptchaToken } from '@/components/forms/Recaptcha';
+import { Honeypot } from '@/components/forms/Honeypot';
 import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
 import { propertyTypeLabel, transactionLabel } from '@/lib/utils';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 
 interface SaveSearchFilters {
   search: string;
@@ -46,6 +48,10 @@ export function SaveSearchModal({ open, onClose, filters }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  // Trap focus inside the dialog while it's open so Tab can't escape
+  // to the page underneath (a11y + UX).
+  useFocusTrap(dialogRef, open);
 
   // Escape closes. Gated on !submitting so a mid-write keypress doesn't
   // tear down state while the subscribe POST is in flight.
@@ -71,6 +77,9 @@ export function SaveSearchModal({ open, onClose, filters }: Props) {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    // Synchronous guard against double-submit before the button-disabled
+    // state lands. See HeroQuickCapture for full rationale.
+    if (submitting) return;
     setError(null);
     if (!email.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())) {
       setError('Enter a valid email.');
@@ -79,17 +88,27 @@ export function SaveSearchModal({ open, onClose, filters }: Props) {
     setSubmitting(true);
     try {
       const recaptchaToken = await getRecaptchaToken('save_search');
+      const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
       const attribution = readUtmsFromCookie();
       // Filter payload matches what /property-alerts sends so downstream
       // matching logic stays unified. propertyType='all' means "any" and
-      // becomes an empty array (no constraint).
+      // becomes an empty array (no constraint). Infinity is explicitly
+      // normalized to null — JSON.stringify(Infinity) silently produces
+      // null, which works but is implicit. Doing it here makes the
+      // serialization deterministic + documented for future readers.
+      const normalizedMax = filters.sizeMax === Infinity || filters.sizeMax === null
+        ? null
+        : Number.isFinite(filters.sizeMax) ? filters.sizeMax : null;
+      const normalizedMin = filters.sizeMin === null || !Number.isFinite(filters.sizeMin)
+        ? null
+        : filters.sizeMin;
       const filterPayload = {
         property_types: filters.propertyType !== 'all' ? [filters.propertyType] : [],
         transaction_type: filters.transactionType !== 'all' ? filters.transactionType : 'both',
         submarkets: [] as string[],
-        size_min: filters.sizeMin,
-        size_max: filters.sizeMax,
-        search_terms: filters.search || null,
+        size_min: normalizedMin,
+        size_max: normalizedMax,
+        search_terms: filters.search ? filters.search.slice(0, 200) : null,
       };
       const res = await fetch('/api/subscribe', {
         method: 'POST',
@@ -101,6 +120,7 @@ export function SaveSearchModal({ open, onClose, filters }: Props) {
           source: 'save-search',
           filters: filterPayload,
           recaptchaToken,
+          website: honeypot,
           ...attribution,
         }),
       });
@@ -133,6 +153,7 @@ export function SaveSearchModal({ open, onClose, filters }: Props) {
       onClick={() => !submitting && onClose()}
     >
       <div
+        ref={dialogRef}
         className="relative w-full max-w-md my-8 rounded-2xl bg-white shadow-2xl overflow-hidden"
         onClick={e => e.stopPropagation()}
       >
@@ -184,6 +205,7 @@ export function SaveSearchModal({ open, onClose, filters }: Props) {
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
+            <Honeypot />
             {/* Filter chip preview — so the visitor can confirm exactly what
                 they're saving and trust the system isn't subscribing them
                 to everything. */}
@@ -223,6 +245,7 @@ export function SaveSearchModal({ open, onClose, filters }: Props) {
               <input
                 type="email"
                 required
+                aria-required="true"
                 autoComplete="email"
                 inputMode="email"
                 value={email}
@@ -231,7 +254,15 @@ export function SaveSearchModal({ open, onClose, filters }: Props) {
                 autoFocus
                 className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary placeholder:text-foreground-muted focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/30"
               />
-              {error && <p className="mt-2 text-caption text-destructive">{error}</p>}
+              {error && (
+                <p
+                  role="alert"
+                  aria-live="polite"
+                  className="mt-2 text-caption text-destructive"
+                >
+                  {error}
+                </p>
+              )}
             </label>
 
             <p className="text-caption text-foreground-muted">

@@ -40,6 +40,8 @@ export function BrochureRequestForm({ listingSlug, listingTitle, brochureUrl }: 
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    // Synchronous guard — see HeroQuickCapture for the same rationale.
+    if (submitting) return;
     setError(null);
 
     if (!email.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email.trim())) {
@@ -101,6 +103,7 @@ export function BrochureRequestForm({ listingSlug, listingTitle, brochureUrl }: 
                   href={brochureUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Download brochure PDF (opens in a new tab)"
                   className="text-gold-dark font-semibold hover:underline"
                   onClick={() => trackEvent('brochure_downloaded_direct', { listing_slug: listingSlug })}
                 >
@@ -148,7 +151,15 @@ export function BrochureRequestForm({ listingSlug, listingTitle, brochureUrl }: 
           {submitting ? 'Sending…' : <>Send <ArrowRight className="h-3.5 w-3.5" /></>}
         </button>
       </div>
-      {error && <p className="mt-2 text-caption text-destructive">{error}</p>}
+      {error && (
+        <p
+          role="alert"
+          aria-live="polite"
+          className="mt-2 text-caption text-destructive"
+        >
+          {error}
+        </p>
+      )}
     </form>
   );
 }
