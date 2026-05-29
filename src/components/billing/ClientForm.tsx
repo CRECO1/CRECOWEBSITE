@@ -73,11 +73,34 @@ export function ClientForm({
           reminder_cadence: reminderCadence,
         }),
       });
+      // Parse body even on success so we can detect the "existed" case
+      // (duplicate email — API returns 200 with the existing client's id).
+      // Without this, the operator gets bounced to the list with no signal,
+      // wondering why "their new client didn't save" — it didn't save
+      // because it already existed under that email.
+      const body = await res.json().catch(() => ({} as Record<string, unknown>));
       if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error ?? `Failed (${res.status})`);
+        throw new Error((body as { error?: string }).error ?? `Failed (${res.status})`);
       }
-      router.push('/billing/clients');
+
+      // Hand a marker to the list page so it can (a) show a confirmation
+      // toast and (b) force-refresh past Next.js's router cache, which
+      // otherwise serves the stale list and makes the new row look missing.
+      try {
+        sessionStorage.setItem('billing.pending_toast', JSON.stringify({
+          kind: 'client_saved',
+          mode,
+          existed: (body as { existed?: boolean }).existed === true,
+          name: name.trim(),
+          id: (body as { id?: string }).id,
+        }));
+      } catch { /* private mode etc — skip */ }
+
+      // The ?t= query string changes the URL identity so the list page's
+      // useSearchParams reads a fresh value, which we use as a useEffect
+      // dependency to re-fetch reliably even when the route segment is
+      // cached. router.refresh() alone doesn't re-run client-side effects.
+      router.push(`/billing/clients?t=${Date.now()}`);
       router.refresh();
     } catch (err) {
       setError((err as Error).message);

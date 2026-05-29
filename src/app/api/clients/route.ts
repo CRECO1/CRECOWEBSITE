@@ -74,8 +74,15 @@ export async function POST(req: NextRequest) {
         .single();
       if (existing) return NextResponse.json({ ok: true, id: existing.id, existed: true });
     }
-    console.error('[clients.POST] insert failed:', error.message);
-    return NextResponse.json({ error: 'Could not save client' }, { status: 500 });
+    // Admin-only endpoint — surface the real Postgres error so schema
+    // drift / RLS denials / missing column issues are visible in the
+    // form's error banner without having to dig through Vercel logs.
+    console.error('[clients.POST] insert failed:', error.message, error);
+    const code = (error as { code?: string }).code;
+    return NextResponse.json(
+      { error: `Save failed: ${error.message}${code ? ` (${code})` : ''}` },
+      { status: 500 },
+    );
   }
   return NextResponse.json({ ok: true, id: data.id });
 }

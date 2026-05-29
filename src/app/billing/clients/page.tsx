@@ -9,7 +9,8 @@
  * on the invoice form reads from here.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import {
   Loader2, AlertTriangle, Plus, Users, ArrowLeft, Search, Receipt,
@@ -17,6 +18,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { formatMoney, formatDate, effectiveStatus, type Invoice } from '@/lib/invoices';
 import type { Client } from '@/lib/clients';
+import { useToast } from '@/components/billing/Toast';
 
 interface ClientWithStats extends Client {
   invoice_count: number;
@@ -24,10 +26,59 @@ interface ClientWithStats extends Client {
   last_billed: string | null;
 }
 
+/**
+ * Outer wrapper exists only to satisfy Next.js's requirement that any
+ * tree using useSearchParams sit inside a Suspense boundary. Without
+ * this, the build's prerender pass throws "should be wrapped in a
+ * suspense boundary" and aborts.
+ */
 export default function ClientsListPage() {
+  return (
+    <Suspense fallback={
+      <main className="min-h-screen bg-background-cream flex items-center justify-center text-foreground-muted">
+        <Loader2 className="h-6 w-6 animate-spin text-gold" />
+      </main>
+    }>
+      <ClientsListPageInner />
+    </Suspense>
+  );
+}
+
+function ClientsListPageInner() {
   const [clients, setClients] = useState<ClientWithStats[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
+  // Read the URL bust param ClientForm sets on save (?t=<ts>). When it
+  // changes we refetch — works around Next.js's router cache, which
+  // otherwise keeps the previously-fetched list mounted and makes new
+  // rows look missing.
+  const searchParams = useSearchParams();
+  const bust = searchParams?.get('t') ?? '';
+  const toast = useToast();
+
+  // Pick up the post-save toast handoff from ClientForm. Runs once on
+  // mount — if the operator just created/edited a client, we tell them
+  // whether it was a fresh insert or an existing-email overlap. Without
+  // this the form just bounces to the list with no signal and the
+  // operator wonders if anything happened.
+  useEffect(() => {
+    let payload: { kind: string; mode: string; existed: boolean; name: string; id?: string } | null = null;
+    try {
+      const raw = sessionStorage.getItem('billing.pending_toast');
+      if (raw) {
+        payload = JSON.parse(raw);
+        sessionStorage.removeItem('billing.pending_toast');
+      }
+    } catch { /* private mode etc — skip */ }
+    if (payload?.kind === 'client_saved') {
+      const verb = payload.mode === 'edit' ? 'Updated' : payload.existed ? 'Already saved' : 'Created';
+      const tail = payload.existed
+        ? ` — opened the existing record.`
+        : '.';
+      toast.show({ message: `${verb} ${payload.name}${tail}` });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -83,7 +134,10 @@ export default function ClientsListPage() {
       setClients(enriched);
     })();
     return () => { cancelled = true; };
-  }, []);
+  // `bust` is the ?t=<ts> the form sets after save — changing it forces
+  // this effect to re-fetch the list. Without it, the router cache may
+  // serve the previously-mounted tree and the new row appears missing.
+  }, [bust]);
 
   const filtered = useMemo(() => {
     if (!clients) return [];
