@@ -223,16 +223,19 @@ function ClientsListPageInner() {
               </section>
             ) : (
               <section className="rounded-xl border border-border bg-white overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-body-sm min-w-[720px]">
+                {/* Desktop / tablet table — hidden on phones. Mirrors the
+                    mobile pattern used on /billing/invoices and
+                    /billing/expenses: table for ≥sm, stacked cards below. */}
+                <div className="hidden sm:block overflow-x-auto">
+                  <table className="w-full text-body-sm">
                     <thead className="bg-background-cream/50 text-caption uppercase tracking-widest text-foreground-muted">
                       <tr>
                         <th className="px-5 py-3 text-left font-medium">Name</th>
                         <th className="px-5 py-3 text-left font-medium">Email</th>
-                        <th className="px-5 py-3 text-left font-medium">Company</th>
+                        <th className="px-5 py-3 text-left font-medium hidden md:table-cell">Company</th>
                         <th className="px-5 py-3 text-right font-medium">Invoices</th>
                         <th className="px-5 py-3 text-right font-medium">Outstanding</th>
-                        <th className="px-5 py-3 text-left font-medium">Last billed</th>
+                        <th className="px-5 py-3 text-left font-medium hidden lg:table-cell">Last billed</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
@@ -247,7 +250,7 @@ function ClientsListPageInner() {
                             </Link>
                           </td>
                           <td className="px-5 py-3 text-foreground-muted">{c.email}</td>
-                          <td className="px-5 py-3 text-foreground-muted">{c.company ?? '—'}</td>
+                          <td className="px-5 py-3 text-foreground-muted hidden md:table-cell">{c.company ?? '—'}</td>
                           <td className="px-5 py-3 text-right text-primary">
                             <Link
                               href={`/billing/invoices?client=${encodeURIComponent(c.email)}`}
@@ -263,7 +266,7 @@ function ClientsListPageInner() {
                               <span className="text-foreground-muted">—</span>
                             )}
                           </td>
-                          <td className="px-5 py-3 text-foreground-muted">
+                          <td className="px-5 py-3 text-foreground-muted hidden lg:table-cell">
                             {c.last_billed ? formatDate(c.last_billed) : '—'}
                           </td>
                         </tr>
@@ -271,6 +274,44 @@ function ClientsListPageInner() {
                     </tbody>
                   </table>
                 </div>
+
+                {/* Mobile stacked cards. Name + outstanding on one line
+                    (most-scanned info), email on line 2, company + invoice
+                    count + last-billed on line 3 as a compact metadata
+                    row. Whole card is one tap target into the client
+                    detail page. */}
+                <ul className="sm:hidden divide-y divide-border">
+                  {filtered.map(c => (
+                    <li key={c.id}>
+                      <Link href={`/billing/clients/${c.id}`} className="block px-4 py-3 hover:bg-background-cream/40">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-body-sm font-semibold text-primary truncate">
+                            {c.name}
+                          </span>
+                          {c.outstanding > 0 ? (
+                            <span className="text-body-sm font-mono font-semibold text-red-700 whitespace-nowrap">
+                              {formatMoney(c.outstanding)}
+                            </span>
+                          ) : (
+                            <span className="text-caption text-foreground-muted whitespace-nowrap">No balance</span>
+                          )}
+                        </div>
+                        <div className="text-caption text-foreground-muted truncate mt-0.5">
+                          {c.email}
+                        </div>
+                        <div className="flex items-center gap-3 text-caption text-foreground-muted mt-1 flex-wrap">
+                          {c.company && <span className="truncate max-w-[60%]">{c.company}</span>}
+                          <span className="inline-flex items-center gap-1">
+                            <Receipt className="h-3 w-3" /> {c.invoice_count} invoice{c.invoice_count !== 1 ? 's' : ''}
+                          </span>
+                          {c.last_billed && (
+                            <span>· Last {formatDate(c.last_billed)}</span>
+                          )}
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
               </section>
             )}
           </>

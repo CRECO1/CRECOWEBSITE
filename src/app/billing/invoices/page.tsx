@@ -393,7 +393,7 @@ export default function InvoicesListPage() {
   }, [enriched]);
 
   return (
-    <main className="min-h-screen bg-background-cream pb-20">
+    <main className="min-h-screen bg-background-cream pb-28 sm:pb-20">
       {/* Header */}
       <header className="border-b border-border bg-white">
         <div className="mx-auto max-w-6xl pl-16 pr-6 lg:px-6 py-5 flex items-center justify-between gap-4 flex-wrap">
@@ -890,7 +890,7 @@ export default function InvoicesListPage() {
 
               <div>
                 <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-2">Method</span>
-                <div className="grid grid-cols-5 gap-1.5" role="radiogroup">
+                <div className="grid grid-cols-3 sm:grid-cols-5 gap-1.5" role="radiogroup">
                   {['Check', 'ACH', 'Stripe', 'Cash', 'Other'].map(m => {
                     const selected = bulkMethod === m;
                     return (

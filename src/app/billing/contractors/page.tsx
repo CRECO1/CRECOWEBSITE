@@ -176,15 +176,16 @@ function ContractorsListPageInner() {
               </section>
             ) : (
               <section className="rounded-xl border border-border bg-white overflow-hidden">
-                <div className="overflow-x-auto">
-                <table className="w-full text-body-sm min-w-[640px]">
+                {/* Desktop / tablet table — hidden on phones. */}
+                <div className="hidden sm:block overflow-x-auto">
+                <table className="w-full text-body-sm">
                   <thead className="bg-background-cream/50 text-caption uppercase tracking-widest text-foreground-muted">
                     <tr>
                       <th className="px-5 py-3 text-left font-medium">Name</th>
-                      <th className="px-5 py-3 text-left font-medium">Tax ID</th>
+                      <th className="px-5 py-3 text-left font-medium hidden md:table-cell">Tax ID</th>
                       <th className="px-5 py-3 text-right font-medium">YTD paid</th>
                       <th className="px-5 py-3 text-left font-medium">1099 status</th>
-                      <th className="px-5 py-3 text-left font-medium">Active</th>
+                      <th className="px-5 py-3 text-left font-medium hidden lg:table-cell">Active</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
@@ -206,7 +207,7 @@ function ContractorsListPageInner() {
                             )}
                             {c.email && <div className="text-caption text-foreground-muted">{c.email}</div>}
                           </td>
-                          <td className="px-5 py-3">
+                          <td className="px-5 py-3 hidden md:table-cell">
                             {c.tax_id ? (
                               <span className="font-mono text-primary">
                                 {c.tax_id_type === 'SSN' ? '***-**-' + c.tax_id.slice(-4) : c.tax_id}
@@ -236,7 +237,7 @@ function ContractorsListPageInner() {
                               <span className="text-caption text-foreground-muted">below $600</span>
                             )}
                           </td>
-                          <td className="px-5 py-3">
+                          <td className="px-5 py-3 hidden lg:table-cell">
                             {c.active ? (
                               <span className="inline-flex items-center gap-1 text-caption text-green-800">
                                 <CheckCircle2 className="h-3 w-3" /> Active
@@ -253,6 +254,58 @@ function ContractorsListPageInner() {
                   </tbody>
                 </table>
                 </div>
+
+                {/* Mobile stacked cards. Name + YTD paid header line (the
+                    YTD number is what drives the 1099 decision), 1099
+                    status pill + tax-ID state inline below, paused-state
+                    chip if applicable. */}
+                <ul className="sm:hidden divide-y divide-border">
+                  {contractors.map(c => {
+                    const over = c.ytd_paid >= 600;
+                    const hasTaxId = !!c.tax_id;
+                    const ready = over && hasTaxId;
+                    return (
+                      <li key={c.id}>
+                        <Link href={`/billing/contractors/${c.id}`} className="block px-4 py-3 hover:bg-background-cream/40">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-body-sm font-semibold text-primary truncate">
+                              {c.display_name ?? c.legal_name}
+                            </span>
+                            <span className="text-body-sm font-mono font-semibold text-primary whitespace-nowrap">
+                              {formatMoney(c.ytd_paid)}
+                            </span>
+                          </div>
+                          {c.display_name && c.display_name !== c.legal_name && (
+                            <div className="text-caption text-foreground-muted truncate">{c.legal_name}</div>
+                          )}
+                          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                            {over ? (
+                              ready ? (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-semibold border bg-green-50 text-green-800 border-green-200">
+                                  <CheckCircle2 className="h-3 w-3" /> 1099 ready
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-semibold border bg-amber-50 text-amber-900 border-amber-200">
+                                  Needs W-9
+                                </span>
+                              )
+                            ) : (
+                              <span className="text-caption text-foreground-muted">Below $600 threshold</span>
+                            )}
+                            {!c.active && (
+                              <span className="inline-flex items-center gap-1 text-caption text-foreground-muted">
+                                <PauseCircle className="h-3 w-3" /> Inactive
+                              </span>
+                            )}
+                            <span className="text-caption text-foreground-muted">
+                              · {c.ytd_expense_count} expense{c.ytd_expense_count !== 1 ? 's' : ''} YTD
+                            </span>
+                          </div>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
               </section>
             )}
           </>

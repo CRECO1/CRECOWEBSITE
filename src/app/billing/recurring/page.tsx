@@ -197,15 +197,17 @@ function RecurringTemplatesPageInner() {
               </section>
             ) : (
               <section className="rounded-xl border border-border bg-white overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-body-sm min-w-[720px]">
+                {/* Desktop / tablet — hidden on phones. Some columns
+                    progressively hide at md/lg breakpoints. */}
+                <div className="hidden sm:block overflow-x-auto">
+                  <table className="w-full text-body-sm">
                     <thead className="bg-background-cream/50 text-caption uppercase tracking-widest text-foreground-muted">
                       <tr>
                         <th className="px-5 py-3 text-left font-medium">Template</th>
-                        <th className="px-5 py-3 text-left font-medium">Frequency</th>
+                        <th className="px-5 py-3 text-left font-medium hidden md:table-cell">Frequency</th>
                         <th className="px-5 py-3 text-left font-medium">Next run</th>
                         <th className="px-5 py-3 text-right font-medium">Est. monthly</th>
-                        <th className="px-5 py-3 text-left font-medium">Generated</th>
+                        <th className="px-5 py-3 text-left font-medium hidden lg:table-cell">Generated</th>
                         <th className="px-5 py-3 text-left font-medium">Status</th>
                       </tr>
                     </thead>
@@ -221,7 +223,7 @@ function RecurringTemplatesPageInner() {
                             </Link>
                             <div className="text-caption text-foreground-muted">{t.client_name}</div>
                           </td>
-                          <td className="px-5 py-3 text-primary">{FREQUENCY_LABELS[t.frequency]}</td>
+                          <td className="px-5 py-3 text-primary hidden md:table-cell">{FREQUENCY_LABELS[t.frequency]}</td>
                           <td className="px-5 py-3">
                             <div className="text-primary">{formatDate(t.next_run_date)}</div>
                             <div className="text-caption text-foreground-muted">{t.on_generate === 'draft' ? 'create as draft' : 'auto-send'}</div>
@@ -252,7 +254,7 @@ function RecurringTemplatesPageInner() {
                           <td className="px-5 py-3 text-right font-mono font-semibold text-primary">
                             {formatMoney(t.monthly_value)}
                           </td>
-                          <td className="px-5 py-3">
+                          <td className="px-5 py-3 hidden lg:table-cell">
                             {t.generated_count > 0 ? (
                               <>
                                 <div className="text-primary">{t.generated_count} invoice{t.generated_count !== 1 ? 's' : ''}</div>
@@ -278,6 +280,50 @@ function RecurringTemplatesPageInner() {
                     </tbody>
                   </table>
                 </div>
+
+                {/* Mobile stacked cards. Template name + monthly value as
+                    the header (the two numbers an operator scans first),
+                    client + frequency on a metadata line, status pill, and
+                    next-run + projected runs on a final compact line. */}
+                <ul className="sm:hidden divide-y divide-border">
+                  {templates.map(t => {
+                    const upcoming = t.active
+                      ? projectUpcomingRuns(t.next_run_date, t.frequency, t.end_date ?? null, 2)
+                      : [];
+                    return (
+                      <li key={t.id}>
+                        <Link href={`/billing/recurring/${t.id}`} className="block px-4 py-3 hover:bg-background-cream/40">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="text-body-sm font-semibold text-primary truncate">{t.name}</span>
+                            <span className="text-body-sm font-mono font-semibold text-primary whitespace-nowrap">
+                              {formatMoney(t.monthly_value)}/mo
+                            </span>
+                          </div>
+                          <div className="text-caption text-foreground-muted truncate mt-0.5">
+                            {t.client_name} · {FREQUENCY_LABELS[t.frequency]}
+                          </div>
+                          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                            {t.active ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-semibold border bg-green-50 text-green-800 border-green-200">
+                                <CheckCircle2 className="h-3 w-3" /> Active
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-semibold border bg-gray-50 text-gray-600 border-gray-200">
+                                <PauseCircle className="h-3 w-3" /> Paused
+                              </span>
+                            )}
+                            <span className="text-caption text-foreground-muted">
+                              Next {formatDate(t.next_run_date)}
+                              {upcoming.length > 0 && (
+                                <> · then {upcoming.map(formatShortDate).join(' · ')}</>
+                              )}
+                            </span>
+                          </div>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
               </section>
             )}
           </>

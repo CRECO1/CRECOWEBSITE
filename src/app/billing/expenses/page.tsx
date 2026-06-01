@@ -234,7 +234,7 @@ function ExpensesListPageInner() {
   }, [expenses]);
 
   return (
-    <main className="min-h-screen bg-background-cream pb-20">
+    <main className="min-h-screen bg-background-cream pb-28 sm:pb-20">
       <header className="border-b border-border bg-white">
         <div className="mx-auto max-w-6xl pl-16 pr-6 lg:px-6 py-5 flex items-center justify-between gap-4 flex-wrap">
           <div className="flex items-center gap-3">
@@ -323,8 +323,13 @@ function ExpensesListPageInner() {
               )}
             </div>
           ) : (
-            <div className="overflow-x-auto">
-            <table className="w-full min-w-[680px]">
+            <>
+            {/* Desktop / tablet table. Hidden on phones in favor of the
+                stacked card list below — too many columns to be useful
+                on a phone width. Mirrors the pattern shipped on the
+                invoice list. */}
+            <div className="hidden sm:block overflow-x-auto">
+            <table className="w-full">
               <thead className="bg-background-cream border-b border-border">
                 <tr className="text-left text-caption uppercase tracking-widest text-foreground-muted">
                   <th className="px-3 py-3 w-10">
@@ -346,9 +351,9 @@ function ExpensesListPageInner() {
                   <th className="px-5 py-3 font-semibold">Date</th>
                   <th className="px-5 py-3 font-semibold">Vendor</th>
                   <th className="px-5 py-3 font-semibold">Category</th>
-                  <th className="px-5 py-3 font-semibold">Method</th>
+                  <th className="px-5 py-3 font-semibold hidden md:table-cell">Method</th>
                   <th className="px-5 py-3 font-semibold text-right">Amount</th>
-                  <th className="px-5 py-3" />
+                  <th className="px-5 py-3 hidden md:table-cell" />
                 </tr>
               </thead>
               <tbody>
@@ -385,9 +390,9 @@ function ExpensesListPageInner() {
                         {e.category}
                       </span>
                     </td>
-                    <td className="px-5 py-4 text-body-sm text-foreground-muted">{e.payment_method ?? '—'}</td>
+                    <td className="px-5 py-4 text-body-sm text-foreground-muted hidden md:table-cell">{e.payment_method ?? '—'}</td>
                     <td className="px-5 py-4 text-body-sm font-mono font-semibold text-primary text-right">{formatMoney(e.amount)}</td>
-                    <td className="px-5 py-4 text-right">
+                    <td className="px-5 py-4 text-right hidden md:table-cell">
                       <Link href={`/billing/expenses/${e.id}`} className="inline-flex items-center gap-1 text-body-sm text-gold-dark hover:text-gold">
                         Open <ArrowRight className="h-3 w-3" />
                       </Link>
@@ -397,6 +402,57 @@ function ExpensesListPageInner() {
               </tbody>
             </table>
             </div>
+
+            {/* Mobile stacked cards. One row → one tappable card showing
+                the fields that matter at a phone glance: vendor + amount,
+                date, category, reimbursable flag. Mirrors the invoice
+                list mobile pattern. */}
+            <ul className="sm:hidden divide-y divide-border">
+              {filtered.map(e => (
+                <li
+                  key={e.id}
+                  className={`flex items-start gap-3 px-4 py-3 ${selected.has(e.id) ? 'bg-gold/5' : ''}`}
+                >
+                  <input
+                    type="checkbox"
+                    aria-label={`Select ${e.vendor}`}
+                    checked={selected.has(e.id)}
+                    onChange={() => toggleOne(e.id)}
+                    className="mt-1.5 h-4 w-4 rounded border-border accent-primary shrink-0"
+                  />
+                  <Link href={`/billing/expenses/${e.id}`} className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-body-sm font-semibold text-primary truncate">
+                        {e.vendor}
+                      </span>
+                      <span className="text-body-sm font-mono font-semibold text-primary whitespace-nowrap">
+                        {formatMoney(e.amount)}
+                      </span>
+                    </div>
+                    <div className="text-caption text-foreground-muted mt-0.5">
+                      {formatDate(e.expense_date)}
+                      {e.payment_method && <span> · {e.payment_method}</span>}
+                    </div>
+                    {e.description && (
+                      <p className="text-caption text-foreground-muted line-clamp-1 mt-0.5">
+                        {e.description}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-caption font-semibold border ${categoryStyle(e.category)}`}>
+                        {e.category}
+                      </span>
+                      {e.reimbursable && (
+                        <span className="inline-flex items-center text-caption text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
+                          Reimbursable
+                        </span>
+                      )}
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            </>
           )}
         </section>
 

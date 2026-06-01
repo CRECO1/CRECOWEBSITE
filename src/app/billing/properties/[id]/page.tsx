@@ -354,13 +354,14 @@ function PropertyDetailPageInner() {
                 : 'No invoices fall in this date range. Widen the range above to see more.'}
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-body-sm min-w-[640px]">
+            <>
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full text-body-sm">
                 <thead className="bg-background-cream/50 text-caption uppercase tracking-widest text-foreground-muted">
                   <tr>
                     <th className="px-5 py-2.5 text-left font-semibold">Invoice</th>
                     <th className="px-5 py-2.5 text-left font-semibold">Client</th>
-                    <th className="px-5 py-2.5 text-left font-semibold">Issued</th>
+                    <th className="px-5 py-2.5 text-left font-semibold hidden md:table-cell">Issued</th>
                     <th className="px-5 py-2.5 text-right font-semibold">Total</th>
                     <th className="px-5 py-2.5 text-left font-semibold">Status</th>
                   </tr>
@@ -377,7 +378,7 @@ function PropertyDetailPageInner() {
                           </Link>
                         </td>
                         <td className="px-5 py-3 text-primary">{inv.client_name}</td>
-                        <td className="px-5 py-3 text-foreground-muted">{formatDate(inv.issue_date)}</td>
+                        <td className="px-5 py-3 text-foreground-muted hidden md:table-cell">{formatDate(inv.issue_date)}</td>
                         <td className="px-5 py-3 font-mono text-right text-primary">{formatMoney(inv.total)}</td>
                         <td className="px-5 py-3">
                           <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-caption font-semibold border ${style.className}`}>
@@ -390,6 +391,31 @@ function PropertyDetailPageInner() {
                 </tbody>
               </table>
             </div>
+            {/* Mobile stacked cards for the invoice drill-down. */}
+            <ul className="sm:hidden divide-y divide-border">
+              {filteredInvoices.map(inv => {
+                const eff = effectiveStatus(inv);
+                const style = STATUS_STYLES[eff];
+                return (
+                  <li key={inv.id}>
+                    <Link href={`/billing/invoices/${inv.id}`} className="block px-4 py-3 hover:bg-background-cream/40">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-mono text-body-sm font-semibold text-primary truncate">{inv.invoice_number}</span>
+                        <span className="font-mono text-body-sm font-semibold text-primary whitespace-nowrap">{formatMoney(inv.total)}</span>
+                      </div>
+                      <div className="text-caption text-foreground-muted truncate mt-0.5">{inv.client_name}</div>
+                      <div className="flex items-center justify-between gap-2 mt-1.5">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-caption font-semibold border ${style.className}`}>
+                          {style.label}
+                        </span>
+                        <span className="text-caption text-foreground-muted">{formatDate(inv.issue_date)}</span>
+                      </div>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+            </>
           )}
         </section>
 
@@ -402,14 +428,14 @@ function PropertyDetailPageInner() {
               </h2>
               <p className="text-caption text-foreground-muted">{recurring.length} template{recurring.length === 1 ? '' : 's'} attached</p>
             </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-body-sm min-w-[640px]">
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full text-body-sm">
                 <thead className="bg-background-cream/50 text-caption uppercase tracking-widest text-foreground-muted">
                   <tr>
                     <th className="px-5 py-2.5 text-left font-semibold">Template</th>
-                    <th className="px-5 py-2.5 text-left font-semibold">Client</th>
+                    <th className="px-5 py-2.5 text-left font-semibold hidden md:table-cell">Client</th>
                     <th className="px-5 py-2.5 text-left font-semibold">Frequency</th>
-                    <th className="px-5 py-2.5 text-left font-semibold">Next run</th>
+                    <th className="px-5 py-2.5 text-left font-semibold hidden lg:table-cell">Next run</th>
                     <th className="px-5 py-2.5 text-left font-semibold">Status</th>
                   </tr>
                 </thead>
@@ -421,9 +447,9 @@ function PropertyDetailPageInner() {
                           {r.name}
                         </Link>
                       </td>
-                      <td className="px-5 py-3 text-foreground-muted">{r.client_name}</td>
+                      <td className="px-5 py-3 text-foreground-muted hidden md:table-cell">{r.client_name}</td>
                       <td className="px-5 py-3 text-foreground-muted">{FREQUENCY_LABELS[r.frequency]}</td>
-                      <td className="px-5 py-3 text-foreground-muted">{formatDate(r.next_run_date)}</td>
+                      <td className="px-5 py-3 text-foreground-muted hidden lg:table-cell">{formatDate(r.next_run_date)}</td>
                       <td className="px-5 py-3">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-caption font-semibold border ${r.active ? 'bg-green-50 text-green-800 border-green-200' : 'bg-gray-100 text-gray-700 border-gray-300'}`}>
                           {r.active ? 'Active' : 'Paused'}
@@ -434,6 +460,25 @@ function PropertyDetailPageInner() {
                 </tbody>
               </table>
             </div>
+            {/* Mobile stacked cards — recurring drill-down. */}
+            <ul className="sm:hidden divide-y divide-border">
+              {recurring.map(r => (
+                <li key={r.id} className={!r.active ? 'opacity-60' : ''}>
+                  <Link href={`/billing/recurring/${r.id}`} className="block px-4 py-3 hover:bg-background-cream/40">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-body-sm font-semibold text-primary truncate">{r.name}</span>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-caption font-semibold border ${r.active ? 'bg-green-50 text-green-800 border-green-200' : 'bg-gray-100 text-gray-700 border-gray-300'} whitespace-nowrap`}>
+                        {r.active ? 'Active' : 'Paused'}
+                      </span>
+                    </div>
+                    <div className="text-caption text-foreground-muted truncate mt-0.5">{r.client_name}</div>
+                    <div className="text-caption text-foreground-muted mt-1">
+                      {FREQUENCY_LABELS[r.frequency]} · next {formatDate(r.next_run_date)}
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </section>
         )}
 
@@ -457,13 +502,14 @@ function PropertyDetailPageInner() {
                 : 'No expenses fall in this date range. Widen the range above to see more.'}
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-body-sm min-w-[640px]">
+            <>
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full text-body-sm">
                 <thead className="bg-background-cream/50 text-caption uppercase tracking-widest text-foreground-muted">
                   <tr>
                     <th className="px-5 py-2.5 text-left font-semibold">Date</th>
                     <th className="px-5 py-2.5 text-left font-semibold">Vendor</th>
-                    <th className="px-5 py-2.5 text-left font-semibold">Category</th>
+                    <th className="px-5 py-2.5 text-left font-semibold hidden md:table-cell">Category</th>
                     <th className="px-5 py-2.5 text-right font-semibold">Amount</th>
                   </tr>
                 </thead>
@@ -478,7 +524,7 @@ function PropertyDetailPageInner() {
                             {e.vendor}
                           </Link>
                         </td>
-                        <td className="px-5 py-3">
+                        <td className="px-5 py-3 hidden md:table-cell">
                           <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-caption font-semibold border ${catClass}`}>
                             {e.category}
                           </span>
@@ -490,6 +536,26 @@ function PropertyDetailPageInner() {
                 </tbody>
               </table>
             </div>
+            {/* Mobile stacked cards — expense drill-down. */}
+            <ul className="sm:hidden divide-y divide-border">
+              {filteredExpenses.map(e => (
+                <li key={e.id}>
+                  <Link href={`/billing/expenses/${e.id}`} className="block px-4 py-3 hover:bg-background-cream/40">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-body-sm font-semibold text-primary truncate">{e.vendor}</span>
+                      <span className="text-body-sm font-mono font-semibold text-primary whitespace-nowrap">{formatMoney(e.amount)}</span>
+                    </div>
+                    <div className="flex items-center justify-between gap-2 mt-1.5">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-caption font-semibold border ${categoryStyle(e.category)}`}>
+                        {e.category}
+                      </span>
+                      <span className="text-caption text-foreground-muted">{formatDate(e.expense_date)}</span>
+                    </div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            </>
           )}
         </section>
       </div>
