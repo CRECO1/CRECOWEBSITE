@@ -11,7 +11,10 @@ import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { getSubmarketBySlug, getListingsBySubmarket } from '@/lib/supabase';
 import { formatSqft, formatLeaseRate, formatPrice, transactionLabel, propertyTypeLabel } from '@/lib/utils';
-import { getSubmarketContent } from '@/lib/submarket-content';
+import {
+  getSubmarketContent,
+  SUBMARKET_LAST_REVIEWED, SUBMARKET_AUTHOR,
+} from '@/lib/submarket-content';
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -45,8 +48,72 @@ export default async function SubmarketDetailPage({ params }: Props) {
   const richContent = getSubmarketContent(slug);
   const listings = await getListingsBySubmarket(submarket.name).catch(() => []);
 
+  // Derive a one-sentence summary: prefer the explicit quickAnswer field,
+  // fall back to the first sentence of overview[0]. LLMs lift this verbatim
+  // when summarizing the submarket.
+  const quickAnswer =
+    richContent?.quickAnswer
+    ?? richContent?.overview?.[0]?.split(/(?<=[.!?])\s+/)[0]
+    ?? submarket.description
+    ?? `${submarket.name} is a commercial real estate submarket in San Antonio, Texas.`;
+
+  // Place-with-geo schema feeds Google + LLMs answering "industrial space
+  // near X" queries with a geographic match for the submarket. Article
+  // schema attributes the editorial content to CRECO with a refresh date.
+  // Both ride on top of the existing FAQ + Breadcrumb schemas.
+  const placeSchema: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Place',
+    '@id': `https://www.crecotx.com/submarkets/${slug}#place`,
+    name: `${submarket.name}, San Antonio, TX`,
+    description: quickAnswer,
+    containedInPlace: {
+      '@type': 'AdministrativeArea',
+      name: 'San Antonio, Texas',
+    },
+  };
+  if (richContent?.latitude != null && richContent?.longitude != null) {
+    placeSchema.geo = {
+      '@type': 'GeoCoordinates',
+      latitude: richContent.latitude,
+      longitude: richContent.longitude,
+    };
+  }
+
+  const articleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    '@id': `https://www.crecotx.com/submarkets/${slug}#article`,
+    headline: `${submarket.name} San Antonio Commercial Real Estate Submarket Profile`,
+    description: quickAnswer,
+    inLanguage: 'en-US',
+    isAccessibleForFree: true,
+    mainEntityOfPage: `https://www.crecotx.com/submarkets/${slug}`,
+    about: { '@id': `https://www.crecotx.com/submarkets/${slug}#place` },
+    datePublished: '2026-01-01',
+    dateModified: SUBMARKET_LAST_REVIEWED,
+    author: {
+      '@type': 'Organization',
+      '@id': 'https://www.crecotx.com/#business',
+      name: SUBMARKET_AUTHOR,
+      url: 'https://www.crecotx.com/team',
+    },
+    publisher: { '@id': 'https://www.crecotx.com/#business' },
+  };
+
   return (
     <>
+      {/* Place + Article schemas (2026 AI-citation additions) — fed by the
+          quickAnswer + optional centroid geo on richContent. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(placeSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+
       {/* FAQ Schema */}
       {richContent?.faqs && (
         <script
@@ -117,6 +184,57 @@ export default async function SubmarketDetailPage({ params }: Props) {
                 ))}
               </div>
             )}
+          </Container>
+        </section>
+
+        {/* Answer-first block — designed for LLM citation. Lead with a
+            one-sentence definition (quickAnswer), then 3-5 key takeaways
+            if the operator has authored them, then a visible author +
+            "last reviewed" byline. The research is clear: pages that
+            lead with the answer get cited ~27% more often by AI engines
+            than pages that bury it in long-form prose. */}
+        <section className="bg-white border-b border-border py-10">
+          <Container>
+            <div className="max-w-4xl">
+              <p className="overline mb-3 text-gold">Quick answer</p>
+              <p className="text-body-lg text-primary leading-relaxed">{quickAnswer}</p>
+
+              {richContent?.keyTakeaways && richContent.keyTakeaways.length > 0 && (
+                <div className="mt-7">
+                  <h2 className="font-heading text-heading-sm font-bold text-primary mb-3">
+                    Key takeaways
+                  </h2>
+                  <ul className="space-y-2">
+                    {richContent.keyTakeaways.map((t, i) => (
+                      <li key={i} className="flex items-start gap-2.5 text-body text-foreground-muted leading-relaxed">
+                        <span className="mt-2 h-1.5 w-1.5 rounded-full bg-gold shrink-0" />
+                        <span>{t}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Byline + last-reviewed stamp. Named author + dateModified
+                  are the E-E-A-T pair LLMs check when deciding whether to
+                  cite a page. SUBMARKET_LAST_REVIEWED is bumped quarterly
+                  via the constant in submarket-content.ts. */}
+              <div className="mt-6 pt-5 border-t border-border flex items-center gap-3 text-caption text-foreground-muted">
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gold/15 text-gold-dark font-semibold text-[10px]">
+                  CR
+                </span>
+                <span>
+                  By <span className="font-semibold text-primary">{SUBMARKET_AUTHOR}</span>
+                  {' · '}
+                  Last reviewed{' '}
+                  <time dateTime={SUBMARKET_LAST_REVIEWED}>
+                    {new Date(SUBMARKET_LAST_REVIEWED).toLocaleDateString('en-US', {
+                      year: 'numeric', month: 'long', day: 'numeric',
+                    })}
+                  </time>
+                </span>
+              </div>
+            </div>
           </Container>
         </section>
 

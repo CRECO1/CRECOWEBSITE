@@ -22,6 +22,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Hill Country gateway submarkets — Fair Oaks Ranch + Boerne
     { url: `${BASE_URL}/fair-oaks-ranch-commercial-real-estate`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.95 },
     { url: `${BASE_URL}/boerne-commercial-real-estate`,        lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9  },
+    // City × asset-class long-tail landing pages — pilot batch. Each
+    // captures intent like "office space for lease san antonio" that
+    // marketplaces (LoopNet / Crexi) don't optimize for. Expand to the
+    // full 15-page set as the Q3 2026 data refresh lands.
+    { url: `${BASE_URL}/san-antonio-office-space`,             lastModified: new Date(), changeFrequency: 'weekly', priority: 0.92 },
+    { url: `${BASE_URL}/houston-industrial-space`,             lastModified: new Date(), changeFrequency: 'weekly', priority: 0.92 },
+    { url: `${BASE_URL}/austin-office-space`,                  lastModified: new Date(), changeFrequency: 'weekly', priority: 0.92 },
     // CRECO development — 8000 Fair Oaks Pkwy
     { url: `${BASE_URL}/8000-fair-oaks-pkwy`,                  lastModified: new Date(), changeFrequency: 'weekly', priority: 0.95 },
     { url: `${BASE_URL}/owner-services`,              lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9  },
@@ -38,6 +45,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/about`,                       lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7  },
     { url: `${BASE_URL}/insights`,                    lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.85 },
     { url: `${BASE_URL}/guides`,                      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${BASE_URL}/research`,                    lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.9  },
     { url: `${BASE_URL}/property-alerts`,             lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8  },
     { url: `${BASE_URL}/careers`,                     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7  },
     { url: `${BASE_URL}/compare`,                     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6  },
@@ -118,5 +126,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.85,
   }));
 
-  return [...staticPages, ...servicePages, ...insightPages, ...guidePages, ...marketHubPages, ...listingPages, ...submarketPages];
+  // Quarterly market reports — every report at /research/{slug} gets
+  // enumerated so search engines + LLM crawlers find them as they
+  // accumulate. Reports are static / file-backed so we can include them
+  // without a DB hit. lastModified comes from the report's publishedAt
+  // since reports are point-in-time snapshots — once published they
+  // don't get updated.
+  const { MARKET_REPORTS } = await import('@/lib/market-reports');
+  const reportPages: MetadataRoute.Sitemap = MARKET_REPORTS.map(r => ({
+    url: `${BASE_URL}/research/${r.slug}`,
+    lastModified: new Date(r.publishedAt),
+    changeFrequency: 'monthly' as const,
+    priority: 0.85,
+  }));
+
+  return [...staticPages, ...servicePages, ...insightPages, ...guidePages, ...marketHubPages, ...listingPages, ...submarketPages, ...reportPages];
 }

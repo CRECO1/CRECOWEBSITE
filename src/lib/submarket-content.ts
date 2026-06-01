@@ -21,10 +21,61 @@ export interface SubmarketContent {
   typicalTenants: string[];
   /** Submarket-specific FAQs with FAQ schema */
   faqs: { q: string; a: string }[];
+
+  // ── 2026 AI-citation additions ────────────────────────────────────────
+  // Optional, backward-compatible. Pages that don't supply these degrade
+  // gracefully to deriving a summary from overview[0]. The research is
+  // clear: pages that lead with a definition sentence + a compact stats
+  // table + a takeaways list see ~27% higher LLM citation rates than
+  // pages that bury the answer in long-form prose.
+
+  /** One-sentence definition. Renders directly under the hero as the
+   *  first thing both humans and LLM crawlers see. Aim for ~30 words. */
+  quickAnswer?: string;
+  /** 3-5 punchy bullets — the most important facts about this submarket.
+   *  Examples: "Highest Class A office rents in San Antonio at $32-48/SF
+   *  FSG", "Anchored by USAA HQ and the South Texas Medical Center". */
+  keyTakeaways?: string[];
+  /** Centroid coordinates. Feeds the Place schema's geo block which
+   *  Google + LLMs use for "industrial space near X" queries. If you
+   *  don't have an exact centroid, a known landmark in the submarket
+   *  (e.g. the major intersection) works. */
+  latitude?: number;
+  longitude?: number;
 }
+
+/**
+ * Workspace-wide "Last updated" stamp for submarket pages. Bumping
+ * this single constant cascades a fresh recency signal across every
+ * submarket page in one commit — way easier than per-page dates. The
+ * stat ranges in fundamentals should be reviewed each quarter; bump
+ * this when you do.
+ */
+export const SUBMARKET_LAST_REVIEWED = '2026-06-01';
+
+/** Default author shown in the byline. Submarket pages are organization-
+ *  level publications, not individual-broker bylines. */
+export const SUBMARKET_AUTHOR = 'CRECO Brokerage Team';
 
 export const SUBMARKET_CONTENT: Record<string, SubmarketContent> = {
   'northwest': {
+    // Quick-answer block — fills the answer-first slot at the top of
+    // /submarkets/northwest. LLMs lift this verbatim when summarizing
+    // "what is the northwest san antonio commercial market." Keep it
+    // tight: one sentence, definitional, includes the headline rent
+    // anchor + the differentiator.
+    quickAnswer:
+      "San Antonio's Northwest submarket — anchored by I-10/Loop 1604, La Cantera, the South Texas Medical Center, and Stone Oak — is the city's highest-rent Class A office and medical-office submarket, with Class A asking $32-48/SF FSG and trophy vacancy under 10%.",
+    keyTakeaways: [
+      "Highest Class A office rents in San Antonio ($32-48/SF FSG); trophy vacancy under 10%",
+      "Anchored by USAA HQ, the South Texas Medical Center, La Cantera, and The Rim",
+      "Strongest retail leasing fundamentals in San Antonio — La Cantera in-line at $28-42/SF NNN",
+      "Limited industrial inventory; new industrial users typically push to Far Northwest / Helotes",
+      "Primary zip codes: 78230, 78231, 78249, 78256, 78257, 78258, 78259",
+    ],
+    // Centroid near La Cantera / I-10 & 1604 — feeds Place.geo schema.
+    latitude: 29.6097,
+    longitude: -98.5757,
     overview: [
       'San Antonio Northwest is the most active commercial real estate submarket in the city, anchored by the I-10 / Loop 1604 interchange and stretching from La Cantera to UTSA, the South Texas Medical Center, and the Stone Oak corridor extension. It is the dominant Class A office submarket in San Antonio and increasingly the dominant medical office market.',
       'The submarket has been the primary beneficiary of San Antonio\'s economic and demographic growth over the past 20 years. The University of Texas at San Antonio, the Medical Center, USAA\'s headquarters, Valero, and a deep concentration of professional services drive office demand. La Cantera, The Rim, and the I-10 retail corridor support some of the strongest retail leasing fundamentals in San Antonio.',
