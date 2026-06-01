@@ -97,7 +97,16 @@ export default async function SubmarketPage({ params }: { params: Promise<{ slug
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <CityHubPage config={entry.config} />
+      <CityHubPage
+        config={{
+          ...entry.config,
+          // Visible breadcrumb mirrors the BreadcrumbList JSON-LD above.
+          breadcrumbs: [
+            { label: 'Markets', href: '/markets' },
+            { label: entry.shortLabel },
+          ],
+        }}
+      />
     </>
   );
 }

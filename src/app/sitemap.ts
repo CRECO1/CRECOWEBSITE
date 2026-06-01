@@ -13,7 +13,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/texas-industrial-property-for-lease`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.95 },
     { url: `${BASE_URL}/texas-office-space-for-lease`,        lastModified: new Date(), changeFrequency: 'weekly', priority: 0.95 },
     { url: `${BASE_URL}/texas-commercial-property-for-sale`,  lastModified: new Date(), changeFrequency: 'weekly', priority: 0.95 },
-    // City hub pages
+    // City hub pages — San Antonio first since it's CRECO's HQ city and
+    // the flagship geographic landing page on the site.
+    { url: `${BASE_URL}/san-antonio-commercial-real-estate`,  lastModified: new Date(), changeFrequency: 'weekly', priority: 0.95 },
     { url: `${BASE_URL}/austin-commercial-real-estate`,       lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9  },
     { url: `${BASE_URL}/houston-commercial-real-estate`,      lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9  },
     { url: `${BASE_URL}/dallas-commercial-real-estate`,       lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9  },

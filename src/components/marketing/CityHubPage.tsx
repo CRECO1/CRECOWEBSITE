@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
+import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 
 export interface SubmarketCard {
   name: string;
@@ -53,6 +54,12 @@ export interface CityHubConfig {
   relatedInsights: { slug: string; title: string; category: string }[];
   /** Property type quick-link cards */
   propertyLinks: { label: string; href: string; description: string }[];
+  /** Optional breadcrumb trail to display above the hero. Used by nested
+   *  routes like /markets/[slug] where this component renders below a
+   *  Home → Markets → {submarket} path. Static city pages (Houston,
+   *  Austin, San Antonio, etc.) leave this undefined — they ARE the top
+   *  geographic landing pages and don't need a crumb above them. */
+  breadcrumbs?: { label: string; href?: string }[];
 }
 
 export function CityHubPage({ config }: { config: CityHubConfig }) {
@@ -60,6 +67,16 @@ export function CityHubPage({ config }: { config: CityHubConfig }) {
     <>
       <Header />
       <main className="min-h-screen pt-20">
+        {/* Optional breadcrumb strip — only renders when caller provides
+            a trail. Markets/[slug] does; static city pages don't. */}
+        {config.breadcrumbs && config.breadcrumbs.length > 0 && (
+          <div className="border-b border-border bg-background-cream py-3">
+            <Container>
+              <Breadcrumbs items={config.breadcrumbs} />
+            </Container>
+          </div>
+        )}
+
         {/* Hero */}
         <section className="bg-primary py-16 sm:py-24 text-white">
           <Container>

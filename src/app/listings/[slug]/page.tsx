@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { MapPin, Calendar, Phone, ArrowLeft, Building2, CheckCircle, Layers, Ruler, Truck, Download, Map } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
+import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { getListingBySlug } from '@/lib/supabase';
 import { formatPrice, formatSqft, formatAcres, formatLeaseRate, transactionLabel, propertyTypeLabel, googleMapsUrl } from '@/lib/utils';
 import { ListingInquiryTabs } from './ListingInquiryTabs';
@@ -83,92 +84,154 @@ export default async function ListingDetailPage({ params }: Props) {
       ? formatLeaseRate(listing!.lease_rate, listing!.lease_rate_basis)
       : 'Contact for pricing';
 
-  // Build RealEstateListing JSON-LD for rich search results
-  const listingSchema: Record<string, any> = {
-    '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: listing!.title,
-    description: listing!.description ?? listing!.headline ?? `${listing!.property_type} property at ${listing!.address}, ${listing!.city}, ${listing!.state}`,
-    image: images.length > 0 ? images : ['https://www.crecotx.com/images/creco-logo.jpg'],
-    category: `Commercial Real Estate · ${listing!.property_type}`,
-    offers: listing!.transaction_type === 'sale' && listing!.sale_price
+  // Build the offer block once — used by the consolidated RealEstateListing
+  // schema below. Lease and sale need different shapes: sale gets a flat
+  // Offer with `price`, lease gets a UnitPriceSpecification under an Offer
+  // with the per-SF-per-year rate. `businessFunction` makes the lease-vs-
+  // sale distinction explicit (HTTP/LeaseOut vs Sell) — Google and LLM
+  // entity graphs both use this to classify the listing.
+  const offerBlock = listing!.transaction_type === 'sale' && listing!.sale_price
+    ? {
+        '@type': 'Offer',
+        businessFunction: 'https://schema.org/Sell',
+        price: listing!.sale_price,
+        priceCurrency: 'USD',
+        availability: 'https://schema.org/InStock',
+        url: `https://www.crecotx.com/listings/${listing!.slug}`,
+        seller: { '@id': 'https://www.crecotx.com/#business' },
+      }
+    : listing!.lease_rate
       ? {
           '@type': 'Offer',
-          price: listing!.sale_price,
-          priceCurrency: 'USD',
+          businessFunction: 'https://schema.org/LeaseOut',
+          priceSpecification: {
+            '@type': 'UnitPriceSpecification',
+            price: listing!.lease_rate,
+            priceCurrency: 'USD',
+            unitCode: 'FTK', // Square Foot (UN/CEFACT)
+            billingIncrement: 'yearly',
+            description: `${listing!.lease_rate_basis ?? 'NNN'} per SF per year`,
+          },
           availability: 'https://schema.org/InStock',
           url: `https://www.crecotx.com/listings/${listing!.slug}`,
           seller: { '@id': 'https://www.crecotx.com/#business' },
         }
-      : listing!.lease_rate
+      : undefined;
+
+  // Build amenityFeature from the listing's freeform features[] array +
+  // structured industrial fields (clear_height, dock_doors, grade_doors).
+  // LLMs and Google rich results both use amenityFeature to compare
+  // properties — populated values directly improve entity-graph fit.
+  const amenityFeatures: Array<{ '@type': 'LocationFeatureSpecification'; name: string; value?: number | boolean }> = [];
+  // Features array — comes from Payload's array field as [{feature: '...'}]
+  const rawFeatures = (listing as { features?: Array<{ feature?: string }> }).features ?? [];
+  for (const f of rawFeatures) {
+    if (f?.feature) amenityFeatures.push({ '@type': 'LocationFeatureSpecification', name: f.feature, value: true });
+  }
+  if (listing!.clear_height) {
+    amenityFeatures.push({ '@type': 'LocationFeatureSpecification', name: 'Clear height (ft)', value: Number(listing!.clear_height) });
+  }
+  if (listing!.dock_doors) {
+    amenityFeatures.push({ '@type': 'LocationFeatureSpecification', name: 'Dock-high doors', value: Number(listing!.dock_doors) });
+  }
+  if (listing!.grade_doors) {
+    amenityFeatures.push({ '@type': 'LocationFeatureSpecification', name: 'Grade-level doors', value: Number(listing!.grade_doors) });
+  }
+  if (listing!.zoning) {
+    amenityFeatures.push({ '@type': 'LocationFeatureSpecification', name: `Zoning: ${listing!.zoning}` });
+  }
+
+  // Single consolidated RealEstateListing schema. Previously the page
+  // emitted both Product + RealEstateListing — Google treats duplicate
+  // schemas for the same entity as a signal of confusion. This is one
+  // canonical record with everything search engines + LLMs need.
+  const listingSchema: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'RealEstateListing',
+    '@id': `https://www.crecotx.com/listings/${listing!.slug}#listing`,
+    name: listing!.title,
+    url: `https://www.crecotx.com/listings/${listing!.slug}`,
+    description:
+      listing!.description
+      ?? listing!.headline
+      ?? `${listing!.property_type} property at ${listing!.address}, ${listing!.city}, ${listing!.state}`,
+    image: images.length > 0 ? images : ['https://www.crecotx.com/images/creco-logo.jpg'],
+    datePosted: listing!.listing_date ?? listing!.created_at,
+    category: `Commercial Real Estate · ${listing!.property_type}`,
+    mainEntity: {
+      '@type': 'CommercialProperty',
+      name: listing!.title,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: listing!.address,
+        addressLocality: listing!.city,
+        addressRegion: listing!.state,
+        postalCode: listing!.zip,
+        addressCountry: 'US',
+      },
+      // geo gives Google + LLMs the lat/lng so the listing can show in
+      // local-pack / map-based rich results and surface in "industrial
+      // space near X" AI answers. Only emit when geocoded — incorrect
+      // coordinates are worse than missing ones.
+      geo: listing!.latitude != null && listing!.longitude != null
         ? {
-            '@type': 'Offer',
-            priceSpecification: {
-              '@type': 'UnitPriceSpecification',
-              price: listing!.lease_rate,
-              priceCurrency: 'USD',
-              unitCode: 'FTK', // Square Foot
-              billingIncrement: 'yearly',
-              description: `${listing!.lease_rate_basis ?? 'NNN'} per SF per year`,
-            },
-            availability: 'https://schema.org/InStock',
-            url: `https://www.crecotx.com/listings/${listing!.slug}`,
-            seller: { '@id': 'https://www.crecotx.com/#business' },
+            '@type': 'GeoCoordinates',
+            latitude: Number(listing!.latitude),
+            longitude: Number(listing!.longitude),
           }
         : undefined,
+      floorSize: listing!.sqft
+        ? { '@type': 'QuantitativeValue', value: listing!.sqft, unitCode: 'FTK' }
+        : undefined,
+      yearBuilt: listing!.year_built ?? undefined,
+      amenityFeature: amenityFeatures.length > 0 ? amenityFeatures : undefined,
+    },
+    offers: offerBlock,
+    broker: { '@id': 'https://www.crecotx.com/#business' },
+  };
+
+  // Visible breadcrumb above is mirrored by this BreadcrumbList JSON-LD —
+  // Google's recommendation is to keep schema and rendered HTML in sync
+  // so the two reinforce each other.
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home',     item: 'https://www.crecotx.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Listings', item: 'https://www.crecotx.com/listings' },
+      { '@type': 'ListItem', position: 3, name: listing!.title, item: `https://www.crecotx.com/listings/${listing!.slug}` },
+    ],
   };
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(listingSchema) }} />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'RealEstateListing',
-            name: listing!.title,
-            url: `https://www.crecotx.com/listings/${listing!.slug}`,
-            description: listing!.description ?? listing!.headline ?? '',
-            datePosted: listing!.listing_date ?? listing!.created_at,
-            mainEntity: {
-              '@type': 'CommercialProperty',
-              name: listing!.title,
-              address: {
-                '@type': 'PostalAddress',
-                streetAddress: listing!.address,
-                addressLocality: listing!.city,
-                addressRegion: listing!.state,
-                postalCode: listing!.zip,
-                addressCountry: 'US',
-              },
-              // geo block gives Google the lat/lng so the listing can show in
-              // local pack / map-based rich results. Only emit when geocoded.
-              geo: listing!.latitude != null && listing!.longitude != null
-                ? {
-                    '@type': 'GeoCoordinates',
-                    latitude: Number(listing!.latitude),
-                    longitude: Number(listing!.longitude),
-                  }
-                : undefined,
-              floorSize: listing!.sqft
-                ? { '@type': 'QuantitativeValue', value: listing!.sqft, unitCode: 'FTK' }
-                : undefined,
-            },
-            broker: { '@id': 'https://www.crecotx.com/#business' },
-          }),
-        }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(listingSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
       <Header variant="minimal" />
       {/* pb-24 lg:pb-0 reserves space under the MobileInquiryBar so the
           last bit of content (related listings, footer) isn't obscured. */}
       <main className="min-h-screen pt-20 pb-24 lg:pb-0">
-        {/* Back */}
+        {/* Breadcrumb strip — replaces the old "Back to Listings" link
+            (the first chevron still points back to /listings, and the
+            full path tells Google + LLMs where this page sits in the
+            site hierarchy). Pairs with the BreadcrumbList we'll emit
+            with the rest of the listing JSON-LD via a sub-graph
+            below — but at minimum the visible breadcrumb itself is a
+            stronger AI-citation signal than a one-link back nav. */}
         <div className="border-b border-border bg-background-cream py-4">
           <Container>
-            <Link href="/listings" className="inline-flex items-center gap-2 text-body-sm text-foreground-muted hover:text-primary transition-colors">
-              <ArrowLeft className="h-4 w-4" /> Back to Listings
-            </Link>
+            <Breadcrumbs
+              items={[
+                { label: 'Listings', href: '/listings' },
+                { label: listing!.title },
+              ]}
+            />
           </Container>
         </div>
 

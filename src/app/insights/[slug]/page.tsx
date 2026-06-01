@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, Calendar, Clock, BookOpen, Phone } from 'lucide-
 import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
+import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { POSTS, findPost } from '@/lib/insights';
 
 interface Props { params: Promise<{ slug: string }> }
@@ -65,14 +66,35 @@ export default async function InsightDetailPage({ params }: Props) {
         }}
       />
 
+      {/* BreadcrumbList JSON-LD mirrors the visible breadcrumb below — Google +
+          LLMs both parse this; matching them is the recommended pattern. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Home',     item: 'https://www.crecotx.com/' },
+              { '@type': 'ListItem', position: 2, name: 'Insights', item: 'https://www.crecotx.com/insights' },
+              { '@type': 'ListItem', position: 3, name: post.title, item: `https://www.crecotx.com/insights/${post.slug}` },
+            ],
+          }),
+        }}
+      />
+
       <Header variant="minimal" />
       <main className="min-h-screen pt-20">
-        {/* Back */}
+        {/* Breadcrumb strip — replaces the old "All Insights" back link.
+            Provides the full hierarchical context that the schema mirrors. */}
         <div className="border-b border-border bg-background-cream py-4">
           <Container>
-            <Link href="/insights" className="inline-flex items-center gap-2 text-body-sm text-foreground-muted hover:text-primary transition-colors">
-              <ArrowLeft className="h-4 w-4" /> All Insights
-            </Link>
+            <Breadcrumbs
+              items={[
+                { label: 'Insights', href: '/insights' },
+                { label: post.title },
+              ]}
+            />
           </Container>
         </div>
 

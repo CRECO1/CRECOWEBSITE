@@ -18,8 +18,26 @@ export const metadata: Metadata = {
     'commercial real estate development texas',
     'commercial real estate broker texas',
     'CRECO services',
+    'commercial real estate firm texas',
+    'leasing and sales texas commercial',
   ],
   alternates: { canonical: 'https://www.crecotx.com/services' },
+  // Per-page OG + Twitter overrides — root layout has decent defaults
+  // but a /services-specific share card converts noticeably better in
+  // social previews than the generic homepage one.
+  openGraph: {
+    title: 'Texas Commercial Real Estate Services | CRECO',
+    description:
+      'Tenant representation, investment advisory, leasing & sales, property management, development, and sustainability consulting across Texas.',
+    url: 'https://www.crecotx.com/services',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Texas Commercial Real Estate Services | CRECO',
+    description:
+      'Full-service Texas CRE firm — tenant rep, investment advisory, leasing & sales, property management.',
+  },
 };
 
 /**

@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Clock, FileText, ArrowRight } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
+import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { findGuide, GUIDES } from '@/lib/guides';
 import { GuideReader } from './GuideReader';
 
@@ -39,10 +40,80 @@ export default async function GuidePage({ params }: PageProps) {
   const guide = findGuide(slug);
   if (!guide) notFound();
 
+  // Article JSON-LD — the single highest-value E-E-A-T schema for guide
+  // content. LLMs (Perplexity, ChatGPT, Google AI Overviews) parse this
+  // to attribute authorship + recency when citing a CRE explainer.
+  // Author Person + publisher Organization both reference IDs declared
+  // in the root layout's @graph so the entity graph stays coherent.
+  //
+  // Date strategy: guides are evergreen, so we use a stable published
+  // date (Jan 2026 — the original drop) and an annually-refreshed
+  // dateModified. If a guide ever needs a "Last updated YYYY-MM-DD"
+  // surfaced in the UI, add publishedAt/updatedAt to the Guide
+  // interface and read from there.
+  const articleSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    '@id': `https://www.crecotx.com/guides/${guide.slug}#article`,
+    headline: guide.title,
+    description: guide.excerpt,
+    keywords: guide.keywords.join(', '),
+    inLanguage: 'en-US',
+    isAccessibleForFree: true,
+    url: `https://www.crecotx.com/guides/${guide.slug}`,
+    mainEntityOfPage: `https://www.crecotx.com/guides/${guide.slug}`,
+    wordCount: guide.pageCount * 300, // approx — 300 words/page is the standard editorial estimate
+    datePublished: '2026-01-15',
+    dateModified: '2026-06-01',
+    author: {
+      '@type': 'Organization',
+      '@id': 'https://www.crecotx.com/#business',
+      name: 'CRECO',
+      url: 'https://www.crecotx.com/team',
+    },
+    publisher: { '@id': 'https://www.crecotx.com/#business' },
+    about: { '@type': 'Thing', name: `Texas commercial real estate · ${guide.audience} guidance` },
+  };
+
+  // BreadcrumbList — gives Google + LLMs the explicit Home → Guides →
+  // {Title} path. Matches the visible breadcrumb component we'll add
+  // separately so schema + UI tell the same story.
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home',  item: 'https://www.crecotx.com/' },
+      { '@type': 'ListItem', position: 2, name: 'Guides', item: 'https://www.crecotx.com/guides' },
+      { '@type': 'ListItem', position: 3, name: guide.title, item: `https://www.crecotx.com/guides/${guide.slug}` },
+    ],
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <Header />
       <main className="min-h-screen pt-20">
+        {/* Breadcrumb — visible counterpart to the BreadcrumbList JSON-LD
+            above. Lives on a light strip above the dark hero so the
+            crumbs read clearly. */}
+        <div className="bg-background-cream border-b border-border py-3">
+          <Container>
+            <Breadcrumbs
+              items={[
+                { label: 'Guides', href: '/guides' },
+                { label: guide.title },
+              ]}
+            />
+          </Container>
+        </div>
+
         {/* Hero */}
         <section className="bg-primary py-12 sm:py-16 text-white">
           <Container>

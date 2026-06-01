@@ -8,6 +8,7 @@ import { ArrowLeft, MapPin, Building2, BarChart3, Users } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
+import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { getSubmarketBySlug, getListingsBySubmarket } from '@/lib/supabase';
 import { formatSqft, formatLeaseRate, formatPrice, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 import { getSubmarketContent } from '@/lib/submarket-content';
@@ -64,14 +65,34 @@ export default async function SubmarketDetailPage({ params }: Props) {
         />
       )}
 
+      {/* BreadcrumbList JSON-LD — mirrors the visible breadcrumb below. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Home',        item: 'https://www.crecotx.com/' },
+              { '@type': 'ListItem', position: 2, name: 'Submarkets',  item: 'https://www.crecotx.com/submarkets' },
+              { '@type': 'ListItem', position: 3, name: submarket.name, item: `https://www.crecotx.com/submarkets/${slug}` },
+            ],
+          }),
+        }}
+      />
+
       <Header variant="minimal" />
       <main className="min-h-screen pt-20">
-        {/* Back */}
+        {/* Breadcrumb strip — full hierarchical context for SEO + LLM
+            citation. Replaces the prior single "back to" link. */}
         <div className="border-b border-border bg-background-cream py-4">
           <Container>
-            <Link href="/submarkets" className="inline-flex items-center gap-2 text-body-sm text-foreground-muted hover:text-primary transition-colors">
-              <ArrowLeft className="h-4 w-4" /> Back to Submarkets
-            </Link>
+            <Breadcrumbs
+              items={[
+                { label: 'Submarkets', href: '/submarkets' },
+                { label: submarket.name },
+              ]}
+            />
           </Container>
         </div>
 
