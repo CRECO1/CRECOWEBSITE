@@ -60,10 +60,9 @@ export interface W9UploadError {
  */
 export async function uploadW9File(file: File): Promise<W9UploadResult | W9UploadError> {
   if (!file) return { ok: false, error: 'No file selected' };
-  // PDF mime check, with fallback to extension because some browsers
-  // attach an empty type to drag-and-drop files. The check is permissive
-  // by design — Resend will accept whatever bytes we hand it; we just
-  // want to catch obvious mistakes (uploading a photo instead of a PDF).
+  // First-pass MIME + extension check. Catches the obvious mistakes
+  // (image dragged in by accident) without a file read. Some browsers
+  // omit file.type on drag-and-drop, so we accept extension as fallback.
   const looksLikePdf = file.type === 'application/pdf'
     || /\.pdf$/i.test(file.name);
   if (!looksLikePdf) {
@@ -71,6 +70,38 @@ export async function uploadW9File(file: File): Promise<W9UploadResult | W9Uploa
   }
   if (file.size > MAX_W9_BYTES) {
     return { ok: false, error: 'File too large (max 5MB — a W-9 should be under 1MB).' };
+  }
+
+  // Magic-byte verification: every PDF starts with the literal bytes
+  // `%PDF` (0x25 0x50 0x44 0x46). A renamed `payload.exe` would pass
+  // the MIME + extension check above but fail this. Without it the
+  // bucket can end up holding arbitrary binaries that a client portal
+  // or invoice email would later serve as `application/pdf`.
+  //
+  // We slice just the first 4 bytes — cheap, doesn't require reading
+  // the whole file into memory. Skipped if file.slice isn't available
+  // (Node-side callers; current path is browser-only).
+  if (typeof file.slice === 'function') {
+    try {
+      const headerBuf = await file.slice(0, 4).arrayBuffer();
+      const header = new Uint8Array(headerBuf);
+      const isPdf =
+        header.length === 4
+        && header[0] === 0x25  // %
+        && header[1] === 0x50  // P
+        && header[2] === 0x44  // D
+        && header[3] === 0x46; // F
+      if (!isPdf) {
+        return {
+          ok: false,
+          error: "That file isn't a valid PDF (header mismatch). Re-save your W-9 as PDF and try again.",
+        };
+      }
+    } catch {
+      // If the slice/read fails for some browser-specific reason we
+      // fall through to the upload. The bucket-side scanning + the
+      // attachment-time fail-soft on send still protect downstream.
+    }
   }
 
   const uuid = (typeof crypto !== 'undefined' && 'randomUUID' in crypto)
@@ -123,7 +154,12 @@ export async function getW9DisplayUrl(
     .from(BUCKET)
     .createSignedUrl(path, expiresInSeconds);
   if (error || !data?.signedUrl) {
-    console.warn('[w9] signed URL failed', { path, msg: error?.message });
+    // Dev-only — leaking storage paths or DB errors to a production
+    // browser console would be a minor info-disclosure surface. The
+    // caller surfaces a generic "unavailable" UI either way.
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('[w9] signed URL failed', { path, msg: error?.message });
+    }
     return null;
   }
   return data.signedUrl;
@@ -153,6 +189,8 @@ export async function fetchW9Attachment(
   try {
     const { data, error } = await client.storage.from(BUCKET).download(path);
     if (error || !data) {
+      // Server-side log — fine to keep at info level; this runs on the
+      // server (cron / API route), not in a user's browser.
       console.warn('[w9] download failed', { path, msg: error?.message });
       return null;
     }

@@ -1,4 +1,7 @@
-export const dynamic = 'force-dynamic';
+// 30-min ISR — submarket pages embed live listings and FAQ content
+// that changes rarely. Replaces the previous force-dynamic, which
+// was rendering on every visit.
+export const revalidate = 1800;
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';

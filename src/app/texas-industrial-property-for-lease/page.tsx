@@ -1,4 +1,6 @@
-export const dynamic = 'force-dynamic';
+// 30-min ISR — listings + CMS content change slowly; saves the
+// per-visit server render that force-dynamic was costing.
+export const revalidate = 1800;
 
 import type { Metadata } from 'next';
 import { PropertyLandingPage } from '@/components/marketing/PropertyLandingPage';

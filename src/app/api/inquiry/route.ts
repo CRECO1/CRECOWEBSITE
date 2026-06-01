@@ -4,6 +4,7 @@ import { Resend } from 'resend';
 import { verifyRecaptcha } from '@/lib/recaptcha';
 import { escapeHtml, clampString, isValidEmail, safePhone, MAX_LEN } from '@/lib/sanitize';
 import { pushToCrm } from '@/lib/crm';
+import { enforceRateLimit } from '@/lib/rate-limit';
 
 /**
  * Unified inquiry endpoint — handles all 5 paths from /get-started:
@@ -99,6 +100,18 @@ function summarizeAnswers(answers: Record<string, unknown> | undefined | null): 
 }
 
 export async function POST(req: NextRequest) {
+  // Per-IP rate limit before any parsing — bots hammering this endpoint
+  // are the realistic threat. 8/min per IP is generous for a human
+  // filling out a form (typical inquiry takes ~2-5 minutes) and tight
+  // enough to throttle a scripted abuse loop. Layered on top of the
+  // existing reCAPTCHA + honeypot — defense in depth.
+  const limited = enforceRateLimit(req, {
+    namespace: 'inquiry',
+    max: 8,
+    windowMs: 60_000,
+  });
+  if (limited) return limited;
+
   try {
     const body = await req.json();
     const {

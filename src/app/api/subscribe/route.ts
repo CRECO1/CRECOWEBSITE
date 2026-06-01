@@ -6,6 +6,7 @@ import { escapeHtml, clampString, isValidEmail, MAX_LEN } from '@/lib/sanitize';
 import { pushToCrm } from '@/lib/crm';
 import { findGuide } from '@/lib/guides';
 import { renderGuideEmailHtml } from '@/lib/guide-email';
+import { enforceRateLimit } from '@/lib/rate-limit';
 
 /**
  * Unified subscribe endpoint — handles all 3 subscription types:
@@ -41,6 +42,17 @@ function getFromEmail(): string {
 const VALID_TYPES = ['newsletter', 'property-alerts', 'lead-magnet'] as const;
 
 export async function POST(req: NextRequest) {
+  // Per-IP rate limit. Newsletter / alert subscribes are typically
+  // one-shot from a single user; 10/min handles legit edge cases
+  // (a user signing up for multiple alert types from the same page)
+  // while throttling scripted email-list-stuffing.
+  const limited = enforceRateLimit(req, {
+    namespace: 'subscribe',
+    max: 10,
+    windowMs: 60_000,
+  });
+  if (limited) return limited;
+
   try {
     const body = await req.json();
     const {

@@ -1,4 +1,6 @@
-export const dynamic = 'force-dynamic';
+// Hourly ISR — submarkets are edited rarely; an hour of staleness
+// on the index is well under operator-visible threshold.
+export const revalidate = 3600;
 
 import type { Metadata } from 'next';
 import Link from 'next/link';

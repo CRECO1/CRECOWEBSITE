@@ -79,7 +79,8 @@ export async function GET(req: NextRequest) {
     .limit(BATCH_LIMIT);
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('[cron/geocode-listings] DB error:', error);
+    return NextResponse.json({ error: 'Could not load listings' }, { status: 500 });
   }
 
   const listings: ListingRow[] = rows ?? [];

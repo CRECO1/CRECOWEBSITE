@@ -1,4 +1,7 @@
-export const dynamic = 'force-dynamic';
+// Hourly ISR — sold-deal records change slowly; an hour of staleness
+// is acceptable and saves the per-visit server render that
+// force-dynamic was costing.
+export const revalidate = 3600;
 
 import type { Metadata } from 'next';
 

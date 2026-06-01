@@ -4,6 +4,7 @@ import { Resend } from 'resend';
 import { verifyRecaptcha } from '@/lib/recaptcha';
 import { escapeHtml, clampString, isValidEmail, safePhone, MAX_LEN } from '@/lib/sanitize';
 import { pushToCrm } from '@/lib/crm';
+import { enforceRateLimit } from '@/lib/rate-limit';
 
 const NOTIFICATION_EMAIL = process.env.LEAD_NOTIFICATION_EMAIL ?? 'info@crecotx.com';
 
@@ -65,6 +66,17 @@ function genericConfirmationHtml(name: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  // Per-IP rate limit before any parsing. See /lib/rate-limit.ts for
+  // the design rationale (best-effort, defense in depth on top of
+  // reCAPTCHA + honeypot). 8/min matches the inquiry endpoint — same
+  // form-fill cadence assumption.
+  const limited = enforceRateLimit(req, {
+    namespace: 'leads',
+    max: 8,
+    windowMs: 60_000,
+  });
+  if (limited) return limited;
+
   try {
     const body = await req.json();
     const {

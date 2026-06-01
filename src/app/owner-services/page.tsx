@@ -10,7 +10,9 @@ import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import { getLandingPage } from '@/lib/supabase';
 
-export const dynamic = 'force-dynamic';
+// Hourly ISR — landing-page CMS content changes rarely (operator
+// edits maybe once a week); hourly revalidation is plenty fresh.
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: 'Texas Commercial Property Owner Services | CRECO',

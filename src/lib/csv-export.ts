@@ -94,8 +94,13 @@ export function downloadCsv<T>(
   a.click();
   document.body.removeChild(a);
   // Release the object URL after the click handler has had a chance to
-  // run. Some browsers fire the download asynchronously.
-  setTimeout(() => URL.revokeObjectURL(url), 100);
+  // run. Some browsers fire the download asynchronously. Wrap in
+  // try/catch — older / non-standard browsers can throw here and we
+  // don't want that to bubble out of a fire-and-forget timer.
+  setTimeout(() => {
+    try { URL.revokeObjectURL(url); }
+    catch { /* harmless — the URL becomes garbage-collectable anyway */ }
+  }, 100);
 }
 
 /** Build a timestamped filename — useful default for "export current

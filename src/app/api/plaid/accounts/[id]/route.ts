@@ -36,7 +36,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     .from('bank_accounts')
     .update({ active: body.active })
     .eq('id', id);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error('[plaid/accounts PATCH] DB error:', error);
+    return NextResponse.json({ error: 'Could not update account' }, { status: 500 });
+  }
   return NextResponse.json({ ok: true });
 }
 
@@ -67,6 +70,9 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   }
 
   const { error } = await supabase.from('bank_accounts').delete().eq('id', id);
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (error) {
+    console.error('[plaid/accounts DELETE] DB error:', error);
+    return NextResponse.json({ error: 'Could not delete account' }, { status: 500 });
+  }
   return NextResponse.json({ ok: true });
 }

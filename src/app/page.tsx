@@ -1,4 +1,8 @@
-export const dynamic = 'force-dynamic';
+// 30-min ISR — home reads the latest active listings + featured
+// content. Re-rendered every 30 min instead of on every visit
+// (which is what force-dynamic was doing). Saves edge-function
+// quota without showing meaningfully-stale listings.
+export const revalidate = 1800;
 
 import type { Metadata } from 'next';
 

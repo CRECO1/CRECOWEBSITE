@@ -84,7 +84,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         internal_notes: null,
       })
       .eq('id', id);
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      // Log the raw Postgres error server-side; return a generic message
+      // to the client. Even for admin-only routes, leaking schema details
+      // is unnecessary attack-surface info.
+      console.error('[plaid/transactions PATCH] DB error:', error);
+      return NextResponse.json({ error: 'Could not update transaction' }, { status: 500 });
+    }
     return NextResponse.json({ ok: true });
   }
 
@@ -99,7 +105,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         internal_notes: note || null,
       })
       .eq('id', id);
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      // Log the raw Postgres error server-side; return a generic message
+      // to the client. Even for admin-only routes, leaking schema details
+      // is unnecessary attack-surface info.
+      console.error('[plaid/transactions PATCH] DB error:', error);
+      return NextResponse.json({ error: 'Could not update transaction' }, { status: 500 });
+    }
     return NextResponse.json({ ok: true });
   }
 
@@ -233,7 +245,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         reviewed_by: user.id,
       })
       .eq('id', id);
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) {
+      // Log the raw Postgres error server-side; return a generic message
+      // to the client. Even for admin-only routes, leaking schema details
+      // is unnecessary attack-surface info.
+      console.error('[plaid/transactions PATCH] DB error:', error);
+      return NextResponse.json({ error: 'Could not update transaction' }, { status: 500 });
+    }
     return NextResponse.json({ ok: true });
   }
 

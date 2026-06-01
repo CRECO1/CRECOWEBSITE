@@ -6,6 +6,7 @@ import { verifyRecaptcha } from '@/lib/recaptcha';
 import { escapeHtml, clampString, isValidEmail, safePhone, MAX_LEN } from '@/lib/sanitize';
 import { buildIcs } from '@/lib/ics';
 import { pushToCrm } from '@/lib/crm';
+import { enforceRateLimit } from '@/lib/rate-limit';
 
 /**
  * POST /api/tour-request
@@ -73,6 +74,16 @@ function isUsDstActive(date: Date): boolean {
 }
 
 export async function POST(req: NextRequest) {
+  // Per-IP rate limit. Tour requests are infrequent for any one person
+  // — 6/min is plenty for a real prospect filling out 1-2 tours and
+  // tight enough to throttle scripted abuse.
+  const limited = enforceRateLimit(req, {
+    namespace: 'tour-request',
+    max: 6,
+    windowMs: 60_000,
+  });
+  if (limited) return limited;
+
   try {
     const body = await req.json();
     const {
