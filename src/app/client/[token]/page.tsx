@@ -2,10 +2,11 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
-  Building2, CheckCircle, Clock, AlertCircle, ExternalLink, Phone, Mail,
+  Building2, CheckCircle, Clock, AlertCircle, ExternalLink, Phone, Mail, FileText,
 } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
 import { formatMoney, formatDate, effectiveStatus, STATUS_STYLES, type Invoice } from '@/lib/invoices';
+import { getW9DisplayUrl } from '@/lib/w9';
 
 /**
  * /client/[token] — the public-facing client portal.
@@ -113,6 +114,23 @@ export default async function ClientPortalPage({ params }: PageProps) {
     return e === 'paid' || e === 'void';
   });
 
+  // Look up the workspace W-9 attachment so the client can grab it any
+  // time (not just from the most recent invoice email). The signed URL
+  // is generated server-side here so the link in the rendered HTML is
+  // already ready to click — no client-side roundtrip. Lifetime is
+  // longer (24 hours) than the default since this is the page the client
+  // sits on; a short signature would expire before they finish reviewing.
+  const { data: w9Settings } = await supabase
+    .from('invoice_settings')
+    .select('w9_storage_path, w9_filename, w9_uploaded_at')
+    .eq('id', 1)
+    .maybeSingle();
+  const w9Url = await getW9DisplayUrl(
+    supabase,
+    w9Settings?.w9_storage_path ?? null,
+    60 * 60 * 24,
+  );
+
   return (
     <main className="min-h-screen bg-background-cream">
       {/* Header — branded but trimmed; no nav, no marketing. The portal is
@@ -166,6 +184,35 @@ export default async function ClientPortalPage({ params }: PageProps) {
             </div>
           </div>
         </section>
+
+        {/* Tax forms — surfaced when the workspace has a W-9 on file.
+            Lets the client grab it any time (their AP team often asks
+            for it weeks after the invoice email gets buried). Single
+            tap → opens the PDF in a new tab via a fresh signed URL. */}
+        {w9Url && (
+          <section className="rounded-xl border border-border bg-white p-5 flex items-center gap-4 flex-wrap">
+            <span className="inline-flex h-10 w-10 items-center justify-center rounded-lg bg-gold/15 text-gold-dark shrink-0">
+              <FileText className="h-5 w-5" />
+            </span>
+            <div className="flex-1 min-w-0">
+              <h2 className="font-heading text-body font-bold text-primary">Tax forms</h2>
+              <p className="text-caption text-foreground-muted">
+                Our W-9 is on file{w9Settings?.w9_uploaded_at
+                  ? ` (last updated ${new Date(w9Settings.w9_uploaded_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })})`
+                  : ''}.
+                Hand it to your AP team so they can pay any invoice from us.
+              </p>
+            </div>
+            <a
+              href={w9Url}
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-4 py-2 text-body-sm font-semibold text-primary hover:border-gold hover:bg-gold/5"
+            >
+              <FileText className="h-4 w-4" /> Download W-9
+            </a>
+          </section>
+        )}
 
         {/* Open invoices */}
         {openInvoices.length > 0 && (

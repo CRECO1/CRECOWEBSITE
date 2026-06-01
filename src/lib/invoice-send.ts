@@ -25,6 +25,13 @@ export interface SendInvoiceOptions {
   cc?: string;
   /** Optional Reply-To override. Defaults to LEAD_NOTIFICATION_EMAIL. */
   replyTo?: string;
+  /**
+   * Optional secondary attachments. The invoice PDF is always sent;
+   * additional files (W-9 today, possibly contractor docs in the future)
+   * land here so the helper stays unaware of which side files happen to
+   * be in scope for a given workspace.
+   */
+  extraAttachments?: { filename: string; content: Buffer }[];
 }
 
 function getFromEmail(): string {
@@ -45,7 +52,7 @@ export async function sendInvoiceEmail(opts: SendInvoiceOptions): Promise<string
     throw new Error('RESEND_API_KEY is not configured');
   }
 
-  const { invoice, subject, message, cc, replyTo } = opts;
+  const { invoice, subject, message, cc, replyTo, extraAttachments } = opts;
 
   const pdf = await renderInvoicePdf(invoice);
   const pdfBuffer = Buffer.from(pdf);
@@ -53,6 +60,14 @@ export async function sendInvoiceEmail(opts: SendInvoiceOptions): Promise<string
   // Body HTML is rendered by the shared builder so the live preview on
   // /billing/invoices/new is guaranteed to match what we ship.
   const html = buildInvoiceEmailHtml({ invoice, message });
+
+  // Invoice PDF is always first; extras (W-9, etc.) tail behind. Most
+  // email clients show attachments in the order they're listed, so the
+  // invoice itself stays the visually-primary file.
+  const attachments = [
+    { filename: `${invoice.invoice_number}.pdf`, content: pdfBuffer },
+    ...(extraAttachments ?? []),
+  ];
 
   const resend = new Resend(process.env.RESEND_API_KEY);
   const result = await resend.emails.send({
@@ -62,12 +77,7 @@ export async function sendInvoiceEmail(opts: SendInvoiceOptions): Promise<string
     replyTo: replyTo ?? process.env.LEAD_NOTIFICATION_EMAIL ?? 'info@crecotx.com',
     subject,
     html,
-    attachments: [
-      {
-        filename: `${invoice.invoice_number}.pdf`,
-        content: pdfBuffer,
-      },
-    ],
+    attachments,
   });
 
   if (result.error) {

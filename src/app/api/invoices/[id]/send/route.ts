@@ -6,6 +6,7 @@ import { isValidEmail, clampString, MAX_LEN } from '@/lib/sanitize';
 import { FALLBACK_TEMPLATE, substituteTemplate } from '@/lib/invoice-email';
 import { sendInvoiceEmail } from '@/lib/invoice-send';
 import { createInvoicePaymentLink, isStripeConfigured } from '@/lib/stripe';
+import { fetchW9Attachment } from '@/lib/w9';
 
 /**
  * POST /api/invoices/[id]/send
@@ -121,6 +122,22 @@ export async function POST(
     if (!bodyMessage) bodyMessage = substituteTemplate(template.default_message, fullInvoice);
   }
 
+  // Fetch the W-9 from storage if one is on file. fetchW9Attachment is
+  // fail-soft — if the file is missing or RLS denies, it returns null and
+  // we send the invoice without the W-9 rather than blocking the email.
+  // Admins see the W-9 state on the settings page, so a missing attachment
+  // is recoverable; a missing invoice email is not.
+  const { data: w9Settings } = await supabase
+    .from('invoice_settings')
+    .select('w9_storage_path, w9_filename')
+    .eq('id', 1)
+    .single();
+  const w9 = await fetchW9Attachment(
+    supabase,
+    w9Settings?.w9_storage_path ?? null,
+    w9Settings?.w9_filename ?? null,
+  );
+
   // Capture the Resend message_id so the webhook can correlate
   // opened/delivered/bounced events back to this invoice.
   let messageId: string | undefined;
@@ -130,6 +147,7 @@ export async function POST(
       subject: bodySubject || `Invoice ${invoice.invoice_number} from CRECO`,
       message: bodyMessage,
       cc: bodyCc,
+      extraAttachments: w9 ? [w9] : undefined,
     });
   } catch (err) {
     console.error('Invoice send error:', err);

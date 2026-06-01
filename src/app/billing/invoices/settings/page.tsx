@@ -15,11 +15,12 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Save, RotateCw, Mail, AlertTriangle, CheckCircle, AlertOctagon } from 'lucide-react';
+import { ArrowLeft, Save, RotateCw, Mail, AlertTriangle, CheckCircle, AlertOctagon, FileText, Upload, Trash2, ExternalLink } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { FALLBACK_TEMPLATE, TEMPLATE_VARIABLES } from '@/lib/invoice-email';
 import { REMINDER_STAGES } from '@/lib/invoice-reminders';
 import type { LateFeeSettings } from '@/lib/invoices';
+import { getW9DisplayUrl, removeW9File, uploadW9File } from '@/lib/w9';
 
 const DEFAULT_LATE_FEE: LateFeeSettings = {
   late_fee_enabled: false,
@@ -38,6 +39,18 @@ export default function InvoiceSettingsPage() {
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
+  // W-9 attachment state. Three values track the lifecycle:
+  //   - w9Path / w9Filename / w9UploadedAt: what's currently saved
+  //   - w9Uploading: spinner during the upload itself
+  //   - w9Error: surfaces validation + upload failures (separate from
+  //     the template-save error so it can be cleared independently)
+  const [w9Path, setW9Path] = useState<string | null>(null);
+  const [w9Filename, setW9Filename] = useState<string | null>(null);
+  const [w9UploadedAt, setW9UploadedAt] = useState<string | null>(null);
+  const [w9Uploading, setW9Uploading] = useState(false);
+  const [w9Error, setW9Error] = useState<string | null>(null);
+  const w9InputRef = useRef<HTMLInputElement | null>(null);
+
   const subjectRef = useRef<HTMLInputElement | null>(null);
   const messageRef = useRef<HTMLTextAreaElement | null>(null);
   // Track which field was last focused so the chip buttons know where to
@@ -51,7 +64,7 @@ export default function InvoiceSettingsPage() {
     (async () => {
       const { data, error } = await supabase
         .from('invoice_settings')
-        .select('default_subject, default_message, late_fee_enabled, late_fee_type, late_fee_amount, late_fee_days, late_fee_recurring')
+        .select('default_subject, default_message, late_fee_enabled, late_fee_type, late_fee_amount, late_fee_days, late_fee_recurring, w9_storage_path, w9_filename, w9_uploaded_at')
         .eq('id', 1)
         .single();
       if (cancelled) return;
@@ -67,6 +80,10 @@ export default function InvoiceSettingsPage() {
           late_fee_days:      data.late_fee_days      ?? DEFAULT_LATE_FEE.late_fee_days,
           late_fee_recurring: data.late_fee_recurring ?? DEFAULT_LATE_FEE.late_fee_recurring,
         });
+        // W-9 columns (migration 0030). Null when no W-9 uploaded yet.
+        setW9Path(data.w9_storage_path ?? null);
+        setW9Filename(data.w9_filename ?? null);
+        setW9UploadedAt(data.w9_uploaded_at ?? null);
       } else if (error?.message?.includes('does not exist')) {
         setError('Run migration 0011_invoice_settings.sql in the Supabase SQL editor first. Until then, the hard-coded fallback template will be used when sending invoices.');
       }
@@ -74,6 +91,83 @@ export default function InvoiceSettingsPage() {
     })();
     return () => { cancelled = true; };
   }, []);
+
+  // Pick a PDF, upload to storage, stamp the path on invoice_settings.
+  // Replaces any previously-uploaded W-9 (deletes the old blob best-effort
+  // so the bucket doesn't accumulate orphans across replacements).
+  async function handleW9Upload(file: File) {
+    setW9Error(null);
+    setW9Uploading(true);
+    try {
+      const previousPath = w9Path;
+      const result = await uploadW9File(file);
+      if (!result.ok) {
+        setW9Error(result.error);
+        return;
+      }
+      const nowIso = new Date().toISOString();
+      const { error: dbErr } = await supabase
+        .from('invoice_settings')
+        .update({
+          w9_storage_path: result.path,
+          w9_filename: result.filename,
+          w9_uploaded_at: nowIso,
+        })
+        .eq('id', 1);
+      if (dbErr) {
+        // DB write failed — try to remove the orphan blob so we don't
+        // leak storage. State stays on the previous file.
+        await removeW9File(result.path);
+        setW9Error(`Could not save: ${dbErr.message}`);
+        return;
+      }
+      setW9Path(result.path);
+      setW9Filename(result.filename);
+      setW9UploadedAt(nowIso);
+      // Clean up the old file once the new one is the source of truth.
+      if (previousPath) await removeW9File(previousPath);
+    } finally {
+      setW9Uploading(false);
+      if (w9InputRef.current) w9InputRef.current.value = '';
+    }
+  }
+
+  // Remove the W-9. Clears the DB row first (the user-visible state) and
+  // then best-effort deletes the storage blob.
+  async function handleW9Remove() {
+    if (!w9Path) return;
+    if (!confirm('Remove the W-9? Future invoice emails will go out without it.')) return;
+    setW9Error(null);
+    const pathToDelete = w9Path;
+    const { error: dbErr } = await supabase
+      .from('invoice_settings')
+      .update({
+        w9_storage_path: null,
+        w9_filename: null,
+        w9_uploaded_at: null,
+      })
+      .eq('id', 1);
+    if (dbErr) {
+      setW9Error(`Could not remove: ${dbErr.message}`);
+      return;
+    }
+    setW9Path(null);
+    setW9Filename(null);
+    setW9UploadedAt(null);
+    await removeW9File(pathToDelete);
+  }
+
+  // Generate a fresh signed URL and open in a new tab. Don't store the
+  // URL — signatures expire and stored links go stale.
+  async function handleW9View() {
+    if (!w9Path) return;
+    const url = await getW9DisplayUrl(supabase, w9Path);
+    if (!url) {
+      setW9Error('Could not generate a download link. Try again in a moment.');
+      return;
+    }
+    window.open(url, '_blank', 'noopener');
+  }
 
   function insertToken(token: string) {
     if (activeField === 'subject') {
@@ -223,6 +317,12 @@ export default function InvoiceSettingsPage() {
                 <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-gold shrink-0" /> Mailing address for paper-check payments</li>
                 <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-gold shrink-0" /> Sign-off, phone, and TREC #</li>
                 <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-gold shrink-0" /> The invoice itself as a branded PDF attachment</li>
+                <li className="flex items-start gap-2">
+                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-gold shrink-0" />
+                  {w9Path
+                    ? <>Your W-9 as a second PDF attachment ({w9Filename ?? 'W-9.pdf'})</>
+                    : <>Your W-9 as a second PDF attachment <span className="italic text-foreground-subtle">— upload one below to enable</span></>}
+                </li>
               </ul>
             </div>
 
@@ -272,6 +372,99 @@ export default function InvoiceSettingsPage() {
                   <strong className="text-foreground">Privacy note:</strong> Some clients (Apple Mail with privacy protection, certain Gmail filters) block tracking images. If a client tells you they read the invoice but the dashboard says "Not opened," that's why — the data is approximate.
                 </p>
               </div>
+            </div>
+
+            {/* ── W-9 attachment ─────────────────────────────────────── */}
+            <div className="rounded-xl border border-border bg-white p-6">
+              <div className="flex items-start gap-3 mb-4">
+                <FileText className="h-5 w-5 text-gold shrink-0 mt-0.5" />
+                <div>
+                  <h2 className="font-heading text-body font-bold text-primary">W-9 attachment</h2>
+                  <p className="text-caption text-foreground-muted mt-1">
+                    Upload your W-9 once and every outgoing invoice email + client portal page will include it.
+                    Saves the back-and-forth with corporate AP departments that won&apos;t pay until they have one on file.
+                  </p>
+                </div>
+              </div>
+
+              {w9Error && (
+                <div className="flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-body-sm text-amber-800 mb-4">
+                  <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" /> <div>{w9Error}</div>
+                </div>
+              )}
+
+              {w9Path ? (
+                <div className="rounded-lg border border-border bg-background-cream/40 p-4">
+                  <div className="flex items-start gap-3">
+                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-gold/15 text-gold-dark shrink-0">
+                      <FileText className="h-4 w-4" />
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-body-sm font-semibold text-primary truncate">
+                        {w9Filename ?? 'W-9.pdf'}
+                      </p>
+                      <p className="text-caption text-foreground-muted">
+                        On file
+                        {w9UploadedAt
+                          ? ` since ${new Date(w9UploadedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}`
+                          : ''}
+                        . Attached to every invoice email automatically.
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        type="button"
+                        onClick={handleW9View}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-3 py-1.5 text-caption text-foreground-muted hover:text-primary hover:border-primary"
+                        title="Open the current W-9 in a new tab"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5" /> View
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => w9InputRef.current?.click()}
+                        disabled={w9Uploading}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-white px-3 py-1.5 text-caption text-foreground-muted hover:text-primary hover:border-primary disabled:opacity-50"
+                      >
+                        <Upload className="h-3.5 w-3.5" /> Replace
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleW9Remove}
+                        disabled={w9Uploading}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-red-300 bg-white px-3 py-1.5 text-caption text-red-700 hover:bg-red-50 disabled:opacity-50"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" /> Remove
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => w9InputRef.current?.click()}
+                  disabled={w9Uploading}
+                  className="w-full rounded-lg border-2 border-dashed border-border bg-background-cream/40 hover:border-gold hover:bg-gold/5 p-8 text-center transition-colors disabled:opacity-50"
+                >
+                  <Upload className="mx-auto h-6 w-6 text-foreground-muted mb-2" />
+                  <p className="text-body-sm font-semibold text-primary">
+                    {w9Uploading ? 'Uploading…' : 'Upload your W-9 (PDF)'}
+                  </p>
+                  <p className="text-caption text-foreground-muted mt-1">
+                    Drop a PDF here, or click to browse. Up to 5MB.
+                  </p>
+                </button>
+              )}
+              <input
+                ref={w9InputRef}
+                type="file"
+                accept="application/pdf,.pdf"
+                onChange={e => {
+                  const f = e.target.files?.[0];
+                  if (f) handleW9Upload(f);
+                }}
+                className="hidden"
+              />
             </div>
 
             {/* ── Auto late fees ─────────────────────────────────────── */}

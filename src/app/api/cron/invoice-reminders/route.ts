@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import type { Invoice } from '@/lib/invoices';
 import { sendInvoiceEmail } from '@/lib/invoice-send';
+import { fetchW9Attachment } from '@/lib/w9';
 import { REMINDER_STAGES, stageForToday, renderReminderContent } from '@/lib/invoice-reminders';
 
 /**
@@ -91,6 +92,23 @@ export async function GET(req: NextRequest) {
     errors: [],
     sent: [],
   };
+
+  // ── W-9 attachment (workspace-wide): fetch once at the top of the run
+  // and reuse for every reminder. The file is small (a few KB at most)
+  // and identical for every send, so paying the storage fetch + memory
+  // cost N times would be silly. fetchW9Attachment is fail-soft — if the
+  // file is missing or RLS denies, w9 stays null and reminders go out
+  // without it, exactly as before this feature existed.
+  const { data: w9Settings } = await supabase
+    .from('invoice_settings')
+    .select('w9_storage_path, w9_filename')
+    .eq('id', 1)
+    .single();
+  const w9 = await fetchW9Attachment(
+    supabase,
+    w9Settings?.w9_storage_path ?? null,
+    w9Settings?.w9_filename ?? null,
+  );
 
   // ── Smart cadence: look up each client's reminder_cadence preference.
   // The cron is per-invoice, but we pull the client setting once + cache by
@@ -191,6 +209,7 @@ export async function GET(req: NextRequest) {
         invoice: fullInvoice,
         subject: content.subject,
         message: content.message,
+        extraAttachments: w9 ? [w9] : undefined,
       });
       // Save the Resend message ID on the reminder row for later auditing
       if (emailId) {
