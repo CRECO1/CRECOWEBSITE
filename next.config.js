@@ -93,12 +93,49 @@ const securityHeaders = [
     value: '1; mode=block',
   },
   {
+    // strict-origin-when-cross-origin sends only the origin (no path/query)
+    // to cross-origin destinations and nothing on downgrade. Tighter than
+    // origin-when-cross-origin which would leak the full referring origin
+    // even when the destination is HTTP. Matches the W3C-recommended default.
     key: 'Referrer-Policy',
-    value: 'origin-when-cross-origin',
+    value: 'strict-origin-when-cross-origin',
   },
   {
+    // Disable every browser API we don't use. Each entry is a defense-in-depth
+    // win — a future XSS or supply-chain compromise can't call these APIs
+    // even if it gets script execution. List grows over time; review when
+    // adding any new browser-feature integration.
+    //   camera, microphone, geolocation — not used (CRE marketing/billing)
+    //   payment, usb, magnetometer, gyroscope, accelerometer — not used
+    //   ambient-light-sensor, autoplay — not used
+    //   interest-cohort — opt out of FLoC / Topics API (privacy hygiene)
+    //   midi, encrypted-media, picture-in-picture — not used
     key: 'Permissions-Policy',
-    value: 'camera=(), microphone=(), geolocation=()',
+    value: [
+      'accelerometer=()',
+      'ambient-light-sensor=()',
+      'autoplay=()',
+      'battery=()',
+      'camera=()',
+      'display-capture=()',
+      'document-domain=()',
+      'encrypted-media=()',
+      'fullscreen=(self)',
+      'geolocation=()',
+      'gyroscope=()',
+      'interest-cohort=()',
+      'magnetometer=()',
+      'microphone=()',
+      'midi=()',
+      'payment=()',
+      'picture-in-picture=()',
+      'publickey-credentials-get=()',
+      'screen-wake-lock=()',
+      'sync-xhr=()',
+      'usb=()',
+      'web-share=()',
+      'xr-spatial-tracking=()',
+    ].join(', '),
   },
   {
     key: 'Content-Security-Policy',
