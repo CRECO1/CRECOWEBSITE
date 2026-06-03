@@ -2,32 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "crons": [
     {
-      "path": "/api/cron/invoice-reminders",
-      "schedule": "0 14 * * *"
-    },
-    {
-      "path": "/api/cron/valuation-followup",
-      "schedule": "30 14 * * *"
-    },
-    {
-      "path": "/api/cron/recurring-invoices",
+      "path": "/api/cron/dispatch",
       "schedule": "15 14 * * *"
-    },
-    {
-      "path": "/api/cron/late-fees",
-      "schedule": "45 14 * * *"
-    },
-    {
-      "path": "/api/cron/plaid-sync",
-      "schedule": "0 13 * * *"
-    },
-    {
-      "path": "/api/cron/geocode-listings",
-      "schedule": "0 15 * * *"
-    },
-    {
-      "path": "/api/cron/tour-followup",
-      "schedule": "30 13 * * *"
     }
   ]
 }
