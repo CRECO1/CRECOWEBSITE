@@ -15,6 +15,7 @@ import type { Invoice } from './invoices';
 import { nextInvoiceNumber, round2 } from './invoices';
 import { sendInvoiceEmail } from './invoice-send';
 import { FALLBACK_TEMPLATE, substituteTemplate } from './invoice-email';
+import { fetchW9Attachment } from './w9';
 import {
   advanceNextRun, computeDueDate,
   type RecurringTemplate, type RecurringLineItem,
@@ -166,13 +167,33 @@ export async function generateInvoiceFromTemplate(
   // 8. Fire the email if the template is configured for auto-send. Catch
   //    failures so the invoice still ends up created — the operator can
   //    re-send manually from the detail page.
+  //
+  //    Two things this branch HAS to get right (both were missed in the
+  //    initial implementation and caught by an audit):
+  //
+  //    a) Capture the Resend message_id returned by sendInvoiceEmail()
+  //       and stamp it on invoices.last_email_message_id. Without this,
+  //       Resend's open-tracking webhook fires for the recipient opening
+  //       the email but can't correlate the event back to an invoice —
+  //       open_count + last_opened_at never update for any cron-sent or
+  //       auto-generated recurring invoice. The webhook resolver checks
+  //       invoices.last_email_message_id first, then
+  //       invoice_reminders.email_id; without one of those, the webhook
+  //       silently logs "no invoice for message_id" and moves on.
+  //
+  //    b) Fetch the workspace W-9 from invoice_settings and pass it as
+  //       extraAttachments. Manual send + reminder cron both do this;
+  //       the recurring generator was forgotten. Without it, every
+  //       auto-generated recurring invoice ships without the W-9 —
+  //       the corporate AP departments that prompted the W-9 feature
+  //       in the first place have to ask again.
   let sent = false;
   let send_error: string | undefined;
   if (tpl.on_generate === 'send_immediately') {
     try {
       const { data: settings } = await supabase
         .from('invoice_settings')
-        .select('default_subject, default_message')
+        .select('default_subject, default_message, w9_storage_path, w9_filename')
         .eq('id', 1)
         .single();
       const template = settings ?? FALLBACK_TEMPLATE;
@@ -180,12 +201,31 @@ export async function generateInvoiceFromTemplate(
         ...invoice,
         line_items: lineItems.map((li, idx) => ({ ...li, sort_order: li.sort_order ?? idx })),
       };
-      await sendInvoiceEmail({
+      // Workspace W-9, when present. Fail-soft — a missing W-9 must not
+      // block the invoice email itself (same posture as manual send +
+      // cron-reminder paths).
+      const w9 = await fetchW9Attachment(
+        supabase,
+        settings?.w9_storage_path ?? null,
+        settings?.w9_filename ?? null,
+      );
+      const messageId = await sendInvoiceEmail({
         invoice: fullInvoice,
         subject: substituteTemplate(template.default_subject, fullInvoice),
         message: substituteTemplate(template.default_message, fullInvoice),
+        extraAttachments: w9 ? [w9] : undefined,
       });
       sent = true;
+      // Stamp the message_id so the Resend open-tracking webhook can
+      // correlate inbound events back to this invoice. Best-effort: a
+      // failure here means tracking is degraded for this invoice but
+      // the send already succeeded — don't let the bookkeeping kill it.
+      if (messageId) {
+        await supabase
+          .from('invoices')
+          .update({ last_email_message_id: messageId })
+          .eq('id', invoice.id);
+      }
     } catch (err) {
       send_error = err instanceof Error ? err.message : String(err);
       console.error('[recurring-generate] email send failed:', send_error);
