@@ -115,7 +115,7 @@ export async function POST(
     const { data: settings } = await supabase
       .from('invoice_settings')
       .select('default_subject, default_message')
-      .eq('id', 1)
+      .eq('workspace_id', fullInvoice.workspace_id)
       .single();
     const template = settings ?? FALLBACK_TEMPLATE;
     if (!bodySubject) bodySubject = substituteTemplate(template.default_subject, fullInvoice);
@@ -130,7 +130,7 @@ export async function POST(
   const { data: w9Settings } = await supabase
     .from('invoice_settings')
     .select('w9_storage_path, w9_filename')
-    .eq('id', 1)
+    .eq('workspace_id', fullInvoice.workspace_id)
     .single();
   const w9 = await fetchW9Attachment(
     supabase,

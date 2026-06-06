@@ -73,7 +73,7 @@ export default async function ClientPortalPage({ params }: PageProps) {
 
   const { data: client } = await supabase
     .from('clients')
-    .select('id, name, email, company, address')
+    .select('id, name, email, company, address, workspace_id')
     .eq('portal_token', token)
     .maybeSingle();
   if (!client) notFound();
@@ -120,10 +120,14 @@ export default async function ClientPortalPage({ params }: PageProps) {
   // already ready to click — no client-side roundtrip. Lifetime is
   // longer (24 hours) than the default since this is the page the client
   // sits on; a short signature would expire before they finish reviewing.
+  // Workspace W-9 — the client belongs to a workspace (via the
+  // clients table), and that workspace's settings hold the W-9 the
+  // client should be able to download. `client.workspace_id` was set
+  // when the client row was created.
   const { data: w9Settings } = await supabase
     .from('invoice_settings')
     .select('w9_storage_path, w9_filename, w9_uploaded_at')
-    .eq('id', 1)
+    .eq('workspace_id', (client as { workspace_id: string }).workspace_id)
     .maybeSingle();
   const w9Url = await getW9DisplayUrl(
     supabase,

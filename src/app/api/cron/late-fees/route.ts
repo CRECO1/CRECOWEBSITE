@@ -66,29 +66,30 @@ export async function GET(req: NextRequest) {
     { auth: { persistSession: false } },
   );
 
-  // 1. Pull settings — bail early if late fees are off
-  const { data: settings } = await supabase
+  // 1. Pull late-fee settings for every workspace — different tenants
+  // have different configs. We map them by workspace_id and look up
+  // per-invoice as we iterate. Workspaces with late_fee_enabled=false
+  // are skipped per invoice (cheap predicate, no DB cost).
+  const { data: allSettings } = await supabase
     .from('invoice_settings')
-    .select('late_fee_enabled, late_fee_type, late_fee_amount, late_fee_days, late_fee_recurring')
-    .eq('id', 1)
-    .single();
-
-  const s = settings as LateFeeSettings | null;
-  if (!s || !s.late_fee_enabled) {
+    .select('workspace_id, late_fee_enabled, late_fee_type, late_fee_amount, late_fee_days, late_fee_recurring');
+  const settingsByWorkspace = new Map<string, LateFeeSettings>();
+  for (const row of (allSettings ?? []) as Array<LateFeeSettings & { workspace_id: string }>) {
+    // Defensive validation per row — if a workspace has bad values
+    // persisted, we skip it and log rather than fail the whole cron.
+    if (row.late_fee_amount < 0 || (row.late_fee_type === 'percent' && row.late_fee_amount > 1)) {
+      console.warn(`[cron/late-fees] workspace ${row.workspace_id} has invalid late_fee_amount; skipping`);
+      continue;
+    }
+    settingsByWorkspace.set(row.workspace_id, row);
+  }
+  if (settingsByWorkspace.size === 0) {
     return NextResponse.json({
       ok: true,
-      skipped: 'late_fee_enabled=false (or settings row missing)',
+      skipped: 'no workspaces with late_fee_enabled=true',
       invoices_checked: 0,
       fees_added: 0,
     });
-  }
-
-  // Validate config — defensive in case bad values got persisted somehow
-  if (s.late_fee_amount < 0 || (s.late_fee_type === 'percent' && s.late_fee_amount > 1)) {
-    return NextResponse.json(
-      { error: 'late_fee_amount out of range — fix in /billing/invoices/settings' },
-      { status: 500 },
-    );
   }
 
   const today = new Date().toISOString().slice(0, 10);
@@ -115,6 +116,11 @@ export async function GET(req: NextRequest) {
 
   for (const inv of (invoices as Invoice[] | null) ?? []) {
     try {
+      // Per-workspace settings lookup. Workspaces with late_fee_enabled
+      // off (or missing settings entirely) skip silently — they opted out.
+      const s = settingsByWorkspace.get(inv.workspace_id);
+      if (!s || !s.late_fee_enabled) continue;
+
       const daysOverdue = daysBetween(inv.due_date, today);
       if (daysOverdue < s.late_fee_days) continue;
 

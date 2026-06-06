@@ -136,7 +136,7 @@ export default function InvoiceDetailPage() {
       const { data } = await supabase
         .from('invoice_settings')
         .select('default_subject, default_message')
-        .eq('id', 1)
+        .eq('workspace_id', workspace.id)
         .single();
       if (data) setEmailTemplate(data);
     })();
@@ -169,7 +169,7 @@ export default function InvoiceDetailPage() {
       const { data: settings } = await supabase
         .from('invoice_settings')
         .select('default_subject, default_message')
-        .eq('id', 1)
+        .eq('workspace_id', workspace.id)
         .single();
       const template = settings ?? FALLBACK_TEMPLATE;
       setComposeSubject(invoice.email_subject ?? substituteTemplate(template.default_subject, invoice));

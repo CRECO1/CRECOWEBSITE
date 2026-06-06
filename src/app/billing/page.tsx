@@ -30,6 +30,7 @@ import {
 } from '@/lib/billing-reports';
 import { CashFlowWidget } from '@/components/billing/CashFlowWidget';
 import { ActivityFeedWidget } from '@/components/billing/ActivityFeedWidget';
+import { QuickstartChecklist } from '@/components/billing/QuickstartChecklist';
 
 export default function BillingDashboard() {
   const [invoices, setInvoices] = useState<Invoice[] | null>(null);
@@ -179,6 +180,12 @@ export default function BillingDashboard() {
       </header>
 
       <div className="mx-auto max-w-6xl px-6 py-8 space-y-6">
+        {/* Quickstart for new workspaces — auto-hides when all three
+            onboarding steps are complete OR when the operator dismisses
+            it. Cheap to render: three count queries, no impact on the
+            steady-state dashboard. */}
+        <QuickstartChecklist />
+
         {errors.map(err => (
           <div key={err} className="flex items-start gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4 text-body-sm text-amber-800">
             <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" /> <div>{err}</div>

@@ -93,22 +93,29 @@ export async function GET(req: NextRequest) {
     sent: [],
   };
 
-  // ── W-9 attachment (workspace-wide): fetch once at the top of the run
-  // and reuse for every reminder. The file is small (a few KB at most)
-  // and identical for every send, so paying the storage fetch + memory
-  // cost N times would be silly. fetchW9Attachment is fail-soft — if the
-  // file is missing or RLS denies, w9 stays null and reminders go out
-  // without it, exactly as before this feature existed.
-  const { data: w9Settings } = await supabase
-    .from('invoice_settings')
-    .select('w9_storage_path, w9_filename')
-    .eq('id', 1)
-    .single();
-  const w9 = await fetchW9Attachment(
-    supabase,
-    w9Settings?.w9_storage_path ?? null,
-    w9Settings?.w9_filename ?? null,
-  );
+  // ── W-9 attachment cache (per workspace).
+  // Multi-tenancy reality: each workspace has its own W-9. The cron
+  // iterates invoices across every workspace, so we cache the fetched
+  // attachment by workspace_id to avoid re-pulling the same bytes
+  // multiple times for invoices that share a tenant.
+  // fetchW9Attachment is fail-soft — null means "no W-9 on file" and
+  // reminders go out without one.
+  const w9ByWorkspace = new Map<string, Awaited<ReturnType<typeof fetchW9Attachment>>>();
+  async function getW9For(workspaceId: string) {
+    if (w9ByWorkspace.has(workspaceId)) return w9ByWorkspace.get(workspaceId)!;
+    const { data: w9Settings } = await supabase
+      .from('invoice_settings')
+      .select('w9_storage_path, w9_filename')
+      .eq('workspace_id', workspaceId)
+      .single();
+    const w9 = await fetchW9Attachment(
+      supabase,
+      w9Settings?.w9_storage_path ?? null,
+      w9Settings?.w9_filename ?? null,
+    );
+    w9ByWorkspace.set(workspaceId, w9);
+    return w9;
+  }
 
   // ── Smart cadence: look up each client's reminder_cadence preference.
   // The cron is per-invoice, but we pull the client setting once + cache by
@@ -212,6 +219,10 @@ export async function GET(req: NextRequest) {
     }
 
     try {
+      // Per-workspace W-9 (cached). When the invoice fires its first
+      // reminder we fetch its workspace's W-9; subsequent reminders for
+      // any invoice in the same workspace get the cached attachment.
+      const w9 = await getW9For(fullInvoice.workspace_id);
       const emailId = await sendInvoiceEmail({
         invoice: fullInvoice,
         subject: content.subject,

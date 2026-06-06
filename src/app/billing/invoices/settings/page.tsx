@@ -71,7 +71,7 @@ export default function InvoiceSettingsPage() {
       const { data, error } = await supabase
         .from('invoice_settings')
         .select('default_subject, default_message, late_fee_enabled, late_fee_type, late_fee_amount, late_fee_days, late_fee_recurring, w9_storage_path, w9_filename, w9_uploaded_at')
-        .eq('id', 1)
+        .eq('workspace_id', workspace.id)
         .single();
       if (cancelled) return;
       if (!error && data) {
@@ -119,7 +119,7 @@ export default function InvoiceSettingsPage() {
           w9_filename: result.filename,
           w9_uploaded_at: nowIso,
         })
-        .eq('id', 1);
+        .eq('workspace_id', workspace.id);
       if (dbErr) {
         // DB write failed — try to remove the orphan blob so we don't
         // leak storage. State stays on the previous file.
@@ -152,7 +152,7 @@ export default function InvoiceSettingsPage() {
         w9_filename: null,
         w9_uploaded_at: null,
       })
-      .eq('id', 1);
+      .eq('workspace_id', workspace.id);
     if (dbErr) {
       setW9Error(`Could not remove: ${dbErr.message}`);
       return;
@@ -215,7 +215,6 @@ export default function InvoiceSettingsPage() {
     const { error } = await supabase
       .from('invoice_settings')
       .upsert({
-        id: 1,
         workspace_id: workspace.id,
         default_subject: subject,
         default_message: message,
@@ -224,7 +223,7 @@ export default function InvoiceSettingsPage() {
         late_fee_amount: lateFee.late_fee_amount,
         late_fee_days: lateFee.late_fee_days,
         late_fee_recurring: lateFee.late_fee_recurring,
-      });
+      }, { onConflict: 'workspace_id' });
     setSaving(false);
     if (error) {
       setError(error.message);

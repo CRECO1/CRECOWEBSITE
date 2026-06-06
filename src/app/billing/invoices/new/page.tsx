@@ -133,17 +133,17 @@ function NewInvoicePageInner() {
     })();
   }, []);
 
-  // Load the global email template once on mount.
+  // Load the workspace's email template once on mount.
   useEffect(() => {
     (async () => {
       const { data } = await supabase
         .from('invoice_settings')
         .select('default_subject, default_message')
-        .eq('id', 1)
+        .eq('workspace_id', workspace.id)
         .single();
       if (data) setEmailTemplate(data);
     })();
-  }, []);
+  }, [workspace.id]);
 
   // If we were arrived at with ?clone=<id>, pull the source invoice + its
   // line items and prefill every editable field. Issue date snaps to today

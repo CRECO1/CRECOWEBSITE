@@ -200,7 +200,7 @@ export async function generateInvoiceFromTemplate(
       const { data: settings } = await supabase
         .from('invoice_settings')
         .select('default_subject, default_message, w9_storage_path, w9_filename')
-        .eq('id', 1)
+        .eq('workspace_id', tpl.workspace_id)
         .single();
       const template = settings ?? FALLBACK_TEMPLATE;
       const fullInvoice = {
