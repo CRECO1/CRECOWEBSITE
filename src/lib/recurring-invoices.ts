@@ -16,6 +16,12 @@ export type RecurringOnGenerate = 'draft' | 'send_immediately';
 
 export interface RecurringTemplate {
   id: string;
+  /** Multi-tenancy: which workspace owns this template. Generated
+   *  invoices inherit this workspace_id automatically. Migration 0032
+   *  added the column and backfilled CRECO's templates with its
+   *  workspace_id; new templates set it from useWorkspace() or
+   *  requireWorkspaceAdmin(). */
+  workspace_id: string;
   name: string;
 
   /** Link to a reusable clients row when present. Snapshot fields below

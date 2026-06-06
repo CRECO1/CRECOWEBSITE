@@ -98,6 +98,11 @@ export async function generateInvoiceFromTemplate(
   const { data: created, error: invErr } = await supabase
     .from('invoices')
     .insert([{
+      // The generated invoice inherits the template's workspace — the
+      // cron iterates templates and each one carries the workspace it
+      // belongs to. This keeps the new invoice in the same tenant as
+      // its template.
+      workspace_id: tpl.workspace_id,
       invoice_number: invoiceNumber,
       client_name: tpl.client_name,
       client_email: tpl.client_email,
@@ -128,10 +133,11 @@ export async function generateInvoiceFromTemplate(
   if (invErr) throw new Error(invErr.message);
   const invoice = created as Invoice;
 
-  // 6. Clone line items into invoice_line_items
+  // 6. Clone line items into invoice_line_items — same workspace.
   const { error: liErr } = await supabase
     .from('invoice_line_items')
     .insert(lineItems.map((li, idx) => ({
+      workspace_id: tpl.workspace_id,
       invoice_id: invoice.id,
       description: li.description,
       quantity: li.quantity,

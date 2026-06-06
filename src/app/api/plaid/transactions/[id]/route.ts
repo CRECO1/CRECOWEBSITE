@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdmin } from '@/lib/api-auth';
+import { requireWorkspaceAdmin } from '@/lib/api-auth';
 import { clampString, MAX_LEN } from '@/lib/sanitize';
 import { deactivatePaymentLink, isStripeConfigured } from '@/lib/stripe';
 
@@ -43,9 +43,9 @@ interface BankTransaction {
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await requireAdmin();
+  const auth = await requireWorkspaceAdmin();
   if (auth.error) return auth.error;
-  const { supabase, user } = auth;
+  const { supabase, user, workspace } = auth;
 
   const { id } = await params;
   let body: Record<string, unknown>;
@@ -277,10 +277,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const vendor = txn.merchant_name || txn.description || 'Unknown';
 
-  // Create the expense
+  // Create the expense — stamped with the calling user's workspace.
   const { data: created, error: insertErr } = await supabase
     .from('expenses')
     .insert([{
+      workspace_id: workspace.id,
       expense_date: txn.posted_date,
       vendor,
       category,

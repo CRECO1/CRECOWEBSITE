@@ -13,6 +13,7 @@ import { supabase } from '@/lib/supabase';
 import { formInputCls as inputCls } from '@/lib/form-styles';
 import { logActivity } from '@/lib/activity-log';
 import { pushPendingToast, withBust } from '@/lib/post-save-feedback';
+import { useWorkspaceOrThrow } from '@/components/billing/WorkspaceProvider';
 import {
   PROPERTY_TYPES,
   type Property,
@@ -27,6 +28,11 @@ export function PropertyForm({
   mode: 'create' | 'edit';
 }) {
   const router = useRouter();
+  // Multi-tenancy: every new property is scoped to the caller's
+  // workspace. Throws if used outside a WorkspaceProvider — fail loud
+  // rather than silently insert without workspace_id (would fail RLS
+  // post-cutover anyway).
+  const workspace = useWorkspaceOrThrow();
 
   const [name, setName] = useState(initial?.name ?? '');
   const [address, setAddress] = useState(initial?.address ?? '');
@@ -62,7 +68,11 @@ export function PropertyForm({
         pushPendingToast({ entity: 'property', mode: 'edit', name: name.trim(), id: initial.id });
         router.push(withBust(`/billing/properties/${initial.id}`));
       } else {
-        const { data, error: e } = await supabase.from('properties').insert([payload]).select('id').single();
+        const { data, error: e } = await supabase
+          .from('properties')
+          .insert([{ ...payload, workspace_id: workspace.id }])
+          .select('id')
+          .single();
         if (e || !data) throw new Error(e?.message ?? 'Could not create property');
         logActivity({ action: 'created', entity_type: 'property', entity_id: data.id, entity_label: name.trim() });
         pushPendingToast({ entity: 'property', mode: 'create', name: name.trim(), id: data.id });

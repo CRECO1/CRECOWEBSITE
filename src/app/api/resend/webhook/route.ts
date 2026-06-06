@@ -157,32 +157,37 @@ export async function POST(req: NextRequest) {
   // event — which looked identical to "Resend sent us an event for an
   // email we don't own". Log loudly when the DB itself complained.
   let invoiceId: string | null = null;
+  let workspaceId: string | null = null;
   {
+    // Select workspace_id alongside id so we can stamp the event row
+    // with the same tenant the invoice belongs to.
     const { data: inv, error: invErr } = await supabase
       .from('invoices')
-      .select('id')
+      .select('id, workspace_id')
       .eq('last_email_message_id', messageId)
       .maybeSingle();
     if (invErr) {
       console.error('[resend/webhook] invoices lookup failed:', invErr.message, invErr.code ?? '');
       return NextResponse.json({ error: 'DB lookup failed' }, { status: 500 });
     }
-    if (inv) invoiceId = inv.id;
+    if (inv) { invoiceId = inv.id; workspaceId = inv.workspace_id; }
   }
   if (!invoiceId) {
+    // Reminder rows carry their own workspace_id — same value as the
+    // parent invoice but we read it directly to avoid an extra join.
     const { data: rem, error: remErr } = await supabase
       .from('invoice_reminders')
-      .select('invoice_id')
+      .select('invoice_id, workspace_id')
       .eq('email_id', messageId)
       .maybeSingle();
     if (remErr) {
       console.error('[resend/webhook] invoice_reminders lookup failed:', remErr.message, remErr.code ?? '');
       return NextResponse.json({ error: 'DB lookup failed' }, { status: 500 });
     }
-    if (rem) invoiceId = rem.invoice_id;
+    if (rem) { invoiceId = rem.invoice_id; workspaceId = rem.workspace_id; }
   }
 
-  if (!invoiceId) {
+  if (!invoiceId || !workspaceId) {
     // Genuinely no match — accept silently so Resend doesn't retry forever.
     console.warn('[resend/webhook] no invoice for message_id:', messageId, 'type:', event.type);
     return NextResponse.json({ ok: true, ignored: 'no invoice for this email' });
@@ -197,6 +202,7 @@ export async function POST(req: NextRequest) {
   const { error: insertErr } = await supabase
     .from('invoice_email_events')
     .insert([{
+      workspace_id: workspaceId,
       invoice_id: invoiceId,
       message_id: messageId,
       event_type: event.type,

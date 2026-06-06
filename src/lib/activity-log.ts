@@ -52,6 +52,19 @@ export interface ActivityLogEntry {
 }
 
 interface LogParams {
+  /**
+   * Workspace the activity belongs to. Required since the migration to
+   * multi-tenancy — every billing row is workspace-scoped including the
+   * audit trail. Callers source this from useWorkspace() (browser) or
+   * requireWorkspaceAdmin() (server).
+   *
+   * Optional in TypeScript only to keep the migration tractable —
+   * callers that haven't been updated yet will fail at the DB layer
+   * (NOT NULL violation) with a clear error rather than silently
+   * inserting into the wrong workspace. Tighten to required when the
+   * sweep is complete.
+   */
+  workspace_id?: string;
   action: ActivityAction;
   entity_type: ActivityEntityType;
   entity_id: string;
@@ -67,13 +80,35 @@ interface LogParams {
  * we'll attribute it correctly".
  *
  * Best-effort: never throws. Failure paths log to console and resolve.
+ *
+ * Workspace resolution order:
+ *   1. params.workspace_id (preferred — pass from useWorkspace/requireWorkspaceAdmin)
+ *   2. Fallback: call current_user_workspace() RPC. Adds ~200ms latency
+ *      but means callers that don't yet pass workspace_id continue to
+ *      work during the migration window. This fallback should be removed
+ *      once every caller is updated.
  */
 export async function logActivity(params: LogParams): Promise<void> {
   try {
     const { data: { user } } = await supabase.auth.getUser();
+
+    let workspaceId = params.workspace_id;
+    if (!workspaceId) {
+      // Migration-window fallback. Resolve from JWT via the SECURITY
+      // DEFINER RPC added in 0031. Remove this branch when every caller
+      // passes workspace_id explicitly.
+      const { data } = await supabase.rpc('current_user_workspace');
+      workspaceId = data?.[0]?.workspace_id;
+      if (!workspaceId) {
+        console.warn('[activity-log] no workspace for current user — skipping log');
+        return;
+      }
+    }
+
     const { error } = await supabase
       .from('activity_log')
       .insert([{
+        workspace_id: workspaceId,
         actor_id: user?.id ?? null,
         actor_email: user?.email ?? null,
         action: params.action,

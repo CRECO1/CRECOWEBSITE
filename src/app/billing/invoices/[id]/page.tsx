@@ -31,6 +31,7 @@ import { REMINDER_STAGES, type ReminderStage } from '@/lib/invoice-reminders';
 import { ModalBase } from '@/components/ui/ModalBase';
 import { logActivity } from '@/lib/activity-log';
 import { useToast } from '@/components/billing/Toast';
+import { useWorkspaceOrThrow } from '@/components/billing/WorkspaceProvider';
 
 type Editable = Omit<Invoice, 'line_items'> & { line_items: InvoiceLineItem[] };
 
@@ -38,6 +39,10 @@ export default function InvoiceDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const toast = useToast();
+  // Multi-tenancy: edits to line items need to include workspace_id on
+  // the new rows. Throws if used outside a WorkspaceProvider — fail
+  // loud rather than silently insert without a workspace.
+  const workspace = useWorkspaceOrThrow();
   const id = params?.id;
 
   const [invoice, setInvoice] = useState<Editable | null>(null);
@@ -524,6 +529,7 @@ export default function InvoiceDetailPage() {
     const rows = draft.line_items
       .filter(it => it.description.trim())
       .map((it, sort_order) => ({
+        workspace_id: workspace.id,
         invoice_id: draft.id,
         description: it.description.trim(),
         quantity: Number(it.quantity) || 0,

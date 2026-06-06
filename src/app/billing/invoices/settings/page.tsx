@@ -21,6 +21,7 @@ import { FALLBACK_TEMPLATE, TEMPLATE_VARIABLES } from '@/lib/invoice-email';
 import { REMINDER_STAGES } from '@/lib/invoice-reminders';
 import type { LateFeeSettings } from '@/lib/invoices';
 import { getW9DisplayUrl, removeW9File, uploadW9File } from '@/lib/w9';
+import { useWorkspaceOrThrow } from '@/components/billing/WorkspaceProvider';
 
 const DEFAULT_LATE_FEE: LateFeeSettings = {
   late_fee_enabled: false,
@@ -31,6 +32,11 @@ const DEFAULT_LATE_FEE: LateFeeSettings = {
 };
 
 export default function InvoiceSettingsPage() {
+  // Multi-tenancy: invoice_settings is per-workspace. Today it's still
+  // a singleton (id=1, CRECO's row); the schema gets refactored to one
+  // row per workspace in a follow-up migration before customer #2
+  // onboards. The upsert below already stamps workspace_id.
+  const workspace = useWorkspaceOrThrow();
   const [subject, setSubject] = useState(FALLBACK_TEMPLATE.default_subject);
   const [message, setMessage] = useState(FALLBACK_TEMPLATE.default_message);
   const [lateFee, setLateFee] = useState<LateFeeSettings>(DEFAULT_LATE_FEE);
@@ -210,6 +216,7 @@ export default function InvoiceSettingsPage() {
       .from('invoice_settings')
       .upsert({
         id: 1,
+        workspace_id: workspace.id,
         default_subject: subject,
         default_message: message,
         late_fee_enabled: lateFee.late_fee_enabled,

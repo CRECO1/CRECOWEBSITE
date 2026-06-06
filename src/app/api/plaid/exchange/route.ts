@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdmin } from '@/lib/api-auth';
+import { requireWorkspaceAdmin } from '@/lib/api-auth';
 import { getPlaidClient } from '@/lib/plaid';
 
 /**
@@ -16,9 +16,9 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST(req: NextRequest) {
-  const auth = await requireAdmin();
+  const auth = await requireWorkspaceAdmin();
   if (auth.error) return auth.error;
-  const { supabase } = auth;
+  const { supabase, workspace } = auth;
 
   const plaid = getPlaidClient();
   if (!plaid) {
@@ -59,8 +59,10 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 3. Insert one bank_accounts row per account on this Item
+    // 3. Insert one bank_accounts row per account on this Item — all
+    //    scoped to the broker's workspace.
     const rows = accountsRes.data.accounts.map(a => ({
+      workspace_id: workspace.id,
       plaid_item_id: item_id,
       plaid_access_token: access_token,
       plaid_account_id: a.account_id,

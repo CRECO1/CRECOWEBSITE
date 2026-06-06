@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdmin } from '@/lib/api-auth';
+import { requireWorkspaceAdmin } from '@/lib/api-auth';
 import { clampString, MAX_LEN } from '@/lib/sanitize';
 
 /**
@@ -34,9 +34,9 @@ function sanitizeBody(body: Record<string, unknown>): Record<string, unknown> {
 }
 
 export async function POST(req: NextRequest) {
-  const auth = await requireAdmin();
+  const auth = await requireWorkspaceAdmin();
   if (auth.error) return auth.error;
-  const { supabase } = auth;
+  const { supabase, workspace } = auth;
 
   let body: Record<string, unknown>;
   try { body = await req.json(); }
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
 
   const { data, error } = await supabase
     .from('contractors')
-    .insert([clean])
+    .insert([{ ...clean, workspace_id: workspace.id }])
     .select('id')
     .single();
 

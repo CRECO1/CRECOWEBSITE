@@ -32,6 +32,7 @@ import type { ClientLite } from '@/lib/clients';
 import type { PropertyLite } from '@/lib/properties';
 import { logActivity } from '@/lib/activity-log';
 import { formInputCls as inputCls } from '@/lib/form-styles';
+import { useWorkspaceOrThrow } from '@/components/billing/WorkspaceProvider';
 
 const DEFAULT_LINE: Omit<InvoiceLineItem, 'sort_order'> = {
   description: '',
@@ -66,6 +67,11 @@ function NewInvoicePageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const cloneId = searchParams.get('clone');
+  // Multi-tenancy: every new invoice + line item + (optional) recurring
+  // template is workspace-scoped. Throws if used outside a
+  // WorkspaceProvider — fail loud rather than silently insert without
+  // workspace_id.
+  const workspace = useWorkspaceOrThrow();
 
   const [invoiceNumber, setInvoiceNumber] = useState('');
   // Banner shown when we successfully prefilled from a previous invoice —
@@ -206,6 +212,7 @@ function NewInvoicePageInner() {
    */
   const previewInvoice: Invoice = useMemo(() => ({
     id: '',
+    workspace_id: workspace.id,
     invoice_number: invoiceNumber || 'INV-PREVIEW',
     client_name: clientName,
     client_email: clientEmail,
@@ -338,6 +345,7 @@ function NewInvoicePageInner() {
     const { data: created, error: insertErr } = await supabase
       .from('invoices')
       .insert([{
+        workspace_id: workspace.id,
         invoice_number: invoiceNumber,
         client_id: resolvedClientId,
         client_name: clientName.trim(),
@@ -382,6 +390,7 @@ function NewInvoicePageInner() {
     const lineRows = items
       .filter(it => it.description.trim())
       .map((it, sort_order) => ({
+        workspace_id: workspace.id,
         invoice_id: created.id,
         description: it.description.trim(),
         quantity: Number(it.quantity) || 0,
@@ -414,6 +423,7 @@ function NewInvoicePageInner() {
       const { data: tpl, error: tplErr } = await supabase
         .from('recurring_invoice_templates')
         .insert([{
+          workspace_id: workspace.id,
           name: `${clientCompany || clientName} — ${recurringFreq}`,
           client_id: resolvedClientId,
           client_name: clientName.trim(),
@@ -449,6 +459,7 @@ function NewInvoicePageInner() {
 
       // Clone the line items into the template (drop invoice_id, swap in template_id)
       const tplLines = lineRows.map(li => ({
+        workspace_id: workspace.id,
         template_id: tpl.id,
         description: li.description,
         quantity: li.quantity,

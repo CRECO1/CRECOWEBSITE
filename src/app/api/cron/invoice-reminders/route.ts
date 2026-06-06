@@ -173,7 +173,14 @@ export async function GET(req: NextRequest) {
     //    already exists we skip — that stage was already handled.
     const { data: reservation, error: reserveErr } = await supabase
       .from('invoice_reminders')
-      .insert([{ invoice_id: inv.id, stage }])
+      .insert([{
+        // Reminder rows inherit the invoice's workspace — keeps the
+        // audit + tracking trail in the same tenant as the data it's
+        // describing.
+        workspace_id: inv.workspace_id,
+        invoice_id: inv.id,
+        stage,
+      }])
       .select('id')
       .single();
 

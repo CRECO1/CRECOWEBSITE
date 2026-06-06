@@ -166,6 +166,9 @@ export async function GET(req: NextRequest) {
       const { error: insertErr } = await supabase
         .from('invoice_line_items')
         .insert([{
+          // Inherit the invoice's workspace so the new line stays
+          // inside the same tenant boundary as its parent.
+          workspace_id: inv.workspace_id,
           invoice_id: inv.id,
           description,
           quantity: 1,

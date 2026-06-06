@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdmin } from '@/lib/api-auth';
+import { requireWorkspaceAdmin } from '@/lib/api-auth';
 
 /**
  * PATCH /api/recurring/[id]   — update a template (optionally with line items)
@@ -47,9 +47,9 @@ function validatePatch(body: Record<string, unknown>): string | null {
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await requireAdmin();
+  const auth = await requireWorkspaceAdmin();
   if (auth.error) return auth.error;
-  const { supabase } = auth;
+  const { supabase, workspace } = auth;
 
   const { id } = await params;
   let body: Record<string, unknown>;
@@ -80,7 +80,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     await supabase.from('recurring_invoice_line_items').delete().eq('template_id', id);
     const { error: liErr } = await supabase
       .from('recurring_invoice_line_items')
-      .insert(lineItems.map(li => ({ ...li, template_id: id })));
+      .insert(lineItems.map(li => ({ ...li, template_id: id, workspace_id: workspace.id })));
     if (liErr) {
       console.error('[recurring.PATCH] line items insert failed:', liErr.message);
       return NextResponse.json({ error: 'Could not save line items' }, { status: 500 });
@@ -91,15 +91,19 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await requireAdmin();
+  const auth = await requireWorkspaceAdmin();
   if (auth.error) return auth.error;
-  const { supabase } = auth;
+  const { supabase, workspace } = auth;
 
   const { id } = await params;
+  // Scope the delete to the caller's workspace defensively. RLS would
+  // deny a cross-workspace delete anyway, but the explicit predicate
+  // means a future audit can see scope at the query layer too.
   const { error } = await supabase
     .from('recurring_invoice_templates')
     .delete()
-    .eq('id', id);
+    .eq('id', id)
+    .eq('workspace_id', workspace.id);
   if (error) {
     console.error('[recurring.DELETE] failed:', error.message);
     return NextResponse.json({ error: 'Could not delete template' }, { status: 500 });

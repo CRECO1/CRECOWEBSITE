@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdmin } from '@/lib/api-auth';
+import { requireWorkspaceAdmin } from '@/lib/api-auth';
 import { clampString, isValidEmail, MAX_LEN } from '@/lib/sanitize';
 
 /**
@@ -47,9 +47,9 @@ function sanitize(body: Record<string, unknown>): Record<string, unknown> | { er
 }
 
 export async function POST(req: NextRequest) {
-  const auth = await requireAdmin();
+  const auth = await requireWorkspaceAdmin();
   if (auth.error) return auth.error;
-  const { supabase } = auth;
+  const { supabase, workspace } = auth;
 
   let body: Record<string, unknown>;
   try { body = await req.json(); }
@@ -58,9 +58,13 @@ export async function POST(req: NextRequest) {
   const clean = sanitize(body);
   if ('error' in clean) return NextResponse.json(clean, { status: 400 });
 
+  // Multi-tenancy: every billing row is scoped to a workspace. The
+  // workspace.id comes from the authenticated user's membership;
+  // they can't write into a workspace they don't belong to (also
+  // enforced by RLS).
   const { data, error } = await supabase
     .from('clients')
-    .insert([clean])
+    .insert([{ ...clean, workspace_id: workspace.id }])
     .select('id')
     .single();
   if (error) {

@@ -28,6 +28,8 @@ export interface SyncResult {
 
 interface BankAccountRow {
   id: string;
+  /** Multi-tenancy: transactions inherit the account's workspace. */
+  workspace_id: string;
   plaid_access_token: string;
   plaid_account_id: string;
   plaid_cursor: string | null;
@@ -42,7 +44,7 @@ export async function syncAllAccounts(supabase: SupabaseClient): Promise<SyncRes
 
   const { data: accounts } = await supabase
     .from('bank_accounts')
-    .select('id, plaid_access_token, plaid_account_id, plaid_cursor, account_name')
+    .select('id, workspace_id, plaid_access_token, plaid_account_id, plaid_cursor, account_name')
     .eq('active', true);
 
   const results: SyncResult[] = [];
@@ -88,6 +90,9 @@ async function syncOneAccount(supabase: SupabaseClient, acct: BankAccountRow): P
     const matches = res.data.added.filter(t => t.account_id === acct.plaid_account_id);
     if (matches.length > 0) {
       const rows = matches.map(t => ({
+        // Inherit workspace from the parent account so cross-tenant
+        // queries can't leak via the bank_transactions table.
+        workspace_id: acct.workspace_id,
         bank_account_id: acct.id,
         plaid_transaction_id: t.transaction_id,
         posted_date: t.date,                  // YYYY-MM-DD

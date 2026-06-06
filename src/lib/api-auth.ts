@@ -37,10 +37,15 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import type { SupabaseClient, User } from '@supabase/supabase-js';
+import { fetchCurrentWorkspace, type Workspace } from '@/lib/workspace';
 
 export type RequireAdminResult =
   | { error: NextResponse; supabase?: never; user?: never }
   | { error?: never; supabase: SupabaseClient; user: User };
+
+export type RequireWorkspaceAdminResult =
+  | { error: NextResponse; supabase?: never; user?: never; workspace?: never }
+  | { error?: never; supabase: SupabaseClient; user: User; workspace: Workspace };
 
 export async function requireAdmin(): Promise<RequireAdminResult> {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -100,4 +105,55 @@ export async function requireAdmin(): Promise<RequireAdminResult> {
   }
 
   return { supabase, user };
+}
+
+/**
+ * Same as requireAdmin() PLUS resolves the user's workspace. Replaces
+ * requireAdmin() in workspace-scoped routes (currently every billing
+ * route — non-billing routes like /api/inquiry don't need workspaces).
+ *
+ * Returns the session-scoped Supabase client + the authenticated user
+ * + the user's workspace. Callers use workspace.id to scope every
+ * query and insert to that workspace.
+ *
+ * Workspace resolution uses the current_user_workspace() SECURITY
+ * DEFINER RPC added in migration 0031 — single round trip, returns
+ * the user's first workspace by joined_at when they belong to several.
+ *
+ * Sequencing during the multi-tenancy migration:
+ *   - Phase 1 (now): requireWorkspaceAdmin returns workspace alongside
+ *     the existing admin_users check. RLS still uses is_billing_admin()
+ *     so existing routes that haven't been updated still work.
+ *   - Phase 2: every billing route migrates from requireAdmin to
+ *     requireWorkspaceAdmin and scopes its queries by workspace.id.
+ *   - Phase 3: migration 0033 flips RLS to use is_workspace_member();
+ *     at that moment unscoped queries return zero rows. The fact that
+ *     every route was updated in Phase 2 is what makes the cutover
+ *     safe.
+ */
+export async function requireWorkspaceAdmin(): Promise<RequireWorkspaceAdminResult> {
+  // Reuse the existing admin check. If it errors, surface the same
+  // response — same 401/403 semantics for non-workspace routes.
+  const auth = await requireAdmin();
+  if (auth.error) return { error: auth.error };
+  const { supabase, user } = auth;
+
+  // Resolve the user's primary workspace. Uses the SECURITY DEFINER
+  // RPC so we don't need to grant select on workspace_members to the
+  // authenticated role.
+  const workspace = await fetchCurrentWorkspace(supabase);
+  if (!workspace) {
+    // The user passed the admin_users gate but isn't a member of any
+    // workspace. Today this can happen only by manual misconfiguration
+    // (admin_users updated without workspace_members updated). Returns
+    // 403 with a specific error code the UI can decode.
+    return {
+      error: NextResponse.json(
+        { error: 'No workspace assigned to this user' },
+        { status: 403 },
+      ),
+    };
+  }
+
+  return { supabase, user, workspace };
 }

@@ -17,12 +17,15 @@ import { deleteReceiptFile, isStoragePath } from '@/lib/receipts';
 import type { PropertyLite } from '@/lib/properties';
 import { logActivity } from '@/lib/activity-log';
 import { pushPendingToast, withBust } from '@/lib/post-save-feedback';
+import { useWorkspaceOrThrow } from '@/components/billing/WorkspaceProvider';
 
 function todayIso(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
 export default function NewExpensePage() {
+  // Multi-tenancy backbone — every billing insert needs workspace_id.
+  const workspace = useWorkspaceOrThrow();
   const router = useRouter();
   const [date, setDate] = useState(todayIso());
   const [vendor, setVendor] = useState('');
@@ -73,6 +76,7 @@ export default function NewExpensePage() {
     const { data, error: insertErr } = await supabase
       .from('expenses')
       .insert([{
+        workspace_id: workspace.id,
         expense_date: date,
         vendor: vendor.trim(),
         category: category.trim() || 'Other',

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAdmin } from '@/lib/api-auth';
+import { requireWorkspaceAdmin } from '@/lib/api-auth';
 
 /**
  * POST /api/recurring — create a recurring invoice template.
@@ -56,9 +56,9 @@ function validateBody(body: Record<string, unknown>): string | null {
 }
 
 export async function POST(req: NextRequest) {
-  const auth = await requireAdmin();
+  const auth = await requireWorkspaceAdmin();
   if (auth.error) return auth.error;
-  const { supabase } = auth;
+  const { supabase, workspace } = auth;
 
   let body: Record<string, unknown>;
   try { body = await req.json(); }
@@ -76,7 +76,7 @@ export async function POST(req: NextRequest) {
 
   const { data: tpl, error } = await supabase
     .from('recurring_invoice_templates')
-    .insert([body])
+    .insert([{ ...body, workspace_id: workspace.id }])
     .select('id')
     .single();
   if (error) {
@@ -84,9 +84,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Could not save template' }, { status: 500 });
   }
 
+  // Line items also workspace-scoped — keeps the per-table index narrow
+  // and means cross-workspace queries can't leak via a bad join.
   const { error: liErr } = await supabase
     .from('recurring_invoice_line_items')
-    .insert(lineItems.map(li => ({ ...li, template_id: tpl.id })));
+    .insert(lineItems.map(li => ({ ...li, template_id: tpl.id, workspace_id: workspace.id })));
   if (liErr) {
     // Roll back the parent so we don't leave a header with zero lines.
     await supabase.from('recurring_invoice_templates').delete().eq('id', tpl.id);

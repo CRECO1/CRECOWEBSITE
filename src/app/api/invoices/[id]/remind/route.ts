@@ -140,7 +140,13 @@ export async function POST(
   //    have an email out with no log; this ordering prevents that.
   const { data: reservation, error: reserveErr } = await supabase
     .from('invoice_reminders')
-    .insert([{ invoice_id: id, stage }])
+    .insert([{
+      // Inherit the invoice's workspace — keeps the audit/tracking
+      // trail in the same tenant as the entity it's about.
+      workspace_id: (inv as Invoice).workspace_id,
+      invoice_id: id,
+      stage,
+    }])
     .select('id')
     .single();
   if (reserveErr) {

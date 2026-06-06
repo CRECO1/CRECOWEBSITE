@@ -37,6 +37,10 @@ export interface LateFeeSettings {
 
 export interface Invoice {
   id: string;
+  /** Multi-tenancy: workspace this invoice belongs to. Required on every
+   *  insert; populated server-side from requireWorkspaceAdmin() or
+   *  client-side from useWorkspace(). RLS gates reads/writes per workspace. */
+  workspace_id: string;
   invoice_number: string;
 
   client_name: string;
