@@ -194,9 +194,11 @@ export default function DietzElkhornPage() {
                 Dietz Elkhorn in Fair Oaks Ranch — ten demisable ±1,500 SF suites, two F&B end caps with
                 patio envelopes, and 2-3 food-ready bays.
               </p>
-              <p className="overline mb-6 text-gold flex items-center justify-center gap-2">
-                <MapPin className="h-3.5 w-3.5" /> Now Pre-Leasing · 8979 Dietz Elkhorn · Fair Oaks Ranch, TX
-              </p>
+              <div className="flex items-center justify-center gap-2 mb-6">
+                <p className="overline text-gold flex items-center gap-2">
+                  <MapPin className="h-3.5 w-3.5" /> Now Pre-Leasing · 8979 Dietz Elkhorn · Fair Oaks Ranch, TX
+                </p>
+              </div>
               <div className="flex flex-wrap gap-4 justify-center">
                 <a
                   href="#inquire"
