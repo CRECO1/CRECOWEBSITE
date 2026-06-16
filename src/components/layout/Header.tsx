@@ -118,38 +118,24 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
 
           {/* CTA Buttons */}
           <div className="flex items-center gap-3">
-            {/* Phone — stacked two-line display: "(210)" above "817-3443".
-                Defends against accidental wrap at narrow desktop widths
-                (the unstacked rendering was breaking under the building
-                icon on the Get Started pill). The tel: href keeps the full
-                number for the dialer. Parser is tolerant of dashes, dots,
-                spaces, parens — falls back to the raw string if it doesn't
-                match the 10-digit shape. */}
-            {(() => {
-              const m = phone.match(/^[(]?(\d{3})[)]?[\s.-]*(\d{3})[\s.-]*(\d{4})$/);
-              const area = m ? `(${m[1]})` : null;
-              const rest = m ? `${m[2]}-${m[3]}` : phone;
-              return (
-                <a
-                  href={`tel:+1${phone.replace(/\D/g, '')}`}
-                  className={cn(
-                    'flex items-center gap-2 font-semibold transition-colors leading-none',
-                    isTransparent ? 'text-white' : 'text-primary',
-                    'hover:text-gold'
-                  )}
-                  style={textShadowStyle}
-                  aria-label={`Call CRECO at ${phone}`}
-                >
-                  <Phone className="h-5 w-5 shrink-0" />
-                  <span className="hidden sm:flex flex-col items-start whitespace-nowrap">
-                    {area && (
-                      <span className="text-caption font-medium opacity-80">{area}</span>
-                    )}
-                    <span className="text-body-sm">{rest}</span>
-                  </span>
-                </a>
-              );
-            })()}
+            {/* Phone — single-line display "(210) 817-3443" with the icon
+                inline. The old stacked two-line layout looked cluttered next
+                to Get Started; flattening reads cleaner and matches the rest
+                of the header's horizontal rhythm. whitespace-nowrap keeps the
+                number from wrapping at narrow desktop widths. */}
+            <a
+              href={`tel:+1${phone.replace(/\D/g, '')}`}
+              className={cn(
+                'hidden sm:inline-flex items-center gap-2 font-semibold transition-colors whitespace-nowrap',
+                isTransparent ? 'text-white' : 'text-primary',
+                'hover:text-gold'
+              )}
+              style={textShadowStyle}
+              aria-label={`Call CRECO at ${phone}`}
+            >
+              <Phone className="h-4 w-4 shrink-0" />
+              <span className="text-body-sm">{phone}</span>
+            </a>
 
             {/* "Get Started" already sits in the nav links above (isHighlight=true),
                 so we don't repeat it here. The Schedule button used to live in this
