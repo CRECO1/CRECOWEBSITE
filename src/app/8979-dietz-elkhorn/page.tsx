@@ -186,9 +186,6 @@ export default function DietzElkhornPage() {
           <div className="absolute inset-0 bg-primary/70" />
           <Container className="relative z-10">
             <div className="max-w-3xl mx-auto text-center">
-              <p className="overline mb-3 text-gold flex items-center justify-center gap-2">
-                <MapPin className="h-3.5 w-3.5" /> Now Pre-Leasing · 8979 Dietz Elkhorn · Fair Oaks Ranch, TX
-              </p>
               <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-5 leading-tight">
                 8979 <span className="text-gold">Dietz Elkhorn.</span>
               </h1>
@@ -196,11 +193,6 @@ export default function DietzElkhornPage() {
                 A new <strong className="text-white">±15,000 SF neighborhood retail center</strong> on
                 Dietz Elkhorn in Fair Oaks Ranch — ten demisable ±1,500 SF suites, two F&B end caps with
                 patio envelopes, and 2-3 food-ready bays.
-              </p>
-              <p className="text-body text-white/65 leading-relaxed mb-8 max-w-2xl mx-auto">
-                Pre-leasing now to local operators first. If you have a concept the
-                neighborhood is asking for, this is your spot — before the national
-                tenants notice the corridor.
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
                 <a
