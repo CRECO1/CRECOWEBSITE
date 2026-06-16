@@ -13,6 +13,7 @@ import {
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { RetailLeasingInquiryForm } from '@/components/forms/RetailLeasingInquiryForm';
+import { ClaimSuiteButton } from '@/components/marketing/ClaimSuiteButton';
 import { getLandingPage } from '@/lib/supabase';
 
 /**
@@ -244,12 +245,7 @@ export default async function DietzElkhornPage() {
                 </p>
               </div>
               <div className="flex flex-wrap gap-4 justify-center">
-                <a
-                  href="#inquire"
-                  className="inline-flex items-center gap-2 rounded-lg bg-gold px-8 py-4 text-body-sm font-bold text-primary hover:bg-gold-light shadow-lg"
-                >
-                  Claim Your Suite — Inquire Now <ArrowRight className="h-4 w-4" />
-                </a>
+                <ClaimSuiteButton />
               </div>
               <p className="mt-5 text-body-sm text-white/50">
                 Suites are limited — local operators get first pick of end caps and food-ready bays.
@@ -413,7 +409,7 @@ export default async function DietzElkhornPage() {
         <section className="bg-background-cream py-16 sm:py-20 border-y border-border">
           <Container>
             <div className="max-w-3xl mx-auto">
-              <p className="overline mb-3 text-gold text-center">Deal framework</p>
+              <FlankedEyebrow>Deal framework</FlankedEyebrow>
               <h2 className="font-heading text-heading-xl sm:text-display-sm font-bold text-primary text-center leading-tight mb-3">
                 Terms designed for local operators.
               </h2>
@@ -447,7 +443,7 @@ export default async function DietzElkhornPage() {
         <section className="bg-white py-16 sm:py-20">
           <Container>
             <div className="max-w-3xl mx-auto">
-              <p className="overline mb-3 text-gold text-center">From inquiry to keys</p>
+              <FlankedEyebrow>From inquiry to keys</FlankedEyebrow>
               <h2 className="font-heading text-heading-xl sm:text-display-sm font-bold text-primary text-center leading-tight mb-12">
                 What happens after you fill out the form.
               </h2>
@@ -467,7 +463,7 @@ export default async function DietzElkhornPage() {
         <section className="bg-background-cream py-16 sm:py-20 border-y border-border">
           <Container>
             <div className="max-w-3xl mx-auto">
-              <p className="overline mb-3 text-gold text-center">Common questions</p>
+              <FlankedEyebrow>Common questions</FlankedEyebrow>
               <h2 className="font-heading text-heading-xl sm:text-display-sm font-bold text-primary text-center leading-tight mb-12">
                 What every local operator asks first.
               </h2>
@@ -577,28 +573,19 @@ function StatBlock({ value, label, sub }: { value: string; label: string; sub?: 
 }
 
 /**
- * FlankedEyebrow — overline text with thin gold lines on either side.
+ * FlankedEyebrow — overline text with a thin gold line BELOW the text,
+ * centered. Reads as a small underline accent rather than flanking lines.
+ * Same component name kept so the call sites don't need to change.
  *
- * The plain .overline class has letter-spacing: 0.15em + tracking-widest,
- * which adds trailing space after the last character that's counted in the
- * text box width. The visible glyph block ends up sitting ~2 pixels left of
- * true center — enough to read as "not quite centered" on big displays.
- *
- * Wrapping the text in a flex container with symmetric line decorations
- * fixes that perception two ways at once: (1) the flex justify-center
- * centers the whole eyebrow block, (2) the matched 12px lines on each side
- * anchor the centering visually so there's no doubt about alignment.
- *
- * `tone="onDark"` swaps the line color to be visible on the primary-bg
- * section ("Who fits here") since gold/40 reads as gold/15 on dark.
+ * `tone="onDark"` keeps the color logic in one place in case we ever need
+ * to swap line opacity for a different section background.
  */
 function FlankedEyebrow({ children, tone = 'onLight' }: { children: React.ReactNode; tone?: 'onLight' | 'onDark' }) {
-  const lineCls = tone === 'onDark' ? 'bg-gold/40' : 'bg-gold/40';
+  const lineCls = tone === 'onDark' ? 'bg-gold/50' : 'bg-gold/40';
   return (
-    <div className="flex items-center justify-center gap-3 mb-3">
-      <span className={`h-px w-10 sm:w-12 ${lineCls}`} aria-hidden="true" />
+    <div className="text-center mb-3">
       <span className="overline text-gold">{children}</span>
-      <span className={`h-px w-10 sm:w-12 ${lineCls}`} aria-hidden="true" />
+      <span className={`block h-px w-12 mx-auto mt-2 ${lineCls}`} aria-hidden="true" />
     </div>
   );
 }
