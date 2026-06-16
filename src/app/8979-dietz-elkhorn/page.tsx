@@ -274,7 +274,7 @@ export default async function DietzElkhornPage() {
         <section className="bg-white py-16 sm:py-20">
           <Container>
             <div className="max-w-2xl mb-12 mx-auto text-center">
-              <p className="overline mb-3 text-gold">Why this center, why now</p>
+              <FlankedEyebrow>Why this center, why now</FlankedEyebrow>
               <h2 className="font-heading text-heading-xl sm:text-display-sm font-bold text-primary leading-tight">
                 A local-first center in a market that rewards local.
               </h2>
@@ -304,7 +304,7 @@ export default async function DietzElkhornPage() {
         <section className="bg-primary py-16 sm:py-20 text-white">
           <Container>
             <div className="max-w-2xl mb-12 mx-auto text-center">
-              <p className="overline mb-3 text-gold">Who fits here</p>
+              <FlankedEyebrow tone="onDark">Who fits here</FlankedEyebrow>
               <h2 className="font-heading text-heading-xl sm:text-display-sm font-bold leading-tight">
                 Daily-needs, lifestyle, and discretionary — in that order.
               </h2>
@@ -387,7 +387,7 @@ export default async function DietzElkhornPage() {
         <section className="bg-white py-16 sm:py-20">
           <Container>
             <div className="max-w-2xl mb-8 mx-auto text-center">
-              <p className="overline mb-3 text-gold">Site plan</p>
+              <FlankedEyebrow>Site plan</FlankedEyebrow>
               <h2 className="font-heading text-heading-xl font-bold text-primary leading-tight">
                 Where everything sits.
               </h2>
@@ -572,6 +572,33 @@ function StatBlock({ value, label, sub }: { value: string; label: string; sub?: 
       </div>
       <div className="text-body-sm font-semibold text-primary mt-2">{label}</div>
       {sub && <div className="text-caption text-foreground-muted mt-0.5">{sub}</div>}
+    </div>
+  );
+}
+
+/**
+ * FlankedEyebrow — overline text with thin gold lines on either side.
+ *
+ * The plain .overline class has letter-spacing: 0.15em + tracking-widest,
+ * which adds trailing space after the last character that's counted in the
+ * text box width. The visible glyph block ends up sitting ~2 pixels left of
+ * true center — enough to read as "not quite centered" on big displays.
+ *
+ * Wrapping the text in a flex container with symmetric line decorations
+ * fixes that perception two ways at once: (1) the flex justify-center
+ * centers the whole eyebrow block, (2) the matched 12px lines on each side
+ * anchor the centering visually so there's no doubt about alignment.
+ *
+ * `tone="onDark"` swaps the line color to be visible on the primary-bg
+ * section ("Who fits here") since gold/40 reads as gold/15 on dark.
+ */
+function FlankedEyebrow({ children, tone = 'onLight' }: { children: React.ReactNode; tone?: 'onLight' | 'onDark' }) {
+  const lineCls = tone === 'onDark' ? 'bg-gold/40' : 'bg-gold/40';
+  return (
+    <div className="flex items-center justify-center gap-3 mb-3">
+      <span className={`h-px w-10 sm:w-12 ${lineCls}`} aria-hidden="true" />
+      <span className="overline text-gold">{children}</span>
+      <span className={`h-px w-10 sm:w-12 ${lineCls}`} aria-hidden="true" />
     </div>
   );
 }
