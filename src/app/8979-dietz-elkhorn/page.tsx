@@ -11,7 +11,7 @@ import { RetailLeasingInquiryForm } from '@/components/forms/RetailLeasingInquir
 
 /**
  * /8979-dietz-elkhorn — pre-leasing landing page for the upcoming
- * ±15,000 SF neighborhood retail center at 8979 Dietz Elkhorn,
+ * ±20,000 SF neighborhood retail center at 8979 Dietz Elkhorn,
  * Fair Oaks Ranch, TX.
  *
  * Audience: LOCAL BUSINESS OWNERS evaluating a Fair Oaks Ranch suite.
@@ -37,7 +37,7 @@ const PHONE_HREF = 'tel:+12108173443';
 export const metadata: Metadata = {
   title: '8979 Dietz Elkhorn — New Retail Center Pre-Leasing | Fair Oaks Ranch | CRECO',
   description:
-    '8979 Dietz Elkhorn — a new ±15,000 SF neighborhood retail center in Fair Oaks Ranch, TX. Ten ±1,500 SF suites, demisable, with end-cap F&B and food-ready bays. Pre-leasing now — local operators welcome. Median HHI $168K, 2x Texas median. Represented by CRECO.',
+    '8979 Dietz Elkhorn — a new ±20,000 SF neighborhood retail center in Fair Oaks Ranch, TX. Ten ±1,500 SF suites, demisable, with end-cap F&B and food-ready bays. Pre-leasing now — local operators welcome. Median HHI $168K, 2x Texas median. Represented by CRECO.',
   keywords: [
     '8979 dietz elkhorn',
     'dietz elkhorn retail',
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: '8979 Dietz Elkhorn — Now Pre-Leasing | Fair Oaks Ranch',
     description:
-      '±15,000 SF neighborhood retail. Ten ±1,500 SF demisable suites. End-cap F&B + food-ready bays. Local operators welcome.',
+      '±20,000 SF neighborhood retail. Ten ±1,500 SF demisable suites. End-cap F&B + food-ready bays. Local operators welcome.',
     url: 'https://www.crecotx.com/8979-dietz-elkhorn',
     type: 'website',
   },
@@ -90,7 +90,7 @@ const WHY_NOW = [
 ];
 
 const ASSET_SPEC = [
-  { icon: Building2, label: 'Total GLA',           value: '±15,000 SF' },
+  { icon: Building2, label: 'Total GLA',           value: '±20,000 SF' },
   { icon: Sparkles,  label: 'Suites',              value: 'Ten ±1,500 SF bays' },
   { icon: Zap,       label: 'Demisable',           value: 'Combine to 3,000 / 4,500 SF' },
   { icon: Flame,     label: 'Food-ready bays',     value: '2-3 with grease + venting' },
@@ -190,7 +190,7 @@ export default function DietzElkhornPage() {
                 8979 <span className="text-gold">Dietz Elkhorn.</span>
               </h1>
               <p className="text-body-lg text-white/80 leading-relaxed mb-4 max-w-2xl mx-auto">
-                A new <strong className="text-white">±15,000 SF neighborhood retail center</strong> on
+                A new <strong className="text-white">±20,000 SF neighborhood retail center</strong> on
                 Dietz Elkhorn in Fair Oaks Ranch — ten demisable ±1,500 SF suites, two F&B end caps with
                 patio envelopes, and 2-3 food-ready bays.
               </p>
