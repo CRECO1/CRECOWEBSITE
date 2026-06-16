@@ -240,9 +240,12 @@ export default async function DietzElkhornPage() {
               {/* "Now Pre-Leasing" pill sits ABOVE the address. Short
                   pin-style tag that draws the eye into the H1; the
                   city/state already lives directly under the H1 so the
-                  pill doesn't repeat the property name or location. */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-gold/50 bg-gold/10 px-4 py-1.5 mb-5 text-caption uppercase tracking-widest text-gold font-bold no-underline">
-                <MapPin className="h-3.5 w-3.5" />
+                  pill doesn't repeat the property name or location.
+                  Bumped from text-caption to text-body-sm so the pill
+                  has real visual weight above the H1 instead of feeling
+                  like a tiny tag — padding nudged up to match. */}
+              <div className="inline-flex items-center gap-2 rounded-full border border-gold/50 bg-gold/10 px-5 py-2 mb-5 text-body-sm uppercase tracking-widest text-gold font-bold no-underline">
+                <MapPin className="h-4 w-4" />
                 <span>{eyebrow}</span>
               </div>
               <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-2 leading-tight">
