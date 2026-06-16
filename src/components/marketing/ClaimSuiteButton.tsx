@@ -65,16 +65,18 @@ export function ClaimSuiteButton() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="claim-suite-title"
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4"
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-start justify-center px-3 sm:px-4 pt-20 sm:pt-24 pb-4"
           onClick={() => setOpen(false)}
         >
-          {/* Modal card — pinned to fit within viewport. flex-col so the
-              sticky header sits above the scrollable form body. Using
-              100dvh (when supported) to handle mobile browser chrome
-              correctly; calc(100vh - 1.5rem) is the desktop safe fallback. */}
+          {/* Modal card — anchored below the site header (pt-20/24 above)
+              so the title + close button never feel squished against the
+              top nav. max-height accounts for that top padding plus the
+              bottom pad so the card always fits inside the visible area.
+              Using 100dvh (when supported) to handle mobile browser chrome
+              correctly; 100vh is the desktop safe fallback. */}
           <div
             className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden"
-            style={{ maxHeight: 'min(calc(100dvh - 1.5rem), calc(100vh - 1.5rem))' }}
+            style={{ maxHeight: 'min(calc(100dvh - 7rem), calc(100vh - 7rem))' }}
             onClick={e => e.stopPropagation()}
           >
             {/* Sticky-ish header — outside the scrolling form so the close
