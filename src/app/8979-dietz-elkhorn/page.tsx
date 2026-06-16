@@ -43,7 +43,9 @@ import { getLandingPage } from '@/lib/supabase';
  * fallback when the DB row hasn't been created yet.
  */
 
-const SITE_PLAN_PDF = '/site-plans/8979-dietz-elkhorn-site-plan.pdf';
+// Site plan asset — the cropped PNG, which is the property only (no
+// engineering letterhead / KFM branding). The original engineered PDF
+// lives outside the public folder so it can't be downloaded by URL.
 const SITE_PLAN_PNG = '/site-plans/8979-dietz-elkhorn-site-plan.png';
 const PHONE_DISPLAY = '(210) 817-3443';
 const PHONE_HREF = 'tel:+12108173443';
@@ -368,12 +370,13 @@ export default async function DietzElkhornPage() {
                   same dollar.
                 </p>
                 <a
-                  href={SITE_PLAN_PDF}
+                  href={SITE_PLAN_PNG}
                   target="_blank"
                   rel="noreferrer noopener"
+                  download
                   className="mt-6 inline-flex items-center gap-2 rounded-lg border border-primary px-5 py-2.5 text-body-sm font-semibold text-primary hover:bg-primary hover:text-white transition-colors"
                 >
-                  <FileText className="h-4 w-4" /> Download site plan (PDF) <ExternalLink className="h-3 w-3" />
+                  <FileText className="h-4 w-4" /> Download site plan <ExternalLink className="h-3 w-3" />
                 </a>
               </div>
 
