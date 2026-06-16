@@ -57,7 +57,7 @@ const FALLBACK = {
   meta_title: '8979 Dietz Elkhorn — New Retail Center Pre-Leasing | Fair Oaks Ranch | CRECO',
   meta_description:
     '8979 Dietz Elkhorn — a new ±20,000 SF neighborhood retail center in Fair Oaks Ranch, TX. Ten ±1,500 SF suites, demisable, with end-cap F&B and food-ready bays. Pre-leasing now — local operators welcome. Median HHI $168K, 2x Texas median. Represented by CRECO.',
-  eyebrow: 'Now Pre-Leasing · 8979 Dietz Elkhorn',
+  eyebrow: 'Now Pre-Leasing',
   h1: '8979 Dietz Elkhorn.',
   subhead:
     'A new ±20,000 SF neighborhood retail center on Dietz Elkhorn in Fair Oaks Ranch.',
@@ -237,23 +237,23 @@ export default async function DietzElkhornPage() {
           <div className="absolute inset-0 bg-primary/70" />
           <Container className="relative z-10">
             <div className="max-w-3xl mx-auto text-center">
+              {/* "Now Pre-Leasing" pill sits ABOVE the address. Short
+                  pin-style tag that draws the eye into the H1; the
+                  city/state already lives directly under the H1 so the
+                  pill doesn't repeat the property name or location. */}
+              <div className="inline-flex items-center gap-2 rounded-full border border-gold/50 bg-gold/10 px-4 py-1.5 mb-5 text-caption uppercase tracking-widest text-gold font-bold no-underline">
+                <MapPin className="h-3.5 w-3.5" />
+                <span>{eyebrow}</span>
+              </div>
               <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-2 leading-tight">
                 {h1}
               </h1>
               <p className="font-heading text-heading-xl sm:text-display-sm font-bold text-white mb-5 leading-tight">
                 Fair Oaks Ranch, TX
               </p>
-              <p className="text-body-lg text-white leading-relaxed mb-4 max-w-4xl mx-auto whitespace-pre-line">
+              <p className="text-body-lg text-white leading-relaxed mb-7 max-w-4xl mx-auto whitespace-pre-line">
                 {subhead}
               </p>
-              {/* Pre-CTA block — both lines gold + bold but visually distinct.
-                  The location tag is a pill so the underline/overline from
-                  Tailwind's typography utility can't accidentally apply.
-                  Scarcity line tight + bold beneath, then the CTA. */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-gold/50 bg-gold/10 px-4 py-1.5 mb-4 text-caption uppercase tracking-widest text-gold font-bold no-underline">
-                <MapPin className="h-3.5 w-3.5" />
-                <span>{eyebrow}</span>
-              </div>
               <p className="text-body-sm text-gold font-bold mb-7 max-w-lg mx-auto leading-snug">
                 Suites are limited
                 <br />
