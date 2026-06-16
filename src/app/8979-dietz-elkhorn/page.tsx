@@ -130,7 +130,7 @@ const TENANT_CATEGORIES = [
 ];
 
 const TERMS = [
-  { label: 'Base rent (in-line)', value: '$30-35 / SF NNN — premium for end caps + food-ready' },
+  { label: 'Base rent (in-line)', value: 'Call for pricing — contact CRECO for current rates' },
   { label: 'Lease type',          value: 'Triple net (NNN)' },
   { label: 'Term',                value: '3-5 yr initial with renewal options' },
   { label: 'Escalations',         value: '4% annual base escalation' },
@@ -176,45 +176,40 @@ export default function DietzElkhornPage() {
         {/* Hero */}
         <section className="bg-primary py-16 sm:py-24 text-white">
           <Container>
-            <div className="max-w-3xl">
-              <p className="overline mb-3 text-gold flex items-center gap-2">
+            <div className="max-w-3xl mx-auto text-center">
+              <p className="overline mb-3 text-gold flex items-center justify-center gap-2">
                 <MapPin className="h-3.5 w-3.5" /> Now Pre-Leasing · 8979 Dietz Elkhorn · Fair Oaks Ranch, TX
               </p>
               <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-5 leading-tight">
                 8979 <span className="text-gold">Dietz Elkhorn.</span>
               </h1>
-              <p className="text-body-lg text-white/80 leading-relaxed mb-4 max-w-2xl">
+              <p className="text-body-lg text-white/80 leading-relaxed mb-4 max-w-2xl mx-auto">
                 A new <strong className="text-white">±15,000 SF neighborhood retail center</strong> on
                 Dietz Elkhorn in Fair Oaks Ranch — ten demisable ±1,500 SF suites, two F&B end caps with
                 patio envelopes, and 2-3 food-ready bays.
               </p>
-              <p className="text-body text-white/65 leading-relaxed mb-8 max-w-2xl">
+              <p className="text-body text-white/65 leading-relaxed mb-8 max-w-2xl mx-auto">
                 Pre-leasing now to local operators first. If you have a concept the
                 neighborhood is asking for, this is your spot — before the national
                 tenants notice the corridor.
               </p>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-4 justify-center">
                 <a
                   href="#inquire"
-                  className="inline-flex items-center gap-2 rounded-lg bg-gold px-7 py-3.5 text-body-sm font-semibold text-primary hover:bg-gold-light"
+                  className="inline-flex items-center gap-2 rounded-lg bg-gold px-8 py-4 text-body-sm font-bold text-primary hover:bg-gold-light shadow-lg"
                 >
-                  Request a tour <ArrowRight className="h-4 w-4" />
-                </a>
-                <a
-                  href={SITE_PLAN_PDF}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="inline-flex items-center gap-2 rounded-lg bg-white px-7 py-3.5 text-body-sm font-semibold text-primary hover:bg-white/90"
-                >
-                  <FileText className="h-4 w-4" /> View site plan
+                  Claim Your Suite — Inquire Now <ArrowRight className="h-4 w-4" />
                 </a>
                 <a
                   href={PHONE_HREF}
-                  className="inline-flex items-center gap-2 rounded-lg border border-white/30 px-7 py-3.5 text-body-sm font-semibold text-white hover:bg-white/10"
+                  className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-4 text-body-sm font-bold text-primary hover:bg-white/90 shadow"
                 >
-                  <Phone className="h-4 w-4" /> {PHONE_DISPLAY}
+                  <Phone className="h-4 w-4" /> Call {PHONE_DISPLAY}
                 </a>
               </div>
+              <p className="mt-5 text-body-sm text-white/50">
+                Suites are limited — local operators get first pick of end caps and food-ready bays.
+              </p>
             </div>
           </Container>
         </section>
@@ -226,7 +221,7 @@ export default function DietzElkhornPage() {
               <StatBlock value="$168K+" label="Median household income" sub="2x the Texas median" />
               <StatBlock value="12,600" label="Residents" sub="Plus Boerne + Leon Springs pull" />
               <StatBlock value="46" label="Median age" sub="Established, loyal households" />
-              <StatBlock value="$30-35" label="Asking / SF NNN" sub="Mid-$20s comp baseline" />
+              <StatBlock value="Call" label="for Pricing" sub={PHONE_DISPLAY} />
             </div>
           </Container>
         </section>
@@ -234,7 +229,7 @@ export default function DietzElkhornPage() {
         {/* Why now */}
         <section className="bg-white py-16 sm:py-20">
           <Container>
-            <div className="max-w-2xl mb-12">
+            <div className="max-w-2xl mb-12 mx-auto text-center">
               <p className="overline mb-3 text-gold">Why this center, why now</p>
               <h2 className="font-heading text-heading-xl sm:text-display-sm font-bold text-primary leading-tight">
                 A local-first center in a market that rewards local.
@@ -254,6 +249,40 @@ export default function DietzElkhornPage() {
                     <Icon className="h-6 w-6 text-gold mb-4" />
                     <h3 className="font-heading text-body-lg font-bold text-primary mb-2">{item.title}</h3>
                     <p className="text-body-sm text-foreground-muted leading-relaxed">{item.body}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </Container>
+        </section>
+
+        {/* Tenant categories */}
+        <section className="bg-primary py-16 sm:py-20 text-white">
+          <Container>
+            <div className="max-w-2xl mb-12 mx-auto text-center">
+              <p className="overline mb-3 text-gold">Who fits here</p>
+              <h2 className="font-heading text-heading-xl sm:text-display-sm font-bold leading-tight">
+                Daily-needs, lifestyle, and discretionary — in that order.
+              </h2>
+              <p className="mt-4 text-body text-white/75 leading-relaxed">
+                Build the mix around a high-income, time-pressed, 46-year-old household
+                base. Below is what we&apos;re actively recruiting — your concept either
+                slots into one of these or you tell us what we&apos;re missing.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
+              {TENANT_CATEGORIES.map(cat => {
+                const Icon = cat.icon;
+                return (
+                  <div key={cat.title} className="rounded-2xl bg-white/5 border border-white/10 p-6 sm:p-8">
+                    <div className="flex items-start justify-between mb-4">
+                      <Icon className="h-7 w-7 text-gold" />
+                      <span className="text-caption uppercase tracking-widest text-gold/80">{cat.suiteCount}</span>
+                    </div>
+                    <h3 className="font-heading text-body-lg font-bold text-white mb-2">{cat.title}</h3>
+                    <p className="text-body-sm text-white/75 leading-relaxed mb-3">{cat.concepts}</p>
+                    <p className="text-caption text-gold/90 font-semibold">{cat.tag}</p>
                   </div>
                 );
               })}
@@ -315,7 +344,7 @@ export default function DietzElkhornPage() {
         {/* Site plan embed */}
         <section className="bg-white py-16 sm:py-20">
           <Container>
-            <div className="max-w-2xl mb-8">
+            <div className="max-w-2xl mb-8 mx-auto text-center">
               <p className="overline mb-3 text-gold">Site plan</p>
               <h2 className="font-heading text-heading-xl font-bold text-primary leading-tight">
                 Where everything sits.
@@ -354,40 +383,6 @@ export default function DietzElkhornPage() {
               Site plan: Headwall Investments / KFM Engineering. For reference; final site
               configuration subject to permit.
             </p>
-          </Container>
-        </section>
-
-        {/* Tenant categories */}
-        <section className="bg-primary py-16 sm:py-20 text-white">
-          <Container>
-            <div className="max-w-2xl mb-12">
-              <p className="overline mb-3 text-gold">Who fits here</p>
-              <h2 className="font-heading text-heading-xl sm:text-display-sm font-bold leading-tight">
-                Daily-needs, lifestyle, and discretionary — in that order.
-              </h2>
-              <p className="mt-4 text-body text-white/75 leading-relaxed">
-                Build the mix around a high-income, time-pressed, 46-year-old household
-                base. Below is what we&apos;re actively recruiting — your concept either
-                slots into one of these or you tell us what we&apos;re missing.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
-              {TENANT_CATEGORIES.map(cat => {
-                const Icon = cat.icon;
-                return (
-                  <div key={cat.title} className="rounded-2xl bg-white/5 border border-white/10 p-6 sm:p-8">
-                    <div className="flex items-start justify-between mb-4">
-                      <Icon className="h-7 w-7 text-gold" />
-                      <span className="text-caption uppercase tracking-widest text-gold/80">{cat.suiteCount}</span>
-                    </div>
-                    <h3 className="font-heading text-body-lg font-bold text-white mb-2">{cat.title}</h3>
-                    <p className="text-body-sm text-white/75 leading-relaxed mb-3">{cat.concepts}</p>
-                    <p className="text-caption text-gold/90 font-semibold">{cat.tag}</p>
-                  </div>
-                );
-              })}
-            </div>
           </Container>
         </section>
 
