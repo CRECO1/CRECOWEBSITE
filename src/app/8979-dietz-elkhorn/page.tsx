@@ -117,7 +117,7 @@ const WHY_NOW_ICONS = [TrendingUp, Users, Sparkles, Building2];
 // Structural sections (not in DB — change in code if they need updating)
 const ASSET_SPEC: { icon: typeof Building2; label: string; value: string; sub?: string }[] = [
   { icon: Building2, label: 'Total GLA',           value: '±20,000 SF' },
-  { icon: Sparkles,  label: 'Suites',              value: 'Ten ±1,500 SF bays', sub: 'Built to suit' },
+  { icon: Sparkles,  label: 'Suites',              value: 'Built-to-suit' },
   { icon: Zap,       label: 'Demisable',           value: 'Combine to 3,000 / 4,500 SF' },
   { icon: Flame,     label: 'Food-ready bays',     value: '2-3 with grease + venting' },
   { icon: Sun,       label: 'End caps',            value: 'Two — F&B with patio envelope' },
