@@ -236,7 +236,7 @@ export default async function DietzElkhornPage() {
               <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-5 leading-tight">
                 {h1}
               </h1>
-              <p className="text-body-lg text-white/80 leading-relaxed mb-4 max-w-2xl mx-auto whitespace-pre-line">
+              <p className="text-body-lg text-white/80 leading-relaxed mb-4 max-w-4xl mx-auto whitespace-pre-line">
                 {subhead}
               </p>
               {/* Pre-CTA block — both lines gold + bold but visually distinct.
