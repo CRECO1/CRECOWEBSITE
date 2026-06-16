@@ -248,16 +248,19 @@ export default async function DietzElkhornPage() {
                 <MapPin className="h-4 w-4" />
                 <span>{eyebrow}</span>
               </div>
-              <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-2 leading-tight">
+              {/* Hero text scale bumped one notch — everything below
+                  the H1 reads more substantial without making the H1
+                  itself overflow on smaller desktop widths. */}
+              <h1 className="font-heading text-display-lg sm:text-display-xl font-bold mb-2 leading-tight">
                 {h1}
               </h1>
-              <p className="font-heading text-heading-xl sm:text-display-sm font-bold text-white mb-5 leading-tight">
+              <p className="font-heading text-display-sm sm:text-display font-bold text-white mb-5 leading-tight">
                 Fair Oaks Ranch, TX
               </p>
-              <p className="text-body-lg text-white leading-relaxed mb-7 max-w-4xl mx-auto whitespace-pre-line">
+              <p className="text-heading text-white leading-relaxed mb-7 max-w-4xl mx-auto whitespace-pre-line">
                 {subhead}
               </p>
-              <p className="text-body-sm text-gold font-bold mb-7 max-w-lg mx-auto leading-snug">
+              <p className="text-body text-gold font-bold mb-7 max-w-xl mx-auto leading-snug">
                 Suites are limited
                 <br />
                 local operators get first pick of end caps and food-ready bays.
