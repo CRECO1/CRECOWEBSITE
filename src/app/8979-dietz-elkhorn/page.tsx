@@ -174,8 +174,18 @@ export default function DietzElkhornPage() {
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}
-        <section className="bg-primary py-16 sm:py-24 text-white">
-          <Container>
+        <section
+          className="relative bg-primary py-16 sm:py-24 text-white overflow-hidden"
+          style={{
+            backgroundImage: 'url(/site-plans/8979-dietz-elkhorn-site-plan.png)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center 30%',
+            backgroundRepeat: 'no-repeat',
+          }}
+        >
+          {/* Dark overlay so text stays readable */}
+          <div className="absolute inset-0 bg-primary/85" />
+          <Container className="relative z-10">
             <div className="max-w-3xl mx-auto text-center">
               <p className="overline mb-3 text-gold flex items-center justify-center gap-2">
                 <MapPin className="h-3.5 w-3.5" /> Now Pre-Leasing · 8979 Dietz Elkhorn · Fair Oaks Ranch, TX
