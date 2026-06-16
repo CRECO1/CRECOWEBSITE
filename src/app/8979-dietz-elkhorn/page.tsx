@@ -225,7 +225,10 @@ export default async function DietzElkhornPage() {
           style={{
             backgroundImage: `url(${SITE_PLAN_PNG})`,
             backgroundSize: 'cover',
-            backgroundPosition: 'center center',
+            // 65% horizontal keeps the building footprint visible while
+            // showing more of the right-side parking + landscape so the
+            // image doesn't feel left-weighted under the centered text.
+            backgroundPosition: '65% center',
             backgroundRepeat: 'no-repeat',
           }}
         >
@@ -248,7 +251,9 @@ export default async function DietzElkhornPage() {
                 <span>{eyebrow}</span>
               </div>
               <p className="text-body-sm text-gold font-bold mb-7 max-w-lg mx-auto leading-snug">
-                Suites are limited — local operators get first pick of end caps and food-ready bays.
+                Suites are limited
+                <br />
+                local operators get first pick of end caps and food-ready bays.
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
                 <ClaimSuiteButton />
