@@ -225,10 +225,7 @@ export default async function DietzElkhornPage() {
           style={{
             backgroundImage: `url(${SITE_PLAN_PNG})`,
             backgroundSize: 'cover',
-            // 65% horizontal keeps the building footprint visible while
-            // showing more of the right-side parking + landscape so the
-            // image doesn't feel left-weighted under the centered text.
-            backgroundPosition: '65% center',
+            backgroundPosition: 'center center',
             backgroundRepeat: 'no-repeat',
           }}
         >
