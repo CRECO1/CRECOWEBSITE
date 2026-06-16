@@ -347,7 +347,7 @@ export function RetailLeasingInquiryForm() {
         disabled={submitting}
         className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-gold px-7 py-3.5 text-body-sm font-semibold text-primary hover:bg-gold-light disabled:opacity-60 disabled:cursor-not-allowed"
       >
-        {submitting ? 'Sending…' : (<>Request a tour <ArrowRight className="h-4 w-4" /></>)}
+        {submitting ? 'Sending…' : (<>Send <ArrowRight className="h-4 w-4" /></>)}
       </button>
 
       <p className="text-caption text-foreground-muted text-center leading-relaxed">
