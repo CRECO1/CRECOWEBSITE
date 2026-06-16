@@ -6,7 +6,7 @@ export const revalidate = 1800;
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import {
-  MapPin, ArrowRight, Phone, Utensils, HeartPulse, Briefcase, ShoppingBag,
+  MapPin, ArrowRight, Utensils, HeartPulse, Briefcase, ShoppingBag,
   TrendingUp, Users, Sparkles, FileText, Building2, Flame, Zap, Car, Sun,
   Check, ExternalLink,
 } from 'lucide-react';
@@ -250,12 +250,6 @@ export default async function DietzElkhornPage() {
                 >
                   Claim Your Suite — Inquire Now <ArrowRight className="h-4 w-4" />
                 </a>
-                <a
-                  href={PHONE_HREF}
-                  className="inline-flex items-center gap-2 rounded-lg bg-white px-8 py-4 text-body-sm font-bold text-primary hover:bg-white/90 shadow"
-                >
-                  <Phone className="h-4 w-4" /> Call {PHONE_DISPLAY}
-                </a>
               </div>
               <p className="mt-5 text-body-sm text-white/50">
                 Suites are limited — local operators get first pick of end caps and food-ready bays.
@@ -295,8 +289,8 @@ export default async function DietzElkhornPage() {
               {marketBullets.map((item, idx) => {
                 const Icon = WHY_NOW_ICONS[idx];
                 return (
-                  <div key={`${item.title}-${idx}`} className="rounded-2xl border border-border bg-white p-6 sm:p-8">
-                    {Icon && <Icon className="h-6 w-6 text-gold mb-4" />}
+                  <div key={`${item.title}-${idx}`} className="rounded-2xl border border-border bg-white p-6 sm:p-8 text-center">
+                    {Icon && <Icon className="h-6 w-6 text-gold mb-4 mx-auto" />}
                     <h3 className="font-heading text-body-lg font-bold text-primary mb-2">{item.title}</h3>
                     <p className="text-body-sm text-foreground-muted leading-relaxed">{item.body}</p>
                   </div>
@@ -325,11 +319,9 @@ export default async function DietzElkhornPage() {
               {TENANT_CATEGORIES.map(cat => {
                 const Icon = cat.icon;
                 return (
-                  <div key={cat.title} className="rounded-2xl bg-white/5 border border-white/10 p-6 sm:p-8">
-                    <div className="flex items-start justify-between mb-4">
-                      <Icon className="h-7 w-7 text-gold" />
-                      <span className="text-caption uppercase tracking-widest text-gold/80">{cat.suiteCount}</span>
-                    </div>
+                  <div key={cat.title} className="rounded-2xl bg-white/5 border border-white/10 p-6 sm:p-8 text-center">
+                    <Icon className="h-7 w-7 text-gold mx-auto mb-3" />
+                    <span className="block text-caption uppercase tracking-widest text-gold/80 mb-3">{cat.suiteCount}</span>
                     <h3 className="font-heading text-body-lg font-bold text-white mb-2">{cat.title}</h3>
                     <p className="text-body-sm text-white/75 leading-relaxed mb-3">{cat.concepts}</p>
                     <p className="text-caption text-gold/90 font-semibold">{cat.tag}</p>
@@ -406,18 +398,14 @@ export default async function DietzElkhornPage() {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-border bg-background-cream overflow-hidden">
+            <div className="max-w-5xl mx-auto rounded-2xl border border-border bg-background-cream overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={SITE_PLAN_PNG}
                 alt="8979 Dietz Elkhorn site plan"
-                className="w-full h-auto object-contain"
+                className="w-full h-auto object-contain mx-auto"
               />
             </div>
-            <p className="text-caption text-foreground-muted text-center mt-3">
-              Site plan: Headwall Investments / KFM Engineering. For reference; final site
-              configuration subject to permit.
-            </p>
           </Container>
         </section>
 
