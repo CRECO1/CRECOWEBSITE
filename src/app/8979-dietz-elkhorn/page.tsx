@@ -135,7 +135,6 @@ const TERMS = [
   { label: 'Term',                value: '3-5 yr initial with renewal options' },
   { label: 'Escalations',         value: '4% annual base escalation' },
   { label: 'TI allowance',        value: 'Scaled to deal — more for anchors + F&B' },
-  { label: 'Free rent',           value: '1-3 months during buildout / ramp for key tenants' },
   { label: 'Exclusive use',       value: 'Granted narrowly to protect category leaders' },
 ];
 
@@ -426,12 +425,6 @@ export default function DietzElkhornPage() {
                 ))}
               </div>
 
-              <div className="mt-6 rounded-xl bg-white border border-border p-5 text-body-sm text-foreground-muted leading-relaxed">
-                <strong className="text-primary">Concession philosophy:</strong> we
-                offer free rent and TI before discounting base rent. Base rent sets the
-                building&apos;s long-term value; concessions are one-time tools to get
-                the right tenant in faster.
-              </div>
             </div>
           </Container>
         </section>
