@@ -4,7 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Phone, Calendar, Building2 } from 'lucide-react';
+import { Menu, X, Phone, Building2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
@@ -151,17 +151,9 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
               );
             })()}
 
-            <Button
-              variant="primary"
-              size="sm"
-              className="hidden sm:inline-flex"
-              asChild
-            >
-              <Link href="/contact#schedule">
-                <Calendar className="mr-2 h-4 w-4" />
-                Schedule
-              </Link>
-            </Button>
+            {/* "Get Started" already sits in the nav links above (isHighlight=true),
+                so we don't repeat it here. The Schedule button used to live in this
+                slot but was removed per request — Get Started covers the same intent. */}
 
             {variant !== 'minimal' && (
               <button
@@ -237,12 +229,6 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
                     <Phone className="mr-2 h-5 w-5" />
                     Call Now: {phone}
                   </a>
-                </Button>
-                <Button variant="outline" size="lg" fullWidth asChild>
-                  <Link href="/contact#schedule">
-                    <Calendar className="mr-2 h-5 w-5" />
-                    Schedule a Consultation
-                  </Link>
                 </Button>
               </div>
             </nav>
