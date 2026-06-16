@@ -276,7 +276,7 @@ export default async function DietzElkhornPage() {
             <div className="max-w-2xl mb-12 mx-auto text-center">
               <FlankedEyebrow>Why this center, why now</FlankedEyebrow>
               <h2 className="font-heading text-heading-xl sm:text-display-sm font-bold text-primary leading-tight">
-                A local-first center in a market that rewards local.
+                Where local belongs—and the market rewards it.
               </h2>
               <p className="mt-4 text-body text-foreground-muted leading-relaxed">
                 Fair Oaks Ranch is not a value market and it is not a national-credit market.
