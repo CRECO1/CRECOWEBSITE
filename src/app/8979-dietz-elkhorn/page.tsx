@@ -239,15 +239,15 @@ export default async function DietzElkhornPage() {
               <p className="text-body-lg text-white/80 leading-relaxed mb-4 max-w-2xl mx-auto whitespace-pre-line">
                 {subhead}
               </p>
-              {/* Both gold + bold pre-CTA lines: location/leasing tag and the
-                  scarcity nudge. Stacked tightly so they read as a single
-                  unit driving down into the gold "Claim Your Suite" button. */}
-              <div className="flex items-center justify-center gap-2 mb-3">
-                <p className="overline text-gold font-bold flex items-center gap-2">
-                  <MapPin className="h-3.5 w-3.5" /> {eyebrow}
-                </p>
+              {/* Pre-CTA block — both lines gold + bold but visually distinct.
+                  The location tag is a pill so the underline/overline from
+                  Tailwind's typography utility can't accidentally apply.
+                  Scarcity line tight + bold beneath, then the CTA. */}
+              <div className="inline-flex items-center gap-2 rounded-full border border-gold/50 bg-gold/10 px-4 py-1.5 mb-4 text-caption uppercase tracking-widest text-gold font-bold no-underline">
+                <MapPin className="h-3.5 w-3.5" />
+                <span>{eyebrow}</span>
               </div>
-              <p className="text-body-sm text-gold font-bold mb-6 max-w-xl mx-auto">
+              <p className="text-body-sm text-gold font-bold mb-7 max-w-lg mx-auto leading-snug">
                 Suites are limited — local operators get first pick of end caps and food-ready bays.
               </p>
               <div className="flex flex-wrap gap-4 justify-center">

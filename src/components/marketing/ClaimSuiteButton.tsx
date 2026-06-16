@@ -93,8 +93,8 @@ export function ClaimSuiteButton() {
                 <h2 id="claim-suite-title" className="font-heading text-heading-md sm:text-heading-lg font-bold text-primary mb-1 leading-tight">
                   Tell us about your concept.
                 </h2>
-                <p className="text-caption text-foreground-muted leading-relaxed">
-                  CRECO broker follows up within one business day.
+                <p className="text-caption text-gold font-bold uppercase tracking-widest leading-relaxed">
+                  Now Pre-Leasing — Limited Space Available
                 </p>
               </div>
             </div>
