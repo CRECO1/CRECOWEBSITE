@@ -366,27 +366,11 @@ export default function DietzElkhornPage() {
             </div>
 
             <div className="rounded-2xl border border-border bg-background-cream overflow-hidden">
-              <object
-                data={SITE_PLAN_PDF}
-                type="application/pdf"
-                className="w-full h-[480px] sm:h-[680px]"
-                aria-label="8979 Dietz Elkhorn site plan"
-              >
-                <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-                  <FileText className="h-10 w-10 text-foreground-muted mb-4" />
-                  <p className="text-body-sm text-foreground-muted mb-4">
-                    Your browser can&apos;t display the PDF inline. Download it instead.
-                  </p>
-                  <a
-                    href={SITE_PLAN_PDF}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-body-sm font-semibold text-white hover:bg-primary/90"
-                  >
-                    Download site plan <ExternalLink className="h-3.5 w-3.5" />
-                  </a>
-                </div>
-              </object>
+              <img
+                src="/site-plans/8979-dietz-elkhorn-site-plan.png"
+                alt="8979 Dietz Elkhorn site plan"
+                className="w-full h-auto object-contain"
+              />
             </div>
             <p className="text-caption text-foreground-muted text-center mt-3">
               Site plan: Headwall Investments / KFM Engineering. For reference; final site
