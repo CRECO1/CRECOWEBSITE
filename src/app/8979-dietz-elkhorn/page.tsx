@@ -60,7 +60,7 @@ const FALLBACK = {
   eyebrow: 'Now Pre-Leasing · 8979 Dietz Elkhorn · Fair Oaks Ranch, TX',
   h1: '8979 Dietz Elkhorn.',
   subhead:
-    'A new ±20,000 SF neighborhood retail center on Dietz Elkhorn in Fair Oaks Ranch — ten demisable ±1,500 SF suites, two F&B end caps with patio envelopes, and 2-3 food-ready bays.',
+    'A new ±20,000 SF neighborhood retail center on Dietz Elkhorn in Fair Oaks Ranch.',
   market_bullets: [
     {
       title: '$168K median household income',
