@@ -259,7 +259,7 @@ export default async function DietzElkhornPage() {
               <p className="font-heading text-display-sm sm:text-display font-bold text-white mb-5 leading-tight">
                 Fair Oaks Ranch, TX
               </p>
-              <p className="text-heading text-white leading-relaxed mb-7 max-w-4xl mx-auto whitespace-pre-line">
+              <p className="text-heading text-white leading-relaxed mb-7 max-w-5xl mx-auto whitespace-pre-line">
                 {subhead}
               </p>
               <p className="text-body text-gold font-bold mb-7 max-w-xl mx-auto leading-snug">
