@@ -285,7 +285,7 @@ export default async function DietzElkhornPage() {
                 leans into that.
               </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+            <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
               {marketBullets.map((item, idx) => {
                 const Icon = WHY_NOW_ICONS[idx];
                 return (
@@ -315,7 +315,7 @@ export default async function DietzElkhornPage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
+            <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-6">
               {TENANT_CATEGORIES.map(cat => {
                 const Icon = cat.icon;
                 return (
@@ -398,7 +398,7 @@ export default async function DietzElkhornPage() {
               </p>
             </div>
 
-            <div className="max-w-5xl mx-auto rounded-2xl border border-border bg-background-cream overflow-hidden">
+            <div className="max-w-4xl mx-auto rounded-2xl border border-border bg-background-cream overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={SITE_PLAN_PNG}
