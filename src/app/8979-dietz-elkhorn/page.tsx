@@ -179,12 +179,12 @@ export default function DietzElkhornPage() {
           style={{
             backgroundImage: 'url(/site-plans/8979-dietz-elkhorn-site-plan.png)',
             backgroundSize: 'cover',
-            backgroundPosition: 'center 30%',
+            backgroundPosition: 'center center',
             backgroundRepeat: 'no-repeat',
           }}
         >
           {/* Dark overlay so text stays readable */}
-          <div className="absolute inset-0 bg-primary/85" />
+          <div className="absolute inset-0 bg-primary/70" />
           <Container className="relative z-10">
             <div className="max-w-3xl mx-auto text-center">
               <p className="overline mb-3 text-gold flex items-center justify-center gap-2">
