@@ -419,9 +419,7 @@ export default async function DietzElkhornPage() {
                 Terms designed for local operators.
               </h2>
               <p className="text-body text-foreground-muted text-center leading-relaxed mb-10 max-w-2xl mx-auto">
-                These are starting points, not take-it-or-leave-it. We concede on free
-                rent and TI before cutting base rent — those are real tools to get the
-                right tenant in.
+                These are starting points, not take-it-or-leave-it.
               </p>
 
               <div className="rounded-2xl bg-white border border-border overflow-hidden">
