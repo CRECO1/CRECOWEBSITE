@@ -72,7 +72,7 @@ const FALLBACK = {
     },
     {
       title: 'Thin supply of quality small-bay retail',
-      body: 'Area asking rents sit mid-$20s to $30 NNN with limited new inventory. A brand-new center with food-ready infrastructure is exactly what the market is short on.',
+      body: 'Quality small-bay retail in the trade area is in short supply, and new inventory is thin. A brand-new center with food-ready infrastructure is exactly what the market is missing.',
     },
     {
       title: 'CRECO is the leasing team',
