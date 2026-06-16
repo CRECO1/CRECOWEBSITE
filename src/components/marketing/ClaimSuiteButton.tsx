@@ -65,35 +65,42 @@ export function ClaimSuiteButton() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="claim-suite-title"
-          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-start sm:items-center justify-center p-3 sm:p-6 overflow-y-auto"
+          className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4"
           onClick={() => setOpen(false)}
         >
+          {/* Modal card — pinned to fit within viewport. flex-col so the
+              sticky header sits above the scrollable form body. Using
+              100dvh (when supported) to handle mobile browser chrome
+              correctly; calc(100vh - 1.5rem) is the desktop safe fallback. */}
           <div
-            className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl my-4 sm:my-0 overflow-hidden"
+            className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+            style={{ maxHeight: 'min(calc(100dvh - 1.5rem), calc(100vh - 1.5rem))' }}
             onClick={e => e.stopPropagation()}
           >
-            {/* Close button — absolute, top-right, large hit area for thumbs */}
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="absolute top-3 right-3 z-10 inline-flex items-center justify-center h-10 w-10 rounded-full text-foreground-muted hover:bg-background-cream hover:text-primary transition-colors"
-              aria-label="Close inquiry form"
-            >
-              <X className="h-5 w-5" />
-            </button>
-
-            <div className="px-5 sm:px-8 pt-8 pb-6 sm:pb-8 max-h-[90vh] overflow-y-auto">
-              <div className="mb-6 text-center max-w-md mx-auto">
-                <p className="overline mb-2 text-gold">Pre-lease your suite</p>
-                <h2 id="claim-suite-title" className="font-heading text-heading-lg sm:text-heading-xl font-bold text-primary mb-2 leading-tight">
+            {/* Sticky-ish header — outside the scrolling form so the close
+                button + title stay visible while the prospect fills out
+                the form */}
+            <div className="flex-shrink-0 px-5 sm:px-8 pt-6 pb-4 border-b border-border/60 relative">
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="absolute top-3 right-3 inline-flex items-center justify-center h-9 w-9 rounded-full text-foreground-muted hover:bg-background-cream hover:text-primary transition-colors"
+                aria-label="Close inquiry form"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              <div className="text-center max-w-md mx-auto pr-8">
+                <h2 id="claim-suite-title" className="font-heading text-heading-md sm:text-heading-lg font-bold text-primary mb-1 leading-tight">
                   Tell us about your concept.
                 </h2>
-                <p className="text-body-sm text-foreground-muted leading-relaxed">
-                  A CRECO broker will follow up within one business day. Established
-                  operators get first pick of end caps and food-ready bays.
+                <p className="text-caption text-foreground-muted leading-relaxed">
+                  CRECO broker follows up within one business day.
                 </p>
               </div>
+            </div>
 
+            {/* Scrollable form body */}
+            <div className="flex-1 overflow-y-auto px-5 sm:px-8 py-5 sm:py-6">
               <RetailLeasingInquiryForm />
             </div>
           </div>
