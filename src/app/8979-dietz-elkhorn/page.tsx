@@ -239,17 +239,20 @@ export default async function DietzElkhornPage() {
               <p className="text-body-lg text-white/80 leading-relaxed mb-4 max-w-2xl mx-auto whitespace-pre-line">
                 {subhead}
               </p>
-              <div className="flex items-center justify-center gap-2 mb-6">
-                <p className="overline text-gold flex items-center gap-2">
+              {/* Both gold + bold pre-CTA lines: location/leasing tag and the
+                  scarcity nudge. Stacked tightly so they read as a single
+                  unit driving down into the gold "Claim Your Suite" button. */}
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <p className="overline text-gold font-bold flex items-center gap-2">
                   <MapPin className="h-3.5 w-3.5" /> {eyebrow}
                 </p>
               </div>
+              <p className="text-body-sm text-gold font-bold mb-6 max-w-xl mx-auto">
+                Suites are limited — local operators get first pick of end caps and food-ready bays.
+              </p>
               <div className="flex flex-wrap gap-4 justify-center">
                 <ClaimSuiteButton />
               </div>
-              <p className="mt-5 text-body-sm text-white/50">
-                Suites are limited — local operators get first pick of end caps and food-ready bays.
-              </p>
             </div>
           </Container>
         </section>
