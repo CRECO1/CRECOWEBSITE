@@ -220,15 +220,19 @@ export default async function DietzElkhornPage() {
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}
-        <section
-          className="relative bg-primary py-16 sm:py-24 text-white overflow-hidden"
-          style={{
-            backgroundImage: `url(${SITE_PLAN_PNG})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center center',
-            backgroundRepeat: 'no-repeat',
-          }}
-        >
+        <section className="relative bg-primary py-16 sm:py-24 text-white overflow-hidden">
+          {/* Background photo as an absolute <img> instead of CSS
+              background-image. object-cover gives pixel-perfect width +
+              height coverage, avoiding the sub-pixel gap on the right
+              edge where the dark bg-primary used to peek through with
+              background-size: cover. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={SITE_PLAN_PNG}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
           {/* Dark overlay so text stays readable */}
           <div className="absolute inset-0 bg-primary/70" />
           <Container className="relative z-10">
