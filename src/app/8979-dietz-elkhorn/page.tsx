@@ -564,8 +564,12 @@ export default async function DietzElkhornPage() {
 // ─── Small subcomponents ──────────────────────────────────────────────
 
 function StatBlock({ value, label, sub }: { value: string; label: string; sub?: string }) {
+  // text-center on the whole block so short values ("Call", "46") sit
+  // visually centered in their grid cell instead of clumping to the
+  // left edge — fixes the "more room on the right than the left"
+  // perception across the 4-column stat row.
   return (
-    <div>
+    <div className="text-center">
       <div className="font-heading text-display-sm sm:text-display font-bold text-primary leading-none">
         {value}
       </div>
