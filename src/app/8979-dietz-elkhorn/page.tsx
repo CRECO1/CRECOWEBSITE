@@ -1,3 +1,8 @@
+// 30-min ISR — admin edits to the landing_pages row show up live within
+// half an hour without a redeploy, but we still skip a server render on
+// every visit.
+export const revalidate = 1800;
+
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import {
@@ -8,6 +13,7 @@ import {
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { RetailLeasingInquiryForm } from '@/components/forms/RetailLeasingInquiryForm';
+import { getLandingPage } from '@/lib/supabase';
 
 /**
  * /8979-dietz-elkhorn — pre-leasing landing page for the upcoming
@@ -21,74 +27,91 @@ import { RetailLeasingInquiryForm } from '@/components/forms/RetailLeasingInquir
  * bays). The landing page is referenced from the on-site "Now Pre-Leasing"
  * signage QR code per Section 5.B of the strategy.
  *
- * Conversion goal: prospect → tour. The lead form pre-qualifies on
- * concept category, SF, timeline, existing locations, and financing —
- * the broker's Hot / Warm / Aspirational signal.
- *
  * Distinct from /8000-fair-oaks-pkwy (which is a different CRECO
  * development across town). Both live as their own SEO landing pages
  * so they don't compete for the same keywords.
+ *
+ * ── Admin editability ──
+ * The text-heavy fields (SEO meta, hero overline/headline/subhead, the
+ * 4 "Why now" cards, and the FAQ list) are sourced from the
+ * `landing_pages` table with slug='8979-dietz-elkhorn'. The admin edits
+ * them at /admin?tab=landing_pages. Structural sections (stats, asset
+ * spec grid, tenant categories, lease terms, process, lead form) stay
+ * in code — those rarely change and changing them visually needs code
+ * anyway. The hardcoded defaults below are the canonical seed and the
+ * fallback when the DB row hasn't been created yet.
  */
 
 const SITE_PLAN_PDF = '/site-plans/8979-dietz-elkhorn-site-plan.pdf';
+const SITE_PLAN_PNG = '/site-plans/8979-dietz-elkhorn-site-plan.png';
 const PHONE_DISPLAY = '(210) 817-3443';
 const PHONE_HREF = 'tel:+12108173443';
 
-export const metadata: Metadata = {
-  title: '8979 Dietz Elkhorn — New Retail Center Pre-Leasing | Fair Oaks Ranch | CRECO',
-  description:
+// ─── Editable defaults (used as the seed + as fallback) ──────────────
+// These mirror the columns on the landing_pages row. Keep this in sync
+// with the seed SQL — when the row is present, DB wins; when it's not,
+// the page still renders identically with this copy.
+
+const FALLBACK = {
+  meta_title: '8979 Dietz Elkhorn — New Retail Center Pre-Leasing | Fair Oaks Ranch | CRECO',
+  meta_description:
     '8979 Dietz Elkhorn — a new ±20,000 SF neighborhood retail center in Fair Oaks Ranch, TX. Ten ±1,500 SF suites, demisable, with end-cap F&B and food-ready bays. Pre-leasing now — local operators welcome. Median HHI $168K, 2x Texas median. Represented by CRECO.',
-  keywords: [
-    '8979 dietz elkhorn',
-    'dietz elkhorn retail',
-    'fair oaks ranch retail center',
-    'fair oaks ranch retail space for lease',
-    'fair oaks ranch new development',
-    'fair oaks ranch restaurant space',
-    'fair oaks ranch coffee shop space',
-    'fair oaks ranch fitness space',
-    'fair oaks ranch boutique space',
-    'fair oaks ranch medical office',
-    'new retail center fair oaks ranch',
-    'fair oaks ranch end cap restaurant',
-    'creco leasing',
+  eyebrow: 'Now Pre-Leasing · 8979 Dietz Elkhorn · Fair Oaks Ranch, TX',
+  h1: '8979 Dietz Elkhorn.',
+  subhead:
+    'A new ±20,000 SF neighborhood retail center on Dietz Elkhorn in Fair Oaks Ranch — ten demisable ±1,500 SF suites, two F&B end caps with patio envelopes, and 2-3 food-ready bays.',
+  market_bullets: [
+    {
+      title: '$168K median household income',
+      body: '2x the Texas median, 2x+ the US median. Captive daily-needs demand with discretionary spend that supports premium service + specialty concepts.',
+    },
+    {
+      title: '~12,600 residents + Hill Country pull',
+      body: 'Fair Oaks Ranch plus traffic from Leon Springs, Boerne, and NW Bexar. Median age 46 — established households, loyal to local operators they trust.',
+    },
+    {
+      title: 'Thin supply of quality small-bay retail',
+      body: 'Area asking rents sit mid-$20s to $30 NNN with limited new inventory. A brand-new center with food-ready infrastructure is exactly what the market is short on.',
+    },
+    {
+      title: 'CRECO is the leasing team',
+      body: "Local broker, local owner relationships, fast decisions. We're recruiting tenants, not waiting on listings. Tours are walked weekly.",
+    },
   ],
-  alternates: { canonical: 'https://www.crecotx.com/8979-dietz-elkhorn' },
-  openGraph: {
-    title: '8979 Dietz Elkhorn — Now Pre-Leasing | Fair Oaks Ranch',
-    description:
-      '±20,000 SF neighborhood retail. Ten ±1,500 SF demisable suites. End-cap F&B + food-ready bays. Local operators welcome.',
-    url: 'https://www.crecotx.com/8979-dietz-elkhorn',
-    type: 'website',
-  },
-  robots: 'index,follow',
+  faqs: [
+    {
+      q: 'How big are the suites and can I combine them?',
+      a: 'Standard bays are ±1,500 SF with demising walls designed to combine. Pair two for ±3,000 SF, three for ±4,500 SF — common asks from restaurants, fitness studios, and medical users. End caps and food-ready bays are limited; the earliest LOIs get first pick.',
+    },
+    {
+      q: 'Can my food concept work here?',
+      a: 'Yes. We are pre-plumbing 2-3 suites with grease lines, venting, and 3-phase power so F&B operators do not have to retrofit. End caps include a patio envelope. Coffee, fast-casual, brunch, bakery, and wine bar concepts are all in scope.',
+    },
+    {
+      q: 'What does NNN actually cost me?',
+      a: 'Triple-net is the tenant share of taxes, insurance, and common-area maintenance. We will share a current NNN estimate when we send the LOI; for centers of this size it typically lands meaningfully below the base rent.',
+    },
+    {
+      q: 'When does the center open?',
+      a: 'Delivery is in active planning. We are pre-leasing now toward a target of 40-50% committed before delivery and 90% within 12 months of opening. The fastest path to picking your suite is to start the conversation now.',
+    },
+    {
+      q: 'What kind of operators are you looking for?',
+      a: 'Phase 1 is local-first: established operators from Fair Oaks Ranch, Boerne, Leon Springs, Stone Oak, and greater NW San Antonio who want a Fair Oaks Ranch location. National and franchise tenants enter selectively in Phase 2 after stabilization.',
+    },
+    {
+      q: 'Do I need a tenant rep broker?',
+      a: 'You do not. CRECO represents the landlord and works directly with owner-operators, but we co-broke with tenant-rep brokers at a market commission if that is your preference. Either path gets you the same straight answers.',
+    },
+  ],
 };
 
-// ─── Section data ─────────────────────────────────────────────────────
+// Icons for the 4 Why-Now cards — matched to market_bullets by index.
+// If the admin adds a 5th bullet it'll render without an icon; we never
+// throw on missing icons.
+const WHY_NOW_ICONS = [TrendingUp, Users, Sparkles, Building2];
 
-const WHY_NOW = [
-  {
-    icon: TrendingUp,
-    title: '$168K median household income',
-    body: '2x the Texas median, 2x+ the US median. Captive daily-needs demand with discretionary spend that supports premium service + specialty concepts.',
-  },
-  {
-    icon: Users,
-    title: '~12,600 residents + Hill Country pull',
-    body: 'Fair Oaks Ranch plus traffic from Leon Springs, Boerne, and NW Bexar. Median age 46 — established households, loyal to local operators they trust.',
-  },
-  {
-    icon: Sparkles,
-    title: 'Thin supply of quality small-bay retail',
-    body: 'Area asking rents sit mid-$20s to $30 NNN with limited new inventory. A brand-new center with food-ready infrastructure is exactly what the market is short on.',
-  },
-  {
-    icon: Building2,
-    title: 'CRECO is the leasing team',
-    body: "Local broker, local owner relationships, fast decisions. We're recruiting tenants, not waiting on listings. Tours are walked weekly.",
-  },
-];
-
+// Structural sections (not in DB — change in code if they need updating)
 const ASSET_SPEC = [
   { icon: Building2, label: 'Total GLA',           value: '±20,000 SF' },
   { icon: Sparkles,  label: 'Suites',              value: 'Ten ±1,500 SF bays' },
@@ -138,36 +161,59 @@ const TERMS = [
   { label: 'Exclusive use',       value: 'Granted narrowly to protect category leaders' },
 ];
 
-const FAQ = [
-  {
-    q: 'How big are the suites and can I combine them?',
-    a: 'Standard bays are ±1,500 SF with demising walls designed to combine. Pair two for ±3,000 SF, three for ±4,500 SF — common asks from restaurants, fitness studios, and medical users. End caps and food-ready bays are limited; the earliest LOIs get first pick.',
-  },
-  {
-    q: 'Can my food concept work here?',
-    a: 'Yes. We are pre-plumbing 2-3 suites with grease lines, venting, and 3-phase power so F&B operators do not have to retrofit. End caps include a patio envelope. Coffee, fast-casual, brunch, bakery, and wine bar concepts are all in scope.',
-  },
-  {
-    q: 'What does NNN actually cost me?',
-    a: 'Triple-net is the tenant share of taxes, insurance, and common-area maintenance. We will share a current NNN estimate when we send the LOI; for centers of this size it typically lands meaningfully below the base rent.',
-  },
-  {
-    q: 'When does the center open?',
-    a: 'Delivery is in active planning. We are pre-leasing now toward a target of 40-50% committed before delivery and 90% within 12 months of opening. The fastest path to picking your suite is to start the conversation now.',
-  },
-  {
-    q: 'What kind of operators are you looking for?',
-    a: 'Phase 1 is local-first: established operators from Fair Oaks Ranch, Boerne, Leon Springs, Stone Oak, and greater NW San Antonio who want a Fair Oaks Ranch location. National and franchise tenants enter selectively in Phase 2 after stabilization.',
-  },
-  {
-    q: 'Do I need a tenant rep broker?',
-    a: 'You do not. CRECO represents the landlord and works directly with owner-operators, but we co-broke with tenant-rep brokers at a market commission if that is your preference. Either path gets you the same straight answers.',
-  },
+// ─── Metadata ────────────────────────────────────────────────────────
+// Async so admin edits to meta_title/meta_description go live without a
+// redeploy. Falls back to the FALLBACK values if the row doesn't exist.
+
+const BASE_KEYWORDS = [
+  '8979 dietz elkhorn',
+  'dietz elkhorn retail',
+  'fair oaks ranch retail center',
+  'fair oaks ranch retail space for lease',
+  'fair oaks ranch new development',
+  'fair oaks ranch restaurant space',
+  'fair oaks ranch coffee shop space',
+  'fair oaks ranch fitness space',
+  'fair oaks ranch boutique space',
+  'fair oaks ranch medical office',
+  'new retail center fair oaks ranch',
+  'fair oaks ranch end cap restaurant',
+  'creco leasing',
 ];
+
+export async function generateMetadata(): Promise<Metadata> {
+  const db = await getLandingPage('8979-dietz-elkhorn').catch(() => null);
+  const title = db?.meta_title || FALLBACK.meta_title;
+  const description = db?.meta_description || FALLBACK.meta_description;
+  return {
+    title,
+    description,
+    keywords: BASE_KEYWORDS,
+    alternates: { canonical: 'https://www.crecotx.com/8979-dietz-elkhorn' },
+    openGraph: {
+      title: '8979 Dietz Elkhorn — Now Pre-Leasing | Fair Oaks Ranch',
+      description: description,
+      url: 'https://www.crecotx.com/8979-dietz-elkhorn',
+      type: 'website',
+    },
+    robots: 'index,follow',
+  };
+}
 
 // ─── Page ─────────────────────────────────────────────────────────────
 
-export default function DietzElkhornPage() {
+export default async function DietzElkhornPage() {
+  // Read editable content. If the row doesn't exist or the DB call
+  // fails for any reason, fall back to FALLBACK so the page always
+  // renders.
+  const db = await getLandingPage('8979-dietz-elkhorn').catch(() => null);
+
+  const eyebrow = db?.eyebrow || FALLBACK.eyebrow;
+  const h1 = db?.h1 || FALLBACK.h1;
+  const subhead = db?.subhead || FALLBACK.subhead;
+  const marketBullets = (db?.market_bullets?.length ? db.market_bullets : FALLBACK.market_bullets);
+  const faqs = (db?.faqs?.length ? db.faqs : FALLBACK.faqs);
+
   return (
     <>
       <Header />
@@ -176,7 +222,7 @@ export default function DietzElkhornPage() {
         <section
           className="relative bg-primary py-16 sm:py-24 text-white overflow-hidden"
           style={{
-            backgroundImage: 'url(/site-plans/8979-dietz-elkhorn-site-plan.png)',
+            backgroundImage: `url(${SITE_PLAN_PNG})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center center',
             backgroundRepeat: 'no-repeat',
@@ -187,16 +233,14 @@ export default function DietzElkhornPage() {
           <Container className="relative z-10">
             <div className="max-w-3xl mx-auto text-center">
               <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-5 leading-tight">
-                8979 <span className="text-gold">Dietz Elkhorn.</span>
+                {h1}
               </h1>
-              <p className="text-body-lg text-white/80 leading-relaxed mb-4 max-w-2xl mx-auto">
-                A new <strong className="text-white">±20,000 SF neighborhood retail center</strong> on
-                Dietz Elkhorn in Fair Oaks Ranch — ten demisable ±1,500 SF suites, two F&B end caps with
-                patio envelopes, and 2-3 food-ready bays.
+              <p className="text-body-lg text-white/80 leading-relaxed mb-4 max-w-2xl mx-auto whitespace-pre-line">
+                {subhead}
               </p>
               <div className="flex items-center justify-center gap-2 mb-6">
                 <p className="overline text-gold flex items-center gap-2">
-                  <MapPin className="h-3.5 w-3.5" /> Now Pre-Leasing · 8979 Dietz Elkhorn · Fair Oaks Ranch, TX
+                  <MapPin className="h-3.5 w-3.5" /> {eyebrow}
                 </p>
               </div>
               <div className="flex flex-wrap gap-4 justify-center">
@@ -232,7 +276,7 @@ export default function DietzElkhornPage() {
           </Container>
         </section>
 
-        {/* Why now */}
+        {/* Why now — driven by landing_pages.market_bullets */}
         <section className="bg-white py-16 sm:py-20">
           <Container>
             <div className="max-w-2xl mb-12 mx-auto text-center">
@@ -248,11 +292,11 @@ export default function DietzElkhornPage() {
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-              {WHY_NOW.map(item => {
-                const Icon = item.icon;
+              {marketBullets.map((item, idx) => {
+                const Icon = WHY_NOW_ICONS[idx];
                 return (
-                  <div key={item.title} className="rounded-2xl border border-border bg-white p-6 sm:p-8">
-                    <Icon className="h-6 w-6 text-gold mb-4" />
+                  <div key={`${item.title}-${idx}`} className="rounded-2xl border border-border bg-white p-6 sm:p-8">
+                    {Icon && <Icon className="h-6 w-6 text-gold mb-4" />}
                     <h3 className="font-heading text-body-lg font-bold text-primary mb-2">{item.title}</h3>
                     <p className="text-body-sm text-foreground-muted leading-relaxed">{item.body}</p>
                   </div>
@@ -363,8 +407,9 @@ export default function DietzElkhornPage() {
             </div>
 
             <div className="rounded-2xl border border-border bg-background-cream overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/site-plans/8979-dietz-elkhorn-site-plan.png"
+                src={SITE_PLAN_PNG}
                 alt="8979 Dietz Elkhorn site plan"
                 className="w-full h-auto object-contain"
               />
@@ -430,7 +475,7 @@ export default function DietzElkhornPage() {
           </Container>
         </section>
 
-        {/* FAQ */}
+        {/* FAQ — driven by landing_pages.faqs */}
         <section className="bg-background-cream py-16 sm:py-20 border-y border-border">
           <Container>
             <div className="max-w-3xl mx-auto">
@@ -440,9 +485,9 @@ export default function DietzElkhornPage() {
               </h2>
 
               <div className="space-y-3">
-                {FAQ.map(item => (
+                {faqs.map((item, idx) => (
                   <details
-                    key={item.q}
+                    key={`${item.q}-${idx}`}
                     className="group rounded-xl bg-white border border-border p-5 sm:p-6 [&_summary]:cursor-pointer"
                   >
                     <summary className="flex items-start justify-between gap-4 list-none">
