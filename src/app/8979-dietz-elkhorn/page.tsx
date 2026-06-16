@@ -57,7 +57,7 @@ const FALLBACK = {
   meta_title: '8979 Dietz Elkhorn — New Retail Center Pre-Leasing | Fair Oaks Ranch | CRECO',
   meta_description:
     '8979 Dietz Elkhorn — a new ±20,000 SF neighborhood retail center in Fair Oaks Ranch, TX. Ten ±1,500 SF suites, demisable, with end-cap F&B and food-ready bays. Pre-leasing now — local operators welcome. Median HHI $168K, 2x Texas median. Represented by CRECO.',
-  eyebrow: 'Now Pre-Leasing · 8979 Dietz Elkhorn · Fair Oaks Ranch, TX',
+  eyebrow: 'Now Pre-Leasing · 8979 Dietz Elkhorn',
   h1: '8979 Dietz Elkhorn.',
   subhead:
     'A new ±20,000 SF neighborhood retail center on Dietz Elkhorn in Fair Oaks Ranch.',
@@ -237,9 +237,12 @@ export default async function DietzElkhornPage() {
           <div className="absolute inset-0 bg-primary/70" />
           <Container className="relative z-10">
             <div className="max-w-3xl mx-auto text-center">
-              <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-5 leading-tight">
+              <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-2 leading-tight">
                 {h1}
               </h1>
+              <p className="font-heading text-heading-xl sm:text-display-sm font-bold text-white mb-5 leading-tight">
+                Fair Oaks Ranch, TX
+              </p>
               <p className="text-body-lg text-white leading-relaxed mb-4 max-w-4xl mx-auto whitespace-pre-line">
                 {subhead}
               </p>
