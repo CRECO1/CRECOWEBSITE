@@ -115,9 +115,9 @@ const FALLBACK = {
 const WHY_NOW_ICONS = [TrendingUp, Users, Sparkles, Building2];
 
 // Structural sections (not in DB — change in code if they need updating)
-const ASSET_SPEC = [
+const ASSET_SPEC: { icon: typeof Building2; label: string; value: string; sub?: string }[] = [
   { icon: Building2, label: 'Total GLA',           value: '±20,000 SF' },
-  { icon: Sparkles,  label: 'Suites',              value: 'Ten ±1,500 SF bays' },
+  { icon: Sparkles,  label: 'Suites',              value: 'Ten ±1,500 SF bays', sub: 'Built to suit' },
   { icon: Zap,       label: 'Demisable',           value: 'Combine to 3,000 / 4,500 SF' },
   { icon: Flame,     label: 'Food-ready bays',     value: '2-3 with grease + venting' },
   { icon: Sun,       label: 'End caps',            value: 'Two — F&B with patio envelope' },
@@ -391,6 +391,9 @@ export default async function DietzElkhornPage() {
                           <div className="text-caption uppercase tracking-widest text-foreground-muted">{item.label}</div>
                         </div>
                         <div className="font-heading text-body-lg font-bold text-primary">{item.value}</div>
+                        {item.sub && (
+                          <div className="mt-1 text-body-sm text-gold font-semibold">{item.sub}</div>
+                        )}
                       </div>
                     );
                   })}
