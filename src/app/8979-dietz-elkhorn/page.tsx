@@ -259,7 +259,11 @@ export default async function DietzElkhornPage() {
               <p className="font-heading text-display-sm sm:text-display font-bold text-white mb-5 leading-tight">
                 Fair Oaks Ranch, TX
               </p>
-              <p className="text-heading text-white leading-relaxed mb-7 max-w-7xl mx-auto whitespace-pre-line lg:whitespace-nowrap">
+              {/* Mobile: text-body-lg keeps subhead readable without
+                  overwhelming the H1 stack on a narrow viewport. Bumps
+                  up to text-heading on sm+. lg:whitespace-nowrap forces
+                  a single line only when the column can actually fit it. */}
+              <p className="text-body-lg sm:text-heading text-white leading-relaxed mb-7 max-w-7xl mx-auto whitespace-pre-line lg:whitespace-nowrap">
                 {subhead}
               </p>
               <p className="text-body text-gold font-bold mb-7 max-w-xl mx-auto leading-snug">
@@ -351,7 +355,12 @@ export default async function DietzElkhornPage() {
         {/* The asset / suite plan */}
         <section className="bg-background-cream py-16 sm:py-20 border-y border-border">
           <Container>
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
+            {/* gap-8 on mobile (when the two columns stack vertically) keeps
+                the "Ten suites" intro tight against the spec grid below it
+                — gap-12 on mobile was creating a hard visual break. lg:gap-12
+                preserves the desktop spacing where the two columns sit
+                side-by-side and need the larger gutter to feel intentional. */}
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
               <div className="lg:col-span-2">
                 <p className="overline mb-3 text-gold">The center</p>
                 <h2 className="font-heading text-heading-xl sm:text-display-sm font-bold text-primary leading-tight mb-5">
@@ -408,7 +417,7 @@ export default async function DietzElkhornPage() {
           <Container>
             <div className="max-w-2xl mb-8 mx-auto text-center">
               <FlankedEyebrow>Site plan</FlankedEyebrow>
-              <h2 className="font-heading text-heading-xl font-bold text-primary leading-tight">
+              <h2 className="font-heading text-heading-xl sm:text-display-sm font-bold text-primary leading-tight">
                 Where everything sits.
               </h2>
               <p className="mt-3 text-body text-foreground-muted leading-relaxed">

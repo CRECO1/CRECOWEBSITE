@@ -52,12 +52,16 @@ export function ClaimSuiteButton() {
 
   return (
     <>
+      {/* Mobile: tighter padding + smaller body text so the long
+          "Claim Your Suite — Inquire Now" label doesn't overflow a 320px
+          viewport. The button has its own text-wrap behavior reset to
+          balance so if it ever does wrap it breaks gracefully. */}
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-lg bg-gold px-8 py-4 text-body-sm font-bold text-primary hover:bg-gold-light shadow-lg"
+        className="inline-flex items-center gap-2 rounded-lg bg-gold px-5 py-3 sm:px-8 sm:py-4 text-body-sm font-bold text-primary hover:bg-gold-light shadow-lg text-balance"
       >
-        Claim Your Suite — Inquire Now <ArrowRight className="h-4 w-4" />
+        Claim Your Suite — Inquire Now <ArrowRight className="h-4 w-4 shrink-0" />
       </button>
 
       {open && (
@@ -92,7 +96,13 @@ export function ClaimSuiteButton() {
                 <X className="h-5 w-5" />
               </button>
               <div className="text-center max-w-md mx-auto pr-8">
-                <h2 id="claim-suite-title" className="font-heading text-heading-md sm:text-heading-lg font-bold text-primary mb-1 leading-tight">
+                {/* text-heading-md doesn't exist in the Tailwind config
+                    (the available scale is heading-sm / heading / heading-lg
+                    / heading-xl). Using heading-sm on mobile + heading-lg
+                    on sm+ keeps the modal title readable but compact on
+                    a 320px viewport where the close-X button + pr-8 on
+                    the title block leaves limited horizontal room. */}
+                <h2 id="claim-suite-title" className="font-heading text-heading-sm sm:text-heading-lg font-bold text-primary mb-1 leading-tight">
                   Tell us about your concept.
                 </h2>
                 <p className="text-caption text-gold font-bold uppercase tracking-widest leading-relaxed">
