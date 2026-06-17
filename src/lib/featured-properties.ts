@@ -23,10 +23,11 @@ import type { Listing } from './supabase';
 /**
  * 8000 Fair Oaks Plaza — mixed-use retail + executive suites in Fair
  * Oaks Ranch. Landing page lives at /8000-fair-oaks-pkwy. The card
- * thumbnail is the wide retail-strip shot (most representative of the
- * "this is a leasable storefront" intent for the listings grid; the
- * monument-sign shot is reserved as the landing-page hero so we don't
- * burn its first impression on a thumbnail).
+ * thumbnail is the monument-sign photo — names the property at a
+ * glance ("Fair Oaks Plaza 8000") and lists the marquee tenants
+ * (Spotted Deer Coffee, Parker's Ice Creams, Fair Oaks Salon, Blume
+ * Haus, Fair Oaks Realty Group), which carries more identifying
+ * weight than any single building shot in a thumbnail-sized card.
  */
 export const FAIR_OAKS_PLAZA_LISTING: Listing = {
   id: 'synth-fair-oaks-plaza',
@@ -57,7 +58,7 @@ export const FAIR_OAKS_PLAZA_LISTING: Listing = {
     'Two two-story executive office buildings',
     'Owner-represented by CRECO',
   ],
-  images: ['/properties/8000-fair-oaks-pkwy/retail-strip-wide.jpg'],
+  images: ['/properties/8000-fair-oaks-pkwy/monument-sign.jpg'],
   brochure_url: null,
   virtual_tour_url: null,
   status: 'active',
