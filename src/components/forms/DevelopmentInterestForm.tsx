@@ -70,8 +70,22 @@ const TIMELINES = [
   'Just exploring',
 ];
 
-export function DevelopmentInterestForm() {
-  const [interest, setInterest] = useState<InterestType>('retail');
+/**
+ * Props for the inquiry form.
+ *
+ * `initialInterest` lets the parent pre-select which inquiry track the
+ * form opens on. Used by the modal button on /8000-fair-oaks-pkwy so
+ * clicking "Inquire about a retail bay" lands the visitor on the retail
+ * track, and "Inquire about an executive suite" lands on the suite
+ * track — without forcing a redundant click before they start filling
+ * out the rest of the fields.
+ */
+interface DevelopmentInterestFormProps {
+  initialInterest?: InterestType;
+}
+
+export function DevelopmentInterestForm({ initialInterest = 'retail' }: DevelopmentInterestFormProps = {}) {
+  const [interest, setInterest] = useState<InterestType>(initialInterest);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');

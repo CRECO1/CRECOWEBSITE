@@ -8,6 +8,7 @@ import {
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { DevelopmentInterestForm } from '@/components/forms/DevelopmentInterestForm';
+import { DevelopmentInquiryButton } from '@/components/marketing/DevelopmentInquiryButton';
 
 // ─── Property photos ────────────────────────────────────────────────────
 // Site-shot photo set of 8000 Fair Oaks Plaza, taken on-site. Sourced
@@ -372,13 +373,17 @@ export default function FairOaksDevPage() {
                     </li>
                   ))}
                 </ul>
-                <Link
-                  href="#inquiry"
-                  className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-body-sm font-semibold text-white hover:bg-primary/90"
-                >
-                  Inquire about a retail bay
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
+                {/* Popup-modal CTA instead of an anchor jump. Catches
+                    the high-intent retail prospect inline and presets
+                    the inquiry form to the retail track so they don't
+                    have to re-pick a radio they already implied. */}
+                <DevelopmentInquiryButton
+                  label="Inquire about a retail bay"
+                  variant="primary"
+                  modalTitle="Tell us about your retail concept."
+                  modalEyebrow="Now Leasing — Retail Bays"
+                  initialInterest="retail"
+                />
               </div>
               <div className="rounded-2xl bg-primary text-white p-8 lg:p-10">
                 <Building2 className="h-9 w-9 text-gold mb-4" />
@@ -412,13 +417,17 @@ export default function FairOaksDevPage() {
                 <p className="text-body text-foreground leading-relaxed mb-6">
                   Particularly strong fits: real estate, financial services, legal, accounting, insurance, therapy and counseling, consulting, and other professional services where a Fair Oaks Ranch address signals quality to clients.
                 </p>
-                <Link
-                  href="#inquiry"
-                  className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-body-sm font-semibold text-white hover:bg-primary/90"
-                >
-                  Inquire about an executive suite
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
+                {/* Same popup pattern as the retail CTA above, but
+                    preset to the executive-suite track. The two
+                    buttons feel parallel visually and behaviorally
+                    while each pre-filtering for the right inquiry. */}
+                <DevelopmentInquiryButton
+                  label="Inquire about an executive suite"
+                  variant="primary"
+                  modalTitle="Tell us about your business."
+                  modalEyebrow="Now Leasing — Executive Office Suites"
+                  initialInterest="suite"
+                />
               </div>
               <div className="rounded-2xl bg-background-cream p-8 lg:p-10 lg:order-1">
                 <Briefcase className="h-9 w-9 text-gold mb-4" />
