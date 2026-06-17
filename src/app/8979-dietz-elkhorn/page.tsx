@@ -221,8 +221,10 @@ export default async function DietzElkhornPage() {
     <>
       <Header />
       <main className="min-h-screen pt-20">
-        {/* Hero */}
-        <section className="relative bg-primary py-16 sm:py-24 text-white overflow-hidden">
+        {/* Hero — py-12 on mobile so the section doesn't feel cavernous
+            below the H1 stack on a phone. sm:py-24 keeps the dramatic
+            desktop chrome. */}
+        <section className="relative bg-primary py-12 sm:py-24 text-white overflow-hidden">
           {/* Background photo as an absolute <img> instead of CSS
               background-image. object-cover gives pixel-perfect width +
               height coverage, avoiding the sub-pixel gap on the right
@@ -266,10 +268,14 @@ export default async function DietzElkhornPage() {
               <p className="text-body-lg sm:text-heading text-white leading-relaxed mb-7 max-w-7xl mx-auto whitespace-pre-line lg:whitespace-nowrap">
                 {subhead}
               </p>
+              {/* Single flowing sentence with an em-dash instead of a
+                  hard <br/>. The previous hard break forced a two-line
+                  layout even when the viewport could fit the whole line,
+                  and read awkwardly on mobile where it wrapped to 3-4
+                  lines. The em-dash version wraps naturally — clean
+                  whatever the width. */}
               <p className="text-body text-gold font-bold mb-7 max-w-xl mx-auto leading-snug">
-                Suites are limited
-                <br />
-                local operators get first pick of end caps and food-ready bays.
+                Suites are limited — local operators get first pick of end caps and food-ready bays.
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
                 <ClaimSuiteButton />
@@ -291,7 +297,7 @@ export default async function DietzElkhornPage() {
         </section>
 
         {/* Why now — driven by landing_pages.market_bullets */}
-        <section className="bg-white py-16 sm:py-20">
+        <section className="bg-white py-12 sm:py-20">
           <Container>
             <div className="max-w-2xl mb-12 mx-auto text-center">
               <FlankedEyebrow>Why this center, why now</FlankedEyebrow>
@@ -309,7 +315,7 @@ export default async function DietzElkhornPage() {
               {marketBullets.map((item, idx) => {
                 const Icon = WHY_NOW_ICONS[idx];
                 return (
-                  <div key={`${item.title}-${idx}`} className="rounded-2xl border border-border bg-white p-6 sm:p-8 text-center">
+                  <div key={`${item.title}-${idx}`} className="rounded-2xl border border-border bg-white p-5 sm:p-8 text-center">
                     {Icon && <Icon className="h-6 w-6 text-gold mb-4 mx-auto" />}
                     <h3 className="font-heading text-body-lg font-bold text-primary mb-2">{item.title}</h3>
                     <p className="text-body-sm text-foreground-muted leading-relaxed">{item.body}</p>
@@ -321,7 +327,7 @@ export default async function DietzElkhornPage() {
         </section>
 
         {/* Tenant categories */}
-        <section className="bg-primary py-16 sm:py-20 text-white">
+        <section className="bg-primary py-12 sm:py-20 text-white">
           <Container>
             <div className="max-w-2xl mb-12 mx-auto text-center">
               <FlankedEyebrow tone="onDark">Who fits here</FlankedEyebrow>
@@ -339,7 +345,7 @@ export default async function DietzElkhornPage() {
               {TENANT_CATEGORIES.map(cat => {
                 const Icon = cat.icon;
                 return (
-                  <div key={cat.title} className="rounded-2xl bg-white/5 border border-white/10 p-6 sm:p-8 text-center">
+                  <div key={cat.title} className="rounded-2xl bg-white/5 border border-white/10 p-5 sm:p-8 text-center">
                     <Icon className="h-7 w-7 text-gold mx-auto mb-3" />
                     <span className="block text-caption uppercase tracking-widest text-gold/80 mb-3">{cat.suiteCount}</span>
                     <h3 className="font-heading text-body-lg font-bold text-white mb-2">{cat.title}</h3>
@@ -353,7 +359,7 @@ export default async function DietzElkhornPage() {
         </section>
 
         {/* The asset / suite plan */}
-        <section className="bg-background-cream py-16 sm:py-20 border-y border-border">
+        <section className="bg-background-cream py-12 sm:py-20 border-y border-border">
           <Container>
             {/* gap-8 on mobile (when the two columns stack vertically) keeps
                 the "Ten suites" intro tight against the spec grid below it
@@ -413,7 +419,7 @@ export default async function DietzElkhornPage() {
         </section>
 
         {/* Site plan embed */}
-        <section className="bg-white py-16 sm:py-20">
+        <section className="bg-white py-12 sm:py-20">
           <Container>
             <div className="max-w-2xl mb-8 mx-auto text-center">
               <FlankedEyebrow>Site plan</FlankedEyebrow>
@@ -439,7 +445,7 @@ export default async function DietzElkhornPage() {
         </section>
 
         {/* Lease terms */}
-        <section className="bg-background-cream py-16 sm:py-20 border-y border-border">
+        <section className="bg-background-cream py-12 sm:py-20 border-y border-border">
           <Container>
             <div className="max-w-3xl mx-auto">
               <FlankedEyebrow>Deal framework</FlankedEyebrow>
@@ -454,7 +460,7 @@ export default async function DietzElkhornPage() {
                 {TERMS.map((row, idx) => (
                   <div
                     key={row.label}
-                    className={`grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 px-6 py-4 ${idx === TERMS.length - 1 ? '' : 'border-b border-border'}`}
+                    className={`grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 px-5 sm:px-6 py-4 ${idx === TERMS.length - 1 ? '' : 'border-b border-border'}`}
                   >
                     <div className="text-caption uppercase tracking-widest text-foreground-muted">
                       {row.label}
@@ -471,7 +477,7 @@ export default async function DietzElkhornPage() {
         </section>
 
         {/* Process */}
-        <section className="bg-white py-16 sm:py-20">
+        <section className="bg-white py-12 sm:py-20">
           <Container>
             <div className="max-w-3xl mx-auto">
               <FlankedEyebrow>From inquiry to keys</FlankedEyebrow>
@@ -491,7 +497,7 @@ export default async function DietzElkhornPage() {
         </section>
 
         {/* FAQ — driven by landing_pages.faqs */}
-        <section className="bg-background-cream py-16 sm:py-20 border-y border-border">
+        <section className="bg-background-cream py-12 sm:py-20 border-y border-border">
           <Container>
             <div className="max-w-3xl mx-auto">
               <FlankedEyebrow>Common questions</FlankedEyebrow>
@@ -518,7 +524,7 @@ export default async function DietzElkhornPage() {
         </section>
 
         {/* Lead capture */}
-        <section id="inquire" className="bg-white py-16 sm:py-24 scroll-mt-20">
+        <section id="inquire" className="bg-white py-12 sm:py-24 scroll-mt-20">
           <Container>
             <div className="max-w-3xl mx-auto">
               <div className="text-center mb-10">
@@ -533,7 +539,7 @@ export default async function DietzElkhornPage() {
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-border bg-background-cream p-6 sm:p-8 lg:p-10">
+              <div className="rounded-2xl border border-border bg-background-cream p-5 sm:p-8 lg:p-10">
                 <RetailLeasingInquiryForm />
               </div>
 
