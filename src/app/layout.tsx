@@ -6,7 +6,13 @@ import { CompareBar } from '@/components/listings/CompareBar';
 import { ChatWidget } from '@/components/chat/ChatWidget';
 import { RecaptchaScript } from '@/components/forms/Recaptcha';
 import { UtmCapture } from '@/components/analytics/UtmCapture';
-import { ExitIntentModal } from '@/components/marketing/ExitIntentModal';
+// ExitIntentModal removed from the global layout per owner request (the
+// "Before you go — get our Q2 Texas market report" popup felt
+// aggressive). The component file at @/components/marketing/ExitIntentModal
+// is intentionally left in the repo so it can be re-mounted later
+// without rebuilding it. To turn back on: re-add the import + a
+// <Suspense fallback={null}><ExitIntentModal /></Suspense> wrapper in
+// the body below.
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -246,13 +252,7 @@ export default function RootLayout({
           <UtmCapture />
         </Suspense>
         {children}
-        {/* Exit-intent modal — internally suppresses on operator routes
-            and respects sessionStorage. Suspense because it reads
-            usePathname() under the hood. Single shared instance for
-            the whole site. */}
-        <Suspense fallback={null}>
-          <ExitIntentModal />
-        </Suspense>
+        {/* ExitIntentModal removed — see import comment at top. */}
         <MobileStickyCTA />
         <CompareBar />
         {/*
