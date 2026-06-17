@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   MapPin, ArrowRight, Phone, Store, Briefcase, Building2,
   TrendingUp, Users, Sparkles, Coffee,
@@ -7,6 +8,44 @@ import {
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { DevelopmentInterestForm } from '@/components/forms/DevelopmentInterestForm';
+
+// ─── Property photos ────────────────────────────────────────────────────
+// Site-shot photo set of 8000 Fair Oaks Plaza, taken on-site. Sourced
+// from PlazaPhotos/ on the owner's desktop, compressed to ~600KB-1.1MB
+// each (sips -Z 2000 -s formatOptions 80) and renamed to semantic names
+// so the component code stays readable.
+//
+// Building mapping per the monument sign + observation:
+//   - retail-strip-* → Building 1 (the 4-bay retail center on Fair Oaks
+//     Pkwy frontage, tenants: Spotted Deer Coffee, Parker's Ice Creams,
+//     Blume Haus, etc.)
+//   - realty-group-* → Building 2 (the older 2-story stone+wood exec
+//     suite building; current CRECO + Fair Oaks Realty Group office)
+//   - executive-suites-south → Building 3 (the newer modern stone exec
+//     suite building, marked "3" on its facade)
+//   - monument-sign → the "Fair Oaks Plaza 8000" pylon sign at the
+//     property entrance; used as the hero background
+const PHOTOS = {
+  monumentSign:           '/properties/8000-fair-oaks-pkwy/monument-sign.jpg',
+  realtyGroupExterior:    '/properties/8000-fair-oaks-pkwy/realty-group-exterior.jpg',
+  realtyGroupEntry:       '/properties/8000-fair-oaks-pkwy/realty-group-entry.jpg',
+  realtyGroupSign:        '/properties/8000-fair-oaks-pkwy/realty-group-sign.jpg',
+  retailStripParkers:     '/properties/8000-fair-oaks-pkwy/retail-strip-parkers.jpg',
+  retailStripSpottedDeer: '/properties/8000-fair-oaks-pkwy/retail-strip-spotted-deer.jpg',
+  retailStripWide:        '/properties/8000-fair-oaks-pkwy/retail-strip-wide.jpg',
+  executiveSuitesSouth:   '/properties/8000-fair-oaks-pkwy/executive-suites-south.jpg',
+} as const;
+
+const GALLERY = [
+  { src: PHOTOS.monumentSign,           alt: 'Fair Oaks Plaza 8000 monument sign listing tenants — Spotted Deer Coffee, Parker\'s Ice Creams, Fair Oaks Salon, Blume Haus, Fair Oaks Realty Group' },
+  { src: PHOTOS.retailStripWide,        alt: 'Wide view of the 4-bay retail center at 8000 Fair Oaks Pkwy with morning light through the oak trees' },
+  { src: PHOTOS.retailStripSpottedDeer, alt: 'Spotted Deer Coffee Company storefront in the 8000 Fair Oaks Pkwy retail center' },
+  { src: PHOTOS.retailStripParkers,     alt: 'Parker\'s Ice Creams and adjacent retail tenants on the strip at 8000 Fair Oaks Pkwy' },
+  { src: PHOTOS.realtyGroupExterior,    alt: 'Fair Oaks Realty Group / CRECO executive suite building (Building 2) with mature oak tree' },
+  { src: PHOTOS.realtyGroupEntry,       alt: 'Building 2 entry walkway at 8000 Fair Oaks Pkwy executive suites' },
+  { src: PHOTOS.executiveSuitesSouth,   alt: 'Building 3 — the south executive office suite building at 8000 Fair Oaks Pkwy' },
+  { src: PHOTOS.realtyGroupSign,        alt: 'Fair Oaks Realty Group Information Center / Real Estate Sales sign at 8000 Fair Oaks Pkwy' },
+];
 
 export const metadata: Metadata = {
   title: '8000 Fair Oaks Pkwy — Retail Bays + Executive Office Suites | Fair Oaks Ranch | CRECO',
@@ -81,9 +120,22 @@ export default function FairOaksDevPage() {
     <>
       <Header />
       <main className="min-h-screen pt-20">
-        {/* Hero */}
-        <section className="bg-primary py-16 sm:py-24 text-white">
-          <Container>
+        {/* Hero — monument sign photo as the background. Site-shot
+            "Fair Oaks Plaza 8000" pylon with the tenant list is the
+            single most recognizable visual for the property and the
+            most credible anchor for the H1. Same overlay pattern as the
+            8979 Dietz Elkhorn hero: absolute <img> + bg-primary/70
+            wash, so text stays readable without losing the photo. */}
+        <section className="relative bg-primary py-16 sm:py-24 text-white overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={PHOTOS.monumentSign}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-primary/70" />
+          <Container className="relative z-10">
             <div className="max-w-3xl">
               <p className="overline mb-3 text-gold flex items-center gap-2">
                 <MapPin className="h-3.5 w-3.5" /> Now Leasing · Fair Oaks Ranch, TX
@@ -153,36 +205,75 @@ export default function FairOaksDevPage() {
                 The lot is configured as a single mixed-use commercial address. The retail center activates the street, drives daytime traffic, and gives the office tenants on-site amenities. The two executive suite buildings serve a different but adjacent market — professionals whose clients are exactly the customers visiting the retail bays.
               </p>
             </div>
+            {/* Three building cards — each now leads with a real photo
+                of that specific building so the prospect can see exactly
+                what they'd be leasing into. Using next/image so we get
+                automatic responsive srcsets + WebP conversion for the
+                large source photos. aspect-[4/3] keeps the grid tidy
+                regardless of source aspect ratio. */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-              <div className="rounded-2xl bg-white shadow-card p-7 flex flex-col">
-                <div className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-gold/10 text-gold mb-4">
-                  <Store className="h-5 w-5" />
+              <div className="rounded-2xl bg-white shadow-card flex flex-col overflow-hidden">
+                <div className="relative w-full aspect-[4/3] bg-background-cream">
+                  <Image
+                    src={PHOTOS.retailStripWide}
+                    alt="The 4-bay retail center at 8000 Fair Oaks Pkwy — Building 1"
+                    fill
+                    sizes="(min-width: 768px) 33vw, 100vw"
+                    className="object-cover"
+                  />
                 </div>
-                <p className="text-caption uppercase tracking-widest text-gold mb-1">Building 1</p>
-                <h3 className="font-heading text-heading-md font-bold text-primary mb-2">4-Bay Retail Center</h3>
-                <p className="text-body-sm text-foreground-muted leading-relaxed flex-1">
-                  Fronting Fair Oaks Pkwy. Suited for restaurant, fast-casual, coffee, fitness, retail, and service concepts that want visibility and a captive Fair Oaks Ranch resident customer base.
-                </p>
+                <div className="p-7 flex flex-col flex-1">
+                  <div className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-gold/10 text-gold mb-4">
+                    <Store className="h-5 w-5" />
+                  </div>
+                  <p className="text-caption uppercase tracking-widest text-gold mb-1">Building 1</p>
+                  <h3 className="font-heading text-heading-md font-bold text-primary mb-2">4-Bay Retail Center</h3>
+                  <p className="text-body-sm text-foreground-muted leading-relaxed flex-1">
+                    Fronting Fair Oaks Pkwy. Suited for restaurant, fast-casual, coffee, fitness, retail, and service concepts that want visibility and a captive Fair Oaks Ranch resident customer base.
+                  </p>
+                </div>
               </div>
-              <div className="rounded-2xl bg-white shadow-card p-7 flex flex-col">
-                <div className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-gold/10 text-gold mb-4">
-                  <Briefcase className="h-5 w-5" />
+              <div className="rounded-2xl bg-white shadow-card flex flex-col overflow-hidden">
+                <div className="relative w-full aspect-[4/3] bg-background-cream">
+                  <Image
+                    src={PHOTOS.realtyGroupExterior}
+                    alt="Building 2 — CRECO + Fair Oaks Realty Group executive office suites"
+                    fill
+                    sizes="(min-width: 768px) 33vw, 100vw"
+                    className="object-cover"
+                  />
                 </div>
-                <p className="text-caption uppercase tracking-widest text-gold mb-1">Building 2</p>
-                <h3 className="font-heading text-heading-md font-bold text-primary mb-2">Executive Office Suites — North Building</h3>
-                <p className="text-body-sm text-foreground-muted leading-relaxed flex-1">
-                  Two-story building of private executive suites. Designed for solo professionals, small teams, and satellite offices that want a Fair Oaks Ranch business address with the convenience of on-site amenities.
-                </p>
+                <div className="p-7 flex flex-col flex-1">
+                  <div className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-gold/10 text-gold mb-4">
+                    <Briefcase className="h-5 w-5" />
+                  </div>
+                  <p className="text-caption uppercase tracking-widest text-gold mb-1">Building 2</p>
+                  <h3 className="font-heading text-heading-md font-bold text-primary mb-2">Executive Office Suites — North Building</h3>
+                  <p className="text-body-sm text-foreground-muted leading-relaxed flex-1">
+                    Two-story building of private executive suites. Designed for solo professionals, small teams, and satellite offices that want a Fair Oaks Ranch business address with the convenience of on-site amenities.
+                  </p>
+                </div>
               </div>
-              <div className="rounded-2xl bg-white shadow-card p-7 flex flex-col">
-                <div className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-gold/10 text-gold mb-4">
-                  <Briefcase className="h-5 w-5" />
+              <div className="rounded-2xl bg-white shadow-card flex flex-col overflow-hidden">
+                <div className="relative w-full aspect-[4/3] bg-background-cream">
+                  <Image
+                    src={PHOTOS.executiveSuitesSouth}
+                    alt="Building 3 — the south executive office suite building at 8000 Fair Oaks Pkwy"
+                    fill
+                    sizes="(min-width: 768px) 33vw, 100vw"
+                    className="object-cover"
+                  />
                 </div>
-                <p className="text-caption uppercase tracking-widest text-gold mb-1">Building 3</p>
-                <h3 className="font-heading text-heading-md font-bold text-primary mb-2">Executive Office Suites — South Building</h3>
-                <p className="text-body-sm text-foreground-muted leading-relaxed flex-1">
-                  Second two-story executive suite building, configured for additional professional office tenants. Walking distance to the retail center for client meetings, lunch, and coffee.
-                </p>
+                <div className="p-7 flex flex-col flex-1">
+                  <div className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-gold/10 text-gold mb-4">
+                    <Briefcase className="h-5 w-5" />
+                  </div>
+                  <p className="text-caption uppercase tracking-widest text-gold mb-1">Building 3</p>
+                  <h3 className="font-heading text-heading-md font-bold text-primary mb-2">Executive Office Suites — South Building</h3>
+                  <p className="text-body-sm text-foreground-muted leading-relaxed flex-1">
+                    Second two-story executive suite building, configured for additional professional office tenants. Walking distance to the retail center for client meetings, lunch, and coffee.
+                  </p>
+                </div>
               </div>
             </div>
           </Container>
@@ -205,6 +296,50 @@ export default function FairOaksDevPage() {
                   </div>
                   <h3 className="font-heading text-heading-sm font-bold text-primary mb-2">{title}</h3>
                   <p className="text-body-sm text-foreground-muted leading-relaxed">{body}</p>
+                </div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* Photo gallery — site-shot tour of the plaza. Sits between
+            "Why" (sets context) and "Retail Bays" (starts the leasing
+            pitch) because by this point a prospect is bought in on the
+            opportunity and ready to see the actual property before
+            reading lease specifics. Asymmetric grid (first photo wider)
+            so the monument-sign hero shot anchors the section visually,
+            with the rest arranged as a clean 2×3 grid on desktop. */}
+        <section id="gallery" className="section-luxury bg-white scroll-mt-24">
+          <Container>
+            <div className="max-w-3xl mx-auto text-center mb-10">
+              <p className="overline mb-3">A look around</p>
+              <h2 className="font-heading text-display-sm font-bold text-primary mb-4">
+                Site-shot tour of the plaza.
+              </h2>
+              <p className="text-body text-foreground-muted leading-relaxed">
+                No renderings. These are real photos of the existing tenant
+                mix, building exteriors, and frontage so you know exactly
+                what you'd be leasing into.
+              </p>
+            </div>
+
+            <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {GALLERY.map((photo, idx) => (
+                <div
+                  key={photo.src}
+                  className={`relative overflow-hidden rounded-xl bg-background-cream ${
+                    idx === 0 ? 'sm:col-span-2 aspect-[16/9]' : 'aspect-[4/3]'
+                  }`}
+                >
+                  <Image
+                    src={photo.src}
+                    alt={photo.alt}
+                    fill
+                    sizes={idx === 0
+                      ? '(min-width: 640px) 66vw, 100vw'
+                      : '(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw'}
+                    className="object-cover transition-transform duration-500 hover:scale-105"
+                  />
                 </div>
               ))}
             </div>
