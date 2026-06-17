@@ -55,6 +55,12 @@ export interface Listing {
   closed_date: string | null;
   submarket: string | null;
   featured: boolean;
+  // Optional override — when set, listing cards link here instead of the
+  // default /listings/${slug} detail page. Used for properties that have
+  // a dedicated marketing landing page (e.g. 8000 Fair Oaks Plaza →
+  // /8000-fair-oaks-pkwy). The DB column does not exist yet; this is an
+  // app-layer-only field populated by code (see src/lib/featured-properties.ts).
+  landing_url?: string | null;
   // Geocoded coordinates — populated by /api/admin/geocode-listings or the
   // Supabase trigger on insert. NULL means "not yet geocoded" — those listings
   // won't render a pin on the map view but still appear in grid.

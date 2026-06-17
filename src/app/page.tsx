@@ -51,6 +51,7 @@ import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import { getListings, getTestimonials, supabase } from '@/lib/supabase';
+import { withSyntheticListings, listingHref } from '@/lib/featured-properties';
 import { TrustStrip } from '@/components/marketing/TrustStrip';
 
 const DEMO_LISTINGS = [
@@ -186,8 +187,20 @@ export default async function HomePage() {
     supabase.from('site_settings').select('*').eq('id', 1).single(),
   ]);
 
-  const featuredListings = listingsResult.status === 'fulfilled' && listingsResult.value.length > 0
-    ? listingsResult.value.slice(0, 3) : DEMO_LISTINGS;
+  // Pull active listings + prepend synthetic ones (Fair Oaks Plaza, etc.)
+  // so a hand-curated property always anchors the Featured grid even when
+  // the DB has fewer than 3 active rows. Slice to 3 for the homepage —
+  // /listings shows the full set.
+  //
+  // The cast to `any` is intentional: DEMO_LISTINGS is a stripped-down
+  // partial Listing shape used purely as a fallback for the card UI, and
+  // the homepage cards already render with `as any` casts on every field
+  // read. withSyntheticListings only inspects `slug` for dedupe, so the
+  // partial shape is safe here.
+  const dbListings = listingsResult.status === 'fulfilled' && listingsResult.value.length > 0
+    ? listingsResult.value
+    : (DEMO_LISTINGS as any[]);
+  const featuredListings = withSyntheticListings(dbListings as any).slice(0, 3);
 
   const featuredTestimonials = testimonialsResult.status === 'fulfilled' && testimonialsResult.value.length > 0
     ? testimonialsResult.value.slice(0, 3) : DEMO_TESTIMONIALS;
@@ -329,7 +342,7 @@ export default async function HomePage() {
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
             {featuredListings.map((listing: any, i: number) => (
               <RevealOnScroll key={listing.id} delay={i * 100}>
-                <Link href={`/listings/${listing.slug}`} className="card-luxury group block">
+                <Link href={listingHref(listing)} className="card-luxury group block">
                   <div className="image-luxury aspect-property bg-background-warm relative">
                     {listing.images && (listing.images as string[])[0] ? (
                       <Image src={(listing.images as string[])[0]} alt={listing.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />

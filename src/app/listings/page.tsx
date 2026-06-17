@@ -13,6 +13,7 @@ import { CompareToggle } from '@/components/listings/CompareToggle';
 import { SaveSearchModal } from '@/components/listings/SaveSearchModal';
 import { formatSqft, formatLeaseRate, formatPrice, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 import type { Listing } from '@/lib/supabase';
+import { withSyntheticListings, listingHref } from '@/lib/featured-properties';
 
 // Map view is heavy (Google Maps JS API + @vis.gl bundle) — only loaded when
 // the user opts in, so grid view keeps a tight first-load bundle for SEO.
@@ -114,7 +115,10 @@ function ListingsPageInner() {
   const initialQ = searchParams.get('q') ?? '';
   const initialView: View = searchParams.get('view') === 'map' ? 'map' : 'grid';
 
-  const [listings, setListings] = useState<Listing[]>(DEMO_LISTINGS);
+  // Synthetic listings (e.g. 8000 Fair Oaks Plaza) are always prepended
+  // to the array regardless of whether the API call has come back yet —
+  // so the property card never blinks in/out as the network resolves.
+  const [listings, setListings] = useState<Listing[]>(() => withSyntheticListings(DEMO_LISTINGS));
   const [search, setSearch] = useState(initialQ);
   const [propertyType, setPropertyType] = useState<string>(initialType);
   const [transactionType, setTransactionType] = useState<string>(initialTxn);
@@ -167,7 +171,10 @@ function ListingsPageInner() {
 
   useEffect(() => {
     fetch('/api/listings').then(r => r.json()).then(d => {
-      if (d.listings?.length) setListings(d.listings);
+      // Always merge the synthetic listings in — even when the DB call
+      // returns 0 rows (e.g. fresh deploy with an empty `listings` table)
+      // the Fair Oaks Plaza card must still render.
+      if (d.listings) setListings(withSyntheticListings(d.listings));
     }).catch(() => {});
   }, []);
 
@@ -354,7 +361,7 @@ function ListingsPageInner() {
                 </p>
                 <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
                   {filtered.map(listing => (
-                    <Link key={listing.id} href={`/listings/${listing.slug}`} className="card-luxury group block">
+                    <Link key={listing.id} href={listingHref(listing)} className="card-luxury group block">
                       <div className="image-luxury aspect-property bg-background-warm relative">
                         {listing.images && (listing.images as string[])[0] ? (
                           <Image src={(listing.images as string[])[0]} alt={listing.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />
