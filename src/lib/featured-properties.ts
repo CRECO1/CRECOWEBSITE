@@ -74,9 +74,73 @@ export const FAIR_OAKS_PLAZA_LISTING: Listing = {
   landing_url: '/8000-fair-oaks-pkwy',
 };
 
+/**
+ * 8979 Dietz Elkhorn — "Elkhorn Point" — new ±20,000 SF neighborhood
+ * retail center pre-leasing in Fair Oaks Ranch.
+ *
+ * The property has BOTH an internal landing page at /8979-dietz-elkhorn
+ * AND a dedicated standalone site at elkhornpoint.com (built and managed
+ * separately). The listing card here points to the standalone site
+ * because it's the canonical presentation for this property — the
+ * internal /8979-dietz-elkhorn page is kept around for SEO and direct
+ * referrals but the standalone domain is where prospective tenants
+ * should land. Card opens in a new tab so visitors don't lose context
+ * of crecotx.com behind them.
+ *
+ * Thumbnail: the cropped site plan PNG. It's not a building photo
+ * (the center hasn't been built yet — it's pre-leasing) but it's the
+ * single most representative visual we have until photography exists.
+ */
+export const DIETZ_ELKHORN_LISTING: Listing = {
+  id: 'synth-8979-dietz-elkhorn',
+  title: 'Elkhorn Point — 8979 Dietz Elkhorn',
+  slug: '8979-dietz-elkhorn',
+  address: '8979 Dietz Elkhorn Rd',
+  city: 'Fair Oaks Ranch',
+  state: 'TX',
+  zip: '78015',
+  property_type: 'retail',
+  transaction_type: 'lease',
+  sale_price: null,
+  lease_rate: null,                          // "Call for pricing" — no public quote
+  lease_rate_basis: null,
+  sqft: 20000,                               // ±20K total GLA across ~10 demisable suites
+  available_sqft: 20000,
+  lot_size: null,
+  zoning: null,
+  year_built: null,
+  clear_height: null,
+  dock_doors: null,
+  grade_doors: null,
+  headline: 'New ±20,000 SF neighborhood retail center — pre-leasing, demisable suites with F&B end caps',
+  description: null,
+  features: [
+    '±10 demisable suites at ±1,500 SF',
+    'Two F&B end caps with patio envelopes',
+    '2-3 food-ready bays',
+    'Pre-leasing local-first',
+  ],
+  images: ['/site-plans/8979-dietz-elkhorn-site-plan.png'],
+  brochure_url: null,
+  virtual_tour_url: null,
+  status: 'active',
+  listing_date: null,
+  closed_date: null,
+  submarket: 'Fair Oaks Ranch',
+  featured: true,
+  latitude: 29.7506,                         // approx — Dietz Elkhorn / Fair Oaks Ranch
+  longitude: -98.6920,
+  geocoded_at: null,
+  created_at: '',
+  updated_at: '',
+  // External — standalone property site lives on its own domain.
+  landing_url: 'https://elkhornpoint.com',
+};
+
 /** Add more bespoke landing-page listings to this array as they come up. */
 export const SYNTHETIC_LISTINGS: Listing[] = [
   FAIR_OAKS_PLAZA_LISTING,
+  DIETZ_ELKHORN_LISTING,
 ];
 
 /**
@@ -88,6 +152,24 @@ export const SYNTHETIC_LISTINGS: Listing[] = [
  */
 export function listingHref(listing: Pick<Listing, 'slug' | 'landing_url'>): string {
   return listing.landing_url ?? `/listings/${listing.slug}`;
+}
+
+/**
+ * Full anchor props for a listing card — handles internal vs. external
+ * URLs in one call. External targets get `target="_blank" rel="noopener
+ * noreferrer"` so the visitor doesn't lose context of crecotx.com when
+ * jumping to a standalone property site (e.g. elkhornpoint.com).
+ */
+export function listingLinkProps(listing: Pick<Listing, 'slug' | 'landing_url'>): {
+  href: string;
+  target?: '_blank';
+  rel?: 'noopener noreferrer';
+} {
+  const href = listingHref(listing);
+  const external = /^https?:\/\//i.test(href);
+  return external
+    ? { href, target: '_blank', rel: 'noopener noreferrer' }
+    : { href };
 }
 
 /**

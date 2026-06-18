@@ -51,7 +51,7 @@ import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import { getListings, getTestimonials, supabase } from '@/lib/supabase';
-import { withSyntheticListings, listingHref } from '@/lib/featured-properties';
+import { withSyntheticListings, listingLinkProps } from '@/lib/featured-properties';
 import { TrustStrip } from '@/components/marketing/TrustStrip';
 
 const DEMO_LISTINGS = [
@@ -342,7 +342,15 @@ export default async function HomePage() {
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
             {featuredListings.map((listing: any, i: number) => (
               <RevealOnScroll key={listing.id} delay={i * 100}>
-                <Link href={listingHref(listing)} className="card-luxury group block">
+                {/* listingLinkProps handles both internal landing pages
+                    (e.g. /8000-fair-oaks-pkwy) and external standalone
+                    sites (e.g. elkhornpoint.com) — external ones spread
+                    target="_blank" rel="noopener noreferrer" so the
+                    visitor doesn't lose context of crecotx.com behind
+                    them. Next.js Link silently treats external hrefs
+                    as plain <a>, so this works without splitting the
+                    JSX into two branches. */}
+                <Link {...listingLinkProps(listing)} className="card-luxury group block">
                   <div className="image-luxury aspect-property bg-background-warm relative">
                     {listing.images && (listing.images as string[])[0] ? (
                       <Image src={(listing.images as string[])[0]} alt={listing.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />
