@@ -130,25 +130,22 @@ export default function FairOaksDevPage() {
             most credible anchor for the H1. Same overlay pattern as the
             8979 Dietz Elkhorn hero: absolute <img> + bg-primary/70
             wash, so text stays readable without losing the photo. */}
-        {/* min-h-[640px] sm:min-h-[760px] gives the monument-sign photo
-            real presence after trimming the hero copy (a phone CTA + a
-            secondary paragraph went away in the last pass). flex
-            items-center keeps the text + buttons vertically centered
-            inside the taller frame instead of hugging the top edge,
-            so the bigger hero doesn't read as wasted space. */}
-        <section className="relative bg-primary py-16 sm:py-24 text-white overflow-hidden min-h-[640px] sm:min-h-[760px] flex items-center">
+        {/* min-h-[560px] sm:min-h-[680px] — scaled back from 640/760
+            because the prior version felt slightly too tall. flex
+            items-center still centers the trimmed copy + CTAs vertically. */}
+        <section className="relative bg-primary py-16 sm:py-24 text-white overflow-hidden min-h-[560px] sm:min-h-[680px] flex items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          {/* object-top anchors the photo's TOP edge to the hero's top
-              edge so the "Fair Oaks Plaza" plaque at the very top of
-              the monument sign stays in frame. Default object-cover
-              centering was clipping the top of the sign — the lower
-              "Fair Oaks Realty Group" line is fine to lose since the
-              rest of the page already calls that tenant out. */}
+          {/* object-position: 50% 20% — between fully-top (0%) and
+              center (50%). Fully anchored to the top pushed the photo
+              too far up; this nudges the sign back down slightly so
+              the "Fair Oaks Plaza" plaque is still visible but the
+              middle of the sign sits closer to the optical center of
+              the hero. */}
           <img
             src={PHOTOS.monumentSign}
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover object-top"
+            className="absolute inset-0 w-full h-full object-cover object-[center_20%]"
           />
           <div className="absolute inset-0 bg-primary/70" />
           <Container className="relative z-10">
