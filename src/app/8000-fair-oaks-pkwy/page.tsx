@@ -130,7 +130,13 @@ export default function FairOaksDevPage() {
             most credible anchor for the H1. Same overlay pattern as the
             8979 Dietz Elkhorn hero: absolute <img> + bg-primary/70
             wash, so text stays readable without losing the photo. */}
-        <section className="relative bg-primary py-16 sm:py-24 text-white overflow-hidden">
+        {/* min-h-[640px] sm:min-h-[760px] gives the monument-sign photo
+            real presence after trimming the hero copy (a phone CTA + a
+            secondary paragraph went away in the last pass). flex
+            items-center keeps the text + buttons vertically centered
+            inside the taller frame instead of hugging the top edge,
+            so the bigger hero doesn't read as wasted space. */}
+        <section className="relative bg-primary py-16 sm:py-24 text-white overflow-hidden min-h-[640px] sm:min-h-[760px] flex items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           {/* object-top anchors the photo's TOP edge to the hero's top
               edge so the "Fair Oaks Plaza" plaque at the very top of
