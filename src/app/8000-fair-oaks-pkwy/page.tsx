@@ -3,7 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
   MapPin, ArrowRight, Phone, Store, Briefcase, Building2,
-  TrendingUp, Users, Sparkles, Coffee,
+  TrendingUp, Users, Sparkles, Coffee, FileText, Download,
 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
@@ -36,6 +36,9 @@ const PHOTOS = {
   retailStripWide:        '/properties/8000-fair-oaks-pkwy/retail-strip-wide.jpg',
   executiveSuitesSouth:   '/properties/8000-fair-oaks-pkwy/executive-suites-south.jpg',
 } as const;
+
+// Downloadable leasing flyer (PDF) — kept in the property's public folder.
+const FLYER_PDF = '/properties/8000-fair-oaks-pkwy/8000-fair-oaks-pkwy-for-lease-flyer.pdf';
 
 const GALLERY = [
   { src: PHOTOS.monumentSign,           alt: 'Fair Oaks Plaza 8000 monument sign listing tenants — Spotted Deer Coffee, Parker\'s Ice Creams, Fair Oaks Salon, Blume Haus, Fair Oaks Realty Group' },
@@ -129,11 +132,17 @@ export default function FairOaksDevPage() {
             wash, so text stays readable without losing the photo. */}
         <section className="relative bg-primary py-16 sm:py-24 text-white overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
+          {/* object-top anchors the photo's TOP edge to the hero's top
+              edge so the "Fair Oaks Plaza" plaque at the very top of
+              the monument sign stays in frame. Default object-cover
+              centering was clipping the top of the sign — the lower
+              "Fair Oaks Realty Group" line is fine to lose since the
+              rest of the page already calls that tenant out. */}
           <img
             src={PHOTOS.monumentSign}
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover object-top"
           />
           <div className="absolute inset-0 bg-primary/70" />
           <Container className="relative z-10">
@@ -144,11 +153,13 @@ export default function FairOaksDevPage() {
               <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-5 leading-tight">
                 8000 Fair Oaks Pkwy.
               </h1>
-              <p className="text-body-lg text-white/70 leading-relaxed mb-4 max-w-2xl">
+              {/* Secondary "Now leasing retail bays for restaurant…
+                  Now leasing executive office suites for…" paragraph
+                  removed — the next-section status strip and the two
+                  CTAs immediately below already convey what's being
+                  leased. The hero reads tighter without it. */}
+              <p className="text-body-lg text-white/70 leading-relaxed mb-8 max-w-2xl">
                 A mixed-use commercial address in Fair Oaks Ranch — <strong className="text-white">a 4-bay retail center plus two two-story executive office suite buildings</strong>, all on one lot, owned and operated by CRECO.
-              </p>
-              <p className="text-body text-white/60 leading-relaxed mb-8 max-w-2xl">
-                Now leasing retail bays for restaurant, coffee, fitness, and specialty retail concepts. Now leasing executive office suites for solo professionals, small teams, and satellite offices.
               </p>
               <div className="flex flex-wrap gap-4">
                 <a
@@ -166,12 +177,19 @@ export default function FairOaksDevPage() {
                   Executive suites
                 </a>
                 <a
-                  href="tel:+12108173443"
+                  href={FLYER_PDF}
+                  target="_blank"
+                  rel="noreferrer noopener"
                   className="inline-flex items-center gap-2 rounded-lg border border-white/30 px-7 py-3.5 text-body-sm font-semibold text-white hover:bg-white/10"
                 >
-                  <Phone className="h-4 w-4" />
-                  (210) 817-3443
+                  <FileText className="h-4 w-4" />
+                  Download flyer
                 </a>
+                {/* Hero phone CTA removed — the header already carries
+                    the phone number, and the inquiry section further
+                    down has a dedicated "Prefer to talk?" card. Three
+                    hero CTAs (Retail / Suites / Flyer) read cleaner
+                    than four on mobile. */}
               </div>
             </div>
           </Container>
@@ -469,6 +487,21 @@ export default function FairOaksDevPage() {
                   </p>
                   <a href="tel:+12108173443" className="inline-flex items-center gap-2 text-gold font-semibold hover:text-gold-light">
                     (210) 817-3443
+                  </a>
+                </div>
+                <div className="rounded-2xl bg-white border border-border p-7">
+                  <FileText className="h-8 w-8 text-gold mb-4" />
+                  <h3 className="font-heading text-heading-sm font-bold text-primary mb-2">Leasing flyer</h3>
+                  <p className="text-body-sm text-foreground-muted mb-4 leading-relaxed">
+                    Download the 8000 Fair Oaks Pkwy leasing flyer — property overview, photos, and contact info in one PDF.
+                  </p>
+                  <a
+                    href={FLYER_PDF}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="inline-flex items-center gap-1.5 text-body-sm font-semibold text-gold-dark hover:text-gold"
+                  >
+                    <Download className="h-4 w-4" /> Download flyer (PDF)
                   </a>
                 </div>
                 <div className="rounded-2xl bg-white border border-border p-7">
