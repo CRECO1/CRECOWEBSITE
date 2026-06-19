@@ -558,7 +558,7 @@ export default async function HomePage() {
                 ))}
               </ul>
               <div className="flex gap-4">
-                <Button size="lg" asChild><Link href="/team">Meet the Team</Link></Button>
+                <Button size="lg" asChild><Link href="/about#team">Meet the Team</Link></Button>
                 <Button size="lg" variant="outline" asChild>
                   <Link href="/sell">List My Property</Link>
                 </Button>

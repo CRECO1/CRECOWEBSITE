@@ -5,6 +5,7 @@ import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
+import { TeamSection } from '@/components/team/TeamSection';
 
 export const metadata: Metadata = {
   title: 'About CRECO | Texas Commercial Real Estate Company',
@@ -125,19 +126,24 @@ export default function AboutPage() {
           </Container>
         </section>
 
-        {/* CTA */}
+        {/* Team — embedded section, replaces the standalone /team route.
+            id="team" lives on the inner <section> so /about#team scrolls
+            users straight to the grid (used by header nav + the /team
+            redirect for any external bookmarks that still point there). */}
+        <TeamSection className="section-luxury bg-white" />
+
+        {/* CTA — "Meet the Team" button removed because the team grid
+            is already on this same page directly above. "Contact Us"
+            stands alone as the single closing action. */}
         <section className="section-compact bg-primary text-white">
           <Container>
             <div className="text-center max-w-2xl mx-auto">
               <h2 className="font-heading text-display-sm font-bold mb-4">Let&apos;s talk.</h2>
               <p className="text-body text-white/70 mb-8">
-                Tour the team, brief us on your needs, or just learn more — we&apos;re happy to start with a conversation.
+                Brief us on your needs or just learn more — we&apos;re happy to start with a conversation.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" asChild>
-                  <Link href="/team">Meet the Team</Link>
-                </Button>
-                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" asChild>
                   <Link href="/contact">Contact Us</Link>
                 </Button>
               </div>

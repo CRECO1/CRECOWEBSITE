@@ -180,8 +180,12 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
                   {link.label}
                 </Link>
               ))}
+              {/* Team link now anchors directly into /about#team — the
+                  team grid was folded into the About page, so a dedicated
+                  /team route would just redirect anyway. Skips the
+                  redirect hop on mobile. */}
               <Link
-                href="/team"
+                href="/about#team"
                 onClick={() => setIsMenuOpen(false)}
                 className="border-b border-border py-4 text-heading font-medium text-primary transition-colors hover:text-gold"
               >
