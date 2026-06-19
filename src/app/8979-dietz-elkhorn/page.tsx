@@ -5,6 +5,7 @@ export const revalidate = 1800;
 
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   MapPin, ArrowRight, Utensils, HeartPulse, Briefcase, ShoppingBag,
   TrendingUp, Users, Sparkles, FileText, Building2, Flame, Zap, Car, Sun,
@@ -220,8 +221,57 @@ export default async function DietzElkhornPage() {
   const marketBullets = (db?.market_bullets?.length ? db.market_bullets : FALLBACK.market_bullets);
   const faqs = (db?.faqs?.length ? db.faqs : FALLBACK.faqs);
 
+  // RealEstateListing + FAQPage schema. The first gives the page
+  // rich-result eligibility (price omitted intentionally — "Call for
+  // pricing"). The FAQPage feeds Google's People Also Ask box AND
+  // lets AI assistants (chatgpt.com, copilot.com) deep-link the right
+  // Q&A directly. FAQs come from the same source the page renders, so
+  // schema stays in sync with displayed copy.
+  const REAL_ESTATE_SCHEMA = {
+    '@context': 'https://schema.org',
+    '@type': 'RealEstateListing',
+    name: 'Elkhorn Point — 8979 Dietz Elkhorn',
+    url: 'https://www.crecotx.com/8979-dietz-elkhorn',
+    image: ['https://www.crecotx.com/site-plans/8979-dietz-elkhorn-site-plan.png'],
+    description:
+      'New ±20,000 SF neighborhood retail center pre-leasing on Dietz Elkhorn in Fair Oaks Ranch, TX. Ten demisable suites, two F&B end caps with patio envelopes, and 2-3 food-ready bays.',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: '8979 Dietz Elkhorn Rd',
+      addressLocality: 'Fair Oaks Ranch',
+      addressRegion: 'TX',
+      postalCode: '78015',
+      addressCountry: 'US',
+    },
+    geo: { '@type': 'GeoCoordinates', latitude: 29.7506, longitude: -98.6920 },
+    broker: {
+      '@type': 'RealEstateAgent',
+      name: 'CRECO',
+      url: 'https://www.crecotx.com',
+      telephone: '+1-210-817-3443',
+    },
+    areaServed: { '@type': 'City', name: 'Fair Oaks Ranch' },
+  };
+  const FAQ_SCHEMA = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f: { q: string; a: string }) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(REAL_ESTATE_SCHEMA) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_SCHEMA) }}
+      />
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero — py-12 on mobile so the section doesn't feel cavernous
@@ -233,12 +283,18 @@ export default async function DietzElkhornPage() {
               height coverage, avoiding the sub-pixel gap on the right
               edge where the dark bg-primary used to peek through with
               background-size: cover. */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          {/* next/image fill + priority — LCP element. WebP conversion
+              + responsive srcset + preload hint. Layout coverage
+              identical to the raw <img absolute inset-0 w-full h-full>
+              pattern via fill. */}
+          <Image
             src={SITE_PLAN_PNG}
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
           />
           {/* Dark overlay so text stays readable */}
           <div className="absolute inset-0 bg-primary/70" />
@@ -437,10 +493,17 @@ export default async function DietzElkhornPage() {
             </div>
 
             <div className="max-w-4xl mx-auto rounded-2xl border border-border bg-background-cream overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              {/* next/image with explicit width/height so the browser
+                  reserves space before load (no CLS) and we still get
+                  WebP + responsive srcset. width/height are the source
+                  PNG's nominal dimensions; rendered size is governed
+                  by w-full + h-auto via className. */}
+              <Image
                 src={SITE_PLAN_PNG}
                 alt="8979 Dietz Elkhorn site plan"
+                width={1687}
+                height={1133}
+                sizes="(min-width: 1024px) 56rem, 100vw"
                 className="w-full h-auto object-contain mx-auto"
               />
             </div>

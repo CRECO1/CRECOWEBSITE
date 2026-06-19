@@ -123,9 +123,46 @@ const WHY_HERE = [
   },
 ];
 
+// RealEstateListing schema — gives this page rich-result eligibility +
+// AI assistant deep-link discoverability (chatgpt.com referrals are
+// already in the GA mix, this widens that channel). Mirrors the
+// schema shape used on /listings/[slug] for consistency.
+const REAL_ESTATE_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'RealEstateListing',
+  name: '8000 Fair Oaks Plaza',
+  url: 'https://www.crecotx.com/8000-fair-oaks-pkwy',
+  image: [
+    'https://www.crecotx.com/properties/8000-fair-oaks-pkwy/monument-sign.jpg',
+    'https://www.crecotx.com/properties/8000-fair-oaks-pkwy/retail-strip-wide.jpg',
+  ],
+  description:
+    'Mixed-use commercial center in Fair Oaks Ranch, TX — 4-bay retail building plus two two-story executive office suite buildings, owned and operated by CRECO. Now leasing retail bays and executive office suites.',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: '8000 Fair Oaks Pkwy',
+    addressLocality: 'Fair Oaks Ranch',
+    addressRegion: 'TX',
+    postalCode: '78015',
+    addressCountry: 'US',
+  },
+  geo: { '@type': 'GeoCoordinates', latitude: 29.7456, longitude: -98.6739 },
+  broker: {
+    '@type': 'RealEstateAgent',
+    name: 'CRECO',
+    url: 'https://www.crecotx.com',
+    telephone: '+1-210-817-3443',
+  },
+  areaServed: { '@type': 'City', name: 'Fair Oaks Ranch' },
+};
+
 export default function FairOaksDevPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(REAL_ESTATE_SCHEMA) }}
+      />
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero — monument sign photo as the background. Site-shot
@@ -145,11 +182,21 @@ export default function FairOaksDevPage() {
               the "Fair Oaks Plaza" plaque is still visible but the
               middle of the sign sits closer to the optical center of
               the hero. */}
-          <img
+          {/* next/image fill + priority — this is the LCP element on
+              the page. Automatic WebP conversion shaves ~35% off the
+              JPG payload, sizes="100vw" generates a responsive srcset
+              so a 375px phone doesn't download a 2000px desktop image,
+              and the priority hint pre-loads it instead of waiting
+              for layout. object-cover + object-[center_20%] preserved
+              identically. */}
+          <Image
             src={PHOTOS.monumentSign}
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover object-[center_20%]"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-[center_20%]"
           />
           <div className="absolute inset-0 bg-primary/70" />
           <Container className="relative z-10">

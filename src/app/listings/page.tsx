@@ -115,6 +115,7 @@ function ListingsPageInner() {
   const initialTxn = searchParams.get('txn') ?? 'all';
   const initialSize = Number(searchParams.get('size') ?? '0');
   const initialQ = searchParams.get('q') ?? '';
+  const initialSubmarket = searchParams.get('submarket') ?? 'all';
   const initialView: View = searchParams.get('view') === 'map' ? 'map' : 'grid';
 
   // Synthetic listings (e.g. 8000 Fair Oaks Plaza) are always prepended
@@ -124,6 +125,7 @@ function ListingsPageInner() {
   const [search, setSearch] = useState(initialQ);
   const [propertyType, setPropertyType] = useState<string>(initialType);
   const [transactionType, setTransactionType] = useState<string>(initialTxn);
+  const [submarket, setSubmarket] = useState<string>(initialSubmarket);
   const [sizeIdx, setSizeIdx] = useState(Number.isFinite(initialSize) ? initialSize : 0);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [view, setView] = useState<View>(initialView);
@@ -152,6 +154,20 @@ function ListingsPageInner() {
     ];
   }, [listings]);
 
+  // Submarket dropdown is fully data-driven — every distinct submarket
+  // string in the listings array becomes an option. New submarkets
+  // added in /admin appear in the filter without any code change.
+  // Sorted alphabetically for predictable scanning.
+  const submarketOptions = useMemo(() => {
+    const submarkets = Array.from(
+      new Set(listings.map(l => l.submarket).filter(Boolean) as string[])
+    ).sort();
+    return [
+      { value: 'all', label: 'All Submarkets' },
+      ...submarkets.map(s => ({ value: s, label: s })),
+    ];
+  }, [listings]);
+
   // Keep the URL in sync with filter state so a filtered view is shareable
   // and bookmarkable. Using router.replace (not push) so the back button
   // doesn't snapshot every keystroke in the search box.
@@ -160,6 +176,7 @@ function ListingsPageInner() {
     const params = new URLSearchParams();
     if (propertyType !== 'all') params.set('type', propertyType);
     if (transactionType !== 'all') params.set('txn', transactionType);
+    if (submarket !== 'all') params.set('submarket', submarket);
     if (sizeIdx !== 0) params.set('size', String(sizeIdx));
     if (search) params.set('q', search);
     if (view !== 'grid') params.set('view', view);
@@ -169,7 +186,7 @@ function ListingsPageInner() {
     if (`${window.location.pathname}${window.location.search}` !== next) {
       router.replace(next, { scroll: false });
     }
-  }, [propertyType, transactionType, sizeIdx, search, view, router]);
+  }, [propertyType, transactionType, submarket, sizeIdx, search, view, router]);
 
   useEffect(() => {
     fetch('/api/listings').then(r => r.json()).then(d => {
@@ -192,13 +209,14 @@ function ListingsPageInner() {
       const matchTxn = transactionType === 'all'
         || l.transaction_type === transactionType
         || l.transaction_type === 'both';
+      const matchSubmarket = submarket === 'all' || l.submarket === submarket;
       const sf = l.sqft ?? 0;
       const matchSize = sf >= range.min && sf <= range.max;
-      return matchSearch && matchType && matchTxn && matchSize;
+      return matchSearch && matchType && matchTxn && matchSubmarket && matchSize;
     });
-  }, [listings, search, propertyType, transactionType, sizeIdx]);
+  }, [listings, search, propertyType, transactionType, submarket, sizeIdx]);
 
-  const hasFilters = propertyType !== 'all' || transactionType !== 'all' || sizeIdx !== 0 || search !== '';
+  const hasFilters = propertyType !== 'all' || transactionType !== 'all' || submarket !== 'all' || sizeIdx !== 0 || search !== '';
 
   return (
     <>
@@ -245,6 +263,22 @@ function ListingsPageInner() {
                 {transactionTypeOptions.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
               </select>
 
+              {/* Submarket filter — populated dynamically from listing
+                  data. Only render the select when there are 2+
+                  submarkets to choose from (the "All Submarkets"
+                  option is index 0). Saves filter-bar space on a
+                  fresh deploy with no DB submarkets present. */}
+              {submarketOptions.length > 2 && (
+                <select
+                  value={submarket}
+                  onChange={e => setSubmarket(e.target.value)}
+                  className="h-11 rounded-lg border border-border px-3 text-body-sm text-primary"
+                  aria-label="Filter by submarket"
+                >
+                  {submarketOptions.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
+                </select>
+              )}
+
               <button
                 onClick={() => setFiltersOpen(v => !v)}
                 className="flex h-11 items-center gap-2 rounded-lg border border-border px-4 text-body-sm text-primary hover:border-gold transition-colors"
@@ -256,7 +290,7 @@ function ListingsPageInner() {
 
               {hasFilters && (
                 <button
-                  onClick={() => { setSearch(''); setPropertyType('all'); setTransactionType('all'); setSizeIdx(0); }}
+                  onClick={() => { setSearch(''); setPropertyType('all'); setTransactionType('all'); setSubmarket('all'); setSizeIdx(0); }}
                   className="flex items-center gap-1 text-caption text-foreground-muted hover:text-primary transition-colors"
                 >
                   <X className="h-3 w-3" /> Clear
@@ -380,9 +414,19 @@ function ListingsPageInner() {
                             {propertyTypeLabel(listing.property_type)}
                           </span>
                         </div>
-                        <div className="absolute top-4 right-4">
-                          <CompareToggle listingId={listing.id} variant="icon" />
-                        </div>
+                        {/* Compare toggle hidden on synthetic listings
+                            (Plaza, Elkhorn). Bespoke landing-page
+                            properties aren't comparable spec-by-spec
+                            with generic DB listings — they live on
+                            their own narrative pages, and /compare
+                            pulls from /api/listings which doesn't
+                            include synthetics. Showing the toggle
+                            would silently drop them from /compare. */}
+                        {!listing.landing_url && (
+                          <div className="absolute top-4 right-4">
+                            <CompareToggle listingId={listing.id} variant="icon" />
+                          </div>
+                        )}
                       </div>
                       <div className="p-6">
                         <p className="mb-1 text-caption text-foreground-muted">
@@ -440,6 +484,7 @@ function ListingsPageInner() {
           search,
           propertyType,
           transactionType,
+          submarket,
           sizeLabel: SIZE_RANGES[sizeIdx]?.label ?? '',
           sizeMin: SIZE_RANGES[sizeIdx]?.min === 0 && SIZE_RANGES[sizeIdx]?.max === Infinity ? null : (SIZE_RANGES[sizeIdx]?.min ?? null),
           sizeMax: SIZE_RANGES[sizeIdx]?.max === Infinity ? null : (SIZE_RANGES[sizeIdx]?.max ?? null),

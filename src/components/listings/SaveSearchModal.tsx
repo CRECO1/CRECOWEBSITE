@@ -29,6 +29,9 @@ interface SaveSearchFilters {
   search: string;
   propertyType: string;
   transactionType: string;
+  /** Submarket name as it appears on the listing row (e.g. "Northeast",
+   *  "Fair Oaks Ranch"). 'all' means "no submarket filter applied". */
+  submarket: string;
   sizeLabel: string;
   /** Min/max in SF; null = unbounded. Sent to the API so the subscriber
    *  record carries the same filter shape as /property-alerts. */
@@ -76,7 +79,7 @@ export function SaveSearchModal({ open, onClose, filters }: Props) {
       filters: {
         property_types: filters.propertyType !== 'all' ? [filters.propertyType] : [],
         transaction_type: filters.transactionType !== 'all' ? filters.transactionType : 'both',
-        submarkets: [] as string[],
+        submarkets: filters.submarket && filters.submarket !== 'all' ? [filters.submarket] : ([] as string[]),
         size_min: normalizedMin,
         size_max: normalizedMax,
         search_terms: filters.search ? filters.search.slice(0, 200) : null,
