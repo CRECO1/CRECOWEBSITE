@@ -24,7 +24,8 @@
  */
 
 import { useState } from 'react';
-import { ArrowRight, CheckCircle, Utensils, HeartPulse, Briefcase, ShoppingBag } from 'lucide-react';
+import { ArrowRight, Utensils, HeartPulse, Briefcase, ShoppingBag } from 'lucide-react';
+import { InquirySuccessCard } from './InquirySuccessCard';
 import { getRecaptchaToken } from './Recaptcha';
 import { Honeypot } from './Honeypot';
 
@@ -164,24 +165,10 @@ export function RetailLeasingInquiryForm() {
 
   if (submitted) {
     return (
-      <div className="form-success-box text-center">
-        <CheckCircle className="mx-auto h-12 w-12 text-gold mb-4" />
-        <h2 className="font-heading text-heading-md font-bold text-primary mb-2">
-          Thanks — we&apos;ll be in touch within one business day.
-        </h2>
-        <p className="text-body text-foreground-muted max-w-md mx-auto">
-          A CRECO broker will follow up about 8979 Dietz Elkhorn with current suite
-          availability, your suite recommendation, and a proposed tour time. If
-          you&apos;re a great fit for an end cap or food-ready bay, we&apos;ll flag
-          that right away.
-        </p>
-        <p className="mt-4 text-body-sm text-foreground-muted">
-          Want to talk now? Call{' '}
-          <a href="tel:+12108173443" className="text-gold-dark hover:underline font-semibold">
-            (210) 817-3443
-          </a>.
-        </p>
-      </div>
+      <InquirySuccessCard
+        propertyName="8979 Dietz Elkhorn"
+        customMessage="A CRECO principal will follow up about 8979 Dietz Elkhorn with current suite availability, your suite recommendation, and a proposed tour time. If you're a great fit for an end cap or food-ready bay, we'll flag that right away."
+      />
     );
   }
 

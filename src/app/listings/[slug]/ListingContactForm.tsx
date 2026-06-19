@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { Honeypot } from '@/components/forms/Honeypot';
+import { InquirySuccessCard } from '@/components/forms/InquirySuccessCard';
 import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
 
 export function ListingContactForm({ listingTitle }: { listingTitle: string }) {
@@ -59,27 +59,19 @@ export function ListingContactForm({ listingTitle }: { listingTitle: string }) {
     }
   }
 
-  // Success state — replaces the form with a friendly confirmation
+  // Success state — uses the shared InquirySuccessCard so the
+  // post-submit moment matches every other inquiry surface on the
+  // site. showBrowseProperties is false here because the visitor was
+  // already browsing properties when they submitted; routing them
+  // back to the grid undoes the choice they just made.
   if (submitted) {
     return (
-      <div className="rounded-xl bg-gold/10 border border-gold/30 p-6 text-center">
-        <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gold">
-          <CheckCircle className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="font-heading text-heading-sm font-semibold text-primary mb-2">
-          Thank you!
-        </h3>
-        <p className="text-body-sm text-foreground-muted">
-          A CRECO broker will reach out within one business day with details on <span className="font-semibold text-primary">{listingTitle}</span>.
-        </p>
-        <button
-          type="button"
-          onClick={() => setSubmitted(false)}
-          className="mt-4 text-caption text-foreground-muted hover:text-primary underline"
-        >
-          Send another message
-        </button>
-      </div>
+      <InquirySuccessCard
+        propertyName={listingTitle}
+        customMessage={`A CRECO principal will follow up about ${listingTitle} with current availability, full property details, and a proposed tour time.`}
+        onReset={() => setSubmitted(false)}
+        showBrowseProperties={false}
+      />
     );
   }
 

@@ -12,9 +12,10 @@
  */
 
 import { useState } from 'react';
-import { ArrowRight, CheckCircle, MapPin, Store, Briefcase } from 'lucide-react';
+import { ArrowRight, MapPin, Store, Briefcase } from 'lucide-react';
 import { getRecaptchaToken } from './Recaptcha';
 import { Honeypot } from './Honeypot';
+import { InquirySuccessCard } from './InquirySuccessCard';
 import { googleMapsUrl } from '@/lib/utils';
 
 type InterestType = 'retail' | 'suite' | 'either';
@@ -166,17 +167,14 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
   }
 
   if (submitted) {
+    // Property-specific copy passed in — the rest (timeline, "while
+    // you wait" links, phone fallback) is the shared InquirySuccessCard
+    // pattern so the post-submit moment feels consistent across forms.
     return (
-      <div className="form-success-box text-center">
-        <CheckCircle className="mx-auto h-12 w-12 text-gold mb-4" />
-        <h2 className="font-heading text-heading-md font-bold text-primary mb-2">Got it — we'll be in touch.</h2>
-        <p className="text-body text-foreground-muted max-w-md mx-auto">
-          Thanks for your interest in 8000 Fair Oaks Pkwy. A CRECO broker will follow up directly with current availability, rates, and next steps.
-        </p>
-        <p className="mt-4 text-body-sm text-foreground-muted">
-          Want to talk now? Call <a href="tel:+12108173443" className="text-gold-dark hover:underline font-semibold">(210) 817-3443</a>.
-        </p>
-      </div>
+      <InquirySuccessCard
+        propertyName="8000 Fair Oaks Plaza"
+        customMessage={`A CRECO principal will follow up about your ${interest === 'suite' ? 'executive office suite' : interest === 'retail' ? 'retail bay' : '8000 Fair Oaks Pkwy'} inquiry with current availability, the right space recommendation, and a proposed tour time.`}
+      />
     );
   }
 
@@ -235,15 +233,19 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
             placeholder="you@company.com"
           />
         </div>
+        {/* Phone made OPTIONAL — was required, which hurt completion.
+            Phone is the broker's preferred reply channel, but forcing
+            it before submission lost the 10-15% of visitors who don't
+            want to share it before a value exchange. We capture email
+            as the gate and ask for the number organically in the reply. */}
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-1.5">Phone *</label>
+          <label className="block text-body-sm font-semibold text-primary mb-1.5">Phone</label>
           <input
             type="tel"
-            required
             value={phone}
             onChange={e => setPhone(e.target.value)}
             className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
-            placeholder="(210) 555-0100"
+            placeholder="(210) 555-0100 (optional)"
           />
         </div>
         <div>
