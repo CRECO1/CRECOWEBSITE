@@ -82,12 +82,18 @@ export function TeamSection({
   return (
     <section id="team" className={`scroll-mt-24 ${className}`}>
       <Container>
-        <div className="max-w-2xl mb-12 mx-auto text-center">
-          <p className="overline mb-3 text-gold">{eyebrow}</p>
+        {/* Section header — full Container width with text-center, so
+            the eyebrow + h2 sit on the optical center of the page
+            instead of inside a narrower max-w wrapper that looked
+            shifted on wide viewports. The description does keep a
+            narrower max-w for readability — long line lengths on a
+            wide column are hard to scan. */}
+        <div className="mb-12 text-center">
+          <p className="overline mb-3 text-gold text-center">{eyebrow}</p>
           <h2 className="font-heading text-display-sm font-bold text-primary leading-tight">
             {heading}
           </h2>
-          <p className="mt-4 text-body text-foreground-muted leading-relaxed">
+          <p className="mt-4 text-body text-foreground-muted leading-relaxed max-w-2xl mx-auto">
             {description}
           </p>
         </div>
