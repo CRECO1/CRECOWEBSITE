@@ -26,6 +26,7 @@
 import { useEffect, useState } from 'react';
 import { ArrowRight, X } from 'lucide-react';
 import { RetailLeasingInquiryForm } from '@/components/forms/RetailLeasingInquiryForm';
+import { trackEvent } from '@/lib/analytics';
 
 export function ClaimSuiteButton() {
   const [open, setOpen] = useState(false);
@@ -58,7 +59,14 @@ export function ClaimSuiteButton() {
           balance so if it ever does wrap it breaks gracefully. */}
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          // Fire GA4 modal-open event before flipping state so the
+          // analytics fire even if the modal mount errors for some
+          // reason. params are kept minimal — property + surface so
+          // GA can attribute the open to the right page.
+          trackEvent('inquiry_modal_opened', { property: '8979-dietz-elkhorn', surface: 'hero_cta' });
+          setOpen(true);
+        }}
         className="inline-flex items-center gap-2 rounded-lg bg-gold px-5 py-3 sm:px-8 sm:py-4 text-body-sm font-bold text-primary hover:bg-gold-light shadow-lg text-balance"
       >
         Claim Your Suite — Inquire Now <ArrowRight className="h-4 w-4 shrink-0" />

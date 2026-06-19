@@ -14,6 +14,9 @@ import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { RetailLeasingInquiryForm } from '@/components/forms/RetailLeasingInquiryForm';
 import { ClaimSuiteButton } from '@/components/marketing/ClaimSuiteButton';
+import { MarketReportCapture } from '@/components/marketing/MarketReportCapture';
+import { PropertyAlertsInline } from '@/components/marketing/PropertyAlertsInline';
+import { StickyPropertyCTABar } from '@/components/marketing/StickyPropertyCTABar';
 import { getLandingPage } from '@/lib/supabase';
 
 /**
@@ -569,6 +572,20 @@ export default async function DietzElkhornPage() {
           </Container>
         </section>
 
+        {/* Passive lead-magnets — for visitors who read the whole page
+            but aren't ready to claim a specific suite yet. Same pair as
+            Plaza so brokers see a consistent lead taxonomy across
+            properties. Light variant against the cream/white sections
+            on either side. */}
+        <section className="bg-white py-12 sm:py-16">
+          <Container>
+            <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <MarketReportCapture variant="light" surface="8979-dietz-elkhorn-bottom" />
+              <PropertyAlertsInline variant="light" surface="8979-dietz-elkhorn-bottom" />
+            </div>
+          </Container>
+        </section>
+
         {/* Cross-link to other CRECO Fair Oaks development */}
         <section className="bg-primary py-12 text-white">
           <Container>
@@ -590,6 +607,13 @@ export default async function DietzElkhornPage() {
           </Container>
         </section>
       </main>
+      {/* Sticky inquiry pill — same modal as the hero "Claim Your Suite"
+          CTA. Anchored to the bottom of the viewport after the visitor
+          scrolls past the hero; auto-hides once the inline #inquire
+          form enters view so we don't compete with ourselves. */}
+      <StickyPropertyCTABar property="8979-dietz-elkhorn" hideWhenVisible="#inquire">
+        <ClaimSuiteButton />
+      </StickyPropertyCTABar>
       <Footer />
     </>
   );

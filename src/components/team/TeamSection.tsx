@@ -22,6 +22,7 @@ import Image from 'next/image';
 import { Phone, Mail, Award, User, X } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { supabase } from '@/lib/supabase';
+import { trackEvent } from '@/lib/analytics';
 
 const DEMO_AGENTS = [
   {
@@ -102,7 +103,10 @@ export function TeamSection({
           {agents.map((agent) => (
             <button
               key={agent.id}
-              onClick={() => setSelected(agent)}
+              onClick={() => {
+                trackEvent('team_profile_opened', { agent_slug: agent.slug, agent_name: agent.name });
+                setSelected(agent);
+              }}
               className="card-luxury group p-6 text-center w-full focus:outline-none focus:ring-2 focus:ring-gold rounded-2xl transition-all hover:-translate-y-1"
             >
               <div className="mx-auto mb-5 h-28 w-28 rounded-full bg-background-warm overflow-hidden">

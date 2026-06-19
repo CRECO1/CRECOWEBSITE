@@ -5,6 +5,7 @@ import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import { SORTED_POSTS } from '@/lib/insights';
+import { MarketReportCapture } from '@/components/marketing/MarketReportCapture';
 
 export const metadata: Metadata = {
   title: 'Insights | Texas Commercial Real Estate Analysis | CRECO',
@@ -136,6 +137,20 @@ export default function InsightsIndex() {
             </Container>
           </section>
         )}
+
+        {/* Market-report capture at the bottom of /insights — natural
+            home for the lead magnet. Visitors who scrolled through
+            posts have shown intent for analytical content; the report
+            is the same kind of artifact. Dark variant so it pops
+            against the white "More Insights" section above and breaks
+            up the rhythm before the footer. */}
+        <section className="bg-primary py-16">
+          <Container>
+            <div className="max-w-2xl mx-auto">
+              <MarketReportCapture variant="dark" surface="insights-bottom" />
+            </div>
+          </Container>
+        </section>
       </main>
       <Footer />
     </>

@@ -8,6 +8,7 @@ import { Menu, X, Phone, Building2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
+import { trackEvent } from '@/lib/analytics';
 
 const navLinks = [
   { href: '/listings', label: 'Properties' },
@@ -123,8 +124,12 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
                 to Get Started; flattening reads cleaner and matches the rest
                 of the header's horizontal rhythm. whitespace-nowrap keeps the
                 number from wrapping at narrow desktop widths. */}
+            {/* Phone tap fires GA4 `phone_click` so the conversions
+                dashboard knows when someone actually called — was
+                completely untracked before. */}
             <a
               href={`tel:+1${phone.replace(/\D/g, '')}`}
+              onClick={() => trackEvent('phone_click', { surface: 'header', page: typeof window !== 'undefined' ? window.location.pathname : undefined })}
               className={cn(
                 'hidden sm:inline-flex items-center gap-2 font-semibold transition-colors whitespace-nowrap',
                 isTransparent ? 'text-white' : 'text-primary',
@@ -215,7 +220,10 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
                   </Link>
                 </Button>
                 <Button variant="primary" size="lg" fullWidth asChild>
-                  <a href={`tel:${phone.replace(/\D/g, '')}`}>
+                  <a
+                    href={`tel:${phone.replace(/\D/g, '')}`}
+                    onClick={() => trackEvent('phone_click', { surface: 'mobile_menu' })}
+                  >
                     <Phone className="mr-2 h-5 w-5" />
                     Call Now: {phone}
                   </a>

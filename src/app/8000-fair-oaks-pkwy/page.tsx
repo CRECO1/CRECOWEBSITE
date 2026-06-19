@@ -9,6 +9,10 @@ import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { DevelopmentInterestForm } from '@/components/forms/DevelopmentInterestForm';
 import { DevelopmentInquiryButton } from '@/components/marketing/DevelopmentInquiryButton';
+import { TrackedAnchor } from '@/components/analytics/TrackedAnchor';
+import { MarketReportCapture } from '@/components/marketing/MarketReportCapture';
+import { PropertyAlertsInline } from '@/components/marketing/PropertyAlertsInline';
+import { StickyPropertyCTABar } from '@/components/marketing/StickyPropertyCTABar';
 
 // ─── Property photos ────────────────────────────────────────────────────
 // Site-shot photo set of 8000 Fair Oaks Plaza, taken on-site. Sourced
@@ -179,15 +183,17 @@ export default function FairOaksDevPage() {
                   <Briefcase className="h-4 w-4" />
                   Executive suites
                 </a>
-                <a
+                <TrackedAnchor
                   href={FLYER_PDF}
                   target="_blank"
                   rel="noreferrer noopener"
+                  event="flyer_downloaded"
+                  params={{ property: '8000-fair-oaks-pkwy', surface: 'hero' }}
                   className="inline-flex items-center gap-2 rounded-lg border border-white/30 px-7 py-3.5 text-body-sm font-semibold text-white hover:bg-white/10"
                 >
                   <FileText className="h-4 w-4" />
                   Download flyer
-                </a>
+                </TrackedAnchor>
                 {/* Hero phone CTA removed — the header already carries
                     the phone number, and the inquiry section further
                     down has a dedicated "Prefer to talk?" card. Three
@@ -498,14 +504,16 @@ export default function FairOaksDevPage() {
                   <p className="text-body-sm text-foreground-muted mb-4 leading-relaxed">
                     Download the 8000 Fair Oaks Pkwy leasing flyer — property overview, photos, and contact info in one PDF.
                   </p>
-                  <a
+                  <TrackedAnchor
                     href={FLYER_PDF}
                     target="_blank"
                     rel="noreferrer noopener"
+                    event="flyer_downloaded"
+                    params={{ property: '8000-fair-oaks-pkwy', surface: 'inquiry_section' }}
                     className="inline-flex items-center gap-1.5 text-body-sm font-semibold text-gold-dark hover:text-gold"
                   >
                     <Download className="h-4 w-4" /> Download flyer (PDF)
-                  </a>
+                  </TrackedAnchor>
                 </div>
                 <div className="rounded-2xl bg-white border border-border p-7">
                   <h3 className="font-heading text-heading-sm font-bold text-primary mb-4">Looking elsewhere?</h3>
@@ -520,6 +528,20 @@ export default function FairOaksDevPage() {
                   </Link>
                 </div>
               </aside>
+            </div>
+          </Container>
+        </section>
+
+        {/* Passive lead-magnets — for the visitor who reads the whole
+            page but isn't ready to inquire about a specific suite yet.
+            Pair: market report (email for the quarterly read) and
+            property alerts (email for new Texas listings). Both
+            fire-and-replace inline, no popup. */}
+        <section className="bg-white py-16">
+          <Container>
+            <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <MarketReportCapture variant="light" surface="8000-fair-oaks-pkwy-bottom" />
+              <PropertyAlertsInline variant="light" surface="8000-fair-oaks-pkwy-bottom" />
             </div>
           </Container>
         </section>
@@ -554,6 +576,18 @@ export default function FairOaksDevPage() {
           </Container>
         </section>
       </main>
+      {/* Sticky inquiry pill — catches the scroll-past-hero visitor.
+          Wraps the same DevelopmentInquiryButton the inline retail-bay
+          CTA uses so the modal + form + attribution path is identical. */}
+      <StickyPropertyCTABar property="8000-fair-oaks-pkwy" hideWhenVisible="#inquiry">
+        <DevelopmentInquiryButton
+          label="Inquire now"
+          variant="gold"
+          modalTitle="Tell us about your concept."
+          modalEyebrow="Now Leasing — 8000 Fair Oaks Plaza"
+          initialInterest="either"
+        />
+      </StickyPropertyCTABar>
       <Footer />
     </>
   );

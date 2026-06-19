@@ -14,6 +14,8 @@ import { SaveSearchModal } from '@/components/listings/SaveSearchModal';
 import { formatSqft, formatLeaseRate, formatPrice, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 import type { Listing } from '@/lib/supabase';
 import { withSyntheticListings, listingLinkProps } from '@/lib/featured-properties';
+import { PropertyAlertsInline } from '@/components/marketing/PropertyAlertsInline';
+import { MarketReportCapture } from '@/components/marketing/MarketReportCapture';
 
 // Map view is heavy (Google Maps JS API + @vis.gl bundle) — only loaded when
 // the user opts in, so grid view keeps a tight first-load bundle for SEO.
@@ -409,6 +411,20 @@ function ListingsPageInner() {
                 </div>
               </>
             )}
+          </Container>
+        </div>
+
+        {/* Lead-magnet band — catches the visitor who scrolled the
+            entire grid and isn't ready to click into a specific
+            listing. Property alerts captures email for new-listing
+            notifications; market report captures email for the
+            quarterly read. Two parallel low-friction signups. */}
+        <div className="bg-background-cream border-t border-border py-12">
+          <Container>
+            <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <PropertyAlertsInline variant="light" surface="listings-bottom" />
+              <MarketReportCapture variant="light" surface="listings-bottom" />
+            </div>
           </Container>
         </div>
       </main>

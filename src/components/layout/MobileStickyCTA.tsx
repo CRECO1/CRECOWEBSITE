@@ -15,6 +15,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Phone, Building2 } from 'lucide-react';
+import { trackEvent } from '@/lib/analytics';
 
 const HIDDEN_PREFIXES = ['/admin', '/manage', '/crm', '/tenant-needs', '/get-started', '/sell', '/contact'];
 
@@ -35,6 +36,7 @@ export function MobileStickyCTA({ phone = '(210) 817-3443' }: { phone?: string }
       >
         <a
           href={telHref}
+          onClick={() => trackEvent('phone_click', { surface: 'mobile_sticky_cta' })}
           className="flex items-center justify-center gap-2 rounded-lg bg-primary px-3 py-3 text-sm font-semibold text-white active:bg-primary/90"
         >
           <Phone className="h-4 w-4" aria-hidden="true" />

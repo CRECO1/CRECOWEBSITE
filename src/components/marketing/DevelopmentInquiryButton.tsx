@@ -27,6 +27,7 @@
 import { useEffect, useState } from 'react';
 import { ArrowRight, X, type LucideIcon } from 'lucide-react';
 import { DevelopmentInterestForm } from '@/components/forms/DevelopmentInterestForm';
+import { trackEvent } from '@/lib/analytics';
 
 type Variant = 'gold' | 'primary';
 
@@ -77,7 +78,13 @@ export function DevelopmentInquiryButton({
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          trackEvent('inquiry_modal_opened', {
+            property: '8000-fair-oaks-pkwy',
+            interest: initialInterest,
+          });
+          setOpen(true);
+        }}
         className={`inline-flex items-center gap-2 rounded-lg px-5 py-3 sm:px-6 sm:py-3 text-body-sm font-semibold shadow-sm text-balance ${buttonClasses}`}
       >
         {Icon && <Icon className="h-4 w-4 shrink-0" />}
