@@ -215,12 +215,22 @@ export default async function HomePage() {
   // 6 even if some slugs are absent (e.g. a synthetic gets removed
   // or a DB listing isn't active).
   const FEATURED_SLUG_ORDER = [
-    '8000-fair-oaks-pkwy',     // Plaza (synthetic)
-    '2250-chipley-circle',      // Chipley (DB) — was at position 4
-    '7830-louis-pasteur',       // Louis Pasteur (DB) — was at position 6
-    '8979-dietz-elkhorn',       // Elkhorn (synthetic) — was at position 2
-    '523-seventh-st',           // Seventh St (DB)
-    '15033-main-st-lytle',      // Lytle (synthetic) — was at position 3
+    '8000-fair-oaks-pkwy',                  // Plaza (synthetic)
+    '2250-chipley-circle',                   // Chipley (DB)
+    // Louis Pasteur's DB slug is `move-in-ready-medical-building`,
+    // not `7830-louis-pasteur` — the slug is keyed to the headline
+    // not the street address. Previous order used the wrong slug,
+    // which is why Louis was getting pushed to the end of the
+    // curated list (no match in the bySlug map) and Elkhorn was
+    // floating into position 3 to fill its slot.
+    'move-in-ready-medical-building',        // Louis Pasteur (DB)
+    '523-seventh-st',                        // Seventh St (DB)
+    '15033-main-st-lytle',                   // Lytle (synthetic)
+    // Elkhorn moves to the end per owner request — swap Louis ↔
+    // Elkhorn from the prior visible order. Elkhorn was previously
+    // position 3 (incorrectly, due to the Louis slug mismatch
+    // above); now it's position 6 as intended.
+    '8979-dietz-elkhorn',                    // Elkhorn (synthetic)
   ];
 
   const allListings = withSyntheticListings(dbListings as any);
