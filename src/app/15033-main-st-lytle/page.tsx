@@ -3,6 +3,7 @@ export const revalidate = 1800;
 
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   MapPin, Phone, ArrowRight, Store, Scissors, Coffee, Shirt,
   Building2, TrendingUp, Users, Sparkles,
@@ -12,6 +13,17 @@ import { Container } from '@/components/ui/Container';
 import { ListingContactForm } from '@/app/listings/[slug]/ListingContactForm';
 import { MarketReportCapture } from '@/components/marketing/MarketReportCapture';
 import { PropertyAlertsInline } from '@/components/marketing/PropertyAlertsInline';
+
+// ─── Property photos ────────────────────────────────────────────────────
+// 4 site photos compressed from the LoopNet originals (sips -Z 2000
+// -s formatOptions 80, ~580KB-970KB each). Filenames are semantic so
+// the JSX below reads cleanly without filename guessing.
+const PHOTOS = {
+  heroCorner:    '/properties/15033-main-st-lytle/hero-corner.jpg',
+  frontWide:     '/properties/15033-main-st-lytle/front-wide.jpg',
+  washateriaEnd: '/properties/15033-main-st-lytle/washateria-end.jpg',
+  aerial:        '/properties/15033-main-st-lytle/aerial.jpg',
+} as const;
 
 /**
  * /15033-main-st-lytle — leasing landing page for the multi-tenant
@@ -175,12 +187,24 @@ export default function LytleMainStPage() {
       />
       <Header />
       <main className="min-h-screen pt-20">
-        {/* Hero — text-driven for now. Same pattern as Plaza:
-            address pill + dramatic h1 + city supporter + lease-framing
-            body copy. When the site photos arrive we can drop in an
-            absolute <Image> + bg-primary/70 overlay. */}
-        <section className="bg-primary py-16 sm:py-24 text-white">
-          <Container>
+        {/* Hero — corner-angle photo as the background (Naomi's Diner
+            sign + 888 Barbershop tenants visible at the right edge).
+            Same pattern as Plaza: absolute next/image + bg-primary/70
+            wash for legibility. object-position center because the
+            interesting content (the sign + storefront) is in the
+            middle/right of the source frame. */}
+        <section className="relative bg-primary py-16 sm:py-24 text-white overflow-hidden">
+          <Image
+            src={PHOTOS.heroCorner}
+            alt=""
+            aria-hidden="true"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-primary/70" />
+          <Container className="relative z-10">
             <div className="max-w-3xl">
               <div className="inline-flex items-center gap-2 rounded-full border border-gold/50 bg-gold/10 px-4 py-1.5 mb-5 text-body-sm uppercase tracking-widest text-gold font-bold">
                 <MapPin className="h-4 w-4" />
@@ -388,11 +412,74 @@ export default function LytleMainStPage() {
           </Container>
         </section>
 
+        {/* Gallery + Location — visual tour of the property. Two
+            photos (front-wide + washateria-end) in a 2-up grid above
+            the aerial site map. The aerial gets its own anchored
+            "Location" slot because it's a different kind of artifact
+            (top-down context, not building photography). */}
+        <section className="bg-background-cream py-16 sm:py-20 border-t border-border">
+          <Container>
+            <div className="max-w-2xl mb-10 mx-auto text-center">
+              <p className="overline mb-3 text-gold">A look around</p>
+              <h2 className="font-heading text-heading-xl sm:text-display-sm font-bold text-primary leading-tight">
+                Site-shot tour.
+              </h2>
+              <p className="mt-4 text-body text-foreground-muted leading-relaxed">
+                Real photos of the existing center and its frontage so you can see exactly
+                what your sign would sit next to.
+              </p>
+            </div>
+
+            {/* Building photos — 2-up grid, aspect-[16/10] keeps the
+                wide-angle shots from being letterboxed too aggressively. */}
+            <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+              <div className="relative overflow-hidden rounded-xl bg-background-warm aspect-[16/10]">
+                <Image
+                  src={PHOTOS.frontWide}
+                  alt="Wide front-on view of the 15033 Main St retail strip in Lytle, TX"
+                  fill
+                  sizes="(min-width: 768px) 50vw, 100vw"
+                  className="object-cover transition-transform duration-500 hover:scale-105"
+                />
+              </div>
+              <div className="relative overflow-hidden rounded-xl bg-background-warm aspect-[16/10]">
+                <Image
+                  src={PHOTOS.washateriaEnd}
+                  alt="Washateria + Dry Cleaners end of the 15033 Main St strip"
+                  fill
+                  sizes="(min-width: 768px) 50vw, 100vw"
+                  className="object-cover transition-transform duration-500 hover:scale-105"
+                />
+              </div>
+            </div>
+
+            {/* Aerial site map — labeled "SITE" callout in the source
+                identifies the property; the I-35 frontage at the
+                bottom-right corner is the leasing story for visibility.
+                Aspect [21/9] approximates the original aerial framing
+                so we don't crop the I-35 sign out. */}
+            <div className="max-w-5xl mx-auto">
+              <p className="text-caption uppercase tracking-widest text-foreground-muted mb-3 text-center">
+                Location · Main Street, Lytle, TX · I-35 corridor
+              </p>
+              <div className="relative overflow-hidden rounded-xl bg-background-warm aspect-[21/9]">
+                <Image
+                  src={PHOTOS.aerial}
+                  alt="Aerial site map of 15033 Main St in Lytle, TX, with the I-35 corridor visible and surrounding retail context"
+                  fill
+                  sizes="(min-width: 1024px) 1024px, 100vw"
+                  className="object-cover"
+                />
+              </div>
+            </div>
+          </Container>
+        </section>
+
         {/* Inquiry form — reuses ListingContactForm so submissions land
             in the same /api/leads pipeline + GA event stream as every
             other listing. Tracks as `listing_inquiry_submitted` with
             listing_title="15033 Main St — Lytle Retail Leasing". */}
-        <section id="inquiry" className="bg-background-cream py-16 sm:py-24 scroll-mt-20">
+        <section id="inquiry" className="bg-white py-16 sm:py-24 scroll-mt-20">
           <Container>
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 max-w-5xl mx-auto">
               <div className="lg:col-span-2">

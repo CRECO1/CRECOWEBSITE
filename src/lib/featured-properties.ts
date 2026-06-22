@@ -188,7 +188,11 @@ export const LYTLE_MAIN_ST_LISTING: Listing = {
     'NNN lease — I-35 corridor',
     'Owner-operator landlord (CRECO)',
   ],
-  images: null,                              // Photos pending — graceful fallback
+  // front-wide is the clearest read at thumbnail size — shows the
+  // whole building identity in one frame, blue corrugated roofline +
+  // tenant signage visible. hero-corner is reserved for the landing
+  // page hero so we don't burn its dramatic perspective on a small card.
+  images: ['/properties/15033-main-st-lytle/front-wide.jpg'],
   brochure_url: null,
   virtual_tour_url: null,
   status: 'active',
