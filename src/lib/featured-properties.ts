@@ -138,34 +138,39 @@ export const DIETZ_ELKHORN_LISTING: Listing = {
 };
 
 /**
- * 15033 Main St — multi-tenant retail investment sale in Lytle, TX.
- * Sourced from LoopNet #37635743; landing page lives at
- * /15033-main-st-lytle. transaction_type='sale' so the listings grid
- * filter "Sale" surfaces this asset to investors.
+ * 15033 Main St — multi-tenant retail FOR LEASE in Lytle, TX. CRECO
+ * is both the OWNER and the leasing broker (same owner-operator
+ * model as 8000 Fair Oaks Plaza). Landing page lives at
+ * /15033-main-st-lytle.
  *
- * `images: null` until the on-site photos arrive — listings grid will
- * render a Building2 fallback icon on the card until then. The page
- * itself ships without a hero photo too; both gracefully degrade.
+ * transaction_type='lease' so the listings grid filter "For Lease"
+ * surfaces this asset to prospective tenants. The previous draft
+ * accidentally framed this as a sale — corrected per owner: it is
+ * not for sale, only for lease.
  *
- * SF and price stay null because the LoopNet page is behind a login
- * and we don't want to guess. The card's spec row shows "—" / "Contact
- * for pricing"; the landing page elaborates with a full "Contact for
- * details" spec block. Update here + on the landing page when the
- * numbers come in.
+ * `images: null` until on-site photos arrive — listings grid renders
+ * a Building2 fallback icon on the card. The landing page itself
+ * also ships without a hero photo; both degrade gracefully.
+ *
+ * SF + lease rate stay null because the LoopNet page is gated and
+ * we don't want to guess. The card shows "Contact for pricing"; the
+ * landing page elaborates with a full "Contact for details" spec
+ * block. Update here + on the landing page (SPECS constant) when
+ * the numbers come in.
  */
 export const LYTLE_MAIN_ST_LISTING: Listing = {
   id: 'synth-15033-main-st-lytle',
-  title: '15033 Main St — Lytle Investment Sale',
+  title: '15033 Main St — Lytle Retail Leasing',
   slug: '15033-main-st-lytle',
   address: '15033 Main St',
   city: 'Lytle',
   state: 'TX',
   zip: '78052',
   property_type: 'retail',
-  transaction_type: 'sale',
-  sale_price: null,                          // Contact for pricing
-  lease_rate: null,
-  lease_rate_basis: null,
+  transaction_type: 'lease',                 // FOR LEASE, not sale
+  sale_price: null,
+  lease_rate: null,                          // Call for pricing
+  lease_rate_basis: 'NNN',                   // Standard for the property
   sqft: null,
   available_sqft: null,
   lot_size: null,
@@ -174,13 +179,13 @@ export const LYTLE_MAIN_ST_LISTING: Listing = {
   clear_height: null,
   dock_doors: null,
   grade_doors: null,
-  headline: 'Stabilized multi-tenant retail strip — 5 active tenants, I-35 corridor, San Antonio southwest metro',
+  headline: 'Multi-tenant retail center on Main Street — now leasing, established co-tenants, I-35 corridor',
   description: null,
   features: [
-    'Multi-tenant rent roll (5 tenants)',
-    'Daily-needs + F&B + specialty retail mix',
+    'Multi-tenant retail strip',
+    '5 established co-tenants in place',
     'I-35 corridor visibility',
-    'Atascosa County investment opportunity',
+    'Owner-operator landlord (CRECO)',
   ],
   images: null,                              // Photos pending — graceful fallback
   brochure_url: null,
@@ -190,7 +195,7 @@ export const LYTLE_MAIN_ST_LISTING: Listing = {
   closed_date: null,
   submarket: 'San Antonio Southwest',
   featured: true,
-  // Approx coords for Lytle, TX Main St — refine when LoopNet specs land.
+  // Approx coords for Lytle, TX Main St — refine when the live data lands.
   latitude: 29.2347,
   longitude: -98.7944,
   geocoded_at: null,
