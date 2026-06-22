@@ -137,10 +137,73 @@ export const DIETZ_ELKHORN_LISTING: Listing = {
   landing_url: 'https://elkhornpoint.com',
 };
 
+/**
+ * 15033 Main St — multi-tenant retail investment sale in Lytle, TX.
+ * Sourced from LoopNet #37635743; landing page lives at
+ * /15033-main-st-lytle. transaction_type='sale' so the listings grid
+ * filter "Sale" surfaces this asset to investors.
+ *
+ * `images: null` until the on-site photos arrive — listings grid will
+ * render a Building2 fallback icon on the card until then. The page
+ * itself ships without a hero photo too; both gracefully degrade.
+ *
+ * SF and price stay null because the LoopNet page is behind a login
+ * and we don't want to guess. The card's spec row shows "—" / "Contact
+ * for pricing"; the landing page elaborates with a full "Contact for
+ * details" spec block. Update here + on the landing page when the
+ * numbers come in.
+ */
+export const LYTLE_MAIN_ST_LISTING: Listing = {
+  id: 'synth-15033-main-st-lytle',
+  title: '15033 Main St — Lytle Investment Sale',
+  slug: '15033-main-st-lytle',
+  address: '15033 Main St',
+  city: 'Lytle',
+  state: 'TX',
+  zip: '78052',
+  property_type: 'retail',
+  transaction_type: 'sale',
+  sale_price: null,                          // Contact for pricing
+  lease_rate: null,
+  lease_rate_basis: null,
+  sqft: null,
+  available_sqft: null,
+  lot_size: null,
+  zoning: null,
+  year_built: null,
+  clear_height: null,
+  dock_doors: null,
+  grade_doors: null,
+  headline: 'Stabilized multi-tenant retail strip — 5 active tenants, I-35 corridor, San Antonio southwest metro',
+  description: null,
+  features: [
+    'Multi-tenant rent roll (5 tenants)',
+    'Daily-needs + F&B + specialty retail mix',
+    'I-35 corridor visibility',
+    'Atascosa County investment opportunity',
+  ],
+  images: null,                              // Photos pending — graceful fallback
+  brochure_url: null,
+  virtual_tour_url: null,
+  status: 'active',
+  listing_date: null,
+  closed_date: null,
+  submarket: 'San Antonio Southwest',
+  featured: true,
+  // Approx coords for Lytle, TX Main St — refine when LoopNet specs land.
+  latitude: 29.2347,
+  longitude: -98.7944,
+  geocoded_at: null,
+  created_at: '',
+  updated_at: '',
+  landing_url: '/15033-main-st-lytle',
+};
+
 /** Add more bespoke landing-page listings to this array as they come up. */
 export const SYNTHETIC_LISTINGS: Listing[] = [
   FAIR_OAKS_PLAZA_LISTING,
   DIETZ_ELKHORN_LISTING,
+  LYTLE_MAIN_ST_LISTING,
 ];
 
 /**
