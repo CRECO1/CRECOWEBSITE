@@ -200,7 +200,14 @@ export default async function HomePage() {
   const dbListings = listingsResult.status === 'fulfilled' && listingsResult.value.length > 0
     ? listingsResult.value
     : (DEMO_LISTINGS as any[]);
-  const featuredListings = withSyntheticListings(dbListings as any).slice(0, 3);
+  // Slice bumped 3 → 6 so the 3 synthetic listings (Plaza, Elkhorn,
+  // Lytle) take the top row and the next 3 DB listings (1222 Chulie,
+  // 1346 Parkridge, 2250 Chipley, etc.) fill the second row. Was 3,
+  // which meant the synthetics consumed the entire grid and pushed
+  // real DB listings off the homepage. 6 is the natural cap for a
+  // 3-column grid — fills 2 clean rows on desktop, stacks gracefully
+  // on mobile via the existing grid-cols-1 md:grid-cols-2 lg:grid-cols-3.
+  const featuredListings = withSyntheticListings(dbListings as any).slice(0, 6);
 
   const featuredTestimonials = testimonialsResult.status === 'fulfilled' && testimonialsResult.value.length > 0
     ? testimonialsResult.value.slice(0, 3) : DEMO_TESTIMONIALS;
