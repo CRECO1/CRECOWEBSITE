@@ -33,6 +33,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/8000-fair-oaks-pkwy`,                  lastModified: new Date(), changeFrequency: 'weekly', priority: 0.95 },
     // CRECO development — 8979 Dietz Elkhorn (Fair Oaks Ranch retail, pre-leasing)
     { url: `${BASE_URL}/8979-dietz-elkhorn`,                   lastModified: new Date(), changeFrequency: 'weekly', priority: 0.95 },
+    // CRECO property — 15033 Main St (Lytle retail leasing). Owner-operator
+    // multi-tenant strip on the I-35 corridor in the SA southwest metro.
+    { url: `${BASE_URL}/15033-main-st-lytle`,                  lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9  },
     { url: `${BASE_URL}/owner-services`,              lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9  },
     // Standard pages
     { url: `${BASE_URL}/services`,                    lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9  },
@@ -43,14 +46,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/submarkets`,                  lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.85 },
     { url: `${BASE_URL}/markets`,                     lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.9  },
     { url: `${BASE_URL}/sold`,                        lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.75 },
-    { url: `${BASE_URL}/team`,                        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7  },
+    // /team intentionally NOT in the sitemap — the route is a 308
+    // redirect to /about#team since the team grid was folded into the
+    // About page. Search engines follow the redirect and consolidate
+    // authority on /about; keeping the redirect URL in the sitemap
+    // would create a duplicate-content signal we don't want.
     { url: `${BASE_URL}/about`,                       lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7  },
     { url: `${BASE_URL}/insights`,                    lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.85 },
     { url: `${BASE_URL}/guides`,                      lastModified: new Date(), changeFrequency: 'monthly', priority: 0.85 },
     { url: `${BASE_URL}/research`,                    lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.9  },
     { url: `${BASE_URL}/property-alerts`,             lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8  },
     { url: `${BASE_URL}/careers`,                     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7  },
-    { url: `${BASE_URL}/compare`,                     lastModified: new Date(), changeFrequency: 'monthly', priority: 0.6  },
+    // /compare omitted — the route is noindex,nofollow because it's a
+    // session tool (only meaningful with shortlisted listings already
+    // saved to localStorage), not a destination for organic search.
     { url: `${BASE_URL}/privacy`,                     lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3  },
   ];
 

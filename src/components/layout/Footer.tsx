@@ -8,6 +8,7 @@ import { Container } from '@/components/ui/Container';
 import { NewsletterSignup } from '@/components/forms/NewsletterSignup';
 import { supabase } from '@/lib/supabase';
 import { googleMapsUrl } from '@/lib/utils';
+import { trackEvent } from '@/lib/analytics';
 
 const footerLinks = {
   properties: [
@@ -139,15 +140,29 @@ export function Footer() {
               <h3 className="mb-5 text-body-sm font-semibold uppercase tracking-widest text-gold">Get in Touch</h3>
               <ul className="space-y-4">
                 <li>
-                  <a href={telHref}
-                    className="flex items-start gap-3 text-body-sm text-white/60 transition-colors hover:text-gold">
+                  {/* Footer phone tracks separately from the header phone
+                      so we can attribute call conversions to footer
+                      vs header surfaces. */}
+                  <a
+                    href={telHref}
+                    onClick={() => trackEvent('phone_click', { surface: 'footer' })}
+                    className="flex items-start gap-3 text-body-sm text-white/60 transition-colors hover:text-gold"
+                  >
                     <Phone className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
                     {contact.phone}
                   </a>
                 </li>
                 <li>
-                  <a href={`mailto:${contact.email}`}
-                    className="flex items-start gap-3 text-body-sm text-white/60 transition-colors hover:text-gold">
+                  {/* mailto_click event — was the only major outbound
+                      conversion not tracked yet (phone_click + form
+                      submits already are). With this in place we can
+                      now answer "what do visitors do after they read
+                      the page?" with phone, email, or form-submit. */}
+                  <a
+                    href={`mailto:${contact.email}`}
+                    onClick={() => trackEvent('mailto_click', { surface: 'footer' })}
+                    className="flex items-start gap-3 text-body-sm text-white/60 transition-colors hover:text-gold"
+                  >
                     <Mail className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
                     {contact.email}
                   </a>
