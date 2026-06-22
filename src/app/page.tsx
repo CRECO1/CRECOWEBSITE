@@ -382,8 +382,18 @@ export default async function HomePage() {
                     them. Next.js Link silently treats external hrefs
                     as plain <a>, so this works without splitting the
                     JSX into two branches. */}
-                <Link {...listingLinkProps(listing)} className="card-luxury group block">
-                  <div className="image-luxury aspect-property bg-background-warm relative">
+                {/* Featured card layout — h-full flex flex-col so every
+                    card in the row stretches to the tallest one (grid
+                    align-items: stretch is the default, but the inner
+                    Link needed to opt in via h-full). The content area
+                    is also flex-col with mt-auto on the bottom row so
+                    the property type / SF chips anchor to the bottom
+                    edge of the card regardless of title or description
+                    line count. Title clamps to 2 lines, description to
+                    1 — produces visually uniform cards even when the
+                    underlying data has variable copy length. */}
+                <Link {...listingLinkProps(listing)} className="card-luxury group block h-full flex flex-col">
+                  <div className="image-luxury aspect-property bg-background-warm relative shrink-0">
                     {listing.images && (listing.images as string[])[0] ? (
                       <Image src={(listing.images as string[])[0]} alt={listing.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />
                     ) : (
@@ -395,17 +405,30 @@ export default async function HomePage() {
                       </span>
                     )}
                   </div>
-                  <div className="p-6">
+                  <div className="p-6 flex-1 flex flex-col">
                     <p className="mb-1 text-caption uppercase tracking-wider text-foreground-muted">
                       <MapPin className="mr-1 inline h-3 w-3" />{listing.city ?? 'San Antonio'}, TX
                     </p>
-                    <h3 className="mb-2 font-heading text-heading font-semibold text-primary group-hover:text-gold transition-colors">{listing.title}</h3>
-                    {listing.headline && (
-                      <p className="mb-4 text-body-sm text-foreground-muted line-clamp-2">{listing.headline}</p>
-                    )}
-                    <div className="flex flex-wrap items-center gap-3 text-caption text-foreground-muted border-t border-border pt-4">
+                    {/* min-h reserves space for a 2-line title so 1-line
+                        and 2-line titles produce identical card heights.
+                        line-clamp-2 caps overflow on extra-long ones. */}
+                    <h3 className="mb-2 font-heading text-heading font-semibold text-primary group-hover:text-gold transition-colors line-clamp-2 min-h-[3.5rem]">
+                      {listing.title}
+                    </h3>
+                    {/* Description always renders with a 1-line clamp
+                        for visual consistency. Falls back to a derived
+                        property-type sentence when no headline is set
+                        (e.g. DB listings that haven't been written up
+                        yet), so the layout never collapses that row. */}
+                    <p className="mb-4 text-body-sm text-foreground-muted line-clamp-1">
+                      {listing.headline
+                        || `${(listing.property_type ?? 'Commercial').toString().replace(/^./, (c: string) => c.toUpperCase())} property in ${listing.city ?? 'Texas'}`}
+                    </p>
+                    <div className="mt-auto flex flex-wrap items-center gap-3 text-caption text-foreground-muted border-t border-border pt-4">
                       <span className="flex items-center gap-1.5"><Building2 className="h-4 w-4" />{(listing.property_type ?? '').toString().replace(/^./, (c: string) => c.toUpperCase())}</span>
-                      <span className="flex items-center gap-1.5"><Layers className="h-4 w-4" />{(listing.sqft ?? 0).toLocaleString()} SF</span>
+                      {listing.sqft ? (
+                        <span className="flex items-center gap-1.5"><Layers className="h-4 w-4" />{listing.sqft.toLocaleString()} SF</span>
+                      ) : null}
                       {listing.zoning && <span className="flex items-center gap-1.5">Zoning {listing.zoning}</span>}
                     </div>
                   </div>
