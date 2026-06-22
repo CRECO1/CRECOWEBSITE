@@ -200,14 +200,39 @@ export default async function HomePage() {
   const dbListings = listingsResult.status === 'fulfilled' && listingsResult.value.length > 0
     ? listingsResult.value
     : (DEMO_LISTINGS as any[]);
-  // Slice bumped 3 → 6 so the 3 synthetic listings (Plaza, Elkhorn,
-  // Lytle) take the top row and the next 3 DB listings (1222 Chulie,
-  // 1346 Parkridge, 2250 Chipley, etc.) fill the second row. Was 3,
-  // which meant the synthetics consumed the entire grid and pushed
-  // real DB listings off the homepage. 6 is the natural cap for a
-  // 3-column grid — fills 2 clean rows on desktop, stacks gracefully
-  // on mobile via the existing grid-cols-1 md:grid-cols-2 lg:grid-cols-3.
-  const featuredListings = withSyntheticListings(dbListings as any).slice(0, 6);
+
+  // Curated order for the homepage Featured grid. Synthetics and DB
+  // listings are interleaved deliberately — the default
+  // "synthetics-first" ordering from withSyntheticListings clustered
+  // all the bespoke landing-page properties at the top, which made
+  // the grid feel front-loaded. Mixing in DB listings (Chipley,
+  // Louis Pasteur, Seventh St) inside the synthetic block gives the
+  // page a more varied visual rhythm and prevents the synthetics
+  // from looking like an island.
+  //
+  // To change the order: shuffle the slugs in this array. Anything
+  // not listed here gets appended at the end so the slice stays at
+  // 6 even if some slugs are absent (e.g. a synthetic gets removed
+  // or a DB listing isn't active).
+  const FEATURED_SLUG_ORDER = [
+    '8000-fair-oaks-pkwy',     // Plaza (synthetic)
+    '2250-chipley-circle',      // Chipley (DB) — was at position 4
+    '7830-louis-pasteur',       // Louis Pasteur (DB) — was at position 6
+    '8979-dietz-elkhorn',       // Elkhorn (synthetic) — was at position 2
+    '523-seventh-st',           // Seventh St (DB)
+    '15033-main-st-lytle',      // Lytle (synthetic) — was at position 3
+  ];
+
+  const allListings = withSyntheticListings(dbListings as any);
+  const bySlug = new Map(allListings.map((l: any) => [l.slug, l]));
+  const ordered = FEATURED_SLUG_ORDER
+    .map(slug => bySlug.get(slug))
+    .filter(Boolean);
+  // Pad with anything not explicitly ordered so we always have 6
+  // slots worth of content even if a slug in the curated list is
+  // missing from the data source.
+  const remaining = allListings.filter((l: any) => !FEATURED_SLUG_ORDER.includes(l.slug));
+  const featuredListings = [...ordered, ...remaining].slice(0, 6);
 
   const featuredTestimonials = testimonialsResult.status === 'fulfilled' && testimonialsResult.value.length > 0
     ? testimonialsResult.value.slice(0, 3) : DEMO_TESTIMONIALS;
