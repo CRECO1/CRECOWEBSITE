@@ -33,16 +33,38 @@ import { PropertyAlertsInline } from '@/components/marketing/PropertyAlertsInlin
  * a follow-up edit can add the hero background + gallery section.
  */
 
+// ─── Unit roster ─────────────────────────────────────────────────────
+// 6 in-line suites in the main retail strip + 1 standalone building
+// on the same parcel. Total ≈ 11,750 SF across 7 leasable units.
+// `type` distinguishes the layout so the suite-breakdown table can
+// label them correctly — a standalone has its own envelope, own
+// signage, own front door, which is meaningfully different from a
+// strip-bay tenant. Availability changes; page reads "Contact for
+// current availability" rather than guessing.
+const SUITES: { unit: string; sf: number; type: 'strip' | 'standalone' }[] = [
+  { unit: 'Suite 100', sf: 800,  type: 'strip' },
+  { unit: 'Suite 101', sf: 1800, type: 'strip' },
+  { unit: 'Suite 102', sf: 1500, type: 'strip' },
+  { unit: 'Suite 103', sf: 2100, type: 'strip' },
+  { unit: 'Suite 104', sf: 2500, type: 'strip' },
+  { unit: 'Suite 105', sf: 2400, type: 'strip' },
+  { unit: 'Standalone building', sf: 650, type: 'standalone' },
+];
+const TOTAL_SF = SUITES.reduce((acc, s) => acc + s.sf, 0);
+const SMALLEST_SUITE = Math.min(...SUITES.map(s => s.sf));
+const LARGEST_SUITE = Math.max(...SUITES.map(s => s.sf));
+
 // ─── Property + lease specs ──────────────────────────────────────────
 // Single source of truth — update here when the live numbers come in.
 const SPECS: { label: string; value: string }[] = [
   { label: 'Address',           value: '15033 Main St, Lytle, TX 78052' },
   { label: 'Property type',     value: 'Multi-tenant retail strip' },
-  { label: 'Available SF',      value: 'Contact for current availability' },
-  { label: 'Suite sizes',       value: 'Contact for details' },
+  { label: 'Total leasable SF', value: `±${TOTAL_SF.toLocaleString()} SF` },
+  { label: 'Unit count',        value: `${SUITES.length} units (6 in-line suites + 1 standalone)` },
+  { label: 'Unit size range',   value: `${SMALLEST_SUITE.toLocaleString()} – ${LARGEST_SUITE.toLocaleString()} SF` },
   { label: 'Lease type',        value: 'NNN (triple net)' },
   { label: 'Base rent',         value: 'Call for current rates' },
-  { label: 'Current co-tenants', value: '5 active local operators (see below)' },
+  { label: 'Availability',      value: 'Contact for currently-available suites' },
   { label: 'Parking',           value: 'Surface lot on-site' },
   { label: 'Highway access',    value: 'I-35 corridor, walking distance' },
 ];
@@ -245,10 +267,63 @@ export default function LytleMainStPage() {
           </Container>
         </section>
 
+        {/* Suite breakdown — the unit roster so a prospective tenant
+            can self-qualify on size before they inquire. 6 in-line
+            suites in the strip + 1 standalone building on the same
+            parcel. Availability per suite varies and changes; we
+            don't claim which are live right now — the inquiry form
+            below resolves that with the broker directly. */}
+        <section className="bg-white py-16 sm:py-20">
+          <Container>
+            <div className="max-w-2xl mb-10 mx-auto text-center">
+              <p className="overline mb-3 text-gold">Suite breakdown</p>
+              <h2 className="font-heading text-heading-xl sm:text-display-sm font-bold text-primary leading-tight">
+                Seven units. 800 – 2,500 SF.
+              </h2>
+              <p className="mt-4 text-body text-foreground-muted leading-relaxed">
+                Six in-line suites in the main retail strip plus a small standalone building on the
+                same parcel — different layouts for different concepts. Inquire below for current
+                availability and per-suite specifics.
+              </p>
+            </div>
+            <div className="max-w-3xl mx-auto rounded-2xl bg-background-cream border border-border overflow-hidden">
+              {SUITES.map((s, idx) => (
+                <div
+                  key={s.unit}
+                  className={`flex items-center justify-between gap-4 px-5 sm:px-6 py-4 ${idx === SUITES.length - 1 ? '' : 'border-b border-border'} ${s.type === 'standalone' ? 'bg-gold/5' : ''}`}
+                >
+                  <div className="flex items-center gap-3">
+                    {s.type === 'standalone' ? (
+                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gold/20 text-gold-dark shrink-0">
+                        <Building2 className="h-4 w-4" />
+                      </span>
+                    ) : (
+                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary shrink-0">
+                        <Store className="h-4 w-4" />
+                      </span>
+                    )}
+                    <div>
+                      <p className="font-heading text-body-sm font-bold text-primary leading-tight">
+                        {s.unit}
+                      </p>
+                      <p className="text-caption text-foreground-muted">
+                        {s.type === 'standalone' ? 'Standalone building (own envelope + signage)' : 'In-line suite (main strip)'}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="font-heading text-body font-bold text-primary tabular-nums shrink-0">
+                    {s.sf.toLocaleString()} SF
+                  </p>
+                </div>
+              ))}
+            </div>
+          </Container>
+        </section>
+
         {/* Co-tenant snapshot — "your neighbors" framing. For a tenant
             deciding whether to lease in, who they sit next to matters
             more than the building shell. */}
-        <section className="bg-white py-16 sm:py-20">
+        <section className="bg-background-cream py-16 sm:py-20 border-t border-border">
           <Container>
             <div className="max-w-2xl mb-10 mx-auto text-center">
               <p className="overline mb-3 text-gold">Your neighbors</p>
@@ -285,8 +360,12 @@ export default function LytleMainStPage() {
         </section>
 
         {/* Why lease here — tenant-framed value prop. Same 4-card
-            layout as Plaza's "Why this center" section. */}
-        <section className="bg-background-cream py-16 sm:py-20 border-y border-border">
+            layout as Plaza's "Why this center" section. bg-white
+            here because the section above it (Co-tenants) is
+            background-cream — avoids two cream sections in a row
+            after the Suite breakdown was inserted between
+            Property snapshot (cream) and Co-tenants. */}
+        <section className="bg-white py-16 sm:py-20 border-b border-border">
           <Container>
             <div className="max-w-2xl mb-12 mx-auto text-center">
               <p className="overline mb-3 text-gold">Why lease here</p>
@@ -313,7 +392,7 @@ export default function LytleMainStPage() {
             in the same /api/leads pipeline + GA event stream as every
             other listing. Tracks as `listing_inquiry_submitted` with
             listing_title="15033 Main St — Lytle Retail Leasing". */}
-        <section id="inquiry" className="bg-white py-16 sm:py-24 scroll-mt-20">
+        <section id="inquiry" className="bg-background-cream py-16 sm:py-24 scroll-mt-20">
           <Container>
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 max-w-5xl mx-auto">
               <div className="lg:col-span-2">

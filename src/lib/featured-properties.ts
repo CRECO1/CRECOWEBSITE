@@ -171,20 +171,21 @@ export const LYTLE_MAIN_ST_LISTING: Listing = {
   sale_price: null,
   lease_rate: null,                          // Call for pricing
   lease_rate_basis: 'NNN',                   // Standard for the property
-  sqft: null,
-  available_sqft: null,
+  sqft: 11750,                               // 6 strip suites (11,100) + 1 standalone (650)
+  available_sqft: null,                      // Per-suite availability varies; broker handles
   lot_size: null,
   zoning: null,
   year_built: null,
   clear_height: null,
   dock_doors: null,
   grade_doors: null,
-  headline: 'Multi-tenant retail center on Main Street — now leasing, established co-tenants, I-35 corridor',
+  headline: '±11,750 SF multi-tenant retail center — 6 in-line suites (800–2,500 SF) + 650 SF standalone building',
   description: null,
   features: [
-    'Multi-tenant retail strip',
+    '6 in-line suites (800 – 2,500 SF)',
+    '650 SF standalone building',
     '5 established co-tenants in place',
-    'I-35 corridor visibility',
+    'NNN lease — I-35 corridor',
     'Owner-operator landlord (CRECO)',
   ],
   images: null,                              // Photos pending — graceful fallback
