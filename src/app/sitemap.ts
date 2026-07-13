@@ -61,6 +61,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // session tool (only meaningful with shortlisted listings already
     // saved to localStorage), not a destination for organic search.
     { url: `${BASE_URL}/privacy`,                     lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3  },
+    { url: `${BASE_URL}/terms`,                       lastModified: new Date(), changeFrequency: 'yearly',  priority: 0.3  },
   ];
 
   const guideSlugs = [

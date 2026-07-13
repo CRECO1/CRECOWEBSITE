@@ -107,6 +107,18 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
+        {/* Skip-to-content link — invisible until focused, jumps
+            keyboard users past the header/nav straight to the page's
+            main content. Standard a11y pattern; used to be missing
+            (caught by the audit). Every page's <main> element needs
+            id="main-content" for this to work — Next.js layouts here
+            already wrap children with a <main> in each page. */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-gold"
+        >
+          Skip to main content
+        </a>
         {/* JSON-LD Structured Data — RealEstateAgent + LocalBusiness + WebSite */}
         <script
           type="application/ld+json"
@@ -251,7 +263,11 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <UtmCapture />
         </Suspense>
-        {children}
+        {/* id="main-content" is the target of the skip-to-content
+            link above. Using a div wrapper (not <main>) so it doesn't
+            conflict with the <main> element each page renders inside
+            its own layout — nested main tags would trip screen readers. */}
+        <div id="main-content">{children}</div>
         {/* ExitIntentModal removed — see import comment at top. */}
         <MobileStickyCTA />
         <CompareBar />
