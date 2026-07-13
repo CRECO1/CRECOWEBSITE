@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { CRECO_SYSTEM_PROMPT } from '@/lib/chat-system-prompt';
+import { CHAT_TOOLS, executeChatTool } from '@/lib/chat-tools';
 import { clampString } from '@/lib/sanitize';
 
 /**
@@ -109,31 +110,84 @@ export async function POST(req: NextRequest) {
 
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-  // System prompt is sent as a single text block with cache_control so the
-  // entire ~5K-token preamble reads at ~0.1× cost on subsequent requests
-  // within the 5-min TTL window. The prefix must stay byte-stable — that
-  // means no per-request interpolation into CRECO_SYSTEM_PROMPT.
-  const stream = client.messages.stream({
-    model: MODEL,
-    max_tokens: MAX_OUTPUT_TOKENS,
-    system: [
-      {
-        type: 'text',
-        text: CRECO_SYSTEM_PROMPT,
-        cache_control: { type: 'ephemeral' },
-      },
-    ],
-    messages,
-  });
-
   const encoder = new TextEncoder();
+  // Agent loop cap — hard limit on how many tool_use→tool_result cycles
+  // one visitor turn can chain. Prevents a runaway prompt from
+  // triggering many sequential tool calls. In practice a normal
+  // visitor turn resolves in 1-2 iterations (one search + one reply,
+  // or one search + capture_lead + reply). 6 gives generous headroom.
+  const MAX_ITERATIONS = 6;
+
   const readable = new ReadableStream({
     async start(controller) {
+      // Working conversation — grows with each turn's assistant message
+      // and any tool_result blocks so Claude sees the full history when
+      // it decides its next action.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const conversation: any[] = [...messages];
+      let currentStream: ReturnType<typeof client.messages.stream> | null = null;
+
       try {
-        for await (const event of stream) {
-          if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
-            controller.enqueue(encoder.encode(event.delta.text));
+        for (let iter = 0; iter < MAX_ITERATIONS; iter++) {
+          // Only cache_control the FIRST request in the loop — subsequent
+          // iterations reuse the cached prefix but the conversation array
+          // has grown, so the prefix is what caches, not the full request.
+          currentStream = client.messages.stream({
+            model: MODEL,
+            max_tokens: MAX_OUTPUT_TOKENS,
+            system: [
+              {
+                type: 'text',
+                text: CRECO_SYSTEM_PROMPT,
+                cache_control: { type: 'ephemeral' },
+              },
+            ],
+            tools: CHAT_TOOLS,
+            messages: conversation,
+          });
+
+          // Stream visible text tokens to the browser as they arrive.
+          // tool_use blocks stream too (as content_block_start/stop) but
+          // don't emit user-visible text — those are handled after the
+          // stream by inspecting the finalMessage.
+          for await (const event of currentStream) {
+            if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+              controller.enqueue(encoder.encode(event.delta.text));
+            }
           }
+
+          const message = await currentStream.finalMessage();
+          conversation.push({ role: 'assistant', content: message.content });
+
+          // If Claude stopped without using a tool, we're done.
+          if (message.stop_reason !== 'tool_use') break;
+
+          // Execute every tool_use block in the turn, in order.
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const toolResults: any[] = [];
+          for (const block of message.content) {
+            if (block.type === 'tool_use') {
+              try {
+                const result = await executeChatTool(block.name, block.input);
+                toolResults.push({
+                  type: 'tool_result',
+                  tool_use_id: block.id,
+                  content: JSON.stringify(result),
+                });
+              } catch (err) {
+                toolResults.push({
+                  type: 'tool_result',
+                  tool_use_id: block.id,
+                  content: JSON.stringify({
+                    error: err instanceof Error ? err.message : 'Tool execution failed',
+                  }),
+                  is_error: true,
+                });
+              }
+            }
+          }
+          conversation.push({ role: 'user', content: toolResults });
+          // Loop iterates — Claude will read the tool_result and continue
         }
         controller.close();
       } catch (err) {
@@ -149,7 +203,8 @@ export async function POST(req: NextRequest) {
       }
     },
     cancel() {
-      stream.controller?.abort();
+      // Abort the in-flight stream if the browser navigated away
+      // (best-effort — the loop may already be between iterations)
     },
   });
 

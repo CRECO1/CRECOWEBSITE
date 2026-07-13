@@ -272,12 +272,20 @@ export default function RootLayout({
         <MobileStickyCTA />
         <CompareBar />
         {/*
-          Chatbot is archived — the component, /api/chat route, and system
-          prompt all remain in the codebase. Flip on by setting:
-            NEXT_PUBLIC_CHAT_ENABLED=true
-          in Vercel env (also requires ANTHROPIC_API_KEY + funded credits).
+          Chat concierge — Claude-powered, has live listings + lead
+          capture tools. Enabled by default; set
+            NEXT_PUBLIC_CHAT_ENABLED=false
+          in Vercel env to turn off. Requires ANTHROPIC_API_KEY on the
+          server for /api/chat to actually respond; without it the
+          widget still mounts and gracefully degrades to a
+          "call (210) 817-3443" fallback message via the /api/chat 503.
+
+          Also set SUPABASE_SERVICE_ROLE_KEY so the search_listings +
+          capture_lead tools can query/insert against Supabase; without
+          it the tools return a "not configured, call us" message that
+          Claude relays.
         */}
-        {process.env.NEXT_PUBLIC_CHAT_ENABLED === 'true' && <ChatWidget />}
+        {process.env.NEXT_PUBLIC_CHAT_ENABLED !== 'false' && <ChatWidget />}
         <RecaptchaScript />
       </body>
     </html>
