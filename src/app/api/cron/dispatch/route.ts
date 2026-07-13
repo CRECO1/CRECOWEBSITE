@@ -36,6 +36,7 @@ import { GET as runRecurringInvoices }  from '../recurring-invoices/route';
 import { GET as runLateFees }           from '../late-fees/route';
 import { GET as runValuationFollowup }  from '../valuation-followup/route';
 import { GET as runTourFollowup }       from '../tour-followup/route';
+import { GET as runLeadFollowup }       from '../lead-followup/route';
 import { GET as runGeocodeListings }    from '../geocode-listings/route';
 
 export const runtime = 'nodejs';
@@ -74,6 +75,10 @@ const SUB_CRONS = [
   { name: 'late-fees',           handler: runLateFees },
   { name: 'valuation-followup',  handler: runValuationFollowup },
   { name: 'tour-followup',       handler: runTourFollowup },
+  // lead-followup — T+24hr generic nudge for non-valuation leads with
+  // 2-3 similar listings + calendar CTA. See
+  // /api/cron/lead-followup/route.ts for the design + gating logic.
+  { name: 'lead-followup',       handler: runLeadFollowup },
   { name: 'geocode-listings',    handler: runGeocodeListings },
 ] as const;
 

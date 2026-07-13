@@ -50,17 +50,75 @@ function valuationConfirmationHtml(name: string): string {
   `;
 }
 
-/** Generic confirmation email — for everything that isn't a valuation request. */
-function genericConfirmationHtml(name: string): string {
-  const safeName = escapeHtml(name);
+/**
+ * Generic T+0 confirmation email.
+ *
+ * Sent immediately after any non-valuation inquiry lands. Companion to
+ * the /api/cron/lead-followup T+24hr sequence — those two emails together
+ * turn "form submit → radio silence → 'did you get my message?' phone
+ * call" into "form submit → confirmation → next-day check-in with 3
+ * curated listings → broker call".
+ *
+ * Upgrade from the previous 3-line boilerplate:
+ *   - CRECO-branded header banner (mirrors the valuation confirmation)
+ *   - "What happens next" 3-step timeline that matches the on-page
+ *     InquirySuccessCard so post-submit expectations line up across
+ *     surfaces
+ *   - "Skip the wait" phone CTA with visual weight
+ *   - TREC + address footer
+ */
+function genericConfirmationHtml(name: string, propertyInterest: string | null): string {
+  const safeName = escapeHtml(name || 'there');
+  const interestLine = propertyInterest
+    ? `<p style="line-height:1.6;margin:0 0 14px">You reached out about <strong>${escapeHtml(propertyInterest)}</strong> &mdash; we&#39;ve got that on the queue and a CRECO principal will pick it up personally.</p>`
+    : `<p style="line-height:1.6;margin:0 0 14px">A CRECO principal will pick this up personally &mdash; not a junior or an auto-router.</p>`;
   return `
-    <div style="font-family:sans-serif;max-width:600px">
-      <h2 style="color:#1A1A1A">Hi ${safeName},</h2>
-      <p>Thank you for reaching out to <strong>CRECO – Commercial Real Estate Company</strong>.</p>
-      <p>A member of our team will be in touch within one business day.</p>
-      <p>Need to talk sooner? Call us at <a href="tel:+12108173443" style="color:#C9A962">(210) 817-3443</a>.</p>
-      <br/>
-      <p>— The CRECO Team<br/>8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015</p>
+    <div style="font-family:Helvetica,Arial,sans-serif;max-width:600px;color:#1A1A1A">
+      <div style="margin:0 0 20px;padding:0 0 18px;border-bottom:2px solid #C9A962">
+        <a href="https://www.crecotx.com" style="text-decoration:none;display:inline-block">
+          <img src="https://www.crecotx.com/images/creco-logo-light.png" alt="CRECO" width="180" style="display:block;width:180px;max-width:180px;height:auto;border:0" />
+        </a>
+      </div>
+      <h2 style="margin:0 0 16px;color:#1A1A1A;font-size:20px">Got it, ${safeName}.</h2>
+      ${interestLine}
+      <p style="font-family:Georgia,serif;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:#C9A962;font-size:12px;margin:22px 0 10px">What happens next</p>
+      <table style="width:100%;border-collapse:collapse;margin:0 0 6px">
+        <tr>
+          <td style="width:36px;padding:4px 0;vertical-align:top">
+            <div style="width:26px;height:26px;background:#C9A962;color:#1A1A1A;border-radius:50%;text-align:center;line-height:26px;font-weight:700;font-size:13px">1</div>
+          </td>
+          <td style="padding:4px 0 4px 6px;vertical-align:top;line-height:1.5">
+            <strong style="color:#1A1A1A">Confirmation email &mdash; that&#39;s this one.</strong><br/>
+            <span style="color:#525252;font-size:14px">If you don&#39;t see it in 5 minutes, check your spam folder and mark as safe.</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="width:36px;padding:8px 0;vertical-align:top">
+            <div style="width:26px;height:26px;background:#C9A962;color:#1A1A1A;border-radius:50%;text-align:center;line-height:26px;font-weight:700;font-size:13px">2</div>
+          </td>
+          <td style="padding:8px 0 8px 6px;vertical-align:top;line-height:1.5">
+            <strong style="color:#1A1A1A">Personal reply &mdash; within one business day.</strong><br/>
+            <span style="color:#525252;font-size:14px">By phone if you left a number, by email otherwise. Weekend submits get Monday-morning replies.</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="width:36px;padding:8px 0;vertical-align:top">
+            <div style="width:26px;height:26px;background:#C9A962;color:#1A1A1A;border-radius:50%;text-align:center;line-height:26px;font-weight:700;font-size:13px">3</div>
+          </td>
+          <td style="padding:8px 0 8px 6px;vertical-align:top;line-height:1.5">
+            <strong style="color:#1A1A1A">Walk-through or call setup.</strong><br/>
+            <span style="color:#525252;font-size:14px">We&#39;ll propose a tour time or a 15-minute briefing call &mdash; whichever fits your stage.</span>
+          </td>
+        </tr>
+      </table>
+      <div style="margin:26px 0;padding:18px 20px;background:#1A1A1A;border-radius:10px;text-align:center">
+        <p style="margin:0 0 12px;color:#FFFFFF;font-size:14px">Prefer to talk right now?</p>
+        <a href="tel:+12108173443" style="display:inline-block;padding:11px 22px;background:#C9A962;color:#1A1A1A;text-decoration:none;border-radius:6px;font-weight:600;font-size:14px">Call (210) 817-3443</a>
+        <p style="margin:12px 0 0;color:#999;font-size:11px">Or reply to this email &mdash; goes straight to our team.</p>
+      </div>
+      <p style="line-height:1.6;color:#525252;font-size:14px">While you wait, feel free to <a href="https://www.crecotx.com/listings" style="color:#B8973F">browse active Texas properties</a> or read the <a href="https://www.crecotx.com/insights" style="color:#B8973F">latest market insights</a>.</p>
+      <p style="color:#525252;margin:24px 0 0">&mdash; The CRECO Team</p>
+      <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367-BB &middot; 8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015</p>
     </div>
   `;
 }
@@ -212,7 +270,7 @@ export async function POST(req: NextRequest) {
         subject: isValuation
           ? 'Your CRECO broker valuation is on the way'
           : 'We received your inquiry — CRECO',
-        html: isValuation ? valuationConfirmationHtml(name) : genericConfirmationHtml(name),
+        html: isValuation ? valuationConfirmationHtml(name) : genericConfirmationHtml(name, property_interest || null),
       });
     }
 
