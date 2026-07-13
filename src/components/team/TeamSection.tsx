@@ -164,23 +164,23 @@ export function TeamSection({
               <X className="h-5 w-5" />
             </button>
 
-            {/* h-40 (160px) was too short for portrait headshots — the
-                top of the head got cropped even with object-top, because
-                object-cover scales the image to fill the width and
-                anything taller than 160px overflows. Bumped to h-72
-                (288px, ~80% taller) so a full head + shoulders fits.
-                object-[center_15%] positions the photo 15% down from
-                the top instead of hard-top so any headroom above the
-                subject in the source frame is trimmed instead of
-                filling the top of the modal with empty background. */}
-            <div className="relative h-72 w-full bg-background-warm">
+            {/* aspect-[3/4] gives the photo area a proper portrait
+                frame — for the ~384px-wide modal card that's ~512px
+                tall, matching typical headshot source aspect. object-
+                cover object-top keeps the crown of the head at the
+                top of the frame, and the taller frame means the suit
+                + shoulders (previously cropped even with h-72) are
+                fully visible. Iterated up from h-40 → h-72 → this
+                aspect-based sizing because fixed heights were still
+                cropping when the source was more portrait-heavy. */}
+            <div className="relative w-full aspect-[3/4] bg-background-warm">
               {selected.image_url ? (
                 <Image
                   src={selected.image_url as string}
                   alt={selected.name}
                   fill
                   sizes="(max-width: 640px) 100vw, 384px"
-                  className="object-cover object-[center_15%]"
+                  className="object-cover object-top"
                 />
               ) : (
                 <div className="flex h-full items-center justify-center">
