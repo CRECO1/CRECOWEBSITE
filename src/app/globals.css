@@ -31,6 +31,16 @@
     scroll-padding-top: 5rem;
     /* Slightly larger base for better readability on all devices */
     font-size: 16px;
+    /* Prevents iOS Safari from auto-inflating text size on orientation
+       change — without this a landscape rotation can silently bump body
+       copy up to 200% and break responsive typography. */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    /* Belt-and-suspenders horizontal-overflow guard at the root level
+       in addition to body. `clip` (not `hidden`) so descendant fixed
+       and sticky positioning still works correctly — `hidden` on a
+       parent silently breaks sticky. */
+    overflow-x: clip;
   }
 
   /* Responsive font scaling for better readability */
@@ -51,9 +61,17 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: #FFFFFF;
-    overflow-x: hidden;
+    /* `clip` is the modern replacement for `hidden` — same overflow
+       clipping but without creating a new scroll container that
+       breaks sticky positioning on descendants. Falls back to hidden
+       on browsers that don't support clip (all evergreen do). */
+    overflow-x: clip;
     /* Improved letter spacing for readability */
     letter-spacing: 0.01em;
+    /* Prevents rubber-band chained scroll from bubbling up when a
+       modal or sticky element hits its scroll edge — cleaner mobile
+       UX inside dialogs. */
+    overscroll-behavior-x: none;
   }
 
   /* Premium heading styles */

@@ -283,7 +283,13 @@ export default async function HomePage() {
           we relied on `min-h-screen items-center` to center content, but
           on shorter viewports the centered block could push the top
           eyebrow up behind the transparent header. */}
-      <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-primary pt-32 md:pt-24 pb-12 md:pb-16">
+      {/* min-h-[100svh] uses the SMALL viewport height (URL bar
+          visible), not the large one. On mobile Safari/Chrome, the
+          previous `min-h-screen` (100vh) sized the hero to the URL-bar-
+          hidden height — so when the browser first loaded and the URL
+          bar was visible, the hero was taller than the visible area
+          and users had to scroll to see the fold. svh eliminates that. */}
+      <section className="relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-primary pt-32 md:pt-24 pb-12 md:pb-16">
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-primary/80" />
         {s.hero_image_url ? (
           <Image
