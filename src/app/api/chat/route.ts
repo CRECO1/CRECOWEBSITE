@@ -192,21 +192,27 @@ export async function POST(req: NextRequest) {
         controller.close();
       } catch (err) {
         // Surface a graceful in-stream error rather than a hard fetch failure
-        // Detailed error surface — inline the actual Anthropic error
-        // message so we can see what's wrong without needing Vercel
-        // logs. Safe to include because APIError.message is
-        // provider-generated (no secrets), and the widget renders
-        // this as a chat bubble the visitor sees. Trimmed to 300
-        // chars so a verbose upstream error doesn't blow out the UI.
-        let detail = '';
-        if (err instanceof Anthropic.APIError) {
-          detail = `[${err.status}] ${err.message ?? ''}`.slice(0, 300);
-        } else if (err instanceof Error) {
-          detail = err.message.slice(0, 300);
-        }
-        const msg = detail
-          ? `Chat is having trouble: ${detail}. Try again, or call (210) 817-3443.`
-          : 'Chat hit an error. Try again, or call (210) 817-3443.';
+        // User-facing message stays generic — the actual error detail
+        // is server-logged via console.error so Vercel logs / observability
+        // has the full context. If we ever need to debug a specific
+        // failure in production, check the Vercel function logs for
+        // /api/chat rather than surfacing the raw Anthropic error to
+        // the visitor (which briefly exposed billing state during a
+        // credit-exhaustion incident on 2026-07-14).
+        //
+        // Special-case known operator-facing failures with a friendlier
+        // message so a low-credit day doesn't render as "Chat is having
+        // trouble (400)". If the account is unfunded, tell the visitor
+        // to call rather than showing a technical status code.
+        const status = err instanceof Anthropic.APIError ? err.status : 0;
+        const rawMsg = err instanceof Error ? err.message : '';
+        const isCreditIssue = rawMsg.toLowerCase().includes('credit balance');
+        const isRateLimit = status === 429;
+        const msg = isCreditIssue || isRateLimit
+          ? "Chat is temporarily unavailable. Please call (210) 817-3443 or use the contact form and a CRECO principal will get right back to you."
+          : status
+            ? `Chat is having trouble (${status}). Try again, or call (210) 817-3443.`
+            : 'Chat hit an error. Try again, or call (210) 817-3443.';
         try {
           controller.enqueue(encoder.encode(`\n\n[${msg}]`));
         } catch { /* controller may already be closed */ }
