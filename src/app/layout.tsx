@@ -272,20 +272,19 @@ export default function RootLayout({
         <MobileStickyCTA />
         <CompareBar />
         {/*
-          Chat concierge — Claude-powered, has live listings + lead
-          capture tools. Enabled by default; set
-            NEXT_PUBLIC_CHAT_ENABLED=false
-          in Vercel env to turn off. Requires ANTHROPIC_API_KEY on the
-          server for /api/chat to actually respond; without it the
-          widget still mounts and gracefully degrades to a
-          "call (210) 817-3443" fallback message via the /api/chat 503.
-
-          Also set SUPABASE_SERVICE_ROLE_KEY so the search_listings +
-          capture_lead tools can query/insert against Supabase; without
-          it the tools return a "not configured, call us" message that
-          Claude relays.
+          Chat concierge — off by default to avoid Anthropic API costs.
+          Everything is still wired up (tools, system prompt, agent loop,
+          UI); to turn back on:
+            1. Fund the Anthropic account at console.anthropic.com
+               (Haiku 4.5 is ~$0.001-0.005 per conversation; $20 lasts
+               a long time)
+            2. Set ANTHROPIC_API_KEY in Vercel env
+            3. Set NEXT_PUBLIC_CHAT_ENABLED=true in Vercel env
+            4. Redeploy
+          Component + route + tools + prompt intentionally left in the
+          codebase so re-enabling is env-var + redeploy only.
         */}
-        {process.env.NEXT_PUBLIC_CHAT_ENABLED !== 'false' && <ChatWidget />}
+        {process.env.NEXT_PUBLIC_CHAT_ENABLED === 'true' && <ChatWidget />}
         <RecaptchaScript />
       </body>
     </html>
