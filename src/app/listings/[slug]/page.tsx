@@ -11,6 +11,7 @@ import { getListingBySlug } from '@/lib/supabase';
 import { formatPrice, formatSqft, formatAcres, formatLeaseRate, transactionLabel, propertyTypeLabel, googleMapsUrl } from '@/lib/utils';
 import { ListingInquiryTabs } from './ListingInquiryTabs';
 import { MobileInquiryBar } from './MobileInquiryBar';
+import { BrokerCard } from '@/components/marketing/BrokerCard';
 import { RelatedListings } from '@/components/marketing/RelatedListings';
 import { ListingGallery } from '@/components/marketing/ListingGallery';
 import { CompareToggle } from '@/components/listings/CompareToggle';
@@ -414,12 +415,14 @@ export default async function ListingDetailPage({ params }: Props) {
                   listingSlug={listing!.slug}
                   listingAddress={`${listing!.address}, ${listing!.city}, ${listing!.state} ${listing!.zip ?? ''}`.trim()}
                 />
-                <div className="mt-6 pt-6 border-t border-border text-center">
-                  <p className="text-caption text-foreground-muted mb-2">Or call us directly</p>
-                  <a href="tel:+12108173443" className="inline-flex items-center gap-2 font-semibold text-primary hover:text-gold transition-colors">
-                    <Phone className="h-5 w-5" />
-                    (210) 817-3443
-                  </a>
+                {/* Named broker + direct contact + optional Cal.com
+                    slot. Replaces the anonymous "Or call us directly"
+                    tile. The visible person on the sidebar next to a
+                    listing detail form is a high-leverage trust
+                    signal — visitors are much more likely to submit
+                    when they can see who will actually reply. */}
+                <div className="mt-6 pt-6 border-t border-border">
+                  <BrokerCard intro="Your inquiry is going to:" />
                 </div>
                 {/* Re-engagement CTA — for tenants who looked but aren't ready
                     to submit an inquiry. Drives them into the Property Alerts

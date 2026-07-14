@@ -13,6 +13,7 @@ import { TrackedAnchor } from '@/components/analytics/TrackedAnchor';
 import { MarketReportCapture } from '@/components/marketing/MarketReportCapture';
 import { PropertyAlertsInline } from '@/components/marketing/PropertyAlertsInline';
 import { StickyPropertyCTABar } from '@/components/marketing/StickyPropertyCTABar';
+import { BrokerCard } from '@/components/marketing/BrokerCard';
 
 // ─── Property photos ────────────────────────────────────────────────────
 // Site-shot photo set of 8000 Fair Oaks Plaza, taken on-site. Sourced
@@ -535,11 +536,22 @@ export default function FairOaksDevPage() {
               </div>
 
               <aside className="space-y-6">
+                {/* Broker card replaces the anonymous "Prefer to talk?"
+                    tile. Named + photographed broker adjacent to a
+                    form is the single biggest CRE-site conversion
+                    lift, per every study we've seen. Direct phone +
+                    email + optional Cal.com booking link. Pulls all
+                    contact info from src/lib/broker.ts so future
+                    broker changes are a one-file edit. */}
+                <BrokerCard
+                  variant="light"
+                  intro="Your inquiry is going to:"
+                />
                 <div className="rounded-2xl bg-primary text-white p-7">
                   <Phone className="h-8 w-8 text-gold mb-4" />
                   <h3 className="font-heading text-heading-sm font-bold mb-2">Prefer to talk?</h3>
                   <p className="text-body-sm text-white/70 leading-relaxed mb-4">
-                    Call or text and we'll walk you through current availability, pricing, and timing. Faster than email if you're moving on a tight timeline.
+                    Call or text and we&apos;ll walk you through current availability, pricing, and timing. Faster than email if you&apos;re moving on a tight timeline.
                   </p>
                   <a href="tel:+12108173443" className="inline-flex items-center gap-2 text-gold font-semibold hover:text-gold-light">
                     (210) 817-3443

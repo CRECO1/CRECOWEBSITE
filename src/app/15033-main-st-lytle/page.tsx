@@ -11,6 +11,7 @@ import {
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { ListingContactForm } from '@/app/listings/[slug]/ListingContactForm';
+import { BrokerCard } from '@/components/marketing/BrokerCard';
 import { MarketReportCapture } from '@/components/marketing/MarketReportCapture';
 import { PropertyAlertsInline } from '@/components/marketing/PropertyAlertsInline';
 
@@ -482,25 +483,22 @@ export default function LytleMainStPage() {
         <section id="inquiry" className="bg-white py-16 sm:py-24 scroll-mt-20">
           <Container>
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-10 max-w-5xl mx-auto">
-              <div className="lg:col-span-2">
-                <p className="overline mb-3 text-gold">Inquire about a suite</p>
-                <h2 className="font-heading text-display-sm font-bold text-primary leading-tight mb-4">
-                  Tell us about your concept.
-                </h2>
-                <p className="text-body text-foreground-muted leading-relaxed mb-6">
-                  Drop your details and CRECO — the owner — will follow up within one business day
-                  with current availability, suite sizes, lease terms, and timing. Owner-operator
-                  conversation; no third-party handoff.
-                </p>
-                <p className="text-body-sm text-foreground-muted mb-2">
-                  <strong className="text-primary">Prefer to talk?</strong>
-                </p>
-                <a
-                  href={PHONE_HREF}
-                  className="inline-flex items-center gap-2 text-gold-dark hover:text-gold font-semibold text-body-sm"
-                >
-                  <Phone className="h-4 w-4" /> {PHONE_DISPLAY}
-                </a>
+              <div className="lg:col-span-2 space-y-6">
+                <div>
+                  <p className="overline mb-3 text-gold">Inquire about a suite</p>
+                  <h2 className="font-heading text-display-sm font-bold text-primary leading-tight mb-4">
+                    Tell us about your concept.
+                  </h2>
+                  <p className="text-body text-foreground-muted leading-relaxed">
+                    Drop your details and CRECO &mdash; the owner &mdash; will follow up within one business day
+                    with current availability, suite sizes, lease terms, and timing. Owner-operator
+                    conversation; no third-party handoff.
+                  </p>
+                </div>
+                {/* Named broker + direct contact + optional Cal.com
+                    booking. Replaces the anonymous "Prefer to talk?"
+                    line with a visible person to reduce submit-anxiety. */}
+                <BrokerCard intro="Your inquiry is going to:" />
               </div>
               <div className="lg:col-span-3">
                 <div className="rounded-2xl border border-border bg-background-cream p-6 sm:p-8">

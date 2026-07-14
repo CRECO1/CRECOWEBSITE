@@ -37,7 +37,9 @@
  */
 
 import Link from 'next/link';
-import { CheckCircle, Clock, Mail, Phone, ArrowRight, BookOpen, Building2 } from 'lucide-react';
+import { CheckCircle, Clock, Mail, Phone, ArrowRight, BookOpen, Building2, Calendar } from 'lucide-react';
+import { BrokerAvatar } from '@/components/marketing/BrokerCard';
+import { PRIMARY_BROKER } from '@/lib/broker';
 
 interface InquirySuccessCardProps {
   /**
@@ -78,26 +80,65 @@ export function InquirySuccessCard({
   showBrowseProperties = true,
   showInsights = true,
 }: InquirySuccessCardProps = {}) {
+  // Copy is now broker-specific ("Zach Stovall will follow up") rather
+  // than the anonymous "a CRECO principal" — much stronger trust signal.
+  // PRIMARY_BROKER is the single source of truth in src/lib/broker.ts;
+  // if the point person changes, updating that one file swaps every
+  // inquiry surface at once.
   const specificMessage = customMessage
     ?? (propertyName
-        ? `A CRECO principal will follow up about ${propertyName} with current availability, the right space recommendation, and a proposed tour time.`
-        : 'A CRECO principal will follow up with the right next step for your situation.');
+        ? `${PRIMARY_BROKER.name} will follow up about ${propertyName} personally — current availability, the right space recommendation, and a proposed tour time.`
+        : `${PRIMARY_BROKER.name} will follow up personally with the right next step for your situation.`);
 
   return (
     <div className="rounded-2xl bg-white border border-gold/30 shadow-sm p-6 sm:p-8 max-w-2xl mx-auto">
-      {/* Header — clear ack + emotional resolution. Centered so the
-          checkmark + headline feel like a complete moment. */}
+      {/* Header — clear ack + emotional resolution. Broker avatar + name
+          inline with the checkmark so the visitor immediately sees the
+          real person who will reply, not an anonymous "principal". */}
       <div className="text-center mb-7">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gold">
           <CheckCircle className="h-8 w-8 text-primary" />
         </div>
-        <h3 className="font-heading text-heading-lg font-bold text-primary mb-2">
+        <h3 className="font-heading text-heading-lg font-bold text-primary mb-3">
           Got it. We received your inquiry.
         </h3>
+        <div className="flex items-center justify-center gap-3 mb-3">
+          <BrokerAvatar size={48} />
+          <div className="text-left">
+            <p className="font-heading text-body-sm font-bold text-primary leading-tight">
+              {PRIMARY_BROKER.name}
+            </p>
+            <p className="text-caption text-foreground-muted">{PRIMARY_BROKER.title}</p>
+          </div>
+        </div>
         <p className="text-body text-foreground-muted leading-relaxed">
           {specificMessage}
         </p>
       </div>
+
+      {/* Direct booking shortcut — only rendered when a Cal.com URL is
+          configured. Sits above the timeline because "book now" is a
+          higher-intent shortcut than "wait for a reply". */}
+      {PRIMARY_BROKER.calendar_url && (
+        <div className="border-t border-border pt-6 mb-6 text-center">
+          <p className="font-heading text-body-sm font-bold text-primary uppercase tracking-widest mb-3">
+            Skip the wait
+          </p>
+          <a
+            href={PRIMARY_BROKER.calendar_url}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-gold px-6 py-3 text-body-sm font-bold text-primary hover:bg-gold-light shadow-sm transition-colors"
+          >
+            <Calendar className="h-4 w-4 shrink-0" />
+            Book 15 min with {PRIMARY_BROKER.name.split(' ')[0]}
+            <ArrowRight className="h-4 w-4 shrink-0" />
+          </a>
+          <p className="text-caption text-foreground-muted mt-3">
+            Grab a slot on {PRIMARY_BROKER.name.split(' ')[0]}&apos;s calendar directly — no waiting on email.
+          </p>
+        </div>
+      )}
 
       {/* 3-step timeline — removes the "when will I hear back?" anxiety
           loop. Numbered + iconed so the steps are scannable at a glance. */}
@@ -125,10 +166,10 @@ export function InquirySuccessCard({
             </span>
             <div className="flex-1">
               <p className="font-heading text-body-sm font-bold text-primary mb-0.5 flex items-center gap-2">
-                <Clock className="h-4 w-4 text-gold" /> Personal reply — within one business day
+                <Clock className="h-4 w-4 text-gold" /> {PRIMARY_BROKER.name.split(' ')[0]} replies personally — within one business day
               </p>
               <p className="text-body-sm text-foreground-muted leading-relaxed">
-                A CRECO principal will respond directly — by phone if you left a number, by email otherwise.
+                By phone if you left a number, by email otherwise. Not a router, not a form-response — the actual broker.
               </p>
             </div>
           </li>

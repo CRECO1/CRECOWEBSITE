@@ -14,6 +14,7 @@ import {
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { RetailLeasingInquiryForm } from '@/components/forms/RetailLeasingInquiryForm';
+import { BrokerCard } from '@/components/marketing/BrokerCard';
 import { ClaimSuiteButton } from '@/components/marketing/ClaimSuiteButton';
 import { MarketReportCapture } from '@/components/marketing/MarketReportCapture';
 import { PropertyAlertsInline } from '@/components/marketing/PropertyAlertsInline';
@@ -592,7 +593,7 @@ export default async function DietzElkhornPage() {
         {/* Lead capture */}
         <section id="inquire" className="bg-white py-12 sm:py-24 scroll-mt-20">
           <Container>
-            <div className="max-w-3xl mx-auto">
+            <div className="max-w-5xl mx-auto">
               <div className="text-center mb-10">
                 <p className="overline mb-3 text-gold">Pre-lease your suite</p>
                 <h2 className="font-heading text-heading-xl sm:text-display-sm font-bold text-primary leading-tight mb-4">
@@ -605,8 +606,17 @@ export default async function DietzElkhornPage() {
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-border bg-background-cream p-5 sm:p-8 lg:p-10">
-                <RetailLeasingInquiryForm />
+              {/* Two-column: form on left, broker card on right. The
+                  named broker tile next to a form is a top-3 trust
+                  lift in CRE conversion research — visitors submit
+                  more readily when they know exactly who's replying. */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
+                <div className="lg:col-span-2 rounded-2xl border border-border bg-background-cream p-5 sm:p-8 lg:p-10">
+                  <RetailLeasingInquiryForm />
+                </div>
+                <div className="lg:sticky lg:top-24">
+                  <BrokerCard intro="Your inquiry is going to:" />
+                </div>
               </div>
 
               <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center text-body-sm text-foreground-muted">
