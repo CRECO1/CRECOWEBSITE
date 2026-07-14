@@ -192,8 +192,20 @@ export async function POST(req: NextRequest) {
         controller.close();
       } catch (err) {
         // Surface a graceful in-stream error rather than a hard fetch failure
-        const msg = err instanceof Anthropic.APIError
-          ? `Chat is having trouble (${err.status}). Try again, or call (210) 817-3443.`
+        // Detailed error surface — inline the actual Anthropic error
+        // message so we can see what's wrong without needing Vercel
+        // logs. Safe to include because APIError.message is
+        // provider-generated (no secrets), and the widget renders
+        // this as a chat bubble the visitor sees. Trimmed to 300
+        // chars so a verbose upstream error doesn't blow out the UI.
+        let detail = '';
+        if (err instanceof Anthropic.APIError) {
+          detail = `[${err.status}] ${err.message ?? ''}`.slice(0, 300);
+        } else if (err instanceof Error) {
+          detail = err.message.slice(0, 300);
+        }
+        const msg = detail
+          ? `Chat is having trouble: ${detail}. Try again, or call (210) 817-3443.`
           : 'Chat hit an error. Try again, or call (210) 817-3443.';
         try {
           controller.enqueue(encoder.encode(`\n\n[${msg}]`));
