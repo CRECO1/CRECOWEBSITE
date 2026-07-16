@@ -8,14 +8,14 @@ import { SORTED_GUIDES, type Guide } from '@/lib/guides';
 export const metadata: Metadata = {
   title: 'Texas Commercial Real Estate Guides & Market Reports | Free Downloads | CRECO',
   description:
-    "Free in-depth guides and quarterly market reports for Texas commercial real estate — lease negotiation, disposition strategy, and Q2 2026 industrial, retail, office, and investment market data from CRECO's broker team.",
+    "Free in-depth guides and quarterly market reports for Texas commercial real estate — lease negotiation, disposition strategy, and Q3 2026 industrial, retail, office, and investment market data from CRECO's broker team.",
   keywords: [
     'texas commercial real estate guide',
     'commercial lease negotiation guide texas',
     'commercial property owner guide texas',
     'texas commercial real estate playbook',
     'texas commercial real estate market report',
-    'q2 2026 texas market report',
+    'q3 2026 texas market report',
     'creco guides',
   ],
   alternates: { canonical: 'https://www.crecotx.com/guides' },
@@ -23,12 +23,16 @@ export const metadata: Metadata = {
 
 /**
  * Market reports are identified by slug — every quarterly report uses the
- * `qN-YYYY-` prefix. Everything else is a strategy playbook.
+ * `qN-YYYY-` prefix. Everything else is a strategy playbook. The current
+ * quarter is featured; earlier quarters are surfaced separately as archive.
  */
 const isMarketReport = (g: Guide) => /^q\d-\d{4}-/.test(g.slug);
+const CURRENT_QUARTER_PREFIX = 'q3-2026-';
+const isCurrentReport = (g: Guide) => g.slug.startsWith(CURRENT_QUARTER_PREFIX);
 
 export default function GuidesIndex() {
-  const marketReports = SORTED_GUIDES.filter(isMarketReport);
+  const marketReports = SORTED_GUIDES.filter(g => isMarketReport(g) && isCurrentReport(g));
+  const earlierReports = SORTED_GUIDES.filter(g => isMarketReport(g) && !isCurrentReport(g));
   const playbooks = SORTED_GUIDES.filter(g => !isMarketReport(g));
 
   // CollectionPage + ItemList schema so Google sees this page as a hub
@@ -88,7 +92,7 @@ export default function GuidesIndex() {
                   <p className="overline mb-2 flex items-center gap-2">
                     <BarChart3 className="h-4 w-4" /> Quarterly Market Reports
                   </p>
-                  <h2 className="font-heading text-display-sm font-bold text-primary">Q2 2026 Texas CRE market data.</h2>
+                  <h2 className="font-heading text-display-sm font-bold text-primary">Q3 2026 Texas CRE market data.</h2>
                   <p className="mt-3 text-body text-foreground-muted max-w-2xl">
                     Rents, cap rates, vacancy, absorption, and deal-flow commentary across the four major Texas metros, broken down by asset class.
                   </p>
@@ -99,6 +103,41 @@ export default function GuidesIndex() {
                   <GuideCard key={guide.slug} guide={guide} accent="report" />
                 ))}
               </div>
+            </Container>
+          </section>
+        )}
+
+        {/* Earlier Reports — previous quarters kept live for reference */}
+        {earlierReports.length > 0 && (
+          <section className="py-12 sm:py-16 bg-white border-t border-border/40">
+            <Container>
+              <div className="mb-6">
+                <p className="overline mb-2 text-foreground-muted">← Earlier reports</p>
+                <h2 className="font-heading text-heading-lg font-bold text-primary">Previous quarterly reports</h2>
+                <p className="mt-2 text-body-sm text-foreground-muted max-w-2xl">
+                  Historical reference — still-useful reads on how the Texas market looked in prior quarters.
+                </p>
+              </div>
+              <ul className="divide-y divide-border/50 border-y border-border/50">
+                {earlierReports.map(guide => (
+                  <li key={guide.slug}>
+                    <Link
+                      href={`/guides/${guide.slug}`}
+                      className="flex items-center justify-between gap-4 py-4 group"
+                    >
+                      <div className="min-w-0">
+                        <h3 className="font-heading text-body font-semibold text-primary group-hover:text-gold transition-colors truncate">
+                          {guide.title}
+                        </h3>
+                        <p className="text-caption text-foreground-muted mt-0.5">
+                          {guide.pageCount} pages · {guide.readingMinutes} min read
+                        </p>
+                      </div>
+                      <ArrowRight className="h-4 w-4 text-gold flex-shrink-0 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </Container>
           </section>
         )}

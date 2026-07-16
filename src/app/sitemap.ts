@@ -67,6 +67,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const guideSlugs = [
     'texas-tenant-lease-negotiation-playbook',
     'texas-owner-disposition-strategy-guide',
+    'q3-2026-texas-industrial-market-report',
+    'q3-2026-texas-retail-market-report',
+    'q3-2026-texas-office-market-report',
+    'q3-2026-texas-investment-outlook-report',
     'q2-2026-texas-industrial-market-report',
     'q2-2026-texas-retail-market-report',
     'q2-2026-texas-office-market-report',
