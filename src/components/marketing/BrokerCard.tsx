@@ -129,7 +129,7 @@ export function BrokerCard({
             href={broker.calendar_url}
             target="_blank"
             rel="noreferrer noopener"
-            className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-gold px-4 py-2.5 text-body-sm font-bold text-primary hover:bg-gold-light shadow-sm transition-colors"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-gold px-4 py-3 text-body-sm font-bold text-primary hover:bg-gold-light shadow-sm transition-colors"
           >
             <Calendar className="h-4 w-4 shrink-0" />
             Book 15 min directly
@@ -138,7 +138,7 @@ export function BrokerCard({
         )}
         <a
           href={broker.phone_href}
-          className={`w-full inline-flex items-center justify-center gap-2 rounded-lg border ${variant === 'dark' ? 'border-white/20 text-white hover:bg-white/10' : 'border-border text-primary hover:border-gold hover:text-gold'} px-4 py-2.5 text-body-sm font-semibold transition-colors`}
+          className={`w-full inline-flex items-center justify-center gap-2 rounded-lg border ${variant === 'dark' ? 'border-white/20 text-white hover:bg-white/10' : 'border-border text-primary hover:border-gold hover:text-gold'} px-4 py-3 text-body-sm font-semibold transition-colors`}
         >
           <Phone className="h-4 w-4 shrink-0" />
           {broker.phone_display}
