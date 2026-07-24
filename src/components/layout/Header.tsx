@@ -17,6 +17,7 @@ const navLinks = [
   { href: '/property-valuation', label: 'Free Valuation' },
   { href: '/insights', label: 'Insights' },
   { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact Us' },
   { href: '/get-started', label: 'Get Started', isHighlight: true },
 ];
 
@@ -195,13 +196,6 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
                 className="border-b border-border py-4 text-heading font-medium text-primary transition-colors hover:text-gold"
               >
                 Team
-              </Link>
-              <Link
-                href="/contact"
-                onClick={() => setIsMenuOpen(false)}
-                className="border-b border-border py-4 text-heading font-medium text-primary transition-colors hover:text-gold"
-              >
-                Contact
               </Link>
 
               {/* Action button stack — extra top margin clears the link
