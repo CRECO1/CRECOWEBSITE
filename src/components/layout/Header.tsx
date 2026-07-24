@@ -137,10 +137,12 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
                 'hover:text-gold'
               )}
               style={textShadowStyle}
-              aria-label={`Call CRECO at ${phone}`}
+              aria-label={`Call or text CRECO at ${phone}`}
             >
               <Phone className="h-4 w-4 shrink-0" />
-              <span className="text-body-sm">{phone}</span>
+              <span className="text-body-sm">
+                <span className="text-gold">Call/Text</span> {phone}
+              </span>
             </a>
 
             {/* "Get Started" already sits in the nav links above (isHighlight=true),
@@ -219,7 +221,7 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
                     onClick={() => trackEvent('phone_click', { surface: 'mobile_menu' })}
                   >
                     <Phone className="mr-2 h-5 w-5" />
-                    Call Now: {phone}
+                    Call/Text: {phone}
                   </a>
                 </Button>
               </div>
