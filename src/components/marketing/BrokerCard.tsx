@@ -19,8 +19,9 @@
  */
 
 import Image from 'next/image';
-import { Phone, Mail, Calendar, ArrowRight } from 'lucide-react';
+import { Mail, Calendar, ArrowRight } from 'lucide-react';
 import { PRIMARY_BROKER, brokerInitials, type Broker } from '@/lib/broker';
+import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 
 // ─── Avatar ──────────────────────────────────────────────────────────
 
@@ -136,13 +137,16 @@ export function BrokerCard({
             <ArrowRight className="h-4 w-4 shrink-0" />
           </a>
         )}
-        <a
-          href={broker.phone_href}
-          className={`w-full inline-flex items-center justify-center gap-2 rounded-lg border ${variant === 'dark' ? 'border-white/20 text-white hover:bg-white/10' : 'border-border text-primary hover:border-gold hover:text-gold'} px-4 py-3 text-body-sm font-semibold transition-colors`}
-        >
-          <Phone className="h-4 w-4 shrink-0" />
+        {/* Call + Text side-by-side. Prospects who prefer texting
+            (increasingly common — Pew found 60%+ of adults 18-49
+            prefer SMS over voice for first-touch) previously had no
+            visible affordance for it despite the phone being SMS-
+            capable. Showing both up-front reads as "we're approachable
+            either way." */}
+        <div className="text-caption font-semibold text-center opacity-70 pt-1">
           {broker.phone_display}
-        </a>
+        </div>
+        <PhoneCallText variant="stacked" surface="broker_card" />
         <a
           href={`mailto:${broker.email}`}
           className={`w-full inline-flex items-center justify-center gap-2 text-body-sm font-semibold ${linkClass}`}

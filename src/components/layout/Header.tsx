@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { trackEvent } from '@/lib/analytics';
+import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 
 const navLinks = [
   { href: '/listings', label: 'Properties' },
@@ -125,25 +126,23 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
                 to Get Started; flattening reads cleaner and matches the rest
                 of the header's horizontal rhythm. whitespace-nowrap keeps the
                 number from wrapping at narrow desktop widths. */}
-            {/* Phone tap fires GA4 `phone_click` so the conversions
-                dashboard knows when someone actually called — was
-                completely untracked before. */}
-            <a
-              href={`tel:+1${phone.replace(/\D/g, '')}`}
-              onClick={() => trackEvent('phone_click', { surface: 'header', page: typeof window !== 'undefined' ? window.location.pathname : undefined })}
-              className={cn(
-                'hidden sm:inline-flex items-center gap-2 font-semibold transition-colors whitespace-nowrap',
-                isTransparent ? 'text-white' : 'text-primary',
-                'hover:text-gold'
-              )}
+            {/* Phone + Text. Was previously a single tel: link with a
+                misleading "Call/Text" label — the label promised SMS but
+                tapping only offered Call. Now the label maps to reality:
+                the phone-number span is the tel: link, "Text" is a
+                separate sms: link right after it. Both fire distinct GA
+                events (phone_click / sms_click) with surface='header'
+                so we can attribute conversions per channel per surface. */}
+            <div
+              className="hidden sm:inline-flex"
               style={textShadowStyle}
-              aria-label={`Call or text CRECO at ${phone}`}
             >
-              <Phone className="h-4 w-4 shrink-0" />
-              <span className="text-body-sm">
-                <span className="text-gold">Call/Text</span> {phone}
-              </span>
-            </a>
+              <PhoneCallText
+                variant="inline"
+                tone={isTransparent ? 'dark' : 'light'}
+                surface="header"
+              />
+            </div>
 
             {/* "Get Started" already sits in the nav links above (isHighlight=true),
                 so we don't repeat it here. The Schedule button used to live in this
@@ -215,15 +214,11 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
                     Get Started
                   </Link>
                 </Button>
-                <Button variant="primary" size="lg" fullWidth asChild>
-                  <a
-                    href={`tel:${phone.replace(/\D/g, '')}`}
-                    onClick={() => trackEvent('phone_click', { surface: 'mobile_menu' })}
-                  >
-                    <Phone className="mr-2 h-5 w-5" />
-                    Call/Text: {phone}
-                  </a>
-                </Button>
+                {/* Was one Call button labeled "Call/Text" but only
+                    linked to tel:. Split into a real Call + Text pair
+                    with distinct GA attribution so tapping "Text"
+                    actually opens Messages. */}
+                <PhoneCallText variant="stacked" surface="mobile_menu" />
               </div>
             </nav>
           </Container>

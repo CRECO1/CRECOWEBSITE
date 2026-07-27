@@ -9,6 +9,7 @@ import { NewsletterSignup } from '@/components/forms/NewsletterSignup';
 import { supabase } from '@/lib/supabase';
 import { googleMapsUrl } from '@/lib/utils';
 import { trackEvent } from '@/lib/analytics';
+import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 
 const footerLinks = {
   properties: [
@@ -140,17 +141,16 @@ export function Footer() {
               <h3 className="mb-5 text-body-sm font-semibold uppercase tracking-widest text-gold">Get in Touch</h3>
               <ul className="space-y-4">
                 <li>
-                  {/* Footer phone tracks separately from the header phone
-                      so we can attribute call conversions to footer
-                      vs header surfaces. */}
-                  <a
-                    href={telHref}
-                    onClick={() => trackEvent('phone_click', { surface: 'footer' })}
-                    className="flex items-start gap-3 text-body-sm text-white/60 transition-colors hover:text-gold"
-                  >
-                    <Phone className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
-                    {contact.phone}
-                  </a>
+                  {/* Call + Text — visible SMS affordance next to the
+                      number. Both actions fire distinct GA events with
+                      surface='footer'. Previously tel: only. Phone icon
+                      is inside PhoneCallText so we don't duplicate it
+                      at the li level. */}
+                  <PhoneCallText
+                    variant="inline"
+                    tone="dark"
+                    surface="footer"
+                  />
                 </li>
                 <li>
                   {/* mailto_click event — was the only major outbound

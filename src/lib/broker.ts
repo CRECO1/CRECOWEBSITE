@@ -39,6 +39,16 @@ export interface Broker {
   /** Tel href, e.g. "tel:+12108173443" */
   phone_href: string;
   /**
+   * SMS deep-link href, e.g. "sms:+12108173443". Both iOS and Android
+   * recognize the plain form — iOS opens Messages, Android opens the
+   * default SMS app. Included alongside phone_href so every contact
+   * surface can offer Call + Text side-by-side. Same number as
+   * phone_href — kept as a separate field so we could ever route the
+   * SMS traffic to a different (e.g. business-line) number later
+   * without touching phone_href.
+   */
+  sms_href: string;
+  /**
    * Public URL to the broker's headshot. Optional — when unset the
    * UI shows an initials avatar. Prefer a local /public/team/*.jpg
    * over a remote Supabase URL so we own the asset lifecycle.
@@ -58,6 +68,7 @@ export const PRIMARY_BROKER: Broker = {
   email: 'info@crecotx.com',
   phone_display: '(210) 817-3443',
   phone_href: 'tel:+12108173443',
+  sms_href: 'sms:+12108173443',
   // Drop a compressed headshot at /public/team/zach-stovall.jpg (max
   // 1000px wide is plenty for the surfaces this renders on) and
   // uncomment this line to switch every avatar sitewide from the
