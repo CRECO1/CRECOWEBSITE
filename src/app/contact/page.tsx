@@ -8,6 +8,7 @@ import { Container } from '@/components/ui/Container';
 import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { Honeypot } from '@/components/forms/Honeypot';
 import { googleMapsUrl } from '@/lib/utils';
+import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 
 const CONTACT_REASONS = [
   'Looking for space to lease or buy',
@@ -88,10 +89,18 @@ export default function ContactPage() {
                       <Phone className="h-5 w-5 text-gold-dark" />
                     </div>
                     <div>
-                      <p className="font-semibold text-primary">Phone</p>
-                      <a href="tel:+12108173443" className="text-body-sm text-foreground-muted hover:text-gold transition-colors">
-                        (210) 817-3443
-                      </a>
+                      {/* Label reads "Phone / Text" because the number
+                          works for both. PhoneCallText renders the
+                          real tel: + sms: links below so tapping either
+                          option actually does what the label promises.
+                          surface="contact_page" attributes the GA
+                          events distinctly from Header / Footer etc. */}
+                      <p className="font-semibold text-primary">Phone &middot; Text</p>
+                      <PhoneCallText
+                        variant="inline"
+                        tone="light"
+                        surface="contact_page"
+                      />
                     </div>
                   </div>
 
@@ -140,16 +149,17 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                {/* Schedule CTA */}
+                {/* Schedule CTA — split "Call to Schedule" into Call
+                    + Text pair since the site number takes both. Copy
+                    updated to say "call or text" so the offering is
+                    unambiguous. */}
                 <div id="schedule" className="rounded-xl bg-gold p-6">
                   <Calendar className="mb-3 h-6 w-6 text-primary/70" />
                   <h3 className="mb-2 font-heading text-heading-sm font-bold text-primary">Schedule a Consultation</h3>
                   <p className="mb-4 text-body-sm text-primary/70">
-                    Prefer to pick a time? Use the form to request your preferred date and time, or call us directly.
+                    Prefer to pick a time? Use the form to request your preferred date and time, or call or text us directly.
                   </p>
-                  <Button variant="secondary" size="sm" asChild>
-                    <a href="tel:+12108173443">Call to Schedule</a>
-                  </Button>
+                  <PhoneCallText variant="stacked" surface="contact_page_schedule" />
                 </div>
               </div>
 
