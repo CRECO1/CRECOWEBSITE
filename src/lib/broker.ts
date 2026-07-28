@@ -74,10 +74,13 @@ export const PRIMARY_BROKER: Broker = {
   // uncomment this line to switch every avatar sitewide from the
   // initials fallback to the real photo.
   // photo_url: '/team/zach-stovall.jpg',
-  // Create a Cal.com "15-minute call" event, paste the share link
-  // below, and every inquiry surface gets a "Book 15 min directly"
-  // CTA next to the form. Free tier of Cal.com is sufficient.
-  // calendar_url: 'https://cal.com/zach-stovall/15min',
+  // Live Cal.com 15-min booking link — the owner set this up on the
+  // free tier. Activates "Book 15 min with Zach" CTAs everywhere
+  // BrokerCard + InquirySuccessCard are rendered (Plaza, Elkhorn,
+  // Lytle, /listings/[slug] sidebars, and every form's post-submit
+  // card). Visitors land straight on Cal.com's slot picker — no
+  // email tag needed to schedule.
+  calendar_url: 'https://cal.com/zachary-stovall-przz4r/15min',
 };
 
 /** Derive initials from a full name for the avatar fallback. */
