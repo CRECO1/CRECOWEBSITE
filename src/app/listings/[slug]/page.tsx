@@ -12,6 +12,7 @@ import { formatPrice, formatSqft, formatAcres, formatLeaseRate, formatMonthlyRen
 import { ListingInquiryTabs } from './ListingInquiryTabs';
 import { MobileInquiryBar } from './MobileInquiryBar';
 import { BrokerCard } from '@/components/marketing/BrokerCard';
+import { getBrokerForListing } from '@/lib/broker';
 import { RelatedListings } from '@/components/marketing/RelatedListings';
 import { ListingGallery } from '@/components/marketing/ListingGallery';
 import { CompareToggle } from '@/components/listings/CompareToggle';
@@ -432,6 +433,7 @@ export default async function ListingDetailPage({ params }: Props) {
                   listingTitle={listing!.title}
                   listingSlug={listing!.slug}
                   listingAddress={`${listing!.address}, ${listing!.city}, ${listing!.state} ${listing!.zip ?? ''}`.trim()}
+                  broker={getBrokerForListing(listing!.slug)}
                 />
                 {/* Named broker + direct contact + optional Cal.com
                     slot. Replaces the anonymous "Or call us directly"
@@ -440,7 +442,15 @@ export default async function ListingDetailPage({ params }: Props) {
                     signal — visitors are much more likely to submit
                     when they can see who will actually reply. */}
                 <div className="mt-6 pt-6 border-t border-border">
-                  <BrokerCard intro="Your inquiry is going to:" />
+                  {/* Per-listing broker override — getBrokerForListing
+                      returns the broker assigned in LISTING_BROKER_MAP
+                      or falls back to PRIMARY_BROKER. Louis Pasteur
+                      (move-in-ready-medical-building) routes to Brian
+                      Blanco; the other listings still land with Zach. */}
+                  <BrokerCard
+                    broker={getBrokerForListing(listing!.slug)}
+                    intro="Your inquiry is going to:"
+                  />
                 </div>
                 {/* Re-engagement CTA — for tenants who looked but aren't ready
                     to submit an inquiry. Drives them into the Property Alerts

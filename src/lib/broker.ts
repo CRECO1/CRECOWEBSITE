@@ -83,6 +83,56 @@ export const PRIMARY_BROKER: Broker = {
   calendar_url: 'https://cal.com/zachary-stovall-przz4r/15min',
 };
 
+/**
+ * Brian Blanco — Director of Leasing. Second broker in the roster.
+ * Handles medical + specialty retail leases where his Amazon site-
+ * selection background maps directly onto tenant needs. Same office
+ * phone + email as Zach for now — swap to Brian-specific direct lines
+ * whenever he wants them exposed publicly.
+ */
+export const BRIAN_BLANCO: Broker = {
+  name: 'Brian Blanco',
+  title: 'Director of Leasing',
+  email: 'info@crecotx.com',
+  phone_display: '(210) 817-3443',
+  phone_href: 'tel:+12108173443',
+  sms_href: 'sms:+12108173443',
+  // Drop /public/team/brian-blanco.jpg and uncomment to swap the
+  // initials avatar for the real headshot.
+  // photo_url: '/team/brian-blanco.jpg',
+  // Add Brian's Cal.com share URL here to activate his "Book 15 min
+  // directly" CTA on listings he's assigned to.
+  // calendar_url: 'https://cal.com/brian-blanco/15min',
+};
+
+/**
+ * Per-listing broker assignment. Maps listing slugs to broker records —
+ * anything not listed here falls through to PRIMARY_BROKER (Zach).
+ *
+ * Why by-slug and not a DB column: the roster is small (2 brokers)
+ * and stable, and slug matching is O(1) in a small map. When the
+ * roster grows past ~5, or brokers start owning listings dynamically,
+ * this should migrate to a Supabase agent_id column on listings and
+ * a join. Until then, editing this constant + a redeploy is the
+ * lightest workflow.
+ */
+const LISTING_BROKER_MAP: Record<string, Broker> = {
+  // 7830 Louis Pasteur — medical office building, Brian's specialty
+  'move-in-ready-medical-building': BRIAN_BLANCO,
+};
+
+/**
+ * Return the broker responsible for a given listing slug. Falls back
+ * to PRIMARY_BROKER when the listing isn't explicitly assigned. Every
+ * inquiry surface that renders a broker card should call this rather
+ * than reading PRIMARY_BROKER directly, so per-listing overrides
+ * always land.
+ */
+export function getBrokerForListing(slug: string | null | undefined): Broker {
+  if (!slug) return PRIMARY_BROKER;
+  return LISTING_BROKER_MAP[slug] ?? PRIMARY_BROKER;
+}
+
 /** Derive initials from a full name for the avatar fallback. */
 export function brokerInitials(broker: Broker): string {
   return broker.name

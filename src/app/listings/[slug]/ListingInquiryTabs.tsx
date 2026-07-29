@@ -14,15 +14,24 @@ import { useState } from 'react';
 import { CalendarClock, MessageSquare } from 'lucide-react';
 import { ListingContactForm } from './ListingContactForm';
 import { TourSchedulerForm } from '@/components/forms/TourSchedulerForm';
+import type { Broker } from '@/lib/broker';
 
 export function ListingInquiryTabs({
   listingTitle,
   listingSlug,
   listingAddress,
+  broker,
 }: {
   listingTitle: string;
   listingSlug: string;
   listingAddress: string;
+  /**
+   * Broker responsible for this listing. Passed through to
+   * ListingContactForm so the post-submit success card names the
+   * correct person (e.g. Brian Blanco for Louis Pasteur). Optional
+   * — falls back to Zach via InquirySuccessCard's own default.
+   */
+  broker?: Broker;
 }) {
   const [tab, setTab] = useState<'tour' | 'message'>('tour');
 
@@ -75,7 +84,7 @@ export function ListingInquiryTabs({
           <p className="mb-5 text-body-sm text-foreground-muted">
             Ask a question, request additional financials, or get the brochure. A CRECO broker will respond within one business day.
           </p>
-          <ListingContactForm listingTitle={listingTitle} />
+          <ListingContactForm listingTitle={listingTitle} broker={broker} />
         </>
       )}
     </>

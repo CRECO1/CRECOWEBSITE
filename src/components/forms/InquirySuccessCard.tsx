@@ -39,9 +39,17 @@
 import Link from 'next/link';
 import { CheckCircle, Clock, Mail, Phone, ArrowRight, BookOpen, Building2, Calendar } from 'lucide-react';
 import { BrokerAvatar } from '@/components/marketing/BrokerCard';
-import { PRIMARY_BROKER } from '@/lib/broker';
+import { PRIMARY_BROKER, type Broker } from '@/lib/broker';
 
 interface InquirySuccessCardProps {
+  /**
+   * Which broker the inquiry routes to. Overrides PRIMARY_BROKER —
+   * used by ListingContactForm on listings with a per-listing broker
+   * assignment (e.g. Louis Pasteur → Brian Blanco). When omitted,
+   * falls back to PRIMARY_BROKER (Zach) so all existing forms keep
+   * working unchanged.
+   */
+  broker?: Broker;
   /**
    * Property or surface name shown in the confirmation copy, e.g.
    * "8979 Dietz Elkhorn" or "your retail bay inquiry". Optional —
@@ -74,21 +82,25 @@ const PHONE_DISPLAY = '(210) 817-3443';
 const PHONE_HREF = 'tel:+12108173443';
 
 export function InquirySuccessCard({
+  broker,
   propertyName,
   customMessage,
   onReset,
   showBrowseProperties = true,
   showInsights = true,
 }: InquirySuccessCardProps = {}) {
-  // Copy is now broker-specific ("Zach Stovall will follow up") rather
-  // than the anonymous "a CRECO principal" — much stronger trust signal.
-  // PRIMARY_BROKER is the single source of truth in src/lib/broker.ts;
-  // if the point person changes, updating that one file swaps every
-  // inquiry surface at once.
+  // Resolve the actual broker to use — the `broker` prop overrides,
+  // falling back to PRIMARY_BROKER (Zach) when omitted. Everything
+  // downstream (copy, avatar, booking link, first-name references)
+  // reads from `activeBroker` so we don't accidentally hardcode the
+  // primary anywhere.
+  const activeBroker = broker ?? PRIMARY_BROKER;
+  const firstName = activeBroker.name.split(' ')[0];
+
   const specificMessage = customMessage
     ?? (propertyName
-        ? `${PRIMARY_BROKER.name} will follow up about ${propertyName} personally — current availability, the right space recommendation, and a proposed tour time.`
-        : `${PRIMARY_BROKER.name} will follow up personally with the right next step for your situation.`);
+        ? `${activeBroker.name} will follow up about ${propertyName} personally — current availability, the right space recommendation, and a proposed tour time.`
+        : `${activeBroker.name} will follow up personally with the right next step for your situation.`);
 
   return (
     <div className="rounded-2xl bg-white border border-gold/30 shadow-sm p-6 sm:p-8 max-w-2xl mx-auto">
@@ -103,12 +115,12 @@ export function InquirySuccessCard({
           Got it. We received your inquiry.
         </h3>
         <div className="flex items-center justify-center gap-3 mb-3">
-          <BrokerAvatar size={48} />
+          <BrokerAvatar broker={activeBroker} size={48} />
           <div className="text-left">
             <p className="font-heading text-body-sm font-bold text-primary leading-tight">
-              {PRIMARY_BROKER.name}
+              {activeBroker.name}
             </p>
-            <p className="text-caption text-foreground-muted">{PRIMARY_BROKER.title}</p>
+            <p className="text-caption text-foreground-muted">{activeBroker.title}</p>
           </div>
         </div>
         <p className="text-body text-foreground-muted leading-relaxed">
@@ -119,23 +131,23 @@ export function InquirySuccessCard({
       {/* Direct booking shortcut — only rendered when a Cal.com URL is
           configured. Sits above the timeline because "book now" is a
           higher-intent shortcut than "wait for a reply". */}
-      {PRIMARY_BROKER.calendar_url && (
+      {activeBroker.calendar_url && (
         <div className="border-t border-border pt-6 mb-6 text-center">
           <p className="font-heading text-body-sm font-bold text-primary uppercase tracking-widest mb-3">
             Skip the wait
           </p>
           <a
-            href={PRIMARY_BROKER.calendar_url}
+            href={activeBroker.calendar_url}
             target="_blank"
             rel="noreferrer noopener"
             className="inline-flex items-center justify-center gap-2 rounded-lg bg-gold px-6 py-3 text-body-sm font-bold text-primary hover:bg-gold-light shadow-sm transition-colors"
           >
             <Calendar className="h-4 w-4 shrink-0" />
-            Book 15 min with {PRIMARY_BROKER.name.split(' ')[0]}
+            Book 15 min with {firstName}
             <ArrowRight className="h-4 w-4 shrink-0" />
           </a>
           <p className="text-caption text-foreground-muted mt-3">
-            Grab a slot on {PRIMARY_BROKER.name.split(' ')[0]}&apos;s calendar directly — no waiting on email.
+            Grab a slot on {firstName}&apos;s calendar directly — no waiting on email.
           </p>
         </div>
       )}
@@ -166,7 +178,7 @@ export function InquirySuccessCard({
             </span>
             <div className="flex-1">
               <p className="font-heading text-body-sm font-bold text-primary mb-0.5 flex items-center gap-2">
-                <Clock className="h-4 w-4 text-gold" /> {PRIMARY_BROKER.name.split(' ')[0]} replies personally — within one business day
+                <Clock className="h-4 w-4 text-gold" /> {firstName} replies personally — within one business day
               </p>
               <p className="text-body-sm text-foreground-muted leading-relaxed">
                 By phone if you left a number, by email otherwise. Not a router, not a form-response — the actual broker.

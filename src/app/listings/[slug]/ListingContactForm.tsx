@@ -6,8 +6,22 @@ import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { Honeypot } from '@/components/forms/Honeypot';
 import { InquirySuccessCard } from '@/components/forms/InquirySuccessCard';
 import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
+import type { Broker } from '@/lib/broker';
 
-export function ListingContactForm({ listingTitle }: { listingTitle: string }) {
+/**
+ * `broker` — the specific broker handling inquiries for this listing.
+ * Passed through to InquirySuccessCard so the post-submit "Zach will
+ * follow up" copy shows the correct name/avatar when the listing is
+ * assigned to a broker other than PRIMARY_BROKER (e.g. Louis Pasteur
+ * → Brian Blanco). Optional so existing callers keep working.
+ */
+export function ListingContactForm({
+  listingTitle,
+  broker,
+}: {
+  listingTitle: string;
+  broker?: Broker;
+}) {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -67,8 +81,9 @@ export function ListingContactForm({ listingTitle }: { listingTitle: string }) {
   if (submitted) {
     return (
       <InquirySuccessCard
+        broker={broker}
         propertyName={listingTitle}
-        customMessage={`A CRECO principal will follow up about ${listingTitle} with current availability, full property details, and a proposed tour time.`}
+        customMessage={`${broker?.name ?? 'A CRECO principal'} will follow up about ${listingTitle} with current availability, full property details, and a proposed tour time.`}
         onReset={() => setSubmitted(false)}
         showBrowseProperties={false}
       />
