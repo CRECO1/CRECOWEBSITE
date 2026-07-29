@@ -8,7 +8,7 @@ import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { getListingBySlug } from '@/lib/supabase';
-import { formatPrice, formatSqft, formatAcres, formatLeaseRate, transactionLabel, propertyTypeLabel, googleMapsUrl } from '@/lib/utils';
+import { formatPrice, formatSqft, formatAcres, formatLeaseRate, formatMonthlyRent, transactionLabel, propertyTypeLabel, googleMapsUrl } from '@/lib/utils';
 import { ListingInquiryTabs } from './ListingInquiryTabs';
 import { MobileInquiryBar } from './MobileInquiryBar';
 import { BrokerCard } from '@/components/marketing/BrokerCard';
@@ -84,6 +84,15 @@ export default async function ListingDetailPage({ params }: Props) {
     : listing!.lease_rate
       ? formatLeaseRate(listing!.lease_rate, listing!.lease_rate_basis)
       : 'Contact for pricing';
+  // Monthly-rent supplement for lease listings — shown below the
+  // $/SF/yr headline so both audiences (institutional buyers who think
+  // in $/SF/yr, local operators who think in $/mo) see their preferred
+  // format without having to do the math. Empty string when the
+  // property isn't a lease or is missing SF/rate — falsy check in JSX
+  // skips rendering.
+  const monthlyRentDisplay = listing!.transaction_type !== 'sale'
+    ? formatMonthlyRent(listing!.lease_rate, listing!.sqft, listing!.lease_rate_basis)
+    : '';
 
   // Build the offer block once — used by the consolidated RealEstateListing
   // schema below. Lease and sale need different shapes: sale gets a flat
@@ -274,6 +283,15 @@ export default async function ListingDetailPage({ params }: Props) {
                   <p className="font-heading text-display-sm font-bold text-primary">
                     {priceDisplay}
                   </p>
+                  {/* Monthly-rent supplement for lease listings.
+                      Local operators quote in $/mo, institutional in
+                      $/SF/yr — showing both eliminates the mental math
+                      and prevents "is this affordable?" bounce. */}
+                  {monthlyRentDisplay && (
+                    <p className="text-body-sm text-foreground-muted mt-1">
+                      {monthlyRentDisplay}
+                    </p>
+                  )}
                   <div className="mt-2 flex flex-wrap justify-end gap-2">
                     <span className="rounded-full bg-gold/20 px-3 py-0.5 text-caption font-semibold text-gold-dark uppercase">
                       {transactionLabel(listing!.transaction_type)}

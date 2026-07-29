@@ -45,6 +45,37 @@ export function formatLeaseRate(rate: number | null | undefined, basis: string |
 }
 
 /**
+ * Compute the monthly base rent from a $/SF/yr rate + total SF.
+ * Real-estate industry standard displays rate as $/SF/yr NNN, which is
+ * accurate but non-intuitive for local operators (a diner tenant thinks
+ * in $/month, not $/SF/yr). Exposing both formats side-by-side lets
+ * institutional + owner-operator audiences both find their preferred
+ * number without translation math. Returns null if either input is
+ * missing so callers can render nothing rather than "$NaN/mo".
+ */
+export function monthlyLeaseRent(
+  rate: number | null | undefined,
+  sqft: number | null | undefined,
+): number | null {
+  if (rate == null || sqft == null || sqft <= 0) return null;
+  return (rate * sqft) / 12;
+}
+
+/**
+ * Formats the monthly equivalent for display. Rounded to whole dollars —
+ * cents aren't meaningful at the monthly-rent scale and add visual noise.
+ */
+export function formatMonthlyRent(
+  rate: number | null | undefined,
+  sqft: number | null | undefined,
+  basis?: string | null,
+): string {
+  const monthly = monthlyLeaseRent(rate, sqft);
+  if (monthly == null) return '';
+  return `$${Math.round(monthly).toLocaleString()}/mo${basis ? ` ${basis}` : ''}`;
+}
+
+/**
  * Builds a Google Maps "search" URL for an address. Used everywhere we
  * render a visible address — wraps it in a clickable link that opens
  * Maps with the address pre-searched. The `?api=1&query=` form is the
