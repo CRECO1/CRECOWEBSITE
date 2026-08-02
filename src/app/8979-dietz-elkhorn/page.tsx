@@ -4,6 +4,7 @@
 export const revalidate = 1800;
 
 import type { Metadata } from 'next';
+import { jsonLd } from '@/lib/jsonLd';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -267,11 +268,11 @@ export default async function DietzElkhornPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(REAL_ESTATE_SCHEMA) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(REAL_ESTATE_SCHEMA) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_SCHEMA) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(FAQ_SCHEMA) }}
       />
       <Header />
       <main className="min-h-screen pt-20">

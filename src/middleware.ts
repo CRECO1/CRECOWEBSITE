@@ -29,10 +29,15 @@ export async function middleware(request: NextRequest) {
   }
 
   // Check for Supabase env vars (this project uses the newer `_PUBLISHABLE_KEY`
-  // naming, not the legacy `_ANON_KEY`). Without this fix the middleware
-  // bails out and /manage is effectively unprotected at the edge.
+  // naming, not the legacy `_ANON_KEY`). We only reach this point on a
+  // protected, non-public route, so a missing config must FAIL CLOSED —
+  // redirect to login rather than letting the request through. Previously
+  // this returned NextResponse.next(), which left /admin, /billing and
+  // /manage open at the edge whenever the env was absent.
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
-    return NextResponse.next();
+    const loginUrl = new URL('/manage/login', request.url);
+    loginUrl.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
   try {

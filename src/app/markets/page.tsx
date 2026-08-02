@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { jsonLd } from '@/lib/jsonLd';
 import Link from 'next/link';
 import { ArrowRight, MapPin, Building2 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
@@ -95,7 +96,7 @@ export default function MarketsHubPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(itemListSchema) }}
       />
       <Header />
       <main className="min-h-screen pt-20">

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { requireAdmin } from '@/lib/api-auth';
 import { renderInvoicePdf } from '@/lib/invoice-pdf';
 import type { Invoice } from '@/lib/invoices';
 
@@ -19,31 +18,17 @@ import type { Invoice } from '@/lib/invoices';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-async function authSupabase() {
-  const cookieStore = await cookies();
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-    {
-      cookies: {
-        getAll() { return cookieStore.getAll(); },
-        setAll() { /* read-only in API routes */ },
-      },
-    },
-  );
-}
-
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
 
-  const supabase = await authSupabase();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
-  }
+  // Admin-only: match the sibling invoice routes. requireAdmin() returns a
+  // session-scoped, RLS-honoring client plus the admin_users allowlist check.
+  const auth = await requireAdmin();
+  if (auth.error) return auth.error;
+  const { supabase } = auth;
 
   const { data: invoice, error } = await supabase
     .from('invoices')

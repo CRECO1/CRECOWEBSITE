@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { requireAdmin } from '@/lib/api-auth';
 import type { Invoice } from '@/lib/invoices';
 import { isValidEmail, clampString, MAX_LEN } from '@/lib/sanitize';
 import { FALLBACK_TEMPLATE, substituteTemplate } from '@/lib/invoice-email';
@@ -20,31 +19,18 @@ import { fetchW9Attachment } from '@/lib/w9';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-async function authSupabase() {
-  const cookieStore = await cookies();
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-    {
-      cookies: {
-        getAll() { return cookieStore.getAll(); },
-        setAll() { /* read-only in API routes */ },
-      },
-    },
-  );
-}
-
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
 
-  const supabase = await authSupabase();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
-  }
+  // Admin-only: match the sibling invoice routes (clients, recurring, etc.).
+  // requireAdmin() returns a session-scoped, RLS-honoring client plus the
+  // admin_users allowlist check — a bare valid session is no longer enough.
+  const auth = await requireAdmin();
+  if (auth.error) return auth.error;
+  const { supabase } = auth;
 
   if (!process.env.RESEND_API_KEY) {
     return NextResponse.json(

@@ -5,6 +5,7 @@
 export const revalidate = 1800;
 
 import type { Metadata } from 'next';
+import { jsonLd } from '@/lib/jsonLd';
 
 export const metadata: Metadata = {
   title: 'Texas Commercial Real Estate | Retail, Industrial & Office | CRECO',
@@ -263,7 +264,7 @@ export default async function HomePage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: jsonLd({
             '@context': 'https://schema.org',
             '@type': 'FAQPage',
             mainEntity: FAQS.map(f => ({

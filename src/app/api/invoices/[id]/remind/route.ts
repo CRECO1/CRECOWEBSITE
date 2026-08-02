@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { requireAdmin } from '@/lib/api-auth';
 import { sendInvoiceEmail } from '@/lib/invoice-send';
 import {
   REMINDER_STAGES, renderReminderContent,
@@ -39,31 +38,16 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
 
-async function authSupabase() {
-  const cookieStore = await cookies();
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-    {
-      cookies: {
-        getAll() { return cookieStore.getAll(); },
-        setAll() { /* read-only in API routes */ },
-      },
-    },
-  );
-}
-
 export async function POST(
   req: NextRequest,
   ctx: { params: Promise<{ id: string }> }
 ) {
-  // Auth gate — must be a signed-in admin. Returns 401 to anonymous
-  // callers, never silently runs.
-  const authClient = await authSupabase();
-  const { data: { user } } = await authClient.auth.getUser();
-  if (!user) {
-    return NextResponse.json({ error: 'Not authorized' }, { status: 401 });
-  }
+  // Auth gate — must be a signed-in admin on the admin_users allowlist.
+  // Runs BEFORE any service-role DB access below. requireAdmin() returns a
+  // 401 to anonymous callers and a 403 to authenticated non-admins; a bare
+  // valid session is no longer sufficient to fire reminder emails.
+  const auth = await requireAdmin();
+  if (auth.error) return auth.error;
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;

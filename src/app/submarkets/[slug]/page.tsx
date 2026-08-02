@@ -4,6 +4,7 @@
 export const revalidate = 1800;
 
 import type { Metadata } from 'next';
+import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -110,11 +111,11 @@ export default async function SubmarketDetailPage({ params }: Props) {
           quickAnswer + optional centroid geo on richContent. */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(placeSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(placeSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(articleSchema) }}
       />
 
       {/* FAQ Schema */}
@@ -122,7 +123,7 @@ export default async function SubmarketDetailPage({ params }: Props) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
+            __html: jsonLd({
               '@context': 'https://schema.org',
               '@type': 'FAQPage',
               mainEntity: richContent.faqs.map(f => ({
@@ -139,7 +140,7 @@ export default async function SubmarketDetailPage({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: jsonLd({
             '@context': 'https://schema.org',
             '@type': 'BreadcrumbList',
             itemListElement: [

@@ -27,3 +27,7 @@ build/
 # Payload
 media/
 tsconfig.tsbuildinfo
+.env*
+
+# FUSE mount artifacts (transient copies left by editors on network/FUSE mounts)
+.fuse_hidden*

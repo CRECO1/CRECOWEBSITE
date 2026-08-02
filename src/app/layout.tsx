@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { jsonLd } from '@/lib/jsonLd';
 import Script from 'next/script';
 import { Suspense } from 'react';
 import { MobileStickyCTA } from '@/components/layout/MobileStickyCTA';
@@ -123,7 +124,7 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
+            __html: jsonLd({
               '@context': 'https://schema.org',
               '@graph': [
                 {

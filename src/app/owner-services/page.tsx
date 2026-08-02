@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { jsonLd } from '@/lib/jsonLd';
 import Link from 'next/link';
 import {
   Building2, LineChart, Wrench, RefreshCw, FileBarChart, Layers, ArrowRight,
@@ -138,7 +139,7 @@ export default async function OwnerServicesPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: jsonLd({
             '@context': 'https://schema.org',
             '@type': 'FAQPage',
             mainEntity: content.faqs.map(f => ({

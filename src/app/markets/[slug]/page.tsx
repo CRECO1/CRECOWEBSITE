@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
 import { CityHubPage } from '@/components/marketing/CityHubPage';
 import {
@@ -53,7 +54,7 @@ export default async function SubmarketPage({ params }: { params: Promise<{ slug
   //   BreadcrumbList — Home > Markets > [submarket]
   // All three help search engines understand the page and qualify for
   // rich results (local pack, breadcrumbs in search, organization card).
-  const jsonLd = [
+  const jsonLdData = [
     {
       '@context': 'https://schema.org',
       '@type': 'Place',
@@ -95,7 +96,7 @@ export default async function SubmarketPage({ params }: { params: Promise<{ slug
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(jsonLdData) }}
       />
       <CityHubPage
         config={{

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { jsonLd } from '@/lib/jsonLd';
 import Link from 'next/link';
 import { ArrowRight, Clock, FileText, Lock, BarChart3, BookOpen } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
@@ -66,7 +67,7 @@ export default function GuidesIndex() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
+        dangerouslySetInnerHTML={{ __html: jsonLd(collectionSchema) }}
       />
       <Header />
       <main className="min-h-screen pt-20">

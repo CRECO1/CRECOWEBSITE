@@ -12,6 +12,7 @@
  */
 
 import Link from 'next/link';
+import { jsonLd } from '@/lib/jsonLd';
 import Image from 'next/image';
 import {
   ArrowRight, Building2, Layers, MapPin, CheckCircle, Phone, Sparkles,
@@ -100,7 +101,7 @@ export async function PropertyLandingPage({ config: configIn, dbContent }: Props
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+          __html: jsonLd({
             '@context': 'https://schema.org',
             '@type': 'FAQPage',
             mainEntity: config.faqs.map(f => ({
