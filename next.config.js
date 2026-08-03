@@ -181,6 +181,22 @@ const nextConfig = {
       },
     ];
   },
+
+  // Proxy the CRM campaign unsubscribe endpoint to the Fair Oaks app, which
+  // owns the unsubscribe-token logic and the CRM database. CRECO-branded
+  // campaign emails link to crecotx.com/api/campaigns/unsubscribe; this rewrite
+  // forwards those requests (query string included) to the handler at
+  // fairoaksrealtygroup.com so CRECO unsubscribes work without duplicating the
+  // token logic here. The confirmation page renders the correct brand based on
+  // the client's business_unit.
+  async rewrites() {
+    return [
+      {
+        source: '/api/campaigns/unsubscribe',
+        destination: 'https://www.fairoaksrealtygroup.com/api/campaigns/unsubscribe',
+      },
+    ];
+  },
 };
 
 export default withPayload(nextConfig);
