@@ -26,6 +26,8 @@ const cspDirectives = {
     'https://www.google.com',            // reCAPTCHA (when enabled)
     'https://www.gstatic.com',           // reCAPTCHA assets
     'https://va.vercel-scripts.com',     // Vercel Analytics
+    'https://maps.googleapis.com',       // Google Maps JavaScript API (listings map)
+    'https://maps.gstatic.com',          // Google Maps script assets
   ],
   'style-src': [
     "'self'",
@@ -54,12 +56,16 @@ const cspDirectives = {
     'https://www.googletagmanager.com',
     'https://api.resend.com',            // outbound from server-side, harmless to allow
     'https://va.vercel-scripts.com',
+    'https://maps.googleapis.com',       // Google Maps tile/vector data + geocoding XHR
+    'https://maps.gstatic.com',
+    'https://*.googleapis.com',          // vector map tile fetches
   ],
   'frame-src': [
     "'self'",
     'https://www.google.com',            // reCAPTCHA challenge iframe (if interactive falls back)
   ],
   'object-src': ["'none'"],
+  'worker-src': ["'self'", 'blob:'],     // Google Maps vector rendering runs in blob web workers
   'base-uri': ["'self'"],
   'form-action': ["'self'"],
   'frame-ancestors': ["'self'"],
