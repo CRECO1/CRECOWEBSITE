@@ -1,4 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { createBrowserClient } from '@supabase/ssr';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
@@ -6,7 +7,19 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 let supabase: SupabaseClient;
 
 if (supabaseUrl && supabaseAnonKey) {
-  supabase = createClient(supabaseUrl, supabaseAnonKey);
+  // In the browser, use the cookie-aware SSR client so this shared client
+  // carries the auth session established at login. Login (src/lib/auth.ts)
+  // and middleware both use @supabase/ssr's createBrowserClient, which
+  // persists the session to COOKIES — not localStorage. The plain
+  // supabase-js client was therefore always anonymous in the browser, so
+  // every authenticated billing call (current_user_workspace(), invoices,
+  // expenses, …) ran logged-out — surfacing as "No workspace assigned".
+  // On the server we keep the plain client for anonymous public reads
+  // (public listings etc.); there's no document/cookie during SSR.
+  supabase =
+    typeof window !== 'undefined'
+      ? (createBrowserClient(supabaseUrl, supabaseAnonKey) as SupabaseClient)
+      : createClient(supabaseUrl, supabaseAnonKey);
 } else {
   console.warn('NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY not set - using placeholder for build');
   supabase = createClient('https://placeholder.supabase.co', 'placeholder-key');
