@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { requireAdmin } from '@/lib/api-auth';
+import { requireWorkspaceAdmin } from '@/lib/api-auth';
 import { sendInvoiceEmail } from '@/lib/invoice-send';
 import {
   REMINDER_STAGES, renderReminderContent,
@@ -42,12 +42,15 @@ export async function POST(
   req: NextRequest,
   ctx: { params: Promise<{ id: string }> }
 ) {
-  // Auth gate — must be a signed-in admin on the admin_users allowlist.
-  // Runs BEFORE any service-role DB access below. requireAdmin() returns a
-  // 401 to anonymous callers and a 403 to authenticated non-admins; a bare
-  // valid session is no longer sufficient to fire reminder emails.
-  const auth = await requireAdmin();
+  // Auth gate — must be a signed-in admin on the admin_users allowlist AND
+  // resolve to a workspace. Runs BEFORE any service-role DB access below.
+  // requireWorkspaceAdmin() returns 401 to anonymous callers and 403 to
+  // authenticated non-admins / users without a workspace. We use the
+  // resolved workspace.id to scope the (service-role) invoice lookup below
+  // so this route can't fire a reminder on another tenant's invoice.
+  const auth = await requireWorkspaceAdmin();
   if (auth.error) return auth.error;
+  const { workspace } = auth;
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -58,11 +61,16 @@ export async function POST(
   const { id } = await ctx.params;
   const supabase = createClient(url, key, { auth: { persistSession: false } });
 
-  // 1. Load invoice + line items
+  // 1. Load invoice + line items. Scope to the caller's workspace: this
+  //    route uses the service-role client (to reserve the invoice_reminders
+  //    row under RLS), so without this explicit workspace_id filter an admin
+  //    could fire a reminder on ANY workspace's invoice by id. This was the
+  //    one billing route that combined service-role + no workspace filter.
   const { data: inv, error: invErr } = await supabase
     .from('invoices')
     .select('*')
     .eq('id', id)
+    .eq('workspace_id', workspace.id)
     .maybeSingle();
   if (invErr) {
     return NextResponse.json({ error: invErr.message }, { status: 500 });

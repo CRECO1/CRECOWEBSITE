@@ -81,9 +81,22 @@ export default async function ClientPortalPage({ params }: PageProps) {
   // Pull every invoice for this client (by id link OR by email — covers the
   // window between when a client row was upserted and old invoices were
   // back-linked). De-duplicate by id.
+  //
+  // SECURITY: this page runs with the service-role key (RLS bypassed), so
+  // both queries MUST scope to the client's own workspace. Without the
+  // workspace_id filter, the email-match query would return invoices for
+  // that email address across EVERY workspace — a cross-tenant leak. And
+  // we select an explicit non-sensitive column allowlist instead of '*'
+  // so internal columns (internal_notes, etc.) never reach this public
+  // surface (see the warning in the comment above).
+  const workspaceId = (client as { workspace_id: string }).workspace_id;
+  const PORTAL_INVOICE_COLS =
+    'id, invoice_number, issue_date, due_date, status, total, paid_amount, paid_at, property_reference, stripe_payment_link_url';
   const [byId, byEmail] = await Promise.all([
-    supabase.from('invoices').select('*').eq('client_id', client.id),
-    supabase.from('invoices').select('*').eq('client_email', client.email),
+    supabase.from('invoices').select(PORTAL_INVOICE_COLS)
+      .eq('workspace_id', workspaceId).eq('client_id', client.id),
+    supabase.from('invoices').select(PORTAL_INVOICE_COLS)
+      .eq('workspace_id', workspaceId).eq('client_email', client.email),
   ]);
   const seen = new Set<string>();
   const invoices: Invoice[] = [];
