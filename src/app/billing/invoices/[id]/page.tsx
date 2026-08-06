@@ -34,6 +34,7 @@ import { useToast } from '@/components/billing/Toast';
 import { useWorkspaceOrThrow } from '@/components/billing/WorkspaceProvider';
 
 type Editable = Omit<Invoice, 'line_items'> & { line_items: InvoiceLineItem[] };
+type PaymentRow = { id: string; amount: number; method: string | null; paid_at: string; notes: string | null; source: string };
 
 export default function InvoiceDetailPage() {
   const params = useParams<{ id: string }>();
@@ -82,6 +83,7 @@ export default function InvoiceDetailPage() {
 
   // Reminder history for this invoice
   const [reminders, setReminders] = useState<{ stage: ReminderStage; sent_at: string }[]>([]);
+  const [payments, setPayments] = useState<PaymentRow[]>([]);
 
   // Resend email events (delivered/opened/clicked/bounced) — powers the
   // "Email tracking" card. Populated by the Resend webhook; the page
@@ -125,6 +127,15 @@ export default function InvoiceDetailPage() {
       .eq('invoice_id', id)
       .order('occurred_at', { ascending: false });
     setEmailEvents((events ?? []) as InvoiceEmailEvent[]);
+
+    // Payment ledger — the sum of these drives the invoice's paid/partial
+    // status (recalc trigger, migration 0046).
+    const { data: pmts } = await supabase
+      .from('invoice_payments')
+      .select('id, amount, method, paid_at, notes, source')
+      .eq('invoice_id', id)
+      .order('paid_at', { ascending: true });
+    setPayments((pmts ?? []) as PaymentRow[]);
   }, [id]);
 
   useEffect(() => { load(); }, [load]);
@@ -310,6 +321,22 @@ export default function InvoiceDetailPage() {
         });
         await load();
       },
+    });
+    await load();
+  }
+
+  async function deletePayment(paymentId: string) {
+    if (!invoice) return;
+    setBusy('delpay');
+    const { error } = await supabase.from('invoice_payments').delete().eq('id', paymentId);
+    setBusy(null);
+    if (error) { setError(error.message); return; }
+    logActivity({
+      action: 'reopened',
+      entity_type: 'invoice',
+      entity_id: invoice.id,
+      entity_label: invoice.invoice_number,
+      diff: { removed_payment: paymentId },
     });
     await load();
   }
@@ -788,9 +815,44 @@ export default function InvoiceDetailPage() {
                     {view.property_reference && <Row label="Property" value={view.property_reference} />}
                     {invoice.sent_at && <Row label="Sent" value={formatDate(invoice.sent_at.slice(0, 10))} />}
                     {invoice.paid_at && <Row label="Paid" value={`${formatDate(invoice.paid_at.slice(0, 10))} · ${invoice.paid_method ?? '—'} · ${formatMoney(invoice.paid_amount ?? invoice.total)}`} />}
+                    {balanceDue(invoice) > 0.005 && (
+                      <Row label="Balance due" value={formatMoney(balanceDue(invoice))} />
+                    )}
                   </dl>
                 )}
               </Card>
+
+              {payments.length > 0 && (
+                <Card title="Payments">
+                  <ul className="space-y-2">
+                    {payments.map(p => (
+                      <li key={p.id} className="flex items-start justify-between gap-2 text-body-sm">
+                        <div>
+                          <div className="font-medium text-primary">{formatMoney(Number(p.amount))} · {p.method ?? '—'}</div>
+                          <div className="text-caption text-foreground-muted">
+                            {formatDate(p.paid_at)}{p.source !== 'manual' ? ` · ${p.source}` : ''}{p.notes ? ` · ${p.notes}` : ''}
+                          </div>
+                        </div>
+                        {invoice.status !== 'void' && (
+                          <button
+                            type="button"
+                            onClick={() => deletePayment(p.id)}
+                            disabled={busy === 'delpay'}
+                            className="shrink-0 text-caption text-destructive hover:underline disabled:opacity-50"
+                            aria-label="Remove payment"
+                          >
+                            Remove
+                          </button>
+                        )}
+                      </li>
+                    ))}
+                    <li className="flex items-center justify-between border-t border-border pt-2 text-body-sm font-semibold">
+                      <span>Balance due</span>
+                      <span className={balanceDue(invoice) > 0.005 ? 'text-primary' : 'text-green-700'}>{formatMoney(balanceDue(invoice))}</span>
+                    </li>
+                  </ul>
+                </Card>
+              )}
 
               <Card title="Payment link">
                 {editing ? (
