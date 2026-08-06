@@ -58,6 +58,20 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
+    // The unique (recurring_template_id, issue_date) index (migration 0042)
+    // rejects a second invoice for the same template+day — i.e. the daily
+    // cron already generated today, or this button was double-clicked.
+    // Surface that as a friendly 409 instead of a raw Postgres error so we
+    // don't double-bill/double-email the client.
+    if (/invoices_recurring_template_period_uidx|duplicate key/i.test(msg)) {
+      return NextResponse.json(
+        {
+          error:
+            'An invoice for this template has already been generated today. Refresh to see it before generating another.',
+        },
+        { status: 409 },
+      );
+    }
     console.error('[recurring.generate] failed:', msg);
     return NextResponse.json({ error: msg }, { status: 500 });
   }
