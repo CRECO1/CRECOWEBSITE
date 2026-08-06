@@ -26,15 +26,20 @@ export interface StatementClient {
   address: string | null;
 }
 
+export interface StatementPaymentRow { date: string; amount: number; invoice_number: string; method: string | null; }
+export interface StatementCreditRow  { date: string; amount: number; invoice_number: string; reason: string | null; }
+
 export interface StatementInput {
   client: StatementClient;
   periodStart: string;     // YYYY-MM-DD inclusive
   periodEnd: string;       // YYYY-MM-DD inclusive
-  /** Invoices to include — caller pre-filters by client + date range. */
+  /** All of the client's invoices — the renderer picks in-period charges. */
   invoices: Invoice[];
-  /** Balance carried forward from before periodStart (sum of unpaid
-   *  invoices outstanding at periodStart). Caller computes this so we
-   *  don't have to re-query inside the renderer. */
+  /** Ledger payments (invoice_payments) — the renderer picks in-period. */
+  payments: StatementPaymentRow[];
+  /** Ledger credits (invoice_credits) — the renderer picks in-period. */
+  credits: StatementCreditRow[];
+  /** Balance carried forward from before periodStart. Caller computes it. */
   openingBalance: number;
 }
 
@@ -42,6 +47,7 @@ export interface StatementSummary {
   openingBalance: number;
   totalCharged: number;
   totalPaid: number;
+  totalCredited: number;
   closingBalance: number;
 }
 
@@ -66,64 +72,63 @@ export function buildStatementLedger(input: StatementInput): {
   entries: StatementEntry[];
   summary: StatementSummary;
 } {
-  const { invoices, periodStart, periodEnd, openingBalance } = input;
+  const { invoices, payments, credits, periodStart, periodEnd, openingBalance } = input;
   const entries: StatementEntry[] = [];
   let running = openingBalance;
   let totalCharged = 0;
   let totalPaid = 0;
+  let totalCredited = 0;
+  const r2 = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100;
+  const inPeriod = (d: string) => d >= periodStart && d <= periodEnd;
 
-  // Build a chronologically interleaved list. Issued and paid become
-  // separate ledger entries; out-of-period activity is dropped.
-  type Event = { date: string; kind: 'billed' | 'paid'; inv: Invoice };
+  // Interleave the three ledgers chronologically: invoices (charges),
+  // payments, and credits — each drawn from its own table so multiple
+  // payments per invoice and credit notes all show as distinct entries.
+  type Event =
+    | { date: string; kind: 'billed'; amount: number; invoice_number: string; ref: string | null }
+    | { date: string; kind: 'paid'; amount: number; invoice_number: string; method: string | null }
+    | { date: string; kind: 'credit'; amount: number; invoice_number: string; reason: string | null };
   const events: Event[] = [];
   for (const inv of invoices) {
-    if (inv.issue_date >= periodStart && inv.issue_date <= periodEnd) {
-      events.push({ date: inv.issue_date, kind: 'billed', inv });
-    }
-    if (inv.paid_at) {
-      const paidIso = inv.paid_at.slice(0, 10);
-      if (paidIso >= periodStart && paidIso <= periodEnd) {
-        events.push({ date: paidIso, kind: 'paid', inv });
-      }
+    if (inPeriod(inv.issue_date)) {
+      events.push({ date: inv.issue_date, kind: 'billed', amount: Number(inv.total), invoice_number: inv.invoice_number, ref: inv.property_reference });
     }
   }
-  events.sort((a, b) => (a.date < b.date ? -1 : 1));
+  for (const p of payments) {
+    if (inPeriod(p.date)) events.push({ date: p.date, kind: 'paid', amount: Number(p.amount), invoice_number: p.invoice_number, method: p.method });
+  }
+  for (const cr of credits) {
+    if (inPeriod(cr.date)) events.push({ date: cr.date, kind: 'credit', amount: Number(cr.amount), invoice_number: cr.invoice_number, reason: cr.reason });
+  }
+  // Chronological; within a day, charge before reductions so the running
+  // balance reads naturally.
+  const order = { billed: 0, credit: 1, paid: 2 } as const;
+  events.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : order[a.kind] - order[b.kind]));
 
   for (const e of events) {
     if (e.kind === 'billed') {
-      const amt = Number(e.inv.total);
-      running = Math.round((running + amt + Number.EPSILON) * 100) / 100;
-      totalCharged += amt;
-      entries.push({
-        date: e.date,
-        invoice_number: e.inv.invoice_number,
-        description: `Invoice ${e.inv.invoice_number}${e.inv.property_reference ? ` — ${e.inv.property_reference}` : ''}`,
-        charges: amt,
-        payments: 0,
-        running_balance: running,
-      });
+      running = r2(running + e.amount);
+      totalCharged += e.amount;
+      entries.push({ date: e.date, invoice_number: e.invoice_number, description: `Invoice ${e.invoice_number}${e.ref ? ` — ${e.ref}` : ''}`, charges: e.amount, payments: 0, running_balance: running });
+    } else if (e.kind === 'paid') {
+      running = r2(running - e.amount);
+      totalPaid += e.amount;
+      entries.push({ date: e.date, invoice_number: e.invoice_number, description: `Payment — Invoice ${e.invoice_number}${e.method ? ` (${e.method})` : ''}`, charges: 0, payments: e.amount, running_balance: running });
     } else {
-      const amt = Number(e.inv.paid_amount ?? e.inv.total);
-      running = Math.round((running - amt + Number.EPSILON) * 100) / 100;
-      totalPaid += amt;
-      entries.push({
-        date: e.date,
-        invoice_number: e.inv.invoice_number,
-        description: `Payment received — Invoice ${e.inv.invoice_number}`,
-        charges: 0,
-        payments: amt,
-        running_balance: running,
-      });
+      running = r2(running - e.amount);
+      totalCredited += e.amount;
+      entries.push({ date: e.date, invoice_number: e.invoice_number, description: `Credit — Invoice ${e.invoice_number}${e.reason ? ` (${e.reason})` : ''}`, charges: 0, payments: e.amount, running_balance: running });
     }
   }
 
   return {
     entries,
     summary: {
-      openingBalance: Math.round((openingBalance + Number.EPSILON) * 100) / 100,
-      totalCharged: Math.round((totalCharged + Number.EPSILON) * 100) / 100,
-      totalPaid: Math.round((totalPaid + Number.EPSILON) * 100) / 100,
-      closingBalance: Math.round((running + Number.EPSILON) * 100) / 100,
+      openingBalance: r2(openingBalance),
+      totalCharged: r2(totalCharged),
+      totalPaid: r2(totalPaid),
+      totalCredited: r2(totalCredited),
+      closingBalance: r2(running),
     },
   };
 }
@@ -224,7 +229,7 @@ export async function renderStatementPdf(input: StatementInput): Promise<Uint8Ar
   doc.text('Date', margin + 2, y + 5);
   doc.text('Description', margin + 28, y + 5);
   doc.text('Charges', pageWidth - margin - 42, y + 5, { align: 'right' });
-  doc.text('Payments', pageWidth - margin - 22, y + 5, { align: 'right' });
+  doc.text('Paid/Credit', pageWidth - margin - 22, y + 5, { align: 'right' });
   doc.text('Balance', pageWidth - margin - 2, y + 5, { align: 'right' });
   y += 7;
 
@@ -275,9 +280,18 @@ export async function renderStatementPdf(input: StatementInput): Promise<Uint8Ar
   y += 14;
 
   // ── Summary box ───────────────────────────────────────────────────────
+  const sumLabels: [string, string][] = [
+    ['Opening balance',      formatMoney(summary.openingBalance)],
+    ['Charges this period',  formatMoney(summary.totalCharged)],
+    ['Payments this period', formatMoney(summary.totalPaid)],
+  ];
+  if (summary.totalCredited > 0) sumLabels.push(['Credits this period', formatMoney(summary.totalCredited)]);
+  sumLabels.push(['Closing balance', formatMoney(summary.closingBalance)]);
+  const boxHeight = 9 + sumLabels.length * 4;
+
   doc.setFillColor(250, 250, 248);
   doc.setDrawColor(...BORDER);
-  doc.rect(margin, y, pageWidth - margin * 2, 26, 'FD');
+  doc.rect(margin, y, pageWidth - margin * 2, boxHeight, 'FD');
 
   doc.setTextColor(...MUTED);
   doc.setFontSize(8);
@@ -287,20 +301,13 @@ export async function renderStatementPdf(input: StatementInput): Promise<Uint8Ar
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
   doc.setTextColor(...CRECO_BLACK);
-
-  const labels = [
-    ['Opening balance',       formatMoney(summary.openingBalance)],
-    ['Charges this period',   formatMoney(summary.totalCharged)],
-    ['Payments this period',  formatMoney(summary.totalPaid)],
-    ['Closing balance',       formatMoney(summary.closingBalance)],
-  ];
   let yLabel = y + 11;
-  for (let i = 0; i < labels.length; i++) {
-    doc.text(labels[i][0], margin + 4, yLabel);
-    doc.text(labels[i][1], pageWidth - margin - 4, yLabel, { align: 'right' });
+  for (const [label, val] of sumLabels) {
+    doc.text(label, margin + 4, yLabel);
+    doc.text(val, pageWidth - margin - 4, yLabel, { align: 'right' });
     yLabel += 4;
   }
-  y += 30;
+  y += boxHeight + 4;
 
   // Footer
   doc.setTextColor(...MUTED);

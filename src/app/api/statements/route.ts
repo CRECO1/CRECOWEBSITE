@@ -90,29 +90,36 @@ export async function POST(req: NextRequest) {
   // — newer rows reflect the latest known address/company for the client.
   const latest = invoices[invoices.length - 1];
 
-  // Opening balance = sum of (invoiced - paid) for invoices issued before
-  // periodStart. A paid-out-of-period invoice billed before periodStart
-  // and paid within-period nets to zero in the opening balance and shows
-  // up as a payment entry in the ledger.
+  // Pull the payment + credit ledgers for these invoices so the statement
+  // reflects every real payment (multiple per invoice) and credit note,
+  // not just a single derived paid_at.
+  const invIds = invoices.map(i => i.id);
+  const byId = new Map(invoices.map(i => [i.id, i]));
+  const [{ data: pmtRows }, { data: crRows }] = await Promise.all([
+    supabase.from('invoice_payments').select('invoice_id, amount, method, paid_at').in('invoice_id', invIds),
+    supabase.from('invoice_credits').select('invoice_id, amount, reason, issued_at').in('invoice_id', invIds),
+  ]);
+  const payments = (pmtRows ?? []).map(p => ({
+    date: p.paid_at as string,
+    amount: Number(p.amount),
+    invoice_number: byId.get(p.invoice_id as string)?.invoice_number ?? '—',
+    method: (p.method as string | null) ?? null,
+  }));
+  const credits = (crRows ?? []).map(cr => ({
+    date: cr.issued_at as string,
+    amount: Number(cr.amount),
+    invoice_number: byId.get(cr.invoice_id as string)?.invoice_number ?? '—',
+    reason: (cr.reason as string | null) ?? null,
+  }));
+
+  // Opening balance = charges before the period − payments − credits before it.
   let openingBalance = 0;
   for (const inv of invoices) {
-    if (inv.issue_date < periodStart) {
-      openingBalance += Number(inv.total);
-      if (inv.paid_at && inv.paid_at.slice(0, 10) < periodStart) {
-        openingBalance -= Number(inv.paid_amount ?? inv.total);
-      }
-    }
+    if (inv.issue_date < periodStart) openingBalance += Number(inv.total);
   }
+  for (const p of payments) { if (p.date < periodStart) openingBalance -= p.amount; }
+  for (const cr of credits) { if (cr.date < periodStart) openingBalance -= cr.amount; }
   openingBalance = Math.round((openingBalance + Number.EPSILON) * 100) / 100;
-
-  // Only the in-period or in-flight invoices need to flow into the ledger
-  // builder — the renderer filters internally, but trimming the input
-  // first keeps it lean.
-  const inScope = invoices.filter(inv => {
-    const issuedInPeriod = inv.issue_date >= periodStart && inv.issue_date <= periodEnd;
-    const paidInPeriod = inv.paid_at && inv.paid_at.slice(0, 10) >= periodStart && inv.paid_at.slice(0, 10) <= periodEnd;
-    return issuedInPeriod || paidInPeriod;
-  });
 
   const pdfBytes = await renderStatementPdf({
     client: {
@@ -123,7 +130,9 @@ export async function POST(req: NextRequest) {
     },
     periodStart,
     periodEnd,
-    invoices: inScope,
+    invoices,
+    payments,
+    credits,
     openingBalance,
   });
   const pdfBuffer = Buffer.from(pdfBytes);
