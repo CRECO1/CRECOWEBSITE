@@ -145,7 +145,8 @@ export interface ClosedDeal {
 export async function getListings(status: 'active' | 'pending' | 'sold' | 'leased' | 'all' = 'active'): Promise<Listing[]> {
   let query = supabase.from('listings').select('*');
   if (status === 'active') {
-    query = query.in('status', ['active', 'pending']);
+    // Include 'leased' so recently-closed deals stay visible with a LEASED badge (social proof).
+    query = query.in('status', ['active', 'pending', 'leased']);
   } else if (status !== 'all') {
     query = query.eq('status', status);
   }

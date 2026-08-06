@@ -10,6 +10,7 @@ const badgeVariants = cva(
         featured: 'bg-gold text-primary',
         new: 'bg-blue-600 text-white',
         sold: 'bg-red-800 text-white',
+        leased: 'bg-slate-700 text-white',
         pending: 'bg-orange-500 text-white',
         active: 'bg-green-600 text-white',
         default: 'bg-primary/10 text-primary',

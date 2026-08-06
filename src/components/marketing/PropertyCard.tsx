@@ -54,6 +54,19 @@ export function PropertyCard({ listing, showPropertyTypeBadge = false }: Propert
 
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-2">
+          {listing.status && listing.status !== 'active' && (
+            <span className={`rounded-full px-3 py-1 text-caption font-semibold uppercase text-white ${
+              listing.status === 'leased' ? 'bg-slate-700'
+              : listing.status === 'sold' ? 'bg-red-800'
+              : listing.status === 'pending' ? 'bg-orange-500'
+              : 'bg-primary'
+            }`}>
+              {listing.status === 'leased' ? 'Leased'
+                : listing.status === 'sold' ? 'Sold'
+                : listing.status === 'pending' ? 'Pending'
+                : listing.status}
+            </span>
+          )}
           {listing.transaction_type && (
             <span className="rounded-full bg-gold px-3 py-1 text-caption font-semibold text-primary uppercase">
               {transactionLabel(listing.transaction_type)}
