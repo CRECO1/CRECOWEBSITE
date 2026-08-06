@@ -12,7 +12,12 @@ export interface InputProps
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, label, error, inputSize = 'md', id, ...props }, ref) => {
-    const inputId = id || React.useId();
+    // Call useId() unconditionally (rules-of-hooks): the previous
+    // `id || React.useId()` short-circuited the hook when an id was passed,
+    // so a parent toggling the id prop between renders would shift hook
+    // order and crash. Generate always, then prefer an explicit id.
+    const generatedId = React.useId();
+    const inputId = id || generatedId;
 
     return (
       <div className="w-full">

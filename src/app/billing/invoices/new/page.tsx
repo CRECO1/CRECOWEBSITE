@@ -401,6 +401,11 @@ function NewInvoicePageInner() {
     if (lineRows.length > 0) {
       const { error: itemsErr } = await supabase.from('invoice_line_items').insert(lineRows);
       if (itemsErr) {
+        // Roll back the just-inserted header so we never leave an invoice
+        // with totals but zero line items (mirrors recurring-generate's
+        // best-effort rollback). Without this, a failed line-item insert
+        // strands a corrupt draft holding a consumed invoice number.
+        await supabase.from('invoices').delete().eq('id', created.id);
         setSaving(false);
         setError(itemsErr.message);
         return;

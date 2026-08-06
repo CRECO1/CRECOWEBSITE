@@ -542,6 +542,34 @@ export default function InvoiceDetailPage() {
       if (e2) { setBusy(null); setError(e2.message); return; }
     }
 
+    // Audit trail: record what changed. Editing a sent invoice after the
+    // client received it is allowed but must be traceable; settled
+    // (paid/void) invoices are frozen at the DB level (migration 0044).
+    if (invoice) {
+      const before = invoice;
+      const changes: Record<string, { from: unknown; to: unknown }> = {};
+      const track = (key: string, from: unknown, to: unknown) => {
+        if (from !== to) changes[key] = { from, to };
+      };
+      track('total', Number(before.total), totals.total);
+      track('subtotal', Number(before.subtotal), totals.subtotal);
+      track('tax_rate', Number(before.tax_rate), draft.tax_rate);
+      track('client_name', before.client_name, draft.client_name.trim());
+      track('client_email', before.client_email, draft.client_email.trim().toLowerCase());
+      track('issue_date', before.issue_date, draft.issue_date);
+      track('due_date', before.due_date, draft.due_date);
+      track('line_items', before.line_items.length, rows.length);
+      if (Object.keys(changes).length > 0) {
+        logActivity({
+          action: 'updated',
+          entity_type: 'invoice',
+          entity_id: draft.id,
+          entity_label: draft.invoice_number,
+          diff: { status: before.status, changed: changes },
+        });
+      }
+    }
+
     setBusy(null);
     setEditing(false);
     setDraft(null);
