@@ -263,5 +263,8 @@ export async function generateInvoiceFromTemplate(
     }
   }
 
-  return { invoice, invoice_number: invoiceNumber, sent, send_error };
+  // invoice.invoice_number is the DB-assigned number (the BEFORE INSERT
+  // trigger from migration 0045 owns numbering); the locally computed
+  // invoiceNumber is now only a fallback hint.
+  return { invoice, invoice_number: invoice.invoice_number, sent, send_error };
 }

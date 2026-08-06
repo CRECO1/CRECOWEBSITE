@@ -382,7 +382,10 @@ function NewInvoicePageInner() {
       action: cloneId ? 'duplicated' : 'created',
       entity_type: 'invoice',
       entity_id: created.id,
-      entity_label: invoiceNumber,
+      // Use the DB-assigned number: the BEFORE INSERT trigger (migration
+      // 0045) owns numbering now, so the client-side preview is only a hint
+      // and may differ under concurrency.
+      entity_label: created.invoice_number,
       diff: cloneId ? { duplicated_from: cloneId } : null,
     });
 
