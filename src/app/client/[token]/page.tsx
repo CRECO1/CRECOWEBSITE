@@ -91,7 +91,7 @@ export default async function ClientPortalPage({ params }: PageProps) {
   // surface (see the warning in the comment above).
   const workspaceId = (client as { workspace_id: string }).workspace_id;
   const PORTAL_INVOICE_COLS =
-    'id, invoice_number, issue_date, due_date, status, total, paid_amount, paid_at, property_reference, stripe_payment_link_url';
+    'id, invoice_number, issue_date, due_date, status, total, paid_amount, credited_amount, paid_at, property_reference, stripe_payment_link_url';
   const [byId, byEmail] = await Promise.all([
     supabase.from('invoices').select(PORTAL_INVOICE_COLS)
       .eq('workspace_id', workspaceId).eq('client_id', client.id),

@@ -83,6 +83,9 @@ export interface Invoice {
   paid_at: string | null;
   paid_amount: number | null;
   paid_method: string | null;
+  /** Sum of credit notes applied to this invoice (migration 0047). Reduces
+   *  the balance due alongside payments; maintained by the recalc trigger. */
+  credited_amount: number | null;
 
   /** Set when the invoice was generated from a recurring template (or
    *  when the operator chose Repeat on the create-invoice form). Lets
@@ -177,8 +180,8 @@ export function effectiveStatus(invoice: Pick<Invoice, 'status' | 'due_date'>): 
  * partially paid invoice contributes only its remaining balance, not the
  * full total.
  */
-export function balanceDue(inv: Pick<Invoice, 'total' | 'paid_amount'>): number {
-  return round2(Number(inv.total) - Number(inv.paid_amount ?? 0));
+export function balanceDue(inv: Pick<Invoice, 'total' | 'paid_amount' | 'credited_amount'>): number {
+  return round2(Number(inv.total) - Number(inv.paid_amount ?? 0) - Number(inv.credited_amount ?? 0));
 }
 
 /** Statuses that still owe money (contribute to AR / outstanding totals). */

@@ -234,6 +234,7 @@ function NewInvoicePageInner() {
     paid_at: null,
     paid_amount: null,
     paid_method: null,
+    credited_amount: null,
     created_at: '',
     updated_at: '',
   }), [invoiceNumber, clientName, clientEmail, clientCompany, clientAddress, issueDate, dueDate, totals, taxRate, propertyReference, notes, internalNotes, stripeLink, paymentTerms]);

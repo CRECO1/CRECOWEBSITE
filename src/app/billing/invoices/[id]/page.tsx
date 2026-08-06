@@ -35,6 +35,7 @@ import { useWorkspaceOrThrow } from '@/components/billing/WorkspaceProvider';
 
 type Editable = Omit<Invoice, 'line_items'> & { line_items: InvoiceLineItem[] };
 type PaymentRow = { id: string; amount: number; method: string | null; paid_at: string; notes: string | null; source: string };
+type CreditRow = { id: string; amount: number; reason: string | null; issued_at: string };
 
 export default function InvoiceDetailPage() {
   const params = useParams<{ id: string }>();
@@ -84,6 +85,10 @@ export default function InvoiceDetailPage() {
   // Reminder history for this invoice
   const [reminders, setReminders] = useState<{ stage: ReminderStage; sent_at: string }[]>([]);
   const [payments, setPayments] = useState<PaymentRow[]>([]);
+  const [credits, setCredits] = useState<CreditRow[]>([]);
+  const [creditOpen, setCreditOpen] = useState(false);
+  const [creditAmountStr, setCreditAmountStr] = useState('');
+  const [creditReason, setCreditReason] = useState('');
 
   // Resend email events (delivered/opened/clicked/bounced) — powers the
   // "Email tracking" card. Populated by the Resend webhook; the page
@@ -136,6 +141,15 @@ export default function InvoiceDetailPage() {
       .eq('invoice_id', id)
       .order('paid_at', { ascending: true });
     setPayments((pmts ?? []) as PaymentRow[]);
+
+    // Credit notes applied to this invoice — reduce the balance alongside
+    // payments (recalc trigger, migration 0047).
+    const { data: crs } = await supabase
+      .from('invoice_credits')
+      .select('id, amount, reason, issued_at')
+      .eq('invoice_id', id)
+      .order('issued_at', { ascending: true });
+    setCredits((crs ?? []) as CreditRow[]);
   }, [id]);
 
   useEffect(() => { load(); }, [load]);
@@ -321,6 +335,46 @@ export default function InvoiceDetailPage() {
         });
         await load();
       },
+    });
+    await load();
+  }
+
+  function openCredit() {
+    if (!invoice) return;
+    setError(null);
+    setCreditAmountStr(String(balanceDue(invoice)));
+    setCreditReason('');
+    setCreditOpen(true);
+  }
+  async function addCredit() {
+    if (!invoice) return;
+    const amount = Number(creditAmountStr);
+    if (!Number.isFinite(amount) || amount <= 0) { setError('Credit amount must be a positive number.'); return; }
+    setBusy('credit');
+    const { error } = await supabase.from('invoice_credits').insert({
+      workspace_id: workspace.id,
+      invoice_id: invoice.id,
+      amount,
+      reason: creditReason.trim() || null,
+    });
+    setBusy(null);
+    if (error) { setError(error.message); return; }
+    setCreditOpen(false);
+    logActivity({
+      action: 'updated', entity_type: 'invoice', entity_id: invoice.id,
+      entity_label: invoice.invoice_number, diff: { credit_added: amount, reason: creditReason.trim() || null },
+    });
+    await load();
+  }
+  async function deleteCredit(creditId: string) {
+    if (!invoice) return;
+    setBusy('delcredit');
+    const { error } = await supabase.from('invoice_credits').delete().eq('id', creditId);
+    setBusy(null);
+    if (error) { setError(error.message); return; }
+    logActivity({
+      action: 'updated', entity_type: 'invoice', entity_id: invoice.id,
+      entity_label: invoice.invoice_number, diff: { credit_removed: creditId },
     });
     await load();
   }
@@ -851,6 +905,47 @@ export default function InvoiceDetailPage() {
                       <span className={balanceDue(invoice) > 0.005 ? 'text-primary' : 'text-green-700'}>{formatMoney(balanceDue(invoice))}</span>
                     </li>
                   </ul>
+                </Card>
+              )}
+
+              {invoice.status !== 'draft' && invoice.status !== 'void' && (
+                <Card title="Credits">
+                  {credits.length > 0 && (
+                    <ul className="space-y-2 mb-3">
+                      {credits.map(cr => (
+                        <li key={cr.id} className="flex items-start justify-between gap-2 text-body-sm">
+                          <div>
+                            <div className="font-medium text-primary">−{formatMoney(Number(cr.amount))}</div>
+                            <div className="text-caption text-foreground-muted">{formatDate(cr.issued_at)}{cr.reason ? ` · ${cr.reason}` : ''}</div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => deleteCredit(cr.id)}
+                            disabled={busy === 'delcredit'}
+                            className="shrink-0 text-caption text-destructive hover:underline disabled:opacity-50"
+                          >
+                            Remove
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  {creditOpen ? (
+                    <div className="space-y-2">
+                      <input type="number" min="0" step="0.01" className={inputCls} value={creditAmountStr} onChange={e => setCreditAmountStr(e.target.value)} placeholder="Amount" autoFocus />
+                      <input className={inputCls} value={creditReason} onChange={e => setCreditReason(e.target.value)} placeholder="Reason (e.g. goodwill, overbilled)" />
+                      <div className="flex gap-2">
+                        <button type="button" onClick={addCredit} disabled={busy === 'credit' || !Number(creditAmountStr)} className="rounded-lg bg-gold px-3 py-1.5 text-body-sm font-semibold text-primary hover:bg-gold-light disabled:opacity-60">
+                          {busy === 'credit' ? 'Adding…' : 'Add credit'}
+                        </button>
+                        <button type="button" onClick={() => setCreditOpen(false)} className="rounded-lg border border-border px-3 py-1.5 text-body-sm text-foreground-muted hover:bg-background-cream">Cancel</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button type="button" onClick={openCredit} className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-body-sm font-semibold text-primary hover:bg-background-cream">
+                      + Add credit
+                    </button>
+                  )}
                 </Card>
               )}
 
