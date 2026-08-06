@@ -5,7 +5,7 @@ import {
   Building2, CheckCircle, Clock, AlertCircle, ExternalLink, Phone, Mail, FileText,
 } from 'lucide-react';
 import { createClient } from '@supabase/supabase-js';
-import { formatMoney, formatDate, effectiveStatus, STATUS_STYLES, type Invoice } from '@/lib/invoices';
+import { formatMoney, formatDate, effectiveStatus, STATUS_STYLES, isOutstanding, balanceDue, type Invoice } from '@/lib/invoices';
 import { getW9DisplayUrl } from '@/lib/w9';
 
 /**
@@ -113,15 +113,16 @@ export default async function ClientPortalPage({ params }: PageProps) {
   const yearStart = `${new Date().getUTCFullYear()}-01-01`;
   for (const inv of invoices) {
     const eff = effectiveStatus(inv);
-    if (eff === 'sent' || eff === 'overdue') outstanding += Number(inv.total);
-    if (eff === 'paid' && inv.paid_at && inv.paid_at >= yearStart) {
+    // Outstanding uses the remaining BALANCE, so a partially paid invoice
+    // contributes only what's still owed (not its full total).
+    if (isOutstanding(eff)) outstanding += balanceDue(inv);
+    // Paid-YTD counts money actually received — full for 'paid', the paid
+    // portion for 'partial'.
+    if ((eff === 'paid' || eff === 'partial') && inv.paid_at && inv.paid_at >= yearStart) {
       paidYtd += Number(inv.paid_amount ?? inv.total);
     }
   }
-  const openInvoices = invoices.filter(i => {
-    const e = effectiveStatus(i);
-    return e === 'sent' || e === 'overdue';
-  });
+  const openInvoices = invoices.filter(i => isOutstanding(effectiveStatus(i)));
   const closedInvoices = invoices.filter(i => {
     const e = effectiveStatus(i);
     return e === 'paid' || e === 'void';

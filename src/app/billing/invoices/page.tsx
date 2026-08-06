@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import {
-  formatMoney, formatDate, effectiveStatus, STATUS_STYLES,
+  formatMoney, formatDate, effectiveStatus, STATUS_STYLES, isOutstanding, balanceDue,
   type Invoice, type InvoiceStatus,
 } from '@/lib/invoices';
 import { ModalBase } from '@/components/ui/ModalBase';
@@ -38,6 +38,7 @@ const FILTERS: { label: string; value: 'all' | InvoiceStatus }[] = [
   { label: 'Sent', value: 'sent' },
   { label: 'Overdue', value: 'overdue' },
   { label: 'Paid', value: 'paid' },
+  { label: 'Partial', value: 'partial' },
   { label: 'Void', value: 'void' },
 ];
 
@@ -381,11 +382,13 @@ export default function InvoicesListPage() {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     for (const inv of enriched) {
-      if (inv._status === 'sent' || inv._status === 'overdue') {
-        outstanding += Number(inv.total);
+      // Outstanding = remaining balance, so a partial invoice contributes
+      // only what's still owed.
+      if (isOutstanding(inv._status)) {
+        outstanding += balanceDue(inv);
       }
-      if (inv._status === 'overdue') overdue += Number(inv.total);
-      if (inv._status === 'paid' && inv.paid_at) {
+      if (inv._status === 'overdue') overdue += balanceDue(inv);
+      if ((inv._status === 'paid' || inv._status === 'partial') && inv.paid_at) {
         if (new Date(inv.paid_at) >= startOfMonth) paidThisMonth += Number(inv.paid_amount ?? inv.total);
       }
     }

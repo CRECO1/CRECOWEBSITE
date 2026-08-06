@@ -153,7 +153,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     const { data: inv, error: invErr } = await supabase
       .from('invoices')
-      .select('id, total, status, stripe_payment_link_url, internal_notes')
+      .select('id, total, status, stripe_payment_link_url, internal_notes, workspace_id')
       .eq('id', invoiceId)
       .single();
     if (invErr || !inv) {
@@ -167,25 +167,23 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
 
     const method = clampString(body.method, MAX_LEN.shortField) || 'ACH';
-    const paidAt = `${txn.posted_date}T12:00:00.000Z`;
     const txnRef = txn.merchant_name || txn.description || 'bank deposit';
 
-    const internalNotePatch = [
-      inv.internal_notes?.trim(),
-      `[Reconciled ${txn.posted_date} from bank: ${txnRef} · ${method}]`,
-    ].filter(Boolean).join('\n\n');
-
-    // 1. Mark invoice paid
+    // 1. Record the bank inflow as a payment in the ledger. The recalc
+    //    trigger (migration 0046) derives the invoice's paid_amount + status
+    //    — a deposit smaller than the balance marks it 'partial', not fully
+    //    paid (fixing the old "$1 inflow marks a $10k invoice paid").
     const { error: payErr } = await supabase
-      .from('invoices')
-      .update({
-        status: 'paid',
-        paid_at: paidAt,
-        paid_method: method,
-        paid_amount: paidAmount,
-        internal_notes: internalNotePatch,
-      })
-      .eq('id', invoiceId);
+      .from('invoice_payments')
+      .insert({
+        workspace_id: inv.workspace_id,
+        invoice_id: invoiceId,
+        amount: paidAmount,
+        method,
+        paid_at: txn.posted_date,
+        notes: `Reconciled from bank: ${txnRef}`,
+        source: 'plaid',
+      });
     if (payErr) {
       return NextResponse.json({ error: payErr.message }, { status: 500 });
     }

@@ -21,7 +21,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import {
   calculateTotals, formatMoney, formatDate, effectiveStatus,
-  STATUS_STYLES, lineAmount,
+  STATUS_STYLES, lineAmount, balanceDue,
   type Invoice, type InvoiceLineItem, type InvoiceEmailEvent,
 } from '@/lib/invoices';
 import { FALLBACK_TEMPLATE, substituteTemplate } from '@/lib/invoice-email';
@@ -232,7 +232,7 @@ export default function InvoiceDetailPage() {
     if (!invoice) return;
     setError(null);
     setInfo(null);
-    setPaidAmountStr(String(invoice.total));
+    setPaidAmountStr(String(balanceDue(invoice)));
     setPaidDate(new Date().toISOString().slice(0, 10));
     setPaidMethod('Check');
     setPaidNotes('');
@@ -251,67 +251,62 @@ export default function InvoiceDetailPage() {
     // date at 12:00 UTC noon to avoid timezone drift when displayed back.
     // If they backdate to "the day the deposit cleared," that's the date
     // that lands on the invoice / shows in monthly paid totals.
-    const paidAtIso = `${paidDate}T12:00:00.000Z`;
-    // Append the note to internal_notes if provided so we have an audit
-    // trail without needing a separate paid_notes column.
-    const notesPatch = paidNotes.trim()
-      ? {
-          internal_notes: [
-            invoice.internal_notes?.trim(),
-            `[Paid ${paidDate} via ${paidMethod}] ${paidNotes.trim()}`,
-          ].filter(Boolean).join('\n\n'),
-        }
-      : {};
-    const { error } = await supabase
-      .from('invoices')
-      .update({
-        status: 'paid',
-        paid_at: paidAtIso,
-        paid_method: paidMethod || 'Other',
-        paid_amount: amount,
-        ...notesPatch,
+    const fullyPaid = amount >= balanceDue(invoice) - 0.005;
+    // Record the payment in the ledger. The recalc trigger (migration 0046)
+    // derives the invoice's paid_amount + status — 'partial' when this
+    // payment doesn't cover the full balance, 'paid' when it does. paidDate
+    // is the cash-basis date the operator chose.
+    const { data: payment, error } = await supabase
+      .from('invoice_payments')
+      .insert({
+        workspace_id: workspace.id,
+        invoice_id: invoice.id,
+        amount,
+        method: paidMethod || 'Other',
+        paid_at: paidDate,
+        notes: paidNotes.trim() || null,
+        source: 'manual',
       })
-      .eq('id', invoice.id);
+      .select('id')
+      .single();
     if (error) {
       setBusy(null);
       setError(error.message);
       return;
     }
-    // Deactivate the Stripe Payment Link (if any) so the client can't pay
-    // again via the link after we've marked them paid by other means.
-    // Best-effort — failure here doesn't block the Paid status update.
-    if (invoice.stripe_payment_link_url) {
+    // Once the invoice is fully paid, deactivate the Stripe Payment Link so
+    // the client can't pay again. Skip on a partial payment — the client
+    // still needs the link to pay the remaining balance. Best-effort.
+    if (fullyPaid && invoice.stripe_payment_link_url) {
       await fetch(`/api/invoices/${invoice.id}/deactivate-payment-link`, { method: 'POST' })
         .catch(err => console.warn('Payment link deactivation failed (non-fatal):', err));
     }
     setBusy(null);
     setMarkPaidOpen(false);
     logActivity({
-      action: 'marked_paid',
+      action: 'payment_recorded',
       entity_type: 'invoice',
       entity_id: invoice.id,
       entity_label: invoice.invoice_number,
-      diff: { amount, method: paidMethod, date: paidDate },
+      diff: { amount, method: paidMethod, date: paidDate, fully_paid: fullyPaid },
     });
-    // Capture the pre-paid snapshot for undo so the operator can roll
-    // back an accidental click. We don't try to revert the Stripe link
-    // deactivation — that's a one-way operation; the undo just resets
-    // the invoice state.
-    const prevStatus = invoice.sent_at ? 'sent' : 'draft';
+    const remaining = Math.max(0, balanceDue(invoice) - amount);
     toast.show({
-      message: `Marked ${invoice.invoice_number} paid · ${formatMoney(amount)} via ${paidMethod}.`,
+      message: `Recorded ${formatMoney(amount)} on ${invoice.invoice_number} via ${paidMethod}${fullyPaid ? ' — paid in full' : ` — ${formatMoney(remaining)} balance remaining`}.`,
       undo: async () => {
+        // Undo removes just this payment row; the recalc trigger reverts the
+        // invoice's status + paid_amount.
         const { error: undoErr } = await supabase
-          .from('invoices')
-          .update({ status: prevStatus, paid_at: null, paid_method: null, paid_amount: null })
-          .eq('id', invoice.id);
+          .from('invoice_payments')
+          .delete()
+          .eq('id', payment.id);
         if (undoErr) return;
         logActivity({
           action: 'reopened',
           entity_type: 'invoice',
           entity_id: invoice.id,
           entity_label: invoice.invoice_number,
-          diff: { via: 'undo' },
+          diff: { via: 'undo', removed_payment: payment.id },
         });
         await load();
       },
@@ -322,10 +317,12 @@ export default function InvoiceDetailPage() {
   async function reopenInvoice() {
     if (!invoice) return;
     setBusy('reopen');
+    // Remove all payments; the recalc trigger reverts the invoice to 'sent'
+    // (effectiveStatus() re-derives 'overdue' on read) and clears paid fields.
     const { error } = await supabase
-      .from('invoices')
-      .update({ status: invoice.sent_at ? 'sent' : 'draft', paid_at: null, paid_method: null, paid_amount: null })
-      .eq('id', invoice.id);
+      .from('invoice_payments')
+      .delete()
+      .eq('invoice_id', invoice.id);
     setBusy(null);
     if (error) {
       setError(error.message);
@@ -1294,9 +1291,11 @@ export default function InvoiceDetailPage() {
                     autoFocus
                   />
                 </div>
-                {Number(paidAmountStr) > 0 && Math.abs(Number(paidAmountStr) - invoice.total) > 0.005 && (
+                {Number(paidAmountStr) > 0 && Math.abs(Number(paidAmountStr) - balanceDue(invoice)) > 0.005 && (
                   <p className="mt-1.5 text-caption text-amber-700">
-                    {Number(paidAmountStr) < invoice.total ? '⚠ Partial payment' : '⚠ Overpayment'} — invoice will still mark fully paid. Adjust separately if needed.
+                    {Number(paidAmountStr) < balanceDue(invoice)
+                      ? `⚠ Partial payment — the invoice will be marked Partial with ${formatMoney(balanceDue(invoice) - Number(paidAmountStr))} still due.`
+                      : '⚠ Amount exceeds the balance due — the invoice will be marked Paid in full.'}
                   </p>
                 )}
               </label>

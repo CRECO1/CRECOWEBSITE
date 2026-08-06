@@ -7,7 +7,7 @@
  * persistence so we never write 19.999999999 into the DB.
  */
 
-export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'void';
+export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'void' | 'partial';
 
 export interface InvoiceLineItem {
   id?: string;
@@ -172,6 +172,21 @@ export function effectiveStatus(invoice: Pick<Invoice, 'status' | 'due_date'>): 
 }
 
 /**
+ * Amount still owed on an invoice = total − payments applied. Use this
+ * anywhere "outstanding" matters (AR aging, portal, list, dashboards) so a
+ * partially paid invoice contributes only its remaining balance, not the
+ * full total.
+ */
+export function balanceDue(inv: Pick<Invoice, 'total' | 'paid_amount'>): number {
+  return round2(Number(inv.total) - Number(inv.paid_amount ?? 0));
+}
+
+/** Statuses that still owe money (contribute to AR / outstanding totals). */
+export function isOutstanding(status: InvoiceStatus): boolean {
+  return status === 'sent' || status === 'overdue' || status === 'partial';
+}
+
+/**
  * Generate the next invoice number. Format: "INV-YYYY-####" where #### is
  * derived from the count of existing invoices in the current year + 1001.
  * Caller passes the count it already queried.
@@ -203,6 +218,7 @@ export const STATUS_STYLES: Record<InvoiceStatus, { label: string; className: st
   draft:   { label: 'Draft',   className: 'bg-gray-100 text-gray-700 border-gray-200' },
   sent:    { label: 'Sent',    className: 'bg-blue-100 text-blue-800 border-blue-200' },
   paid:    { label: 'Paid',    className: 'bg-green-100 text-green-800 border-green-200' },
+  partial: { label: 'Partial', className: 'bg-amber-100 text-amber-800 border-amber-200' },
   overdue: { label: 'Overdue', className: 'bg-red-100 text-red-800 border-red-200' },
   void:    { label: 'Void',    className: 'bg-gray-50 text-gray-400 border-gray-200 line-through' },
 };

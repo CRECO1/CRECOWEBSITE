@@ -9,7 +9,7 @@
  * deterministic to the penny.
  */
 
-import { effectiveStatus, round2, type Invoice } from './invoices';
+import { effectiveStatus, round2, isOutstanding, balanceDue, type Invoice } from './invoices';
 import type { Expense } from './expenses';
 
 // ── A/R aging ───────────────────────────────────────────────────────────────
@@ -66,11 +66,13 @@ export function computeArAging(invoices: Invoice[], asOf: Date = new Date()): {
 
   for (const inv of invoices) {
     const eff = effectiveStatus(inv);
-    if (eff !== 'sent' && eff !== 'overdue') continue;
+    if (!isOutstanding(eff)) continue;
     const dOver = daysOverdue(inv.due_date, asOf);
     const bucket = bucketFor(dOver);
     rows.push({ invoice: inv, bucket, days_overdue: dOver });
-    const amt = Number(inv.total);
+    // Age the remaining balance, not the full total, so a partially paid
+    // invoice contributes only what's still owed.
+    const amt = balanceDue(inv);
     sum[bucket] = round2(sum[bucket] + amt);
     sum.total_outstanding = round2(sum.total_outstanding + amt);
     if (bucket !== 'current') {

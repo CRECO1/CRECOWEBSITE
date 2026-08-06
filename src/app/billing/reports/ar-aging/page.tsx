@@ -31,7 +31,7 @@ export default function ArAgingPage() {
       const { data, error } = await supabase
         .from('invoices')
         .select('*')
-        .in('status', ['sent', 'overdue'])
+        .in('status', ['sent', 'overdue', 'partial'])
         .order('due_date', { ascending: true });
       if (cancelled) return;
       if (error) setError(error.message);
