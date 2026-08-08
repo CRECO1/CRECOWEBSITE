@@ -8,7 +8,7 @@ import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, MapPin, Building2, BarChart3, Users } from 'lucide-react';
+import { MapPin, Building2, BarChart3, Users } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';

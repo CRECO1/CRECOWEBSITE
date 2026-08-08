@@ -74,8 +74,6 @@ interface PropertyHit {
 
 type Hit = InvoiceHit | ClientHit | ExpenseHit | PropertyHit;
 
-const SUPPRESS_PATHS = ['/api/', '/_next/'];
-
 export function CommandPalette() {
   const router = useRouter();
   const pathname = usePathname();

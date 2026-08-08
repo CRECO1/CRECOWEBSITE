@@ -10,8 +10,7 @@
  * triggered from anywhere via the keyboard shortcut or the search button.
  */
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import Link from 'next/link';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Search, X, Loader2, Receipt, ArrowDownCircle, Repeat, FileBadge,

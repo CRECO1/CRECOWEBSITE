@@ -22,7 +22,7 @@ import { supabase } from '@/lib/supabase';
 import { formatMoney, type Invoice } from '@/lib/invoices';
 import { categoryStyle, type Expense } from '@/lib/expenses';
 import {
-  rollupScheduleC, meals50Deductible, SCHEDULE_C_LINES,
+  rollupScheduleC, meals50Deductible,
 } from '@/lib/schedule-c';
 import { csvCell } from '@/lib/billing-reports';
 

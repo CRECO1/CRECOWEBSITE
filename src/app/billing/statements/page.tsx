@@ -18,7 +18,7 @@ import {
   Loader2, AlertTriangle, ArrowLeft, FileText, Download, Mail, CheckCircle2,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { effectiveStatus, formatMoney, formatDate, type Invoice } from '@/lib/invoices';
+import { effectiveStatus, formatMoney, type Invoice } from '@/lib/invoices';
 
 interface ClientSummary {
   email: string;

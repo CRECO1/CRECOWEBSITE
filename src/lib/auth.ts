@@ -101,7 +101,7 @@ export async function createAdminUser(user: {
   const supabase = createClient();
 
   // First create the auth user
-  const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+  const { error: authError } = await supabase.auth.admin.createUser({
     email: user.email,
     password: user.password,
     email_confirm: true,

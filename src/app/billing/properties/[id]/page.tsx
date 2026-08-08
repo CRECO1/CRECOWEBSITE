@@ -28,7 +28,7 @@ import { useToast } from '@/components/billing/Toast';
 import { BillingFallback } from '@/components/billing/BillingFallback';
 import { supabase } from '@/lib/supabase';
 import {
-  formatPropertyLabel, PROPERTY_STATUS_STYLES, type Property,
+  PROPERTY_STATUS_STYLES, type Property,
 } from '@/lib/properties';
 import {
   formatMoney, formatDate, effectiveStatus, STATUS_STYLES,

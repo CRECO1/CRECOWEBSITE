@@ -31,7 +31,6 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const NOTIFICATION_EMAIL = process.env.LEAD_NOTIFICATION_EMAIL ?? 'info@crecotx.com';
-const DEFAULT_TIMEZONE = 'America/Chicago';        // central time
 const TOUR_DURATION_MINUTES = 45;
 
 function getFromEmail(): string {

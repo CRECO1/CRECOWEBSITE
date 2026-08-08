@@ -8,7 +8,7 @@
  * Helvetica is the path that keeps the bundle small and the runtime fast.
  */
 
-import type { Invoice, InvoiceLineItem } from './invoices';
+import type { Invoice } from './invoices';
 import { formatMoney, formatDate } from './invoices';
 import { getLogoLightDataUri, LOGO_ASPECT } from './pdf-logo';
 

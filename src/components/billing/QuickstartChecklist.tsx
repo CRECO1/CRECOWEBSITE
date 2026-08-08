@@ -23,7 +23,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { CheckCircle2, Circle, Upload, Users, FileText, X, ArrowRight } from 'lucide-react';
+import { CheckCircle2, Upload, Users, FileText, X, ArrowRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useWorkspace } from '@/components/billing/WorkspaceProvider';
 

@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import type { Invoice } from '@/lib/invoices';
 import { sendInvoiceEmail } from '@/lib/invoice-send';
 import { fetchW9Attachment } from '@/lib/w9';
-import { REMINDER_STAGES, stageForToday, renderReminderContent } from '@/lib/invoice-reminders';
+import { stageForToday, renderReminderContent } from '@/lib/invoice-reminders';
 
 /**
  * GET /api/cron/invoice-reminders

@@ -4,11 +4,10 @@ import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Phone, Building2 } from 'lucide-react';
+import { Menu, X, Building2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
-import { trackEvent } from '@/lib/analytics';
 import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 
 const navLinks = [

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Phone, Mail, MapPin, Facebook, Instagram, Linkedin } from 'lucide-react';
+import { Mail, MapPin, Facebook, Instagram, Linkedin } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { NewsletterSignup } from '@/components/forms/NewsletterSignup';
 import { supabase } from '@/lib/supabase';
@@ -61,7 +61,6 @@ export function Footer() {
       });
   }, []);
 
-  const telHref = `tel:+1${contact.phone.replace(/\D/g, '')}`;
   const addressLines = contact.address.split('\n');
 
   return (

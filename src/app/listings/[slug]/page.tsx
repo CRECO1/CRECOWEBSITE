@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { MapPin, Calendar, Phone, ArrowLeft, Building2, CheckCircle, Layers, Ruler, Truck, Download, Map } from 'lucide-react';
+import { MapPin, Calendar, Building2, CheckCircle, Layers, Ruler, Truck, Download, Map } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';

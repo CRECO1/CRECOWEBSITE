@@ -35,10 +35,6 @@ export interface RecurringTemplateInitial extends Partial<RecurringTemplate> {
   line_items?: RecurringLineItem[];
 }
 
-function todayIso(): string {
-  return new Date().toISOString().slice(0, 10);
-}
-
 function firstOfNextMonth(): string {
   const d = new Date();
   return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1)).toISOString().slice(0, 10);

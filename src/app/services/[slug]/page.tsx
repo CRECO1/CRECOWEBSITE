@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, CheckCircle, Phone, Building2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle, Phone } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';

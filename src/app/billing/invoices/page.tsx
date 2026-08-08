@@ -16,7 +16,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft, ArrowRight, FilePlus2, Filter, Mail, Receipt, Eye, EyeOff,
-  CheckCircle, Ban, X, Loader2, DollarSign, Bookmark, SlidersHorizontal, Trash2,
+  CheckCircle, Ban, X, Loader2, DollarSign, Bookmark, SlidersHorizontal,
   Download,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
