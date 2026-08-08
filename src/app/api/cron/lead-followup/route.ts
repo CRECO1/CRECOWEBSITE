@@ -138,7 +138,6 @@ function followupHtml(name: string, propertyInterest: string | null, listings: S
  *   - city: if the lead mentioned a Texas city name
  * Falls back to 3 recent featured listings if no match.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function findSimilarListings(
   supabase: any, // Supabase client — inferred type is version-fragile across the SDK
   propertyInterest: string | null,

@@ -75,7 +75,6 @@ export default async function ListingDetailPage({ params }: Props) {
   const { slug } = await params;
 
   let listing = await getListingBySlug(slug).catch(() => null);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if (!listing && DEMO[slug]) listing = DEMO[slug] as any;
   if (!listing) notFound();
 

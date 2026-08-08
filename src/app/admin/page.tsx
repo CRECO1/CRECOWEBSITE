@@ -507,7 +507,6 @@ function LoginForm({ onLogin }: { onLogin: (s: Session) => void }) {
 
 // ─── Site Settings Tab ────────────────────────────────────────────────────────
 function SettingsTab() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [settings, setSettings] = useState<any>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -887,11 +886,9 @@ function LandingPagesTab() {
 
 // ─── Data Table ───────────────────────────────────────────────────────────────
 function DataTable({ tab }: { tab: Exclude<Tab, 'settings' | 'landing_pages'> }) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [rows, setRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [editing, setEditing] = useState<any | null>(null);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
@@ -963,7 +960,6 @@ function DataTable({ tab }: { tab: Exclude<Tab, 'settings' | 'landing_pages'> })
 
   async function handleSave() {
     setSaving(true);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { id, created_at, updated_at, search_vector, ...fields } = editing;
 
     // Defensive: strip legacy field names that may linger in component state

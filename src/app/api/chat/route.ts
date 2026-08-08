@@ -123,7 +123,6 @@ export async function POST(req: NextRequest) {
       // Working conversation — grows with each turn's assistant message
       // and any tool_result blocks so Claude sees the full history when
       // it decides its next action.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const conversation: any[] = [...messages];
       let currentStream: ReturnType<typeof client.messages.stream> | null = null;
 
@@ -163,7 +162,6 @@ export async function POST(req: NextRequest) {
           if (message.stop_reason !== 'tool_use') break;
 
           // Execute every tool_use block in the turn, in order.
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const toolResults: any[] = [];
           for (const block of message.content) {
             if (block.type === 'tool_use') {

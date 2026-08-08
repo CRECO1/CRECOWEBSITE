@@ -54,12 +54,10 @@ interface PhoneCallTextProps {
 function fireClickEvent(action: 'phone_click' | 'sms_click', surface: string) {
   if (typeof window === 'undefined') return;
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const gtag = (window as any).gtag;
     if (typeof gtag === 'function') {
       gtag('event', action, { surface });
     }
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const dl = (window as any).dataLayer;
     if (Array.isArray(dl)) {
       dl.push({ event: action, surface });
