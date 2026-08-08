@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import {
   ArrowRight, ArrowLeft, CheckCircle, Building2, Briefcase, Warehouse, Store, Layers,
   MapPin, ShoppingBag, LineChart, Wrench, Compass,
@@ -579,10 +580,10 @@ export default function GetStartedPage() {
               </div>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Button size="lg" asChild>
-                  <a href="/listings">Browse Properties</a>
+                  <Link href="/listings">Browse Properties</Link>
                 </Button>
                 <Button size="lg" variant="outline" asChild>
-                  <a href="/">Back to Homepage</a>
+                  <Link href="/">Back to Homepage</Link>
                 </Button>
               </div>
             </div>

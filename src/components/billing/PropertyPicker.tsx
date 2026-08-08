@@ -17,6 +17,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
 import { Search, X, Building2, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { PropertyLite } from '@/lib/properties';
@@ -139,7 +140,7 @@ export function PropertyPicker({ selectedId, onPick, onClear, label }: Props) {
           )}
           <p className="mt-1.5 text-caption text-foreground-muted">
             {properties.length === 0
-              ? <>No properties yet. <a href="/billing/properties/new" className="text-gold-dark font-semibold">Create your first →</a></>
+              ? <>No properties yet. <Link href="/billing/properties/new" className="text-gold-dark font-semibold">Create your first →</Link></>
               : `${properties.length} property${properties.length === 1 ? '' : 's'} on file. Optional — leave blank for general overhead.`}
           </p>
         </>

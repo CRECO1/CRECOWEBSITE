@@ -165,7 +165,7 @@ export default function InvoiceDetailPage() {
         .single();
       if (data) setEmailTemplate(data);
     })();
-  }, []);
+  }, [workspace.id]);
 
   const status = invoice ? effectiveStatus(invoice) : 'draft';
   const statusStyle = STATUS_STYLES[status];

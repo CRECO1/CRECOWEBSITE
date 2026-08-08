@@ -96,7 +96,7 @@ export default function InvoiceSettingsPage() {
       setLoading(false);
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [workspace.id]);
 
   // Pick a PDF, upload to storage, stamp the path on invoice_settings.
   // Replaces any previously-uploaded W-9 (deletes the old blob best-effort

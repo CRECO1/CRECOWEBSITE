@@ -237,7 +237,7 @@ function NewInvoicePageInner() {
     credited_amount: null,
     created_at: '',
     updated_at: '',
-  }), [invoiceNumber, clientName, clientEmail, clientCompany, clientAddress, issueDate, dueDate, totals, taxRate, propertyReference, notes, internalNotes, stripeLink, paymentTerms]);
+  }), [invoiceNumber, clientName, clientEmail, clientCompany, clientAddress, issueDate, dueDate, totals, taxRate, propertyReference, notes, internalNotes, stripeLink, paymentTerms, workspace.id]);
 
   // Keep the email subject + message synced to the substituted template
   // *until* the admin manually edits them. Once they type in either field,
