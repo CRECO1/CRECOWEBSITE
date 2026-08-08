@@ -23,9 +23,3 @@
 export const formInputCls =
   'w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20';
 
-/**
- * Label that sits above a form field. Mirrors the `<Input />` label
- * treatment — caption-size, uppercase, gold-tinged muted for hierarchy.
- */
-export const formLabelCls =
-  'block text-caption uppercase tracking-widest text-foreground-muted mb-1.5';

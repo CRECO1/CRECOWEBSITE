@@ -69,12 +69,3 @@ export const PROPERTY_STATUS_STYLES: Record<PropertyStatus, { label: string; cla
   inactive: { label: 'Inactive', className: 'bg-gray-100 text-gray-700 border-gray-300' },
 };
 
-/**
- * Build the friendly display string for a property — name with optional
- * city in parens. Used in pickers, property cards, P&L headers.
- */
-export function formatPropertyLabel(p: { name: string; city: string | null } | PropertyLite | null | undefined): string {
-  if (!p) return '—';
-  const city = 'city' in p ? p.city : null;
-  return city ? `${p.name} (${city})` : p.name;
-}

@@ -72,8 +72,6 @@ export interface MarketReport {
   relatedSubmarketSlugs?: string[];
 }
 
-const AUTHOR_DEFAULT = { name: 'CRECO Brokerage Team', title: 'Commercial Real Estate · Texas' };
-
 export const MARKET_REPORTS: MarketReport[] = [
   {
     slug: 'san-antonio-northwest-office-q2-2026',
@@ -149,5 +147,3 @@ export function findMarketReport(slug: string): MarketReport | undefined {
 export const MARKET_REPORTS_SORTED: MarketReport[] = [...MARKET_REPORTS].sort(
   (a, b) => (a.publishedAt < b.publishedAt ? 1 : -1),
 );
-
-export const DEFAULT_AUTHOR = AUTHOR_DEFAULT;

@@ -101,15 +101,6 @@ export function categoryStyle(category: string): string {
   return CATEGORY_STYLES[category] ?? CATEGORY_STYLES['Other'];
 }
 
-/** Roll up a list of expenses by category — used in the dashboard. */
-export function totalsByCategory(expenses: Expense[]): Record<string, number> {
-  const out: Record<string, number> = {};
-  for (const e of expenses) {
-    out[e.category] = (out[e.category] ?? 0) + Number(e.amount);
-  }
-  return out;
-}
-
 // Re-export the same money/date formatters so /billing pages can pull
 // everything from one module without juggling imports.
 export { formatMoney, formatDate };

@@ -65,12 +65,6 @@ export const CATEGORY_TO_SCHEDULE_C: Record<string, string> = {
   'Other':                        '27a',
 };
 
-/** Look up the Schedule C line for an expense, defaulting to 27a. */
-export function scheduleCLineFor(category: string): ScheduleCLine {
-  const num = CATEGORY_TO_SCHEDULE_C[category] ?? '27a';
-  return SCHEDULE_C_LINES.find(l => l.number === num) ?? SCHEDULE_C_LINES[SCHEDULE_C_LINES.length - 1];
-}
-
 export interface ScheduleCLineRollup {
   line: ScheduleCLine;
   /** Total dollars on this line for the period. */

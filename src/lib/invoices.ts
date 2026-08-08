@@ -147,12 +147,6 @@ export function formatMoney(n: number | null | undefined): string {
   return usdFmt.format(n);
 }
 
-/** Tax rate display: 0.0825 → "8.25%". */
-export function formatTaxRate(rate: number | null | undefined): string {
-  if (!rate) return '0%';
-  return `${(rate * 100).toFixed(rate * 100 < 10 ? 3 : 2).replace(/\.?0+$/, '')}%`;
-}
-
 /** "Apr 15, 2026" — used in lists and on the PDF. */
 export function formatDate(iso: string | null | undefined): string {
   if (!iso) return '—';

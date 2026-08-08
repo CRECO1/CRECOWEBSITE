@@ -169,18 +169,6 @@ export async function getListingBySlug(slug: string): Promise<Listing | null> {
   return data;
 }
 
-export async function getListingsByType(type: PropertyType): Promise<Listing[]> {
-  const { data, error } = await supabase
-    .from('listings')
-    .select('*')
-    .eq('property_type', type)
-    .in('status', ['active', 'pending'])
-    .order('listing_date', { ascending: false });
-
-  if (error) throw error;
-  return data ?? [];
-}
-
 export async function getListingsBySubmarket(submarket: string): Promise<Listing[]> {
   const { data, error } = await supabase
     .from('listings')
@@ -191,29 +179,6 @@ export async function getListingsBySubmarket(submarket: string): Promise<Listing
 
   if (error) throw error;
   return data ?? [];
-}
-
-export async function getAgents(): Promise<Agent[]> {
-  const { data, error } = await supabase
-    .from('agents')
-    .select('*')
-    .order('order', { ascending: true });
-
-  if (error) throw error;
-  return data ?? [];
-}
-
-export async function getFeaturedAgent(): Promise<Agent | null> {
-  const { data, error } = await supabase
-    .from('agents')
-    .select('*')
-    .eq('featured', true)
-    .order('order', { ascending: true })
-    .limit(1)
-    .single();
-
-  if (error) return null;
-  return data;
 }
 
 export async function getSubmarkets(): Promise<Submarket[]> {
@@ -290,38 +255,3 @@ export async function getLandingPage(slug: string): Promise<LandingPageContent |
   return data as LandingPageContent;
 }
 
-export async function getAllLandingPages(): Promise<LandingPageContent[]> {
-  const { data, error } = await supabase
-    .from('landing_pages')
-    .select('*')
-    .order('slug');
-  if (error) return [];
-  return (data ?? []) as LandingPageContent[];
-}
-
-export async function submitLead(lead: {
-  name: string;
-  email: string;
-  phone?: string;
-  company?: string;
-  message?: string;
-  property_interest?: string;
-  source?: string;
-}) {
-  const { data, error } = await supabase
-    .from('leads')
-    .insert([{
-      name: lead.name,
-      email: lead.email,
-      phone: lead.phone ?? null,
-      company: lead.company ?? null,
-      message: lead.message ?? null,
-      property_interest: lead.property_interest ?? null,
-      source: lead.source ?? 'contact',
-    }])
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
-}

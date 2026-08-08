@@ -75,17 +75,3 @@ export async function fetchCurrentWorkspace(
   };
 }
 
-/**
- * Build the storage path prefix for a workspace. All workspace-scoped
- * files (W-9s, receipts, future PDF templates, etc.) live under this
- * prefix so a single bucket can hold every tenant's files with RLS
- * gating on the path itself.
- *
- * Example: `creco/2026/06/abc123.pdf`
- *
- * Storage RLS policies parse the leading slug from the path and call
- * is_workspace_member() — same gating story as the table-level policies.
- */
-export function workspacePathPrefix(workspace: Pick<Workspace, 'slug'>): string {
-  return `${workspace.slug}/`;
-}
