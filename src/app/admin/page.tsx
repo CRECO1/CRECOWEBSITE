@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import type { Session } from '@supabase/supabase-js';
 import { ImageCropModal, fileToDataURL } from './ImageCropModal';
+import { processImageForUpload } from '@/lib/image-processing';
 
 type Tab = 'listings' | 'sold' | 'agents' | 'submarkets' | 'testimonials' | 'leads' | 'settings' | 'landing_pages';
 
@@ -77,9 +78,13 @@ function ImageUpload({
   const [uploading, setUploading] = useState(false);
   const [cropSrc, setCropSrc] = useState<string | null>(null);
 
-  // When a file is picked, read it and open the crop modal first.
+  // When a file is picked, convert it (HEIC→JPEG + downscale) then open the
+  // crop modal. The conversion is required before cropping too: the cropper
+  // draws the image into an <img>/canvas, and browsers can't decode HEIC — so
+  // an unconverted iPhone photo would open a blank cropper.
   async function onFilePicked(file: File) {
-    const dataUrl = await fileToDataURL(file);
+    const processed = await processImageForUpload(file, { maxDimension: 2560 });
+    const dataUrl = await fileToDataURL(processed);
     setCropSrc(dataUrl);
   }
 
@@ -282,8 +287,11 @@ function MultiImageUpload({
   const [cropSrc, setCropSrc] = useState<string | null>(null);
   const items = Array.isArray(value) ? value : [];
 
-  // Bulk upload — no crop, just upload the originals. User can crop each
-  // afterward via the per-thumbnail Crop button.
+  // Bulk upload — convert each file (HEIC→JPEG + downscale) first, then upload
+  // the web-safe result. Without the conversion step, iPhone photos land in
+  // storage as image/heic, which no browser can render — the gallery then shows
+  // only the cover and blank tiles for the rest. User can crop each afterward
+  // via the per-thumbnail Crop button.
   async function handleFiles(files: FileList) {
     const arr = Array.from(files);
     setUploading(true);
@@ -293,7 +301,8 @@ function MultiImageUpload({
     for (let i = 0; i < arr.length; i++) {
       const file = arr[i];
       try {
-        const url = await uploadBlobToImages(file, file.name.split('.').pop());
+        const processed = await processImageForUpload(file, { maxDimension: 2560 });
+        const url = await uploadBlobToImages(processed, processed.name.split('.').pop());
         newUrls.push(url);
       } catch (e) {
         alert(`Upload failed for ${file.name}: ${(e as Error).message}`);

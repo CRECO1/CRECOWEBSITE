@@ -101,6 +101,17 @@ export async function processReceiptImage(
 }
 
 /**
+ * Generic alias for the exact same pipeline (HEIC→JPEG + downscale), for any
+ * operator-supplied upload — not just receipts. The listing admin uploader
+ * (src/app/admin) runs every picked file through this before storing, so
+ * iPhone HEIC photos become browser-renderable JPEGs instead of silently-
+ * broken files (browsers can't display image/heic). It also downscales the
+ * 10–16MB straight-from-camera JPEGs that would otherwise trip the uploader's
+ * 10MB size cap. Non-HEIC images already under the cap pass through unchanged.
+ */
+export const processImageForUpload = processReceiptImage;
+
+/**
  * Decode the blob via Image + draw to canvas at the target size + encode
  * as JPEG. Returns null when the source is already under the cap (caller
  * uses the input unchanged to avoid pointless re-encoding).
