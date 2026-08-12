@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { Honeypot } from '@/components/forms/Honeypot';
+import { trackEvent } from '@/lib/analytics';
 
 /**
  * Multi-path inquiry quiz — replaces the old /tenant-needs single-path form.
@@ -554,11 +555,18 @@ export default function GetStartedPage() {
       if (!res.ok) {
         let msg = 'Something went wrong sending your request. Please try again, or call (210) 817-3443.';
         try { const data = await res.json(); if (data?.error) msg = data.error; } catch { /* non-JSON error body */ }
+        // Track the failed submit so the main funnel's drop-off is visible in GA.
+        trackEvent('get_started_failed', { path, reason: `http_${res.status}` });
         setSubmitError(msg);
         return;
       }
+      // The primary homepage CTA previously fired NO analytics event on success,
+      // so its conversions were invisible in GA4. Fire it here; mark it as a Key
+      // Event in GA4 to attribute leads by source/landing page.
+      trackEvent('get_started_submitted', { path });
       setDone(true);
     } catch {
+      trackEvent('get_started_failed', { path, reason: 'network' });
       setSubmitError("We couldn't reach the server. Check your connection and try again, or call (210) 817-3443.");
     } finally {
       setLoading(false);
