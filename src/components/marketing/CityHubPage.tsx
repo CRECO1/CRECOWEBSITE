@@ -14,6 +14,7 @@ import {
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
+import { jsonLd } from '@/lib/jsonLd';
 
 export interface SubmarketCard {
   name: string;
@@ -60,11 +61,69 @@ export interface CityHubConfig {
    *  Austin, San Antonio, etc.) leave this undefined — they ARE the top
    *  geographic landing pages and don't need a crumb above them. */
   breadcrumbs?: { label: string; href?: string }[];
+  /** Canonical path (e.g. "/austin-commercial-real-estate"). When set, the page
+   *  emits Place + Article + BreadcrumbList JSON-LD. Optional so shared consumers
+   *  without a canonical (e.g. the dynamic markets route) stay schema-free. */
+  canonicalPath?: string;
 }
 
 export function CityHubPage({ config }: { config: CityHubConfig }) {
+  // Structured data (Place + Article + BreadcrumbList) — these city hubs shipped
+  // with no JSON-LD. heroSubhead feeds the description (no quickAnswer field on
+  // this template). Only emitted when the caller supplies a canonical path.
+  const pageUrl = config.canonicalPath ? `https://www.crecotx.com${config.canonicalPath}` : null;
+  const crumbTrail = config.breadcrumbs && config.breadcrumbs.length > 0
+    ? config.breadcrumbs
+    : [{ label: config.city }];
+  const schemas: Record<string, unknown>[] = pageUrl ? [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Place',
+      '@id': `${pageUrl}#place`,
+      name: `${config.city}, Texas`,
+      description: config.heroSubhead,
+      containedInPlace: { '@type': 'AdministrativeArea', name: 'Texas, United States' },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      '@id': `${pageUrl}#article`,
+      headline: `${config.city} Commercial Real Estate — Market Overview`,
+      description: config.heroSubhead,
+      inLanguage: 'en-US',
+      isAccessibleForFree: true,
+      mainEntityOfPage: pageUrl,
+      about: { '@id': `${pageUrl}#place` },
+      datePublished: '2026-01-01',
+      dateModified: '2026-08-01',
+      author: {
+        '@type': 'Organization',
+        '@id': 'https://www.crecotx.com/#business',
+        name: 'CRECO – Commercial Real Estate Company',
+        url: 'https://www.crecotx.com/about',
+      },
+      publisher: { '@id': 'https://www.crecotx.com/#business' },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.crecotx.com/' },
+        ...crumbTrail.map((b, i) => ({
+          '@type': 'ListItem',
+          position: i + 2,
+          name: b.label,
+          item: b.href ? `https://www.crecotx.com${b.href}` : pageUrl,
+        })),
+      ],
+    },
+  ] : [];
+
   return (
     <>
+      {schemas.map((s, i) => (
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(s) }} />
+      ))}
       <Header />
       <main className="min-h-screen pt-20">
         {/* Optional breadcrumb strip — only renders when caller provides

@@ -51,6 +51,7 @@ export default function SanAntonioPage() {
   return (
     <CityHubPage
       config={{
+        canonicalPath: '/san-antonio-commercial-real-estate',
         city: 'San Antonio',
         cityShort: 'San Antonio',
         heroEyebrow: 'Texas Commercial Real Estate · San Antonio · HQ',

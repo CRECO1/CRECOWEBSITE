@@ -35,6 +35,7 @@ export default function HoustonIndustrialSpacePage() {
   return (
     <CityAssetPage
       config={{
+        canonicalPath: '/houston-industrial-space',
         city: 'Houston',
         asset: 'industrial',
         heroEyebrow: 'Texas Industrial Market · Houston',

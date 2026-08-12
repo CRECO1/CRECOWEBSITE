@@ -35,6 +35,7 @@ export default function AustinOfficeSpacePage() {
   return (
     <CityAssetPage
       config={{
+        canonicalPath: '/austin-office-space',
         city: 'Austin',
         asset: 'office',
         heroEyebrow: 'Texas Office Market · Austin',

@@ -35,6 +35,7 @@ export default function SanAntonioOfficeSpacePage() {
   return (
     <CityAssetPage
       config={{
+        canonicalPath: '/san-antonio-office-space',
         city: 'San Antonio',
         asset: 'office',
         heroEyebrow: 'Texas Office Market · San Antonio · HQ',

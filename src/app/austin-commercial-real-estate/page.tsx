@@ -32,6 +32,7 @@ export default function AustinPage() {
   return (
     <CityHubPage
       config={{
+        canonicalPath: '/austin-commercial-real-estate',
         city: 'Austin',
         cityShort: 'Austin',
         heroEyebrow: 'Texas Commercial Real Estate · Austin',

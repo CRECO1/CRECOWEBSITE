@@ -3,6 +3,7 @@ import { ArrowRight, BarChart3, Building2, MapPin, Phone, CheckCircle2 } from 'l
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
+import { jsonLd } from '@/lib/jsonLd';
 
 /**
  * CityAssetPage — shared template for city × asset-class landing pages
@@ -64,11 +65,66 @@ export interface CityAssetConfig {
   cityHubLink: { label: string; href: string };
   /** Breadcrumb trail (Home is auto-prepended). */
   breadcrumbs: { label: string; href?: string }[];
+  /** Canonical path (e.g. "/austin-office-space"). When set, the page emits
+   *  Place + Article + BreadcrumbList JSON-LD (matching the submarket template).
+   *  Optional so shared consumers without a canonical stay schema-free. */
+  canonicalPath?: string;
 }
 
 export function CityAssetPage({ config }: { config: CityAssetConfig }) {
+  // Structured data (Place + Article + BreadcrumbList) — ports the submarket
+  // template's AI-citation pattern to these city × asset pages, which shipped
+  // with no JSON-LD at all. quickAnswer feeds the answer-first description.
+  const pageUrl = config.canonicalPath ? `https://www.crecotx.com${config.canonicalPath}` : null;
+  const schemas: Record<string, unknown>[] = pageUrl ? [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Place',
+      '@id': `${pageUrl}#place`,
+      name: `${config.city}, Texas`,
+      description: config.quickAnswer,
+      containedInPlace: { '@type': 'AdministrativeArea', name: 'Texas, United States' },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      '@id': `${pageUrl}#article`,
+      headline: `${config.city} ${config.asset} space for lease — market guide`,
+      description: config.quickAnswer,
+      inLanguage: 'en-US',
+      isAccessibleForFree: true,
+      mainEntityOfPage: pageUrl,
+      about: { '@id': `${pageUrl}#place` },
+      datePublished: '2026-01-01',
+      dateModified: '2026-08-01',
+      author: {
+        '@type': 'Organization',
+        '@id': 'https://www.crecotx.com/#business',
+        name: 'CRECO – Commercial Real Estate Company',
+        url: 'https://www.crecotx.com/about',
+      },
+      publisher: { '@id': 'https://www.crecotx.com/#business' },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.crecotx.com/' },
+        ...config.breadcrumbs.map((b, i) => ({
+          '@type': 'ListItem',
+          position: i + 2,
+          name: b.label,
+          item: b.href ? `https://www.crecotx.com${b.href}` : pageUrl,
+        })),
+      ],
+    },
+  ] : [];
+
   return (
     <>
+      {schemas.map((s, i) => (
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(s) }} />
+      ))}
       <Header />
       <main className="min-h-screen pt-20">
         {/* Breadcrumb */}

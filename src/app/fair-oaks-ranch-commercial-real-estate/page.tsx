@@ -31,6 +31,7 @@ export default function FairOaksRanchPage() {
   return (
     <CityHubPage
       config={{
+        canonicalPath: '/fair-oaks-ranch-commercial-real-estate',
         city: 'Fair Oaks Ranch',
         cityShort: 'Fair Oaks Ranch',
         heroEyebrow: 'Texas Commercial Real Estate · Fair Oaks Ranch',

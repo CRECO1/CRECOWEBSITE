@@ -32,6 +32,7 @@ export default function DallasPage() {
   return (
     <CityHubPage
       config={{
+        canonicalPath: '/dallas-commercial-real-estate',
         city: 'Dallas–Fort Worth',
         cityShort: 'DFW',
         heroEyebrow: 'Texas Commercial Real Estate · DFW',
