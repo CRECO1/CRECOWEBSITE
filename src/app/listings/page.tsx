@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useState, useEffect, useMemo } from 'react';
+import { Suspense, useState, useEffect, useMemo, Fragment } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -387,8 +387,9 @@ function ListingsPageInner() {
                   Showing {filtered.length} {filtered.length === 1 ? 'property' : 'properties'}
                 </p>
                 <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                  {filtered.map(listing => (
-                    <Link key={listing.id} {...listingLinkProps(listing)} className="card-luxury group block">
+                  {filtered.map((listing, i) => (
+                    <Fragment key={listing.id}>
+                    <Link {...listingLinkProps(listing)} className="card-luxury group block">
                       <div className="image-luxury aspect-property bg-background-warm relative">
                         {listing.images && (listing.images as string[])[0] ? (
                           <Image src={(listing.images as string[])[0]} alt={listing.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />
@@ -442,6 +443,16 @@ function ListingsPageInner() {
                         </div>
                       </div>
                     </Link>
+                    {/* Loud lead-magnet injected mid-grid — browsers on the
+                        listings page are the prime audience for new-listing
+                        alerts, so we catch them in the flow instead of only at
+                        the very bottom (which most never scroll to). */}
+                    {filtered.length > 6 && i === 5 && (
+                      <div className="sm:col-span-2 lg:col-span-3">
+                        <PropertyAlertsInline variant="dark" surface="listings-inline" />
+                      </div>
+                    )}
+                    </Fragment>
                   ))}
                 </div>
               </>

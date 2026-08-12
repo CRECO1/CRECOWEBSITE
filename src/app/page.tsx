@@ -54,6 +54,7 @@ import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import { getListings, getTestimonials, supabase } from '@/lib/supabase';
 import { withSyntheticListings, listingLinkProps } from '@/lib/featured-properties';
 import { TrustStrip } from '@/components/marketing/TrustStrip';
+import { LeadMagnetBand } from '@/components/marketing/LeadMagnetBand';
 
 const DEMO_LISTINGS = [
   {
@@ -470,6 +471,10 @@ export default async function HomePage() {
           </div>
         </Container>
       </section>
+
+      {/* ── Lead-Magnet Band — loud dual capture (valuation + alerts),
+          high on the page right after the featured properties. ─────────── */}
+      <LeadMagnetBand surface="homepage-featured" />
 
       {/* ── Texas Markets We Serve ──────────────────────────────────── */}
       <section className="section-luxury bg-white">
