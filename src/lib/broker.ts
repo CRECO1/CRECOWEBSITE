@@ -69,11 +69,9 @@ export const PRIMARY_BROKER: Broker = {
   phone_display: '(210) 817-3443',
   phone_href: 'tel:+12108173443',
   sms_href: 'sms:+12108173443',
-  // Drop a compressed headshot at /public/team/zach-stovall.jpg (max
-  // 1000px wide is plenty for the surfaces this renders on) and
-  // uncomment this line to switch every avatar sitewide from the
-  // initials fallback to the real photo.
-  // photo_url: '/team/zach-stovall.jpg',
+  // Real headshot (512px square, sourced from the agents table / About page)
+  // — switches every avatar sitewide from the initials fallback to the photo.
+  photo_url: '/team/zach-stovall.jpg',
   // Live Cal.com 15-min booking link — the owner set this up on the
   // free tier. Activates "Book 15 min with Zach" CTAs everywhere
   // BrokerCard + InquirySuccessCard are rendered (Plaza, Elkhorn,
@@ -97,9 +95,8 @@ export const BRIAN_BLANCO: Broker = {
   phone_display: '(210) 817-3443',
   phone_href: 'tel:+12108173443',
   sms_href: 'sms:+12108173443',
-  // Drop /public/team/brian-blanco.jpg and uncomment to swap the
-  // initials avatar for the real headshot.
-  // photo_url: '/team/brian-blanco.jpg',
+  // Real headshot (512px square, face-cropped from the agents-table photo).
+  photo_url: '/team/brian-blanco.jpg',
   // Add Brian's Cal.com share URL here to activate his "Book 15 min
   // directly" CTA on listings he's assigned to.
   // calendar_url: 'https://cal.com/brian-blanco/15min',
