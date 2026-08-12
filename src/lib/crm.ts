@@ -1,14 +1,16 @@
 /**
  * CRM bridge — every lead-creating event on crecotx.com gets mirrored
- * into the shared Fair Oaks Realty Group CRM so it shows up under the
- * "Prospects" tab on the commercial dashboard at
+ * into the shared Fair Oaks Realty Group CRM so the broker sees it on
+ * the commercial dashboard at
  *   https://www.fairoaksrealtygroup.com/crm/commercial
  *
- * The Prospects view reads from `email_lead_imports JOIN crm_clients`,
- * filtered by `business_unit = 'commercial'`. So for our leads to appear
- * there, we need to:
- *   1. Find or create a `crm_clients` row (deduped by email)
- *   2. Insert a matching `email_lead_imports` row pointing to that client
+ * For a web lead to surface everywhere the broker looks, we write up to
+ * three rows, all keyed to one client (deduped by email):
+ *   1. `crm_clients`        — the contact (shows in Contacts / Prospects)
+ *   2. `email_lead_imports` — legacy import row, kept for history
+ *   3. `crm_deals`          — a Prospect-stage deal, so real transaction
+ *      leads land in the Deal Flow "Prospect" column. Newsletter
+ *      subscribers and agent applicants get no deal (no transaction type).
  *
  * CRECO and FORG run on separate Supabase projects. The CRM (crm_clients +
  * email_lead_imports + the dashboard) lives on the FORG Supabase, but
@@ -60,6 +62,16 @@ const SOURCE_TO_LABEL: Record<string, string> = {
   'contact':           'CRECO Website — Contact Form',
   'listing':           'CRECO Website — Listing Inquiry',
   'quiz':              'CRECO Website — Get Started Quiz',
+};
+
+/** Map the CRM client-type onto a Deal Flow pipeline type, so a web lead
+ *  also lands in the "Prospect" column. Agent/Broker leads are absent on
+ *  purpose — they're recruiting, not a transaction — so they get no deal. */
+const TYPE_TO_DEAL: Partial<Record<CrmLeadType, string>> = {
+  'Buyer':             'Buyer Purchase',
+  'Seller':            'Seller Listing',
+  'Tenant':            'Tenant Lease',
+  'Landlord/Investor': 'Landlord Listing',
 };
 
 export interface CrmPayload {
@@ -175,11 +187,12 @@ export async function pushToCrm(p: CrmPayload): Promise<boolean> {
 
     const { data: existing } = await supabase
       .from('crm_clients')
-      .select('id, tags, lead_source, prospect_status')
+      .select('id, tags, lead_source, prospect_status, agent_id')
       .eq('email', p.email)
       .maybeSingle();
 
     let clientId: string | null = null;
+    let agentId: string | null = existing?.agent_id ?? null;
 
     if (existing) {
       // Merge tags, keep original source if it was set
@@ -207,7 +220,7 @@ export async function pushToCrm(p: CrmPayload): Promise<boolean> {
         .eq('role', 'admin')
         .limit(1)
         .maybeSingle();
-      const agentId = adminProfile?.id ?? null;
+      agentId = adminProfile?.id ?? null;
 
       const { data: created, error: insertErr } = await supabase
         .from('crm_clients')
@@ -265,6 +278,43 @@ export async function pushToCrm(p: CrmPayload): Promise<boolean> {
       if (code !== '23505') {
         console.error('[crm] email_lead_imports insert failed:', importErr.message);
         return false;
+      }
+    }
+
+    // 3. Mirror the lead into the Deal Flow "Prospect" column. Only real
+    //    transaction leads (Buyer/Seller/Tenant/Landlord) get a deal —
+    //    newsletter subscribers and agent applicants don't. Skip if the
+    //    contact already has an open deal so re-submissions don't pile up.
+    const dealType = TYPE_TO_DEAL[type];
+    if (dealType && p.event !== 'subscriber.created') {
+      const { data: openDeal } = await supabase
+        .from('crm_deals')
+        .select('id')
+        .eq('client_id', clientId)
+        .not('stage', 'in', '("Closed","Lost")')
+        .limit(1)
+        .maybeSingle();
+      if (!openDeal) {
+        if (!agentId) {
+          const { data: adminProfile } = await supabase
+            .from('crm_profiles').select('id').eq('role', 'admin').limit(1).maybeSingle();
+          agentId = adminProfile?.id ?? null;
+        }
+        const { error: dealErr } = await supabase.from('crm_deals').insert([{
+          client_id:     clientId,
+          client:        [first, last].filter(Boolean).join(' ') || 'Web Lead',
+          client_email:  p.email,
+          client_phone:  phone || '',
+          type:          dealType,
+          property:      p.property_interest ?? '',
+          value:         0,
+          notes:         message,
+          agent_id:      agentId,
+          stage:         'Prospect',
+          last_touch:    new Date().toISOString().slice(0, 10),
+          business_unit: 'commercial',
+        }]);
+        if (dealErr) console.error('[crm] crm_deals insert failed:', dealErr.message);
       }
     }
 
