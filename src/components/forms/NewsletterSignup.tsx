@@ -81,7 +81,7 @@ export function NewsletterSignup() {
         </button>
       </div>
       {error && <p className="text-caption text-destructive">{error}</p>}
-      <p className="text-caption text-white/40">
+      <p className="text-caption text-white/70">
         Texas commercial market analysis, ~once a month. Unsubscribe anytime.
       </p>
     </form>
