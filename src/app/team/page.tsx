@@ -1,4 +1,4 @@
-import { redirect } from 'next/navigation';
+import { permanentRedirect } from 'next/navigation';
 
 /**
  * /team has been folded into /about — the team grid lives at
@@ -12,5 +12,5 @@ import { redirect } from 'next/navigation';
  * (Header/Footer/hero band) restored.
  */
 export default function TeamPage(): never {
-  redirect('/about#team');
+  permanentRedirect('/about#team');
 }

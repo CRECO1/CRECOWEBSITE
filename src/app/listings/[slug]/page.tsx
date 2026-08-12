@@ -1,4 +1,8 @@
-export const dynamic = 'force-dynamic';
+// ISR: statically generate known listing slugs at build and revalidate every
+// 30 min, instead of a cold Supabase round-trip (×3 queries) on every single
+// view. Slugs not yet built render on-demand (dynamicParams default) and then
+// cache. Was `force-dynamic` — the last public page never migrated to caching.
+export const revalidate = 1800;
 
 import type { Metadata } from 'next';
 import { jsonLd } from '@/lib/jsonLd';
@@ -8,7 +12,8 @@ import { MapPin, Calendar, Building2, CheckCircle, Layers, Ruler, Truck, Downloa
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
-import { getListingBySlug } from '@/lib/supabase';
+import { getListingBySlug, getListings } from '@/lib/supabase';
+import { cache } from 'react';
 import { formatPrice, formatSqft, formatAcres, formatLeaseRate, formatMonthlyRent, transactionLabel, propertyTypeLabel, googleMapsUrl } from '@/lib/utils';
 import { ListingInquiryTabs } from './ListingInquiryTabs';
 import { MobileInquiryBar } from './MobileInquiryBar';
@@ -21,11 +26,28 @@ import { ListingDetailMap } from '@/components/listings/ListingDetailMap';
 import { BrochureRequestForm } from '@/components/forms/BrochureRequestForm';
 import { Bell } from 'lucide-react';
 
+// Dedupe the per-request fetch: generateMetadata() and the page body both need
+// the listing, and without this each fires the same Supabase query. cache()
+// lives here (a server-only module) rather than in the client-shared
+// supabase.ts, so it never executes in a client bundle.
+const getListing = cache((slug: string) => getListingBySlug(slug));
+
+// Pre-render every current listing's detail page at build time (ISR above keeps
+// them fresh). Falls back to fully on-demand if the DB is unreachable at build.
+export async function generateStaticParams() {
+  try {
+    const listings = await getListings('all');
+    return listings.map((l) => ({ slug: l.slug }));
+  } catch {
+    return [];
+  }
+}
+
 // Per-listing metadata so each property has a unique <title>, <meta description>,
 // canonical URL, and OG image (instead of inheriting the /listings index meta).
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const listing = await getListingBySlug(slug).catch(() => null);
+  const listing = await getListing(slug).catch(() => null);
   if (!listing) {
     return { title: 'Property Not Found | CRECO' };
   }
@@ -74,7 +96,7 @@ interface Props { params: Promise<{ slug: string }> }
 export default async function ListingDetailPage({ params }: Props) {
   const { slug } = await params;
 
-  let listing = await getListingBySlug(slug).catch(() => null);
+  let listing = await getListing(slug).catch(() => null);
   if (!listing && DEMO[slug]) listing = DEMO[slug] as any;
   if (!listing) notFound();
 

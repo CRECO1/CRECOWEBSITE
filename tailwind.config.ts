@@ -61,10 +61,12 @@ const config: Config = {
         },
       },
       fontFamily: {
-        // Premium typography pairing
-        heading: ['Playfair Display', 'Georgia', 'Times New Roman', 'serif'],
-        body: ['Source Sans Pro', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        accent: ['Cormorant Garamond', 'Georgia', 'serif'],
+        // Premium typography pairing — loaded via next/font (see src/app/layout.tsx),
+        // exposed as CSS variables so @apply font-heading/font-body resolve to the
+        // self-hosted, preloaded families. 'accent' (Cormorant Garamond) was
+        // removed: it shipped on every page but was referenced 0×.
+        heading: ['var(--font-heading)', 'Georgia', 'Times New Roman', 'serif'],
+        body: ['var(--font-body)', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
       },
       fontSize: {
         // Fluid display sizes — clamp() auto-scales between mobile and desktop.

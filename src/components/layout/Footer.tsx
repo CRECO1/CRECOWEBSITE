@@ -13,10 +13,14 @@ import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 
 const footerLinks = {
   properties: [
-    { href: '/listings?type=office', label: 'Office Space' },
-    { href: '/listings?type=warehouse', label: 'Warehouse / Industrial' },
+    // Point the three property types that have dedicated, SSR'd, FAQ-schema'd
+    // keyword landing pages at those pages (stronger crawl target) instead of
+    // the client-rendered /listings?type=X filter view. Flex + land have no
+    // landing page yet, so they keep the filtered index.
+    { href: '/texas-office-space-for-lease', label: 'Office Space' },
+    { href: '/texas-industrial-property-for-lease', label: 'Warehouse / Industrial' },
     { href: '/listings?type=flex', label: 'Flex Space' },
-    { href: '/listings?type=retail', label: 'Retail Space' },
+    { href: '/texas-retail-space-for-lease', label: 'Retail Space' },
     { href: '/listings?type=land', label: 'Land' },
     { href: '/property-alerts', label: 'Property Alerts' },
     { href: '/compare', label: 'Compare Listings' },

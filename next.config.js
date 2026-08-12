@@ -161,6 +161,11 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
+    // AVIF first (≈20-30% smaller than WebP on these photo-heavy pages), WebP
+    // fallback. Listing/hero photos are immutable once uploaded, so cache the
+    // optimized variants for 30 days to cut repeat optimization + egress.
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 2592000,
     remotePatterns: [
       {
         protocol: 'https',

@@ -1,0 +1,30 @@
+# CRECO — Commercial Real Estate Company
+
+> CRECO is a full-service Texas commercial real estate brokerage headquartered in Fair Oaks Ranch (San Antonio metro), TREC #9014367-BB. We represent tenants, owners, and investors across retail, industrial, office, flex, and land — for lease and for sale — statewide, with deep coverage of San Antonio, Austin, Houston, and Dallas–Fort Worth. Phone: (210) 817-3443. Email: info@crecotx.com.
+
+## Available properties
+- [All Texas listings](https://www.crecotx.com/listings): Current commercial inventory — filter by type, transaction, submarket, and size.
+- [Texas retail space for lease](https://www.crecotx.com/texas-retail-space-for-lease)
+- [Texas industrial property for lease](https://www.crecotx.com/texas-industrial-property-for-lease)
+- [Texas office space for lease](https://www.crecotx.com/texas-office-space-for-lease)
+- [Texas commercial property for sale](https://www.crecotx.com/texas-commercial-property-for-sale)
+
+## Markets
+- [San Antonio commercial real estate](https://www.crecotx.com/san-antonio-commercial-real-estate)
+- [Austin commercial real estate](https://www.crecotx.com/austin-commercial-real-estate)
+- [Houston commercial real estate](https://www.crecotx.com/houston-commercial-real-estate)
+- [Dallas commercial real estate](https://www.crecotx.com/dallas-commercial-real-estate)
+
+## Services
+- [Commercial real estate services](https://www.crecotx.com/services): Tenant representation, owner-side leasing and sales, investment advisory, property management, and development.
+- [Owner services](https://www.crecotx.com/owner-services): Hold/sell analysis, repositioning, 1031 exchange identification, and portfolio strategy for multi-property owners.
+- [Free property valuation](https://www.crecotx.com/property-valuation): Instant cap-rate-based preliminary value range — no contact info required to see the number.
+
+## Company
+- [About CRECO](https://www.crecotx.com/about): Firm background, team, and approach.
+- [Contact](https://www.crecotx.com/contact): Reach a CRECO principal directly.
+- [Get started](https://www.crecotx.com/get-started): Tell us what you're looking for and get matched properties.
+
+## Reference
+- [Sitemap](https://www.crecotx.com/sitemap.xml)
+- [Market insights](https://www.crecotx.com/insights): Quarterly Texas market reports and strategy playbooks.

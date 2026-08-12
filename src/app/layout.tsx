@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Playfair_Display, Source_Sans_3 } from 'next/font/google';
 import { jsonLd } from '@/lib/jsonLd';
 import Script from 'next/script';
 import { Suspense } from 'react';
@@ -15,6 +16,23 @@ import { UtmCapture } from '@/components/analytics/UtmCapture';
 // <Suspense fallback={null}><ExitIntentModal /></Suspense> wrapper in
 // the body below.
 import './globals.css';
+
+// Self-hosted via next/font (was a render-blocking Google Fonts CSS @import in
+// globals.css, on the critical path of every page). next/font inlines the WOFF2,
+// adds size-adjust fallback metrics to cut CLS, and preloads with no external
+// round-trip. Cormorant Garamond was dropped entirely — it was downloaded on
+// every page but referenced nowhere. Both remaining families are variable
+// fonts, so all weights load without enumerating them.
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-heading',
+  display: 'swap',
+});
+const sourceSans = Source_Sans_3({
+  subsets: ['latin'],
+  variable: '--font-body',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.crecotx.com'),
@@ -106,7 +124,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={`${playfair.variable} ${sourceSans.variable}`} suppressHydrationWarning>
       <body suppressHydrationWarning>
         {/* Skip-to-content link — invisible until focused, jumps
             keyboard users past the header/nav straight to the page's
