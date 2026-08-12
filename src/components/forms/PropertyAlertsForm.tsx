@@ -187,8 +187,8 @@ export function PropertyAlertsForm() {
       {/* Identity */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-1.5">Name</label>
-          <input
+          <label htmlFor="pa-1" className="block text-body-sm font-semibold text-primary mb-1.5">Name</label>
+          <input id="pa-1"
             type="text"
             required
             value={name}
@@ -198,8 +198,8 @@ export function PropertyAlertsForm() {
           />
         </div>
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-1.5">Email</label>
-          <input
+          <label htmlFor="pa-2" className="block text-body-sm font-semibold text-primary mb-1.5">Email</label>
+          <input id="pa-2"
             type="email"
             required
             value={email}
@@ -283,8 +283,8 @@ export function PropertyAlertsForm() {
 
       {/* Size */}
       <div>
-        <label className="block text-body-sm font-semibold text-primary mb-2">Size range</label>
-        <select
+        <label htmlFor="pa-3" className="block text-body-sm font-semibold text-primary mb-2">Size range</label>
+        <select id="pa-3"
           value={sizeIdx}
           onChange={e => setSizeIdx(Number(e.target.value))}
           className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
@@ -297,8 +297,8 @@ export function PropertyAlertsForm() {
 
       {/* Notes */}
       <div>
-        <label className="block text-body-sm font-semibold text-primary mb-1.5">Anything else we should know? <span className="text-foreground-muted font-normal">(optional)</span></label>
-        <textarea
+        <label htmlFor="pa-4" className="block text-body-sm font-semibold text-primary mb-1.5">Anything else we should know? <span className="text-foreground-muted font-normal">(optional)</span></label>
+        <textarea id="pa-4"
           value={notes}
           onChange={e => setNotes(e.target.value)}
           rows={3}

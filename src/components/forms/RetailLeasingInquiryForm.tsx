@@ -230,10 +230,10 @@ export function RetailLeasingInquiryForm() {
 
       {/* Concept name */}
       <div>
-        <label className="block text-body-sm font-semibold text-primary mb-2">
+        <label htmlFor="retail-1" className="block text-body-sm font-semibold text-primary mb-2">
           Concept name <span className="text-foreground-muted font-normal">(or your working name)</span>
         </label>
-        <input
+        <input id="retail-1"
           type="text"
           value={concept}
           onChange={e => setConcept(e.target.value)}
@@ -247,15 +247,15 @@ export function RetailLeasingInquiryForm() {
       {/* Two-column: SF + timeline */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-2">Space size</label>
-          <select value={sfNeeded} onChange={e => setSfNeeded(e.target.value)} className={inputCls}>
+          <label htmlFor="retail-2" className="block text-body-sm font-semibold text-primary mb-2">Space size</label>
+          <select id="retail-2" value={sfNeeded} onChange={e => setSfNeeded(e.target.value)} className={inputCls}>
             <option value="">Select…</option>
             {SF_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
           </select>
         </div>
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-2">Target open date</label>
-          <select value={timeline} onChange={e => setTimeline(e.target.value)} className={inputCls}>
+          <label htmlFor="retail-3" className="block text-body-sm font-semibold text-primary mb-2">Target open date</label>
+          <select id="retail-3" value={timeline} onChange={e => setTimeline(e.target.value)} className={inputCls}>
             <option value="">Select…</option>
             {TIMELINES.map(o => <option key={o} value={o}>{o}</option>)}
           </select>
@@ -265,10 +265,10 @@ export function RetailLeasingInquiryForm() {
       {/* Existing locations + financing — Hot/Warm/Aspirational signal */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-2">
+          <label htmlFor="retail-4" className="block text-body-sm font-semibold text-primary mb-2">
             Existing locations <span className="text-foreground-muted font-normal">(optional)</span>
           </label>
-          <input
+          <input id="retail-4"
             type="text"
             value={existingLocations}
             onChange={e => setExistingLocations(e.target.value)}
@@ -278,10 +278,10 @@ export function RetailLeasingInquiryForm() {
           />
         </div>
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-2">
+          <label htmlFor="retail-5" className="block text-body-sm font-semibold text-primary mb-2">
             Funding status <span className="text-foreground-muted font-normal">(optional)</span>
           </label>
-          <select value={financing} onChange={e => setFinancing(e.target.value)} className={inputCls}>
+          <select id="retail-5" value={financing} onChange={e => setFinancing(e.target.value)} className={inputCls}>
             <option value="">Select…</option>
             {FINANCING.map(o => <option key={o} value={o}>{o}</option>)}
           </select>
@@ -291,29 +291,29 @@ export function RetailLeasingInquiryForm() {
       {/* Contact block */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-border">
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-2">Your name</label>
-          <input type="text" value={name} onChange={e => setName(e.target.value)} required maxLength={120} autoComplete="name" className={inputCls} />
+          <label htmlFor="retail-6" className="block text-body-sm font-semibold text-primary mb-2">Your name</label>
+          <input id="retail-6" type="text" value={name} onChange={e => setName(e.target.value)} required maxLength={120} autoComplete="name" className={inputCls} />
         </div>
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-2">Company / LLC</label>
-          <input type="text" value={company} onChange={e => setCompany(e.target.value)} maxLength={160} autoComplete="organization" className={inputCls} />
+          <label htmlFor="retail-7" className="block text-body-sm font-semibold text-primary mb-2">Company / LLC</label>
+          <input id="retail-7" type="text" value={company} onChange={e => setCompany(e.target.value)} maxLength={160} autoComplete="organization" className={inputCls} />
         </div>
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-2">Email</label>
-          <input type="email" value={email} onChange={e => setEmail(e.target.value)} required maxLength={160} autoComplete="email" className={inputCls} />
+          <label htmlFor="retail-8" className="block text-body-sm font-semibold text-primary mb-2">Email</label>
+          <input id="retail-8" type="email" value={email} onChange={e => setEmail(e.target.value)} required maxLength={160} autoComplete="email" className={inputCls} />
         </div>
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-2">Phone</label>
-          <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} maxLength={40} autoComplete="tel" className={inputCls} />
+          <label htmlFor="retail-9" className="block text-body-sm font-semibold text-primary mb-2">Phone</label>
+          <input id="retail-9" type="tel" value={phone} onChange={e => setPhone(e.target.value)} maxLength={40} autoComplete="tel" className={inputCls} />
         </div>
       </div>
 
       {/* Notes */}
       <div>
-        <label className="block text-body-sm font-semibold text-primary mb-2">
+        <label htmlFor="retail-10" className="block text-body-sm font-semibold text-primary mb-2">
           Anything else? <span className="text-foreground-muted font-normal">(optional)</span>
         </label>
-        <textarea
+        <textarea id="retail-10"
           value={notes}
           onChange={e => setNotes(e.target.value)}
           rows={3}

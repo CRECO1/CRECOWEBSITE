@@ -138,8 +138,8 @@ export function CareerApplicationForm() {
       {/* Identity */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-1.5">Name *</label>
-          <input
+          <label htmlFor="career-1" className="block text-body-sm font-semibold text-primary mb-1.5">Name *</label>
+          <input id="career-1"
             type="text"
             required
             value={name}
@@ -149,8 +149,8 @@ export function CareerApplicationForm() {
           />
         </div>
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-1.5">Email *</label>
-          <input
+          <label htmlFor="career-2" className="block text-body-sm font-semibold text-primary mb-1.5">Email *</label>
+          <input id="career-2"
             type="email"
             required
             value={email}
@@ -160,8 +160,8 @@ export function CareerApplicationForm() {
           />
         </div>
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-1.5">Phone *</label>
-          <input
+          <label htmlFor="career-3" className="block text-body-sm font-semibold text-primary mb-1.5">Phone *</label>
+          <input id="career-3"
             type="tel"
             required
             value={phone}
@@ -171,8 +171,8 @@ export function CareerApplicationForm() {
           />
         </div>
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-1.5">LinkedIn (optional)</label>
-          <input
+          <label htmlFor="career-4" className="block text-body-sm font-semibold text-primary mb-1.5">LinkedIn (optional)</label>
+          <input id="career-4"
             type="url"
             value={linkedin}
             onChange={e => setLinkedin(e.target.value)}
@@ -211,8 +211,8 @@ export function CareerApplicationForm() {
       {/* TREC + experience + brokerage */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-1.5">TREC license # <span className="text-foreground-muted font-normal">(if licensed)</span></label>
-          <input
+          <label htmlFor="career-5" className="block text-body-sm font-semibold text-primary mb-1.5">TREC license # <span className="text-foreground-muted font-normal">(if licensed)</span></label>
+          <input id="career-5"
             type="text"
             value={licenseNumber}
             onChange={e => setLicenseNumber(e.target.value)}
@@ -221,8 +221,8 @@ export function CareerApplicationForm() {
           />
         </div>
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-1.5">Years of experience</label>
-          <select
+          <label htmlFor="career-6" className="block text-body-sm font-semibold text-primary mb-1.5">Years of experience</label>
+          <select id="career-6"
             value={yearsExperience}
             onChange={e => setYearsExperience(e.target.value)}
             className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
@@ -232,8 +232,8 @@ export function CareerApplicationForm() {
           </select>
         </div>
         <div className="md:col-span-2">
-          <label className="block text-body-sm font-semibold text-primary mb-1.5">Current brokerage <span className="text-foreground-muted font-normal">(or "none")</span></label>
-          <input
+          <label htmlFor="career-7" className="block text-body-sm font-semibold text-primary mb-1.5">Current brokerage <span className="text-foreground-muted font-normal">(or "none")</span></label>
+          <input id="career-7"
             type="text"
             value={currentBrokerage}
             onChange={e => setCurrentBrokerage(e.target.value)}
@@ -269,8 +269,8 @@ export function CareerApplicationForm() {
 
       {/* Market */}
       <div>
-        <label className="block text-body-sm font-semibold text-primary mb-1.5">Primary market</label>
-        <select
+        <label htmlFor="career-8" className="block text-body-sm font-semibold text-primary mb-1.5">Primary market</label>
+        <select id="career-8"
           value={primaryMarket}
           onChange={e => setPrimaryMarket(e.target.value)}
           className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
@@ -282,8 +282,8 @@ export function CareerApplicationForm() {
 
       {/* Why CRECO */}
       <div>
-        <label className="block text-body-sm font-semibold text-primary mb-1.5">Why CRECO?</label>
-        <textarea
+        <label htmlFor="career-9" className="block text-body-sm font-semibold text-primary mb-1.5">Why CRECO?</label>
+        <textarea id="career-9"
           value={whyCreco}
           onChange={e => setWhyCreco(e.target.value)}
           rows={4}

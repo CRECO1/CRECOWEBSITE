@@ -284,6 +284,9 @@ export default async function HomePage() {
       />
 
       <Header variant="transparent" />
+      {/* Explicit <main> landmark — the homepage previously had none, so
+          screen-reader landmark navigation had no "main content" target. */}
+      <main>
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       {/* pt-32 md:pt-24 guarantees the eyebrow + headline never crash into
@@ -733,6 +736,7 @@ export default async function HomePage() {
         </Container>
       </section>
 
+      </main>
       <Footer />
     </>
   );

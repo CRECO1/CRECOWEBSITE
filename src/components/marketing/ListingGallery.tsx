@@ -11,10 +11,11 @@
  * - Body scroll locked while lightbox is open
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import { Building2, X, ChevronLeft, ChevronRight, Expand } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 
 interface Props {
   images: string[];
@@ -27,6 +28,21 @@ export function ListingGallery({ images, altPrefix }: Props) {
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const isOpen = lightboxIdx !== null;
   const total = images.length;
+
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
+
+  // Focus management for the lightbox (WCAG 2.4.3): trap Tab within the dialog
+  // while open, and restore focus to the thumbnail that opened it on close.
+  useFocusTrap(dialogRef, isOpen);
+  useEffect(() => {
+    if (isOpen) {
+      triggerRef.current = document.activeElement as HTMLElement | null;
+    } else if (triggerRef.current) {
+      triggerRef.current.focus();
+      triggerRef.current = null;
+    }
+  }, [isOpen]);
 
   const close = useCallback(() => setLightboxIdx(null), []);
   const next = useCallback(() => {
@@ -170,6 +186,7 @@ export function ListingGallery({ images, altPrefix }: Props) {
       {/* Lightbox overlay */}
       {isOpen && lightboxIdx !== null && (
         <div
+          ref={dialogRef}
           role="dialog"
           aria-modal="true"
           aria-label={`Photo ${lightboxIdx + 1} of ${total}`}

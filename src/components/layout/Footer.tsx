@@ -83,7 +83,7 @@ export function Footer() {
                   className="h-14 w-auto object-contain bg-white rounded-md p-1"
                 />
               </Link>
-              <p className="text-foreground-light text-body-sm leading-relaxed mb-6 max-w-xs">
+              <p className="text-white/70 text-body-sm leading-relaxed mb-6 max-w-xs">
                 Where your real estate ventures find the support they deserve. San Antonio commercial real estate experts.
               </p>
               <div className="flex gap-4">
@@ -245,7 +245,7 @@ export function Footer() {
               instead of its own full-width band. Less visual weight, stays
               discoverable. */}
           <div className="mt-5 pt-4 border-t border-white/5 flex flex-wrap items-center justify-center md:justify-start gap-x-2 gap-y-1 text-center md:text-left">
-            <span className="text-caption text-white/40">Looking for residential?</span>
+            <span className="text-caption text-white/70">Looking for residential?</span>
             <a
               href="https://www.fairoaksrealtygroup.com"
               target="_blank" rel="noopener noreferrer"
@@ -264,7 +264,7 @@ export function Footer() {
         <Container>
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             {/* Copyright + license */}
-            <p className="text-caption text-white/40 text-center md:text-left">
+            <p className="text-caption text-white/70 text-center md:text-left">
               © {currentYear} CRECO – Commercial Real Estate Company · Licensed Texas Real Estate Brokerage · TREC #9014367-BB
             </p>
             {/* Disclosure + policy links */}

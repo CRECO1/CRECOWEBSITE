@@ -31,6 +31,21 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
   const [isScrolled, setIsScrolled] = React.useState(false);
   const pathname = usePathname();
 
+  // Mobile menu a11y: while the full-screen overlay is open, lock body scroll
+  // (it previously let the page scroll behind it) and close on Escape (there
+  // was no keyboard affordance to dismiss it).
+  React.useEffect(() => {
+    if (!isMenuOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setIsMenuOpen(false); };
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [isMenuOpen]);
+
   React.useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
@@ -155,6 +170,8 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
                 )}
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={isMenuOpen}
+                aria-controls="mobile-menu"
               >
                 {isMenuOpen ? (
                   <X className="h-6 w-6" />
@@ -169,7 +186,7 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
 
       {/* Mobile Menu */}
       {isMenuOpen && variant !== 'minimal' && (
-        <div className="fixed inset-0 top-20 z-40 bg-white xl:hidden">
+        <div id="mobile-menu" className="fixed inset-0 top-20 z-40 bg-white xl:hidden">
           <Container>
             <nav className="flex flex-col py-8">
               {navLinks.filter(link => !('isHighlight' in link && link.isHighlight)).map((link) => (

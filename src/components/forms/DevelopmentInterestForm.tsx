@@ -212,8 +212,8 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
       {/* Identity */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-1.5">Name *</label>
-          <input
+          <label htmlFor="dev-1" className="block text-body-sm font-semibold text-primary mb-1.5">Name *</label>
+          <input id="dev-1"
             type="text"
             required
             value={name}
@@ -223,8 +223,8 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
           />
         </div>
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-1.5">Email *</label>
-          <input
+          <label htmlFor="dev-2" className="block text-body-sm font-semibold text-primary mb-1.5">Email *</label>
+          <input id="dev-2"
             type="email"
             required
             value={email}
@@ -239,8 +239,8 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
             want to share it before a value exchange. We capture email
             as the gate and ask for the number organically in the reply. */}
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-1.5">Phone</label>
-          <input
+          <label htmlFor="dev-3" className="block text-body-sm font-semibold text-primary mb-1.5">Phone</label>
+          <input id="dev-3"
             type="tel"
             value={phone}
             onChange={e => setPhone(e.target.value)}
@@ -249,8 +249,8 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
           />
         </div>
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-1.5">Company / Concept</label>
-          <input
+          <label htmlFor="dev-4" className="block text-body-sm font-semibold text-primary mb-1.5">Company / Concept</label>
+          <input id="dev-4"
             type="text"
             value={company}
             onChange={e => setCompany(e.target.value)}
@@ -286,10 +286,10 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
       {/* SF + Timeline */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-1.5">
+          <label htmlFor="dev-5" className="block text-body-sm font-semibold text-primary mb-1.5">
             {interest === 'suite' ? 'Suite size or # of offices' : 'Approximate SF needed'}
           </label>
-          <input
+          <input id="dev-5"
             type="text"
             value={sfNeeded}
             onChange={e => setSfNeeded(e.target.value)}
@@ -298,8 +298,8 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
           />
         </div>
         <div>
-          <label className="block text-body-sm font-semibold text-primary mb-1.5">Timeline</label>
-          <select
+          <label htmlFor="dev-6" className="block text-body-sm font-semibold text-primary mb-1.5">Timeline</label>
+          <select id="dev-6"
             value={timeline}
             onChange={e => setTimeline(e.target.value)}
             className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
@@ -312,8 +312,8 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
 
       {/* Notes */}
       <div>
-        <label className="block text-body-sm font-semibold text-primary mb-1.5">Anything else we should know?</label>
-        <textarea
+        <label htmlFor="dev-7" className="block text-body-sm font-semibold text-primary mb-1.5">Anything else we should know?</label>
+        <textarea id="dev-7"
           value={notes}
           onChange={e => setNotes(e.target.value)}
           rows={3}
