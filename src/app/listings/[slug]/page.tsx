@@ -59,7 +59,6 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     (listing.description && String(listing.description).trim().slice(0, 160)) ||
     listing.headline ||
     `${type} ${txn.toLowerCase()} at ${listing.address}, ${listing.city ?? 'Texas'}, TX. Contact CRECO for full details, photos, and a tour.`;
-  const heroImage = Array.isArray(listing.images) && listing.images[0] ? listing.images[0] : 'https://www.crecotx.com/images/creco-logo.jpg';
   return {
     title,
     description,
@@ -69,9 +68,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       description,
       url: `https://www.crecotx.com/listings/${listing.slug}`,
       type: 'website',
-      images: [{ url: heroImage, alt: listing.title }],
+      // og:image comes from the colocated ./opengraph-image.tsx (branded card).
     },
-    twitter: { card: 'summary_large_image', title, description, images: [heroImage] },
+    twitter: { card: 'summary_large_image', title, description },
   };
 }
 
