@@ -187,6 +187,22 @@ const nextConfig = {
   },
   serverExternalPackages: ['sharp', 'graphql'],
 
+  // Canonicalize the apex domain to www. crecotx.com currently serves a 200
+  // (duplicate-content split) while every canonical tag points to www — this
+  // 308-redirects apex → www so the ranking signal consolidates onto one host.
+  // The `has` host match is anchored to the bare apex, so www.crecotx.com does
+  // NOT match and there's no redirect loop.
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'crecotx.com' }],
+        destination: 'https://www.crecotx.com/:path*',
+        permanent: true,
+      },
+    ];
+  },
+
   // Add security headers to all routes
   async headers() {
     return [

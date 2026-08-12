@@ -33,51 +33,6 @@ const ListingsMap = dynamic(
 
 type View = 'grid' | 'map';
 
-const DEMO_LISTINGS: Listing[] = [
-  {
-    id: '1', title: '1222 Chulie Dr', slug: '1222-chulie-dr',
-    address: '1222 Chulie Dr', city: 'San Antonio', state: 'TX', zip: '78219',
-    property_type: 'warehouse', transaction_type: 'lease',
-    sale_price: null, lease_rate: 9.50, lease_rate_basis: 'NNN',
-    sqft: 16100, available_sqft: 16100, lot_size: 1.2, zoning: 'I-1', year_built: 1998,
-    clear_height: 22, dock_doors: 4, grade_doors: 1,
-    headline: '16,100 SF warehouse with dock and grade doors',
-    description: null, features: ['Dock-high loading', 'Grade-level door', 'Fenced yard'],
-    images: null, brochure_url: null, virtual_tour_url: null, status: 'active',
-    listing_date: '2026-04-10', closed_date: null, submarket: 'Northeast', featured: false,
-    latitude: 29.498, longitude: -98.367, geocoded_at: null,
-    created_at: '', updated_at: '',
-  },
-  {
-    id: '2', title: '1346 Parkridge Dr', slug: '1346-parkridge-dr',
-    address: '1346 Parkridge Dr', city: 'San Antonio', state: 'TX', zip: '78213',
-    property_type: 'office', transaction_type: 'sale',
-    sale_price: 875000, lease_rate: null, lease_rate_basis: null,
-    sqft: 2475, available_sqft: 2475, lot_size: 1.7, zoning: 'C-2', year_built: 2004,
-    clear_height: null, dock_doors: null, grade_doors: null,
-    headline: '1.7 acres with 2,475 SF office building',
-    description: null, features: ['Stand-alone building', 'Ample parking', 'Highway visibility'],
-    images: null, brochure_url: null, virtual_tour_url: null, status: 'active',
-    listing_date: '2026-03-22', closed_date: null, submarket: 'North Central', featured: false,
-    latitude: 29.526, longitude: -98.491, geocoded_at: null,
-    created_at: '', updated_at: '',
-  },
-  {
-    id: '3', title: '2250 Chipley Circle', slug: '2250-chipley-circle',
-    address: '2250 Chipley Cir', city: 'San Antonio', state: 'TX', zip: '78219',
-    property_type: 'warehouse', transaction_type: 'lease',
-    sale_price: null, lease_rate: 8.75, lease_rate_basis: 'NNN',
-    sqft: 26400, available_sqft: 26400, lot_size: 2.4, zoning: 'I-1', year_built: 2001,
-    clear_height: 24, dock_doors: 6, grade_doors: 2,
-    headline: '26,400 SF warehouse, I-1 zoning',
-    description: null, features: ['Heavy power', 'Cross-dock layout', 'Fenced & secured'],
-    images: null, brochure_url: null, virtual_tour_url: null, status: 'active',
-    listing_date: '2026-04-01', closed_date: null, submarket: 'Northeast', featured: false,
-    latitude: 29.503, longitude: -98.372, geocoded_at: null,
-    created_at: '', updated_at: '',
-  },
-];
-
 // Predefined options always shown in the dropdowns, in this order. Custom
 // property/transaction types coming from the data get appended below these.
 const PROPERTY_TYPE_PRESETS = ['office', 'warehouse', 'flex', 'retail', 'land'];
@@ -118,10 +73,17 @@ function ListingsPageInner() {
   const initialSubmarket = searchParams.get('submarket') ?? 'all';
   const initialView: View = searchParams.get('view') === 'map' ? 'map' : 'grid';
 
-  // Synthetic listings (e.g. 8000 Fair Oaks Plaza) are always prepended
-  // to the array regardless of whether the API call has come back yet —
-  // so the property card never blinks in/out as the network resolves.
-  const [listings, setListings] = useState<Listing[]>(() => withSyntheticListings(DEMO_LISTINGS));
+  // Initial state is the real synthetic listings only (e.g. 8000 Fair Oaks
+  // Plaza) — these are genuine featured properties with landing pages, always
+  // prepended so their cards never blink in/out as the network resolves. We do
+  // NOT seed placeholder/demo rows here: doing so rendered fabricated inventory
+  // (wrong specs, dead links) in the first paint and, on any API failure, left
+  // that fake data on screen as if it were real.
+  const [listings, setListings] = useState<Listing[]>(() => withSyntheticListings([]));
+  // Live-inventory load state — drives a non-silent error/retry affordance so a
+  // Supabase/API outage no longer masquerades as "these are all our listings".
+  const [loadError, setLoadError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
   const [search, setSearch] = useState(initialQ);
   const [propertyType, setPropertyType] = useState<string>(initialType);
   const [transactionType, setTransactionType] = useState<string>(initialTxn);
@@ -189,13 +151,28 @@ function ListingsPageInner() {
   }, [propertyType, transactionType, submarket, sizeIdx, search, view, router]);
 
   useEffect(() => {
-    fetch('/api/listings').then(r => r.json()).then(d => {
-      // Always merge the synthetic listings in — even when the DB call
-      // returns 0 rows (e.g. fresh deploy with an empty `listings` table)
-      // the Fair Oaks Plaza card must still render.
-      if (d.listings) setListings(withSyntheticListings(d.listings));
-    }).catch(() => {});
-  }, []);
+    let cancelled = false;
+    (async () => {
+      try {
+        const r = await fetch('/api/listings');
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const d = await r.json();
+        if (cancelled) return;
+        // Always merge the synthetic listings in — even when the DB call
+        // returns 0 rows (e.g. fresh deploy with an empty `listings` table)
+        // the Fair Oaks Plaza card must still render.
+        setListings(withSyntheticListings(d.listings ?? []));
+        setLoadError(false);
+      } catch {
+        // Surface the failure instead of silently leaving stale data on screen.
+        // The synthetic featured listings already in state stay visible (they're
+        // real and DB-independent); the banner flags that live inventory didn't
+        // load and offers a retry.
+        if (!cancelled) setLoadError(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [reloadKey]);
 
   const filtered = useMemo(() => {
     const range = SIZE_RANGES[sizeIdx];
@@ -365,6 +342,20 @@ function ListingsPageInner() {
         {/* Grid or Map */}
         <div className="py-10">
           <Container>
+            {loadError && (
+              <div role="alert" className="mb-8 flex flex-col gap-3 rounded-xl border border-destructive/30 bg-destructive/5 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-body-sm text-primary">
+                  We couldn&apos;t load the latest live inventory just now. The featured properties below are current; some listings may be missing.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setReloadKey(k => k + 1)}
+                  className="shrink-0 rounded-lg bg-primary px-4 py-2 text-body-sm font-semibold text-white hover:bg-primary/90"
+                >
+                  Retry
+                </button>
+              </div>
+            )}
             {filtered.length === 0 ? (
               <div className="py-24 text-center">
                 <Building2 className="mx-auto mb-4 h-12 w-12 text-foreground-subtle" />

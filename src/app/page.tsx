@@ -258,6 +258,13 @@ export default async function HomePage() {
     { value: s.stat_satisfaction ?? DEFAULT_SETTINGS.stat_satisfaction, label: 'Client Satisfaction', icon: Star },
   ];
 
+  // Guard the nullable CMS hero fields. hero_headline in particular has
+  // .includes()/.split() called on it below — if an editor ever blanks that
+  // field, calling a string method on null would throw and drop the ENTIRE
+  // homepage to error.tsx. Fall back to the defaults instead.
+  const heroHeadline = s.hero_headline ?? DEFAULT_SETTINGS.hero_headline;
+  const heroSubheadline = s.hero_subheadline ?? DEFAULT_SETTINGS.hero_subheadline;
+
   return (
     <>
       {/* FAQ Schema for "People Also Ask" featured snippets */}
@@ -310,15 +317,15 @@ export default async function HomePage() {
         <Container className="relative z-10 text-center text-white">
           <p className="overline mb-6 animate-fade-in-down text-gold">Texas Commercial Real Estate · Statewide Coverage</p>
           <h1 className="mb-6 animate-fade-in-up font-heading text-display-xl font-bold text-white text-shadow-hero fill-both">
-            {s.hero_headline.includes('\n')
-              ? s.hero_headline.split('\n').map((line: string, i: number) => (
+            {heroHeadline.includes('\n')
+              ? heroHeadline.split('\n').map((line: string, i: number) => (
                 <span key={i}>{i > 0 && <br />}{line}</span>
               ))
-              : <><span className="text-gradient-gold">{s.hero_headline}</span></>
+              : <><span className="text-gradient-gold">{heroHeadline}</span></>
             }
           </h1>
           <p className="mx-auto mb-10 max-w-2xl animate-fade-in text-body-lg text-white/80 delay-200 fill-both">
-            {s.hero_subheadline}
+            {heroSubheadline}
           </p>
 
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center animate-fade-in delay-300 fill-both">

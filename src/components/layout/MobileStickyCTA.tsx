@@ -17,7 +17,11 @@ import { usePathname } from 'next/navigation';
 import { Phone, Building2, MessageSquare } from 'lucide-react';
 import { trackEvent } from '@/lib/analytics';
 
-const HIDDEN_PREFIXES = ['/admin', '/manage', '/crm', '/tenant-needs', '/get-started', '/sell', '/contact'];
+// Note the trailing slash on '/listings/' — it hides this global bar on listing
+// DETAIL pages (which have their own MobileInquiryBar "Schedule a Tour" bar, so
+// the two would otherwise stack and occlude each other) while keeping it on the
+// '/listings' index, which has no bar of its own.
+const HIDDEN_PREFIXES = ['/admin', '/manage', '/crm', '/tenant-needs', '/get-started', '/sell', '/contact', '/listings/'];
 
 export function MobileStickyCTA({ phone = '(210) 817-3443' }: { phone?: string }) {
   const pathname = usePathname() ?? '/';

@@ -448,6 +448,7 @@ export default function GetStartedPage() {
   const [contactStep, setContactStep] = useState(false);
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [name, setName] = useState('');
   const [company, setCompany] = useState('');
   const [email, setEmail] = useState('');
@@ -535,16 +536,33 @@ export default function GetStartedPage() {
 
   async function handleContact(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setLoading(true);
-    const recaptchaToken = await getRecaptchaToken('submit_get_started');
+    // Read the honeypot synchronously — e.currentTarget is only valid during
+    // the event dispatch and can be null after the awaits below.
     const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
-    await fetch('/api/inquiry', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path, name, company, email, phone, answers, recaptchaToken, website: honeypot }),
-    }).catch(() => {});
-    setLoading(false);
-    setDone(true);
+    setLoading(true);
+    setSubmitError(null);
+    try {
+      const recaptchaToken = await getRecaptchaToken('submit_get_started');
+      const res = await fetch('/api/inquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path, name, company, email, phone, answers, recaptchaToken, website: honeypot }),
+      });
+      // Only show the success screen if the lead actually landed. Previously
+      // every outcome (400/500/network error) fell through to setDone(true),
+      // so failed submissions looked successful and the lead was lost.
+      if (!res.ok) {
+        let msg = 'Something went wrong sending your request. Please try again, or call (210) 817-3443.';
+        try { const data = await res.json(); if (data?.error) msg = data.error; } catch { /* non-JSON error body */ }
+        setSubmitError(msg);
+        return;
+      }
+      setDone(true);
+    } catch {
+      setSubmitError("We couldn't reach the server. Check your connection and try again, or call (210) 817-3443.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   // ─── Done state ─────────────────────────────────────────────────────────
@@ -637,6 +655,11 @@ export default function GetStartedPage() {
                   {config.ctaCopy}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
+                {submitError && (
+                  <p role="alert" aria-live="assertive" className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-body-sm text-destructive">
+                    {submitError}
+                  </p>
+                )}
               </form>
               <button
                 type="button"

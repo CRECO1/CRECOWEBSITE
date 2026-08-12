@@ -41,13 +41,19 @@ export function BrochureRequestForm({ listingSlug, listingTitle, brochureUrl }: 
     failureEvent: 'brochure_request_failed',
     successEventParams: { listing_slug: listingSlug, has_brochure: !!brochureUrl },
     buildPayload: (cleanEmail) => ({
-      name: '—',
+      name: 'Brochure request',
       email: cleanEmail,
-      message: `Requested the marketing brochure for ${listingTitle}. ${brochureUrl ? 'Brochure URL is on file.' : 'No PDF on file yet — send the offering memo manually.'}`,
+      message: `Requested the marketing brochure for ${listingTitle}. ${brochureUrl ? 'An uploaded brochure PDF is on file.' : 'The auto-generated one-pager was served — consider following up with a full offering memo.'}`,
       property_interest: `${listingTitle} (${listingSlug})`,
       source: 'brochure-request',
     }),
   });
+
+  // Always resolvable: the uploaded brochure PDF when one exists, otherwise the
+  // on-demand generated one-pager at /api/brochure/[slug] (works for every
+  // listing). This is what makes the "instant brochure" promise real — before,
+  // the form claimed an emailed brochure that was never actually sent.
+  const brochureHref = brochureUrl || `/api/brochure/${listingSlug}`;
 
   if (submitted) {
     return (
@@ -55,26 +61,21 @@ export function BrochureRequestForm({ listingSlug, listingTitle, brochureUrl }: 
         <div className="flex items-start gap-2.5">
           <CheckCircle2 className="h-5 w-5 shrink-0 mt-0.5 text-green-700" />
           <div className="text-body-sm">
-            <p className="font-semibold text-primary">Brochure on its way.</p>
-            {brochureUrl ? (
-              <p className="text-foreground-muted mt-0.5">
-                Check your inbox in a few minutes. You can also{' '}
-                <a
-                  href={brochureUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Download brochure PDF (opens in a new tab)"
-                  className="text-gold-dark font-semibold hover:underline"
-                  onClick={() => trackEvent('brochure_downloaded_direct', { listing_slug: listingSlug })}
-                >
-                  download it now →
-                </a>
-              </p>
-            ) : (
-              <p className="text-foreground-muted mt-0.5">
-                A CRECO broker will send the offering memo shortly with current pricing and availability.
-              </p>
-            )}
+            <p className="font-semibold text-primary">Your brochure is ready.</p>
+            <p className="text-foreground-muted mt-0.5">
+              <a
+                href={brochureHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Download the property brochure PDF (opens in a new tab)"
+                className="text-gold-dark font-semibold hover:underline"
+                onClick={() => trackEvent('brochure_downloaded_direct', { listing_slug: listingSlug })}
+              >
+                Download the brochure (PDF) →
+              </a>
+              <br />
+              A CRECO broker will also follow up with current pricing and availability.
+            </p>
           </div>
         </div>
       </div>
@@ -89,7 +90,7 @@ export function BrochureRequestForm({ listingSlug, listingTitle, brochureUrl }: 
         <p className="text-body-sm font-semibold text-primary">Get the brochure</p>
       </div>
       <p className="text-caption text-foreground-muted mb-3">
-        Full property details — specs, photos, pricing — emailed instantly. No call required.
+        Full property details — specs, pricing, and highlights — as an instant PDF download. No call required.
       </p>
       <div className="flex flex-col sm:flex-row gap-2">
         <input
