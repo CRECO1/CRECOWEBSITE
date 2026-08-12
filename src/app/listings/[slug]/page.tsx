@@ -4,7 +4,7 @@ import type { Metadata } from 'next';
 import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { MapPin, Calendar, Building2, CheckCircle, Layers, Ruler, Truck, Download, Map } from 'lucide-react';
+import { MapPin, Calendar, Building2, CheckCircle, Layers, Ruler, Truck, Download, Map, Video } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
@@ -311,6 +311,12 @@ export default async function ListingDetailPage({ params }: Props) {
               <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
                 {[
                   { icon: Layers, label: 'Building SF', value: formatSqft(listing!.sqft) },
+                  // Available SF only when it's a divisible space (differs from
+                  // the building total) — a tenant looking for 5k SF in a 30k
+                  // building needs to see what's actually available.
+                  ...(listing!.available_sqft != null && listing!.available_sqft !== listing!.sqft
+                    ? [{ icon: Ruler, label: 'Available SF', value: formatSqft(listing!.available_sqft) }]
+                    : []),
                   { icon: Ruler, label: 'Lot Size', value: listing!.lot_size != null ? formatAcres(listing!.lot_size) : '—' },
                   { icon: Calendar, label: 'Year Built', value: listing!.year_built ?? '—' },
                   { icon: Map, label: 'Zoning', value: listing!.zoning ?? '—' },
@@ -392,6 +398,23 @@ export default async function ListingDetailPage({ params }: Props) {
                     title={listing!.title}
                     propertyType={listing!.property_type}
                   />
+                </div>
+              )}
+
+              {/* Virtual / 3D tour — the URL is captured in the admin and the
+                  Payload schema but was never surfaced publicly. Shows a
+                  prominent CTA whenever a broker has added a Matterport / 3D
+                  walkthrough link; renders nothing until then. */}
+              {listing!.virtual_tour_url && (
+                <div className="mb-8">
+                  <a
+                    href={listing!.virtual_tour_url}
+                    target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-lg bg-gold px-5 py-3 text-body-sm font-semibold text-primary transition-colors hover:bg-gold-dark"
+                  >
+                    <Video className="h-4 w-4" />
+                    Take the 3D Virtual Tour
+                  </a>
                 </div>
               )}
 
