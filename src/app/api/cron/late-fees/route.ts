@@ -125,11 +125,18 @@ export async function GET(req: NextRequest) {
       if (daysOverdue < s.late_fee_days) continue;
 
       // 3. Pull the invoice's line items, isolate late-fee lines
-      const { data: lines } = await supabase
+      const { data: lines, error: linesErr } = await supabase
         .from('invoice_line_items')
         .select('*')
         .eq('invoice_id', inv.id)
         .order('sort_order', { ascending: true });
+      if (linesErr) {
+        // A transient read failure here would leave lineItems empty, and the
+        // total-recompute below would then clobber the invoice's real total
+        // down to just the fee. Skip this invoice rather than corrupt it.
+        console.error(`[late-fees] line-items read failed for invoice ${inv.id}, skipping:`, linesErr.message);
+        continue;
+      }
       const lineItems = (lines as InvoiceLineItem[] | null) ?? [];
       const lateFeeLines = lineItems.filter(l => l.is_late_fee);
 
