@@ -43,8 +43,8 @@ export function LeadMagnetForm({
     setError(null);
     setSubmitting(true);
     try {
-      const recaptchaToken = await getRecaptchaToken('subscribe_lead_magnet');
       const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
+      const recaptchaToken = await getRecaptchaToken('subscribe_lead_magnet');
       const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

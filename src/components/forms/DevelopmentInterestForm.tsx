@@ -116,8 +116,8 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
     setError(null);
     setSubmitting(true);
     try {
-      const recaptchaToken = await getRecaptchaToken('submit_8000_fair_oaks_pkwy');
       const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
+      const recaptchaToken = await getRecaptchaToken('submit_8000_fair_oaks_pkwy');
 
       // Pack the structured fields into the message body so the broker gets
       // all the context up-front. The interest type leads so it's the first

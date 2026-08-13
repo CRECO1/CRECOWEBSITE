@@ -79,8 +79,8 @@ export function CareerApplicationForm() {
     setError(null);
     setSubmitting(true);
     try {
-      const recaptchaToken = await getRecaptchaToken('submit_agent_application');
       const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
+      const recaptchaToken = await getRecaptchaToken('submit_agent_application');
       const res = await fetch('/api/inquiry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

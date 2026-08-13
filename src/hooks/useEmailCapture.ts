@@ -94,8 +94,8 @@ export function useEmailCapture(opts: UseEmailCaptureOpts): EmailCaptureState {
 
     setSubmitting(true);
     try {
-      const recaptchaToken = await getRecaptchaToken(opts.recaptchaAction);
       const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
+      const recaptchaToken = await getRecaptchaToken(opts.recaptchaAction);
       const attribution = readUtmsFromCookie();
       const cleanEmail = email.trim().toLowerCase();
 

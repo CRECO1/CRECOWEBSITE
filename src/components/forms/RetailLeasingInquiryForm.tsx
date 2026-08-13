@@ -112,8 +112,8 @@ export function RetailLeasingInquiryForm() {
 
     setSubmitting(true);
     try {
-      const recaptchaToken = await getRecaptchaToken('submit_8979_dietz_elkhorn');
       const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
+      const recaptchaToken = await getRecaptchaToken('submit_8979_dietz_elkhorn');
 
       // Pack structured pre-qualification into the message body so the
       // broker sees the Hot/Warm/Aspirational signal at a glance.

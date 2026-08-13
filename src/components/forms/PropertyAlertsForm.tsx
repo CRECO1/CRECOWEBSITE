@@ -115,8 +115,8 @@ export function PropertyAlertsForm() {
     setError(null);
     setSubmitting(true);
     try {
-      const recaptchaToken = await getRecaptchaToken('subscribe_property_alerts');
       const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
+      const recaptchaToken = await getRecaptchaToken('subscribe_property_alerts');
       const range = SIZE_RANGES[sizeIdx];
       const filters = {
         property_types: propertyTypes,

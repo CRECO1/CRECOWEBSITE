@@ -123,8 +123,8 @@ export function PropertyValuationForm() {
     setLeadError(null);
     setSubmittingLead(true);
     try {
-      const recaptchaToken = await getRecaptchaToken('property_valuation');
       const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
+      const recaptchaToken = await getRecaptchaToken('property_valuation');
 
       const summaryParts = [
         `Property type: ${propertyType}`,
