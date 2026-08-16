@@ -120,17 +120,29 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   // times for the same checkout.
   const { data: invoice } = await supabase
     .from('invoices')
-    .select('id, status')
+    .select('id, status, workspace_id')
     .eq('id', invoiceId)
     .single();
   if (!invoice) {
     console.warn('Webhook: invoice not found', invoiceId);
     return;
   }
-  if (invoice.status === 'paid') return;
+  if (invoice.status === 'void') return; // never record a payment against a voided invoice
+
+  // Idempotency — Stripe retries the same session for up to 3 days. Each ledger
+  // row is tagged with the session id; skip if we've already recorded it.
+  const notesStr = `Stripe checkout ${session.id}`;
+  const { data: existingPayment } = await supabase
+    .from('invoice_payments')
+    .select('id')
+    .eq('invoice_id', invoiceId)
+    .eq('notes', notesStr)
+    .maybeSingle();
+  if (existingPayment) return;
 
   // Stripe gives amount_total in cents
   const paidAmount = (session.amount_total ?? 0) / 100;
+  if (!(paidAmount > 0)) { console.warn('Webhook: non-positive amount for', invoiceId); return; }
 
   // Detect payment method — Stripe's session has payment_method_types but
   // not always the chosen method. We resolve via the linked payment_intent
@@ -156,15 +168,22 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     console.warn('Could not resolve payment method, defaulting to "Stripe":', err);
   }
 
-  await supabase
-    .from('invoices')
-    .update({
-      status: 'paid',
-      paid_at: new Date().toISOString(),
-      paid_amount: paidAmount,
-      paid_method: paidMethod,
-    })
-    .eq('id', invoiceId);
+  // Record the payment in the ledger — the recalc trigger derives the invoice's
+  // paid_amount / paid_at / paid_method / status (partial vs paid). This keeps
+  // Stripe consistent with the manual + Plaid paths and the statements view, and
+  // stops a later ledger event from silently reverting the Stripe payment.
+  const { error: payErr } = await supabase
+    .from('invoice_payments')
+    .insert({
+      workspace_id: invoice.workspace_id,
+      invoice_id: invoiceId,
+      amount: paidAmount,
+      method: paidMethod,
+      paid_at: new Date().toISOString().slice(0, 10),
+      notes: notesStr,
+      source: 'stripe',
+    });
+  if (payErr) throw new Error(`invoice_payments insert failed: ${payErr.message}`);
 }
 
 /**
@@ -193,22 +212,28 @@ async function handleChargeIssue(charge: Stripe.Charge, eventType: string) {
   // Read existing notes before reverting so we can append a status note
   // (rather than clobber prior admin context).
   const supabase = svcSupabase();
+
+  // Remove this invoice's Stripe payment(s) from the ledger; the recalc trigger
+  // re-derives status (→ sent, or 'partial'/'paid' if a non-Stripe payment
+  // remains). We deliberately don't touch the invoice columns directly — the
+  // ledger is the source of truth.
+  const { error: delErr } = await supabase
+    .from('invoice_payments')
+    .delete()
+    .eq('invoice_id', invoiceId)
+    .eq('source', 'stripe');
+  if (delErr) throw new Error(`invoice_payments revert failed: ${delErr.message}`);
+
+  // Append an audit note without clobbering prior admin context.
   const { data: row } = await supabase
     .from('invoices')
     .select('internal_notes')
     .eq('id', invoiceId)
     .single();
-  const note = `[${new Date().toISOString().slice(0, 10)}] Stripe reported ${eventType} — invoice reverted to Sent. Charge: ${charge.id}.`;
+  const note = `[${new Date().toISOString().slice(0, 10)}] Stripe reported ${eventType} — Stripe payment reversed in the ledger. Charge: ${charge.id}.`;
   const internal_notes = row?.internal_notes ? `${row.internal_notes}\n${note}` : note;
-
   await supabase
     .from('invoices')
-    .update({
-      status: 'sent',
-      paid_at: null,
-      paid_amount: null,
-      paid_method: null,
-      internal_notes,
-    })
+    .update({ internal_notes })
     .eq('id', invoiceId);
 }
