@@ -175,6 +175,22 @@ export default function SanAntonioPage() {
               'San Antonio commercial property for sale — investment, owner-user, and 1031 replacement opportunities across every asset class.',
           },
         ],
+        quickAnswer:
+          "San Antonio is the 2nd-largest city in Texas and one of the fastest-growing US metros, with a disciplined commercial real estate market: industrial on the South Side and in Schertz/Cibolo, Class A office in Stone Oak and Westover Hills, medical around the South Texas Medical Center, and tourism retail on the Riverwalk. CRECO is headquartered in San Antonio and represents tenants, owners, and investors building-by-building.",
+        faqs: [
+          {
+            q: 'Is commercial real estate cheaper in San Antonio than Austin?',
+            a: "For comparable product, San Antonio cap rates frequently run 75–150 basis points higher than Austin — better yield for investors and, often, lower occupancy costs for tenants. San Antonio's market is also less distorted by speculative capital, so pricing tends to track real cash flow and demand. That spread is a major reason Austin and Houston 1031 buyers look to San Antonio for replacement property.",
+          },
+          {
+            q: 'What are the main commercial real estate submarkets in San Antonio?',
+            a: 'The most active are Stone Oak / North Central (Class A office, retail, and medical along the 1604/281 corridor), the South Texas Medical Center (medical office), Westover Hills (corporate campuses on the Far West Side), the Pearl (creative office and lifestyle retail), Downtown / Riverwalk (tourism retail and legacy office), the South Side / Toyota corridor (advanced manufacturing and industrial), and Schertz / Cibolo (modern bulk distribution). Each has very different rents, tenant profiles, and dynamics.',
+          },
+          {
+            q: "Where is San Antonio's industrial and warehouse growth concentrated?",
+            a: 'Two corridors lead absorption: the South Side around the Toyota Texas plant and its supplier network, and the Schertz/Cibolo corridor along I-35 northeast — the fastest-absorbing industrial submarket in Greater San Antonio, with multiple 500,000+ SF distribution deliveries underway. Both serve the combined San Antonio–Austin market along the I-35 spine.',
+          },
+        ],
       }}
     />
   );

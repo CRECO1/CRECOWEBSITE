@@ -40,11 +40,18 @@ export function PropertyAlertsInline({
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Dark variant sits on a bg-primary section, so the card must be a LIGHTER
+  // surface (bg-white/5) than that section — using bg-primary made the card and
+  // its bg-primary button invisible against the band. Mirrors the sibling card
+  // in LeadMagnetBand, and the CTA goes gold so it pops on the dark ground.
   const cardClasses = variant === 'dark'
-    ? 'bg-primary text-white border border-white/10'
+    ? 'bg-white/5 text-white border border-white/10'
     : 'bg-white border border-border';
   const headingClasses = variant === 'dark' ? 'text-white' : 'text-primary';
   const bodyClasses = variant === 'dark' ? 'text-white/70' : 'text-foreground-muted';
+  const buttonClasses = variant === 'dark'
+    ? 'bg-gold text-primary hover:bg-gold-light'
+    : 'bg-primary text-white hover:bg-primary/90';
   const inputClasses = variant === 'dark'
     ? 'bg-white/10 text-white placeholder:text-white/40 border-white/20 focus:border-gold'
     : 'bg-background-cream text-primary placeholder:text-foreground-muted border-border focus:border-gold';
@@ -136,7 +143,7 @@ export function PropertyAlertsInline({
         <button
           type="submit"
           disabled={submitting}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-body-sm font-bold text-white hover:bg-primary/90 shadow-sm transition-colors disabled:opacity-60"
+          className={`inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-body-sm font-bold shadow-sm transition-colors disabled:opacity-60 ${buttonClasses}`}
         >
           {submitting ? 'Sending…' : 'Subscribe'}
           {!submitting && <ArrowRight className="h-4 w-4 shrink-0" />}

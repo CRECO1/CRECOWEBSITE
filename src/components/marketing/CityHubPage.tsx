@@ -65,6 +65,46 @@ export interface CityHubConfig {
    *  emits Place + Article + BreadcrumbList JSON-LD. Optional so shared consumers
    *  without a canonical (e.g. the dynamic markets route) stay schema-free. */
   canonicalPath?: string;
+  /** Optional answer-first summary (~40-60 words) rendered as a highlighted
+   *  callout high on the page + fed to the Article schema description. This is
+   *  the snippet AI assistants and featured snippets tend to lift verbatim. */
+  quickAnswer?: string;
+  /** City-specific FAQs. PREPENDED to a shared, city-interpolated baseline
+   *  (baseCityFaqs) so every city hub renders a real FAQ section + FAQPage
+   *  schema even when no page-specific questions are supplied. */
+  faqs?: { q: string; a: string }[];
+}
+
+/**
+ * Evergreen, factually-safe FAQs every Texas city hub can carry. Answer-first
+ * and city-interpolated so the text differs per page. Grounded in process
+ * facts (who pays a broker, typical timelines) + CRECO's own service model —
+ * no market stats that would go stale — so they're safe to publish sitewide
+ * and the kind of Q&A AI assistants cite. Page-specific faqs prepend to these.
+ */
+function baseCityFaqs(city: string): { q: string; a: string }[] {
+  return [
+    {
+      q: `Do I need a commercial real estate broker in ${city}, and who pays for one?`,
+      a: `As a tenant or buyer, representation in ${city} is almost always free to you — the landlord or seller pays the commission, and it's typically split whether or not you bring your own broker. So going unrepresented rarely saves money; it just means the listing broker is negotiating for the other side. CRECO represents your interests across the entire ${city} market, not one owner's building.`,
+    },
+    {
+      q: `How long does it take to lease or buy commercial property in ${city}?`,
+      a: `For a lease, plan on roughly 30–90 days from starting a focused search to signing — a second-generation space (already built out) moves fastest, while heavy build-out adds time. For a purchase, 60–120 days is typical once under contract, to allow for due diligence, financing, and closing. Defining your must-haves up front is the single biggest way to compress that timeline.`,
+    },
+    {
+      q: `What types of commercial property does CRECO handle in ${city}?`,
+      a: `Office, industrial and warehouse, retail, medical office, and flex space — for both lease and sale — plus land and investment property, including 1031-exchange replacements. We work all three sides of the market: tenant and buyer representation, owner services (leasing, management, disposition), and investment advisory across ${city} and the rest of Texas.`,
+    },
+    {
+      q: `What size deals does CRECO work on in ${city}?`,
+      a: `The same senior team handles a small suite and a multi-million-dollar investment sale — we don't hand smaller ${city} deals to junior staff after the pitch. Whether you're a business finding your first location, a growing tenant needing more room, or an owner with a portfolio, you get direct senior-broker attention.`,
+    },
+    {
+      q: `How do I get started with CRECO in ${city}?`,
+      a: `Tell us what you're trying to do — lease, buy, sell, or reposition — and we'll walk through your ${city} options with no pitch and no obligation. Use the "Get started" form or call (210) 817-3443. Not ready to talk yet? Set up property alerts and we'll email you when matching ${city} listings hit the market.`,
+    },
+  ];
 }
 
 export function CityHubPage({ config }: { config: CityHubConfig }) {
@@ -75,6 +115,7 @@ export function CityHubPage({ config }: { config: CityHubConfig }) {
   const crumbTrail = config.breadcrumbs && config.breadcrumbs.length > 0
     ? config.breadcrumbs
     : [{ label: config.city }];
+  const faqs = [...(config.faqs ?? []), ...baseCityFaqs(config.cityShort)];
   const schemas: Record<string, unknown>[] = pageUrl ? [
     {
       '@context': 'https://schema.org',
@@ -89,7 +130,7 @@ export function CityHubPage({ config }: { config: CityHubConfig }) {
       '@type': 'Article',
       '@id': `${pageUrl}#article`,
       headline: `${config.city} Commercial Real Estate — Market Overview`,
-      description: config.heroSubhead,
+      description: config.quickAnswer || config.heroSubhead,
       inLanguage: 'en-US',
       isAccessibleForFree: true,
       mainEntityOfPage: pageUrl,
@@ -118,6 +159,22 @@ export function CityHubPage({ config }: { config: CityHubConfig }) {
       ],
     },
   ] : [];
+
+  // FAQPage schema — always emitted (the baseline guarantees faqs.length > 0).
+  // The same questions render visibly below, which Google requires for FAQ rich
+  // results and which gives AI answer engines clean Q&A pairs to quote.
+  if (faqs.length > 0) {
+    schemas.push({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      ...(pageUrl ? { '@id': `${pageUrl}#faq` } : {}),
+      mainEntity: faqs.map(f => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    });
+  }
 
   return (
     <>
@@ -183,6 +240,20 @@ export function CityHubPage({ config }: { config: CityHubConfig }) {
                     {stat.context && <div className="text-caption opacity-70 mt-0.5">{stat.context}</div>}
                   </div>
                 ))}
+              </div>
+            </Container>
+          </section>
+        )}
+
+        {/* Answer-first summary — the concise snippet AI + featured results lift */}
+        {config.quickAnswer && (
+          <section className="bg-white border-b border-border py-8">
+            <Container>
+              <div className="max-w-3xl mx-auto flex items-start gap-3">
+                <TrendingUp className="h-5 w-5 text-gold shrink-0 mt-1" />
+                <p className="text-body-lg text-foreground leading-relaxed">
+                  <span className="font-semibold text-primary">In short:</span> {config.quickAnswer}
+                </p>
               </div>
             </Container>
           </section>
@@ -371,6 +442,29 @@ export function CityHubPage({ config }: { config: CityHubConfig }) {
                     </span>
                   </Link>
                 ))}
+              </div>
+            </Container>
+          </section>
+        )}
+
+        {/* FAQ — visible Q&A mirroring the FAQPage schema (required for rich
+            results) and giving AI answer engines clean pairs to quote. */}
+        {faqs.length > 0 && (
+          <section className="section-luxury bg-white" id="faq" aria-labelledby="faq-heading">
+            <Container>
+              <div className="max-w-3xl mx-auto">
+                <p className="overline mb-3">FAQ</p>
+                <h2 id="faq-heading" className="font-heading text-display-sm font-bold text-primary mb-8">
+                  {config.cityShort} commercial real estate — common questions
+                </h2>
+                <dl className="space-y-8">
+                  {faqs.map((f, i) => (
+                    <div key={i}>
+                      <dt className="font-heading text-heading-sm font-bold text-primary mb-2">{f.q}</dt>
+                      <dd className="text-body text-foreground leading-relaxed">{f.a}</dd>
+                    </div>
+                  ))}
+                </dl>
               </div>
             </Container>
           </section>
