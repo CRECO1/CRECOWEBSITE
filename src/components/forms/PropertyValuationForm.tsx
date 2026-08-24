@@ -320,36 +320,46 @@ export function PropertyValuationForm() {
             </p>
           </div>
 
-          {/* CTA to capture as lead */}
+          {/* CTA to capture as lead — lead with the concrete incremental value
+              so there's a reason to continue past the free number they already
+              have (the funnel showed ~all calc users leaving here). */}
           {!showLeadForm && !leadSubmitted && (
-            <button
-              type="button"
-              onClick={() => {
-                setShowLeadForm(true);
-                trackEvent('valuation_lead_form_opened', { property_type: propertyType });
-              }}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-gold px-6 py-3.5 text-body-sm font-semibold text-primary hover:bg-gold-light"
-            >
-              Get the full broker valuation <ArrowRight className="h-4 w-4" />
-            </button>
+            <div className="rounded-lg bg-primary/5 border border-gold/30 p-4 sm:p-5">
+              <p className="text-body-sm font-semibold text-primary mb-1">
+                This is a market-average estimate — your real number can sit 10–20% either side.
+              </p>
+              <p className="text-caption text-foreground-muted mb-4">
+                A senior broker adjusts it for your lease terms, tenant credit, condition, and recent comps from active CRECO deals, then sends you the full breakdown. Free, within one business day, no obligation.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowLeadForm(true);
+                  trackEvent('valuation_lead_form_opened', { property_type: propertyType });
+                }}
+                className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-gold px-6 py-3.5 text-body-sm font-semibold text-primary hover:bg-gold-light"
+              >
+                Send me the full broker valuation <ArrowRight className="h-4 w-4" />
+              </button>
+            </div>
           )}
 
           {showLeadForm && !leadSubmitted && (
             <form onSubmit={handleSubmitLead} className="space-y-4 rounded-lg bg-white border border-border p-5">
               <Honeypot />
-              <p className="text-body-sm text-primary font-semibold">Send me the full broker valuation</p>
+              <p className="text-body-sm text-primary font-semibold">Where should we send it?</p>
               <p className="text-caption text-foreground-muted -mt-2">
-                A senior CRECO broker will review your inputs, pull comps from active deals, and follow up within one business day. No charge, no obligation, no sales pitch unless you ask for one.
+                Just your name and email — a senior CRECO broker reviews your inputs, pulls comps, and follows up within one business day. No charge, no obligation.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <input type="text" required value={leadName} onChange={e => setLeadName(e.target.value)} placeholder="Your name" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold" />
                 <input type="email" required value={leadEmail} onChange={e => setLeadEmail(e.target.value)} placeholder="you@email.com" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold" />
               </div>
-              <input type="tel" required value={leadPhone} onChange={e => setLeadPhone(e.target.value)} placeholder="Phone" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold" />
-              <textarea value={leadNotes} onChange={e => setLeadNotes(e.target.value)} rows={3} placeholder="Anything else we should know? (timeline, current tenant situation, what you're considering)" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold" />
+              <input type="tel" value={leadPhone} onChange={e => setLeadPhone(e.target.value)} placeholder="Phone (optional — if you'd rather we call)" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold" />
+              <textarea value={leadNotes} onChange={e => setLeadNotes(e.target.value)} rows={3} placeholder="Anything else we should know? Timeline, tenant situation, what you're weighing — optional" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold" />
               {leadError && <p className="text-body-sm text-destructive">{leadError}</p>}
               <button type="submit" disabled={submittingLead} className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-body-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-60">
-                {submittingLead ? <><Loader2 className="h-4 w-4 animate-spin" /> Sending…</> : <>Request full valuation <ArrowRight className="h-4 w-4" /></>}
+                {submittingLead ? <><Loader2 className="h-4 w-4 animate-spin" /> Sending…</> : <>Send my full valuation <ArrowRight className="h-4 w-4" /></>}
               </button>
             </form>
           )}
