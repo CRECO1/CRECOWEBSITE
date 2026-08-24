@@ -78,7 +78,13 @@ export function BillingSearch() {
     }
     setLoading(true);
     const timer = setTimeout(async () => {
-      const like = `%${q.replace(/[%_]/g, m => '\\' + m)}%`;
+      // Wrap the value in PostgREST double-quotes so its reserved delimiters
+      // (comma / parens / dot) are treated as LITERAL text inside the .or()
+      // filter instead of being parsed as extra filter clauses — otherwise a
+      // search term like `x,client_email.ilike.*@*` injects conditions. Escape
+      // the two chars that are special inside PostgREST quotes: " and \.
+      const esc = q.replace(/["\\]/g, m => '\\' + m);
+      const like = `"%${esc}%"`;
       const [invR, expR, recR, conR] = await Promise.all([
         supabase
           .from('invoices')

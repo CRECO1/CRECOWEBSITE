@@ -46,8 +46,11 @@ export async function verifyRecaptcha(token: string | undefined | null): Promise
     }
     return { ok: true, score: data.score };
   } catch (err) {
-    // Network / Google outage — fail open so legitimate users aren't blocked
-    console.warn('reCAPTCHA verify failed; allowing through:', (err as Error).message);
-    return { ok: true, reason: 'verify-error' };
+    // Fail CLOSED on a verify error. Failing open let an attacker bypass the
+    // score check by inducing a timeout/error at Google's endpoint (or riding a
+    // transient outage) to fire unlimited bot submissions + the two Resend
+    // emails each triggers. A genuine user simply retries.
+    console.warn('reCAPTCHA verify failed; blocking:', (err as Error).message);
+    return { ok: false, reason: 'verify-error' };
   }
 }

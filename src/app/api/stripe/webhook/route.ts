@@ -183,7 +183,18 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       notes: notesStr,
       source: 'stripe',
     });
-  if (payErr) throw new Error(`invoice_payments insert failed: ${payErr.message}`);
+  if (payErr) {
+    // 23505 = unique_violation. The SELECT above is a best-effort fast path, but
+    // Stripe re-delivers the same event and two concurrent deliveries can both
+    // pass that check before either commits (a TOCTOU window widened by the
+    // payment-method Stripe API calls). The partial unique index on
+    // invoice_payments (invoice_id, notes) WHERE source='stripe' makes the DB
+    // the source of truth: a duplicate insert raises 23505, which we treat as an
+    // idempotent no-op rather than double-recording the payment (which the
+    // recalc trigger would sum into paid_amount = 2×total → false overpayment).
+    if ((payErr as { code?: string }).code === '23505') return;
+    throw new Error(`invoice_payments insert failed: ${payErr.message}`);
+  }
 }
 
 /**
