@@ -151,7 +151,34 @@ export default async function GuidePage({ params }: PageProps) {
                 ))}
               </div>
 
-              {/* Email gate + full content (client-side) */}
+              {/* Preview sections — server-rendered + UNGATED (market reports set
+                  previewSections>0). This is what makes the report's headline data
+                  indexable by Google and citable by AI answer engines, and gives
+                  readers real value before the gate so they don't bounce at a wall. */}
+              {(guide.previewSections ?? 0) > 0 && (
+                <div className="prose-creco mt-2">
+                  {guide.sections.slice(0, guide.previewSections).map((section, i) => (
+                    <section key={i} className="mb-10">
+                      <h2 className="font-heading text-heading-lg font-bold text-primary mt-10 mb-4">{section.heading}</h2>
+                      {section.paragraphs.map((p, j) => (
+                        <p key={j} className="text-body text-foreground leading-relaxed mb-4">{p}</p>
+                      ))}
+                      {section.bullets && (
+                        <ul className="space-y-2 mt-4 mb-4">
+                          {section.bullets.map((b, j) => (
+                            <li key={j} className="flex items-start gap-3 text-body text-foreground leading-relaxed">
+                              <span className="mt-2.5 h-1.5 w-1.5 rounded-full bg-gold shrink-0" />
+                              <span>{b}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </section>
+                  ))}
+                </div>
+              )}
+
+              {/* Email gate + remaining content (client-side) */}
               <GuideReader guide={guide} />
             </div>
           </Container>

@@ -16,6 +16,11 @@ import type { Guide } from '@/lib/guides';
 export function GuideReader({ guide }: { guide: Guide }) {
   const [unlocked, setUnlocked] = useState(false);
 
+  // Sections 0..previewSections are rendered ungated by the server page; the
+  // gate covers only what remains, so nothing is shown twice.
+  const preview = guide.previewSections ?? 0;
+  const gatedSections = preview > 0 ? guide.sections.slice(preview) : guide.sections;
+
   if (!unlocked) {
     return (
       <>
@@ -26,9 +31,11 @@ export function GuideReader({ guide }: { guide: Guide }) {
         />
         {/* Outline — visible to give users a sense of what's behind the gate (and helps SEO) */}
         <div className="rounded-xl border border-border bg-white p-6 sm:p-8">
-          <h3 className="font-heading text-heading-sm font-bold text-primary mb-4">What's inside</h3>
+          <h3 className="font-heading text-heading-sm font-bold text-primary mb-4">
+            {preview > 0 ? "What's in the rest of the report" : "What's inside"}
+          </h3>
           <ol className="space-y-3 list-decimal list-inside text-body-sm text-foreground-muted">
-            {guide.sections.map(s => (
+            {gatedSections.map(s => (
               <li key={s.heading} className="leading-relaxed">{s.heading}</li>
             ))}
           </ol>
@@ -39,7 +46,7 @@ export function GuideReader({ guide }: { guide: Guide }) {
 
   return (
     <div className="prose-creco">
-      {guide.sections.map((section, i) => (
+      {gatedSections.map((section, i) => (
         <section key={i} className="mb-10">
           <h2 className="font-heading text-heading-lg font-bold text-primary mt-10 mb-4">{section.heading}</h2>
           {section.paragraphs.map((p, j) => (

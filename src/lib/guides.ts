@@ -35,6 +35,14 @@ export interface Guide {
   outcomes: string[];
   /** Above-the-fold preview — visible without email */
   teaser: string[];
+  /**
+   * How many of the leading `sections` to render server-side and UNGATED
+   * (indexable + AI-citable + immediate reader value), before the email gate
+   * covers the rest. Default 0 = fully gated (playbooks keep their hard gate).
+   * Set to 1+ for market reports so their headline data isn't invisible to
+   * search + AI answer engines and readers don't bounce at a bare wall.
+   */
+  previewSections?: number;
   /** Full content — only rendered after email capture */
   sections: GuideSection[];
   conclusion: string[];
@@ -307,6 +315,7 @@ export const GUIDES: Guide[] = [
 
   {
     slug: 'q3-2026-texas-industrial-market-report',
+    previewSections: 1,
     title: 'Q3 2026 Texas Industrial Market Report',
     metaTitle: 'Q3 2026 Texas Industrial Market Report | Warehouse & Flex Cap Rates, Rents | CRECO',
     metaDescription:
@@ -420,6 +429,7 @@ export const GUIDES: Guide[] = [
 
   {
     slug: 'q3-2026-texas-retail-market-report',
+    previewSections: 1,
     title: 'Q3 2026 Texas Retail Market Report',
     metaTitle: 'Q3 2026 Texas Retail Market Report | Shop Rents, Cap Rates, Anchor Tenants | CRECO',
     metaDescription:
@@ -533,6 +543,7 @@ export const GUIDES: Guide[] = [
 
   {
     slug: 'q3-2026-texas-office-market-report',
+    previewSections: 1,
     title: 'Q3 2026 Texas Office Market Report',
     metaTitle: 'Q3 2026 Texas Office Market Report | Office Rents, Cap Rates, Sublease | CRECO',
     metaDescription:
@@ -646,6 +657,7 @@ export const GUIDES: Guide[] = [
 
   {
     slug: 'q3-2026-texas-investment-outlook-report',
+    previewSections: 1,
     title: 'Q3 2026 Texas CRE Investment Outlook',
     metaTitle: 'Q3 2026 Texas Commercial Real Estate Investment Outlook | CRECO',
     metaDescription:
@@ -753,6 +765,7 @@ export const GUIDES: Guide[] = [
 
   {
     slug: 'q2-2026-texas-industrial-market-report',
+    previewSections: 1,
     title: 'Q2 2026 Texas Industrial Market Report',
     metaTitle: 'Q2 2026 Texas Industrial Market Report | Warehouse & Flex Cap Rates, Rents | CRECO',
     metaDescription:
@@ -864,6 +877,7 @@ export const GUIDES: Guide[] = [
 
   {
     slug: 'q2-2026-texas-retail-market-report',
+    previewSections: 1,
     title: 'Q2 2026 Texas Retail Market Report',
     metaTitle: 'Q2 2026 Texas Retail Market Report | Shop Rents, Cap Rates, Anchor Tenants | CRECO',
     metaDescription:
@@ -974,6 +988,7 @@ export const GUIDES: Guide[] = [
 
   {
     slug: 'q2-2026-texas-office-market-report',
+    previewSections: 1,
     title: 'Q2 2026 Texas Office Market Report',
     metaTitle: 'Q2 2026 Texas Office Market Report | Office Rents, Cap Rates, Sublease | CRECO',
     metaDescription:
@@ -1086,6 +1101,7 @@ export const GUIDES: Guide[] = [
 
   {
     slug: 'q2-2026-texas-investment-outlook-report',
+    previewSections: 1,
     title: 'Q2 2026 Texas CRE Investment Outlook',
     metaTitle: 'Q2 2026 Texas Commercial Real Estate Investment Outlook | CRECO',
     metaDescription:
