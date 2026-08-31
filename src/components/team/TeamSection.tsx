@@ -19,10 +19,11 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { Phone, Mail, Award, User, X } from 'lucide-react';
+import { Phone, Mail, Award, User, X, ArrowRight, Send, Loader2, CheckCircle } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
+import { Honeypot } from '@/components/forms/Honeypot';
 import { supabase } from '@/lib/supabase';
-import { trackEvent } from '@/lib/analytics';
+import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
 
 const DEMO_AGENTS = [
   {
@@ -66,6 +67,17 @@ export function TeamSection({
   const [agents, setAgents] = useState<Agent[]>([]);
   const [selected, setSelected] = useState<Agent | null>(null);
 
+  // Broker-message capture (opened from inside the profile modal). Turns a
+  // profile view into a real lead routed to that broker, instead of relying on
+  // a mailto: that opens the visitor's email app and captures nothing.
+  const [showMessageForm, setShowMessageForm] = useState(false);
+  const [msgName, setMsgName] = useState('');
+  const [msgEmail, setMsgEmail] = useState('');
+  const [msgBody, setMsgBody] = useState('');
+  const [msgSubmitting, setMsgSubmitting] = useState(false);
+  const [msgSubmitted, setMsgSubmitted] = useState(false);
+  const [msgError, setMsgError] = useState<string | null>(null);
+
   useEffect(() => {
     supabase
       .from('agents')
@@ -79,6 +91,48 @@ export function TeamSection({
         }
       });
   }, []);
+
+  function openProfile(agent: Agent) {
+    trackEvent('team_profile_opened', { agent_slug: agent.slug, agent_name: agent.name });
+    // Fresh capture state each time a profile opens.
+    setShowMessageForm(false);
+    setMsgSubmitted(false);
+    setMsgError(null);
+    setSelected(agent);
+  }
+
+  async function handleBrokerMessage(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!selected) return;
+    setMsgError(null);
+    setMsgSubmitting(true);
+    try {
+      const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
+      if (honeypot) { setMsgSubmitted(true); setMsgSubmitting(false); return; }
+      const attribution = readUtmsFromCookie();
+      const res = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: msgName,
+          email: msgEmail,
+          message: `Message to ${selected.name} (${selected.title}) sent from their team profile:\n\n${msgBody || '(no message provided)'}`,
+          property_interest: `Broker: ${selected.name}`,
+          source: 'broker-profile',
+          website: honeypot,
+          ...attribution,
+        }),
+      });
+      if (!res.ok) throw new Error('Could not send your message — please try again.');
+      setMsgSubmitted(true);
+      trackEvent('broker_message_submitted', { agent_slug: selected.slug, agent_name: selected.name });
+    } catch (err) {
+      setMsgError((err as Error).message);
+      trackEvent('broker_message_failed', { reason: (err as Error).message?.slice(0, 80) });
+    } finally {
+      setMsgSubmitting(false);
+    }
+  }
 
   return (
     <section id="team" className={`scroll-mt-24 ${className}`}>
@@ -103,10 +157,7 @@ export function TeamSection({
           {agents.map((agent) => (
             <button
               key={agent.id}
-              onClick={() => {
-                trackEvent('team_profile_opened', { agent_slug: agent.slug, agent_name: agent.name });
-                setSelected(agent);
-              }}
+              onClick={() => openProfile(agent)}
               className="card-luxury group p-6 text-center w-full focus:outline-none focus:ring-2 focus:ring-gold rounded-2xl transition-all hover:-translate-y-1"
             >
               <div className="mx-auto mb-5 h-28 w-28 rounded-full bg-background-warm overflow-hidden">
@@ -223,22 +274,77 @@ export function TeamSection({
                 </div>
               )}
 
-              <div className="flex flex-col sm:flex-row gap-2">
-                {selected.phone && (
-                  <a
-                    href={`tel:${(selected.phone as string).replace(/\D/g, '')}`}
-                    className="flex-1 flex items-center justify-center gap-2 rounded-lg bg-primary px-3 py-2.5 text-caption font-semibold text-white hover:bg-primary/90 transition-colors"
-                  >
-                    <Phone className="h-3.5 w-3.5" /> {selected.phone as string}
-                  </a>
-                )}
-                <a
-                  href={`mailto:${selected.email}`}
-                  className="flex-1 flex items-center justify-center gap-2 rounded-lg border border-border px-3 py-2.5 text-caption font-semibold text-primary hover:border-gold hover:text-gold transition-colors"
-                >
-                  <Mail className="h-3.5 w-3.5" /> Email {(selected.name as string).split(' ')[0]}
-                </a>
-              </div>
+              {/* Contact — a real lead-capturing message form (primary), with
+                  direct phone/email as secondary options. The message routes to
+                  this broker and lands as a lead, unlike a bare mailto link. */}
+              {msgSubmitted ? (
+                <div className="rounded-lg bg-green-50 border border-green-200 p-4 text-center">
+                  <CheckCircle className="mx-auto h-8 w-8 text-green-700 mb-1.5" />
+                  <p className="text-body-sm font-semibold text-green-900">Message sent.</p>
+                  <p className="text-caption text-green-800">
+                    {selected.name.split(' ')[0]} will follow up shortly — usually the same day.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {!showMessageForm ? (
+                    <button
+                      type="button"
+                      onClick={() => setShowMessageForm(true)}
+                      className="w-full flex items-center justify-center gap-2 rounded-lg bg-gold px-4 py-2.5 text-caption font-semibold text-primary hover:bg-gold-light transition-colors"
+                    >
+                      Message {selected.name.split(' ')[0]} <ArrowRight className="h-3.5 w-3.5" />
+                    </button>
+                  ) : (
+                    <form onSubmit={handleBrokerMessage} className="space-y-2.5 rounded-lg border border-border bg-background-cream/40 p-3">
+                      <Honeypot />
+                      <p className="text-caption text-foreground-muted">
+                        Send {selected.name.split(' ')[0]} a note — the reply comes straight to your inbox.
+                      </p>
+                      <input
+                        type="text" required value={msgName} onChange={(e) => setMsgName(e.target.value)}
+                        placeholder="Your name"
+                        className="w-full rounded-lg border border-border bg-white px-3 py-2 text-caption text-primary focus:outline-none focus:border-gold"
+                      />
+                      <input
+                        type="email" required value={msgEmail} onChange={(e) => setMsgEmail(e.target.value)}
+                        placeholder="you@email.com"
+                        className="w-full rounded-lg border border-border bg-white px-3 py-2 text-caption text-primary focus:outline-none focus:border-gold"
+                      />
+                      <textarea
+                        rows={3} value={msgBody} onChange={(e) => setMsgBody(e.target.value)}
+                        placeholder={`What can ${selected.name.split(' ')[0]} help with? (property, timeline, question)`}
+                        className="w-full rounded-lg border border-border bg-white px-3 py-2 text-caption text-primary focus:outline-none focus:border-gold"
+                      />
+                      {msgError && <p className="text-caption text-red-500">{msgError}</p>}
+                      <button
+                        type="submit" disabled={msgSubmitting}
+                        className="w-full flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-caption font-semibold text-white hover:bg-primary/90 disabled:opacity-60 transition-colors"
+                      >
+                        {msgSubmitting ? <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Sending…</> : <>Send message <Send className="h-3.5 w-3.5" /></>}
+                      </button>
+                    </form>
+                  )}
+
+                  {/* Direct lines — secondary */}
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    {selected.phone && (
+                      <a
+                        href={`tel:${(selected.phone as string).replace(/\D/g, '')}`}
+                        className="flex-1 flex items-center justify-center gap-2 rounded-lg border border-border px-3 py-2 text-caption font-semibold text-foreground-muted hover:border-gold hover:text-gold transition-colors"
+                      >
+                        <Phone className="h-3.5 w-3.5" /> Call
+                      </a>
+                    )}
+                    <a
+                      href={`mailto:${selected.email}`}
+                      className="flex-1 flex items-center justify-center gap-2 rounded-lg border border-border px-3 py-2 text-caption font-semibold text-foreground-muted hover:border-gold hover:text-gold transition-colors"
+                    >
+                      <Mail className="h-3.5 w-3.5" /> Email
+                    </a>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
