@@ -215,16 +215,14 @@ export function TeamSection({
               <X className="h-5 w-5" />
             </button>
 
-            {/* aspect-[3/4] gives the photo area a proper portrait
-                frame — for the ~384px-wide modal card that's ~512px
-                tall, matching typical headshot source aspect. object-
-                cover object-top keeps the crown of the head at the
-                top of the frame, and the taller frame means the suit
-                + shoulders (previously cropped even with h-72) are
-                fully visible. Iterated up from h-40 → h-72 → this
-                aspect-based sizing because fixed heights were still
-                cropping when the source was more portrait-heavy. */}
-            <div className="relative w-full aspect-[3/4] bg-background-warm">
+            {/* Square headshot crop (was aspect-[3/4], a ~512px-tall portrait
+                that dominated the card). aspect-square (~384px on the ~384px-wide
+                modal) is meaningfully shorter, so the name, bio, specialties, and
+                message form sit higher and more is visible without scrolling —
+                owner preference to weight the text over the photo. object-cover
+                object-top keeps the face framed at the top as the lower torso
+                crops out. */}
+            <div className="relative w-full aspect-square bg-background-warm">
               {selected.image_url ? (
                 <Image
                   src={selected.image_url as string}
