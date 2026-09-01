@@ -8,6 +8,7 @@ import { CompareBar } from '@/components/listings/CompareBar';
 import { ChatWidget } from '@/components/chat/ChatWidget';
 import { RecaptchaScript } from '@/components/forms/Recaptcha';
 import { UtmCapture } from '@/components/analytics/UtmCapture';
+import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 // ExitIntentModal removed from the global layout per owner request (the
 // "Before you go — get our Q2 Texas market report" popup felt
 // aggressive). The component file at @/components/marketing/ExitIntentModal
@@ -249,21 +250,11 @@ export default function RootLayout({
             }),
           }}
         />
+        {/* GA loads only on the production hostnames (crecotx.com) — never on
+            Vercel preview/deploy URLs or localhost, which otherwise leaked into
+            the GA4 property. See GoogleAnalytics. */}
         {process.env.NEXT_PUBLIC_GA_ID && (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
-              strategy="afterInteractive"
-            />
-            <Script id="google-analytics" strategy="afterInteractive">
-              {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}');
-              `}
-            </Script>
-          </>
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
         )}
         {process.env.NEXT_PUBLIC_CLARITY_ID && (
           <Script id="microsoft-clarity" strategy="afterInteractive">
