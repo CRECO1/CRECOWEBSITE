@@ -4,6 +4,7 @@ import { ArrowRight, Phone, ShieldCheck, TrendingUp, Calculator, Building2 } fro
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { PropertyValuationForm } from '@/components/forms/PropertyValuationForm';
+import { jsonLd } from '@/lib/jsonLd';
 
 export const metadata: Metadata = {
   title: "What's My Commercial Property Worth? | Free Texas CRE Valuation | CRECO",
@@ -56,9 +57,58 @@ const TRUST = [
   'Your inputs stay confidential — never shared, never sold',
 ];
 
+// Answer-first, Texas-specific FAQ — the substantive, indexable content that
+// helps this page (28% of the site's search impressions but stuck on page 3)
+// rank for valuation queries, and gives AI answer engines clean pairs to cite.
+const FAQS: { q: string; a: string }[] = [
+  {
+    q: 'How is commercial property valued?',
+    a: "Most income-producing commercial real estate is valued with the income approach: divide the property's annual net operating income (NOI) by a market capitalization (“cap”) rate. If a building nets $200,000 a year and comparable properties trade at an 8% cap rate, its indicated value is $200,000 ÷ 0.08 = $2.5 million. Owner-user and special-use properties lean more on the sales-comparison or cost approaches, but for leased retail, industrial, office, and flex, the income approach drives the number.",
+  },
+  {
+    q: 'What is a cap rate, and how does it affect value?',
+    a: "A capitalization rate is the ratio of a property's annual net operating income to its price — effectively the unleveraged yield a buyer accepts. Lower cap rates mean higher prices (buyers pay more per dollar of income for lower-risk assets); higher cap rates mean lower prices. Cap rates move with interest rates, tenant credit, lease term, location, and condition, which is why the same NOI can support very different values.",
+  },
+  {
+    q: 'What cap rates is Texas commercial real estate trading at in 2026?',
+    a: "As a rough 2026 guide for stabilized Texas assets: industrial and multi-tenant retail generally trade around 6.5–8.5%, single-tenant net-lease depends heavily on tenant credit and remaining term, and Class B office is wider at roughly 8–10%+. Value-add, distressed, or special-use properties trade outside these bands. Our tool applies current ranges by property type and submarket tier — the right cap rate for your specific asset still depends on lease structure and condition.",
+  },
+  {
+    q: 'How accurate is an instant online valuation versus a broker appraisal?',
+    a: "An instant range is a directional starting point — it tells you whether your asset is roughly where you think it is. It can't see your actual lease terms, tenant credit, deferred maintenance, recent comparable sales, or current buyer demand, all of which routinely move the number 10–20% either way. A full broker valuation or formal appraisal accounts for those. Use the instant range to ground the conversation, not to set a list price.",
+  },
+  {
+    q: 'What information do I need to value my commercial property?',
+    a: "At minimum, the property type and submarket. For an income-based estimate, your annual net operating income (NOI) gives the tightest result; if you don't have NOI handy, gross income — or square footage plus approximate rent per SF — works too. The more accurate your income figure, the tighter the range.",
+  },
+  {
+    q: 'Does property type change how value is calculated?',
+    a: "The income approach applies across industrial, retail, office, flex, and mixed-use, but each type carries different market cap rates and value drivers. Industrial value hinges on clear height, dock access, and location on distribution corridors; retail on tenant mix, co-tenancy, and traffic; office on class, submarket, and lease term. The tool applies the appropriate cap-rate band for the type you select.",
+  },
+  {
+    q: 'How does location affect commercial property value in Texas?',
+    a: "Submarket is one of the biggest value levers. The same building supports a different price in a primary submarket (strong demand, lower cap rates) than in a secondary or tertiary one. Texas metros each have their own dynamics — Class A office in Stone Oak or the Domain prices very differently from Class B space downtown. The tool asks for a submarket tier so the estimate reflects that.",
+  },
+  {
+    q: 'Is the valuation free, and what happens after?',
+    a: "Yes — the instant range is free and requires no contact information to see the number. If you'd like a full broker valuation (a property walkthrough, comps, lease and condition analysis, and market-timing guidance), a senior CRECO broker follows up at no charge and no obligation — useful if you're weighing a sale or a 1031 exchange.",
+  },
+];
+
 export default function PropertyValuationPage() {
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    '@id': 'https://www.crecotx.com/property-valuation#faq',
+    mainEntity: FAQS.map(f => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  };
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(faqSchema) }} />
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}
@@ -142,6 +192,27 @@ export default function PropertyValuationPage() {
                   <p className="text-body-sm text-foreground-muted leading-relaxed">{body}</p>
                 </div>
               ))}
+            </div>
+          </Container>
+        </section>
+
+        {/* FAQ — answer-first content mirroring the FAQPage schema (indexable +
+            AI-citable), targeting commercial-property-valuation search intent. */}
+        <section className="section-luxury bg-background-cream" id="faq" aria-labelledby="val-faq-heading">
+          <Container>
+            <div className="max-w-3xl mx-auto">
+              <p className="overline mb-3">FAQ</p>
+              <h2 id="val-faq-heading" className="font-heading text-display-sm font-bold text-primary mb-8">
+                Commercial property valuation in Texas — common questions
+              </h2>
+              <dl className="space-y-8">
+                {FAQS.map((f, i) => (
+                  <div key={i}>
+                    <dt className="font-heading text-heading-sm font-bold text-primary mb-2">{f.q}</dt>
+                    <dd className="text-body text-foreground leading-relaxed">{f.a}</dd>
+                  </div>
+                ))}
+              </dl>
             </div>
           </Container>
         </section>

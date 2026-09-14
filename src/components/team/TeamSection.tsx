@@ -19,7 +19,7 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { Phone, Mail, Award, User, X, ArrowRight, Send, Loader2, CheckCircle } from 'lucide-react';
+import { Phone, Award, User, X, ArrowRight, Send, Loader2, CheckCircle, MessageSquare } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { Honeypot } from '@/components/forms/Honeypot';
 import { supabase } from '@/lib/supabase';
@@ -253,6 +253,27 @@ export function TeamSection({
                 </div>
               )}
 
+              {/* Quick contact — one tap, placed high so it's visible without
+                  scrolling past the bio (where the message form lives, and where
+                  17 profile-viewers produced 0 messages). Call/Text are the
+                  lowest-friction path for a form-averse audience. */}
+              {selected.phone && !msgSubmitted && (
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                  <a
+                    href={`tel:${(selected.phone as string).replace(/\D/g, '')}`}
+                    className="flex items-center justify-center gap-2 rounded-lg border border-gold px-3 py-2.5 text-caption font-semibold text-gold-dark hover:bg-gold/10 transition-colors"
+                  >
+                    <Phone className="h-3.5 w-3.5" /> Call {selected.name.split(' ')[0]}
+                  </a>
+                  <a
+                    href={`sms:${(selected.phone as string).replace(/\D/g, '')}`}
+                    className="flex items-center justify-center gap-2 rounded-lg border border-gold px-3 py-2.5 text-caption font-semibold text-gold-dark hover:bg-gold/10 transition-colors"
+                  >
+                    <MessageSquare className="h-3.5 w-3.5" /> Text
+                  </a>
+                </div>
+              )}
+
               {selected.bio && (
                 <p className="text-body-sm text-foreground-muted leading-relaxed mb-4">
                   {selected.bio as string}
@@ -323,24 +344,6 @@ export function TeamSection({
                       </button>
                     </form>
                   )}
-
-                  {/* Direct lines — secondary */}
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    {selected.phone && (
-                      <a
-                        href={`tel:${(selected.phone as string).replace(/\D/g, '')}`}
-                        className="flex-1 flex items-center justify-center gap-2 rounded-lg border border-border px-3 py-2 text-caption font-semibold text-foreground-muted hover:border-gold hover:text-gold transition-colors"
-                      >
-                        <Phone className="h-3.5 w-3.5" /> Call
-                      </a>
-                    )}
-                    <a
-                      href={`mailto:${selected.email}`}
-                      className="flex-1 flex items-center justify-center gap-2 rounded-lg border border-border px-3 py-2 text-caption font-semibold text-foreground-muted hover:border-gold hover:text-gold transition-colors"
-                    >
-                      <Mail className="h-3.5 w-3.5" /> Email
-                    </a>
-                  </div>
                 </div>
               )}
             </div>
