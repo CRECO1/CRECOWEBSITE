@@ -58,6 +58,7 @@ const SOURCE_TO_LABEL: Record<string, string> = {
   'buyer-inquiry':     'CRECO Website — Buyer / Investor',
   'pm-inquiry':        'CRECO Website — Property Management',
   'agent-application': 'CRECO Website — Agent Application',
+  'market-report':     'CRECO Website — Market Report',
   'exploring':         'CRECO Website — Exploring',
   'contact':           'CRECO Website — Contact Form',
   'listing':           'CRECO Website — Listing Inquiry',
@@ -143,6 +144,9 @@ function buildTags(p: CrmPayload): string[] {
   const tags = ['New Lead', 'Website', 'CRECO'];
   if (p.event === 'tour.requested')       tags.push('Tour Scheduled');
   if (p.event === 'valuation.requested')  tags.push('Valuation Tool');
+  // Quarterly market-report opt-ins — a distinct tag so they can be segmented
+  // and enrolled in the recurring market-report campaign.
+  if (p.source === 'market-report')       tags.push('Market Report');
   if (p.event === 'subscriber.created') {
     if (p.subscription_type === 'lead-magnet')       tags.push('Lead Magnet');
     else if (p.subscription_type === 'property-alerts') tags.push('Property Alerts');
