@@ -8,6 +8,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
     { url: BASE_URL,                                  lastModified: new Date(), changeFrequency: 'daily',   priority: 1.0  },
     { url: `${BASE_URL}/listings`,                    lastModified: new Date(), changeFrequency: 'daily',   priority: 0.95 },
+    // Highest-impression organic page on the site (valuation tool + FAQ) — was
+    // missing from the sitemap; add it explicitly so Google prioritizes crawling.
+    { url: `${BASE_URL}/property-valuation`,          lastModified: new Date(), changeFrequency: 'weekly',  priority: 0.92 },
     // High-priority keyword landing pages
     { url: `${BASE_URL}/texas-retail-space-for-lease`,        lastModified: new Date(), changeFrequency: 'weekly', priority: 0.95 },
     { url: `${BASE_URL}/texas-industrial-property-for-lease`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.95 },
