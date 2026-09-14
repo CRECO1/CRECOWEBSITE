@@ -28,6 +28,7 @@
 import { useState } from 'react';
 import { ArrowRight, CheckCircle, TrendingUp } from 'lucide-react';
 import { Honeypot } from '@/components/forms/Honeypot';
+import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
 
 interface MarketReportCaptureProps {
@@ -81,6 +82,10 @@ export function MarketReportCapture({
       // placeholder so the broker can still recognize who subscribed.
       const namePlaceholder = email.split('@')[0]?.slice(0, 40) || 'Market Report Subscriber';
       const utms = readUtmsFromCookie();
+      // /api/leads gates on reCAPTCHA when RECAPTCHA_SECRET_KEY is set; without a
+      // token every submission 400s ("Spam check failed"), which is why this
+      // low-friction capture was silently rejecting everyone. Match the other forms.
+      const recaptchaToken = await getRecaptchaToken('subscribe_market_report');
       const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -89,6 +94,7 @@ export function MarketReportCapture({
           email,
           source: 'market-report',
           message: `Subscribed to the quarterly Texas commercial market report from ${surface}.`,
+          recaptchaToken,
           ...utms,
         }),
       });
