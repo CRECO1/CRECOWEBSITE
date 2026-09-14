@@ -38,6 +38,7 @@ import { GET as runValuationFollowup }  from '../valuation-followup/route';
 import { GET as runTourFollowup }       from '../tour-followup/route';
 import { GET as runLeadFollowup }       from '../lead-followup/route';
 import { GET as runGeocodeListings }    from '../geocode-listings/route';
+import { GET as runMarketReport }       from '../market-report/route';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -80,6 +81,10 @@ const SUB_CRONS = [
   // /api/cron/lead-followup/route.ts for the design + gating logic.
   { name: 'lead-followup',       handler: runLeadFollowup },
   { name: 'geocode-listings',    handler: runGeocodeListings },
+  // Quarterly market report — no-ops daily unless the "Quarterly Market Report"
+  // CRM campaign has a Send Date that's due; then emails the current subscriber
+  // segment and clears the date. See /api/cron/market-report/route.ts.
+  { name: 'market-report',       handler: runMarketReport },
 ] as const;
 
 export async function GET(req: NextRequest) {
