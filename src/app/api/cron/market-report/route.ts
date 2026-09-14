@@ -49,6 +49,31 @@ function crmClient() {
   return createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } });
 }
 
+type Crm = NonNullable<ReturnType<typeof crmClient>>;
+
+/**
+ * crm_campaign_sends.enrollment_id is NOT NULL — the send-log is modeled
+ * around enrollments. This cron targets a DYNAMIC segment (no manual
+ * enrollment), so we lazily materialize a passive enrollment row per
+ * recipient (active:false) the first time we log a send to them. Idempotent:
+ * reuses the existing enrollment on later quarters. Returns null on failure —
+ * logging is best-effort and must never block the actual email.
+ */
+async function ensureEnrollment(supabase: Crm, campaignId: string, clientId: string): Promise<string | null> {
+  const { data: existing } = await supabase
+    .from('crm_campaign_enrollments')
+    .select('id')
+    .eq('campaign_id', campaignId)
+    .eq('client_id', clientId)
+    .limit(1);
+  if (existing && existing.length) return existing[0].id as string;
+  const { data: created } = await supabase
+    .from('crm_campaign_enrollments')
+    .insert([{ campaign_id: campaignId, client_id: clientId, active: false }])
+    .select('id');
+  return created?.[0]?.id ?? null;
+}
+
 interface Recipient {
   id: string;
   first_name: string | null;
@@ -140,12 +165,18 @@ export async function GET(req: NextRequest) {
       const subject = applyMerge(campaign.email_subject || 'CRECO — Texas Commercial Market Report', c);
       const result = await resend.emails.send({ from, to: c.email, subject, html, replyTo: 'zack@crecotx.com' });
       sent++;
-      // Best-effort send log so it shows in the CRM; ignore schema mismatches.
+      // Best-effort send log so it shows in the CRM campaign history. Requires
+      // an enrollment_id (NOT NULL) — materialize a passive one if needed.
+      // Never let a logging failure surface as a send failure.
       try {
-        await supabase.from('crm_campaign_sends').insert([{
-          campaign_id: campaign.id, client_id: c.id, type: 'email', status: 'sent',
-          provider_id: result.data?.id ?? null,
-        }]);
+        const enrollmentId = await ensureEnrollment(supabase, campaign.id, c.id);
+        if (enrollmentId) {
+          await supabase.from('crm_campaign_sends').insert([{
+            campaign_id: campaign.id, client_id: c.id, enrollment_id: enrollmentId,
+            type: 'email', status: 'sent', subject,
+            provider_id: result.data?.id ?? null,
+          }]);
+        }
       } catch { /* no-op */ }
     } catch (e) {
       errors.push({ email: c.email, error: (e as Error).message?.slice(0, 140) ?? 'send failed' });
