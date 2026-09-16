@@ -5,6 +5,7 @@ import { verifyRecaptcha } from '@/lib/recaptcha';
 import { escapeHtml, clampString, isValidEmail, safePhone, MAX_LEN } from '@/lib/sanitize';
 import { pushToCrm } from '@/lib/crm';
 import { enforceRateLimit } from '@/lib/rate-limit';
+import { scoreLead, tierSubjectLabel, tierColor } from '@/lib/lead-score';
 
 const NOTIFICATION_EMAIL = process.env.LEAD_NOTIFICATION_EMAIL ?? 'info@crecotx.com';
 
@@ -237,16 +238,49 @@ export async function POST(req: NextRequest) {
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
 
+      // Triage score — computed from signals we already captured (source,
+      // phone, company, message, attribution). Drives the subject line +
+      // banner so the broker can prioritize hot leads from the inbox list.
+      // Prospect never sees this; it's an internal signal only.
+      const lead = scoreLead({ source, phone, company, message, property_interest, utm_medium });
+      const tc = tierColor(lead.tier);
+      const telHref = phone ? 'tel:' + phone.replace(/[^\d+]/g, '') : null;
+      const attribution = [utm_source, utm_medium, utm_campaign].filter(Boolean).join(' / ');
+
+      const reasonsHtml = lead.reasons.length
+        ? `<ul style="margin:8px 0 0;padding-left:18px;color:${tc.fg};font-size:12px;line-height:1.6">${lead.reasons.map(r => `<li>${escapeHtml(r)}</li>`).join('')}</ul>`
+        : '';
+      const bannerHtml = `
+        <div style="background:${tc.bg};color:${tc.fg};border-radius:10px;padding:14px 16px;margin:0 0 16px">
+          <div style="font-size:15px;font-weight:700;letter-spacing:0.02em">${tc.label} &nbsp;·&nbsp; score ${lead.score}/100</div>
+          ${reasonsHtml}
+        </div>`;
+      // One-tap actions so the broker can act inside 5 minutes — the single
+      // biggest lever on CRE lead conversion.
+      const ctaHtml = `
+        <div style="margin:0 0 18px">
+          ${telHref ? `<a href="${telHref}" style="display:inline-block;padding:11px 20px;margin:0 8px 8px 0;background:#B42318;color:#fff;text-decoration:none;border-radius:6px;font-weight:700;font-size:14px">&#9742; Call ${escapeHtml(phone)}</a>` : ''}
+          <a href="mailto:${escapeHtml(email)}?subject=${encodeURIComponent('Re: your CRECO inquiry')}" style="display:inline-block;padding:11px 20px;margin:0 8px 8px 0;background:#1A1A1A;color:#fff;text-decoration:none;border-radius:6px;font-weight:700;font-size:14px">&#9993; Reply by email</a>
+        </div>`;
+
+      // Inbox-scannable subject. Hot leads with a phone shout "call now".
+      const subjectBase = `${tierSubjectLabel(lead.tier, lead.isRecruiting)}: ${name} — ${source}`;
+      const subject = lead.tier === 'hot' && telHref ? `${subjectBase} · call now` : subjectBase;
+
       // All interpolated values escaped — even though our broker is the only
       // recipient of the notification, we don't want a malicious submission
-      // to be able to inject markup into the inbox view.
+      // to be able to inject markup into the inbox view. replyTo=lead's email
+      // so the broker can just hit Reply to respond to the prospect directly.
       await resend.emails.send({
         from: getFromEmail(),
         to: NOTIFICATION_EMAIL,
-        subject: `New Lead: ${name} — ${source}`,
+        replyTo: email,
+        subject,
         html: `
           <div style="font-family:sans-serif;max-width:600px">
-            <h2 style="color:#1A1A1A">New Lead — CRECO</h2>
+            ${bannerHtml}
+            <h2 style="color:#1A1A1A;margin:0 0 12px">New Lead — CRECO</h2>
+            ${ctaHtml}
             <table style="border-collapse:collapse;width:100%">
               <tr><td style="padding:8px 12px;font-weight:bold;background:#FAFAF8;border:1px solid #E8E5E0">Name</td><td style="padding:8px 12px;border:1px solid #E8E5E0">${escapeHtml(name)}</td></tr>
               ${company ? `<tr><td style="padding:8px 12px;font-weight:bold;background:#FAFAF8;border:1px solid #E8E5E0">Company</td><td style="padding:8px 12px;border:1px solid #E8E5E0">${escapeHtml(company)}</td></tr>` : ''}
@@ -254,6 +288,7 @@ export async function POST(req: NextRequest) {
               <tr><td style="padding:8px 12px;font-weight:bold;background:#FAFAF8;border:1px solid #E8E5E0">Phone</td><td style="padding:8px 12px;border:1px solid #E8E5E0">${escapeHtml(phone || '—')}</td></tr>
               <tr><td style="padding:8px 12px;font-weight:bold;background:#FAFAF8;border:1px solid #E8E5E0">Source</td><td style="padding:8px 12px;border:1px solid #E8E5E0">${escapeHtml(source)}</td></tr>
               ${property_interest ? `<tr><td style="padding:8px 12px;font-weight:bold;background:#FAFAF8;border:1px solid #E8E5E0">Property</td><td style="padding:8px 12px;border:1px solid #E8E5E0">${escapeHtml(property_interest)}</td></tr>` : ''}
+              ${attribution ? `<tr><td style="padding:8px 12px;font-weight:bold;background:#FAFAF8;border:1px solid #E8E5E0">Attribution</td><td style="padding:8px 12px;border:1px solid #E8E5E0">${escapeHtml(attribution)}</td></tr>` : ''}
               ${message ? `<tr><td style="padding:8px 12px;font-weight:bold;background:#FAFAF8;border:1px solid #E8E5E0">Message</td><td style="padding:8px 12px;border:1px solid #E8E5E0;white-space:pre-line">${escapeHtml(message)}</td></tr>` : ''}
             </table>
           </div>
