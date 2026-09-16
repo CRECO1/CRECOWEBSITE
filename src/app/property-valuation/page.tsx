@@ -5,6 +5,7 @@ import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { PropertyValuationForm } from '@/components/forms/PropertyValuationForm';
 import { TrustStrip } from '@/components/marketing/TrustStrip';
+import { Testimonials } from '@/components/marketing/Testimonials';
 import { jsonLd } from '@/lib/jsonLd';
 
 export const metadata: Metadata = {
@@ -222,6 +223,15 @@ export default function PropertyValuationPage() {
             </div>
           </Container>
         </section>
+
+        {/* Real client testimonials right before the final ask — the strongest
+            social proof lands closest to the conversion point. Renders nothing
+            if there are no featured testimonials. */}
+        <Testimonials
+          eyebrow="Client Stories"
+          heading="Owners who trusted our read on value"
+          bg="bg-white"
+        />
 
         {/* Final CTA */}
         <section className="bg-primary py-16 text-white">
