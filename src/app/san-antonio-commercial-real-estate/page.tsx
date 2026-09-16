@@ -152,19 +152,19 @@ export default function SanAntonioPage() {
         propertyLinks: [
           {
             label: 'Industrial / warehouse for lease',
-            href: '/texas-industrial-property-for-lease',
+            href: '/san-antonio-industrial-space',
             description:
               'Modern bulk distribution, manufacturing, flex, and special-use industrial across the South Side, Schertz/Cibolo, and the I-35 corridor.',
           },
           {
-            label: 'Office space for lease — Texas',
-            href: '/texas-office-space-for-lease',
+            label: 'Office space for lease',
+            href: '/san-antonio-office-space',
             description:
               'Class A office in Stone Oak and Westover Hills, creative office at the Pearl, and Class B value across downtown San Antonio.',
           },
           {
             label: 'Retail space for lease',
-            href: '/texas-retail-space-for-lease',
+            href: '/san-antonio-retail-space',
             description:
               'San Antonio retail — Stone Oak strip and power centers, Pearl-area street retail, Riverwalk inline, and master-planned community pad sites.',
           },

@@ -30,8 +30,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // marketplaces (LoopNet / Crexi) don't optimize for. Expand to the
     // full 15-page set as the Q3 2026 data refresh lands.
     { url: `${BASE_URL}/san-antonio-office-space`,             lastModified: new Date(), changeFrequency: 'weekly', priority: 0.92 },
+    { url: `${BASE_URL}/san-antonio-industrial-space`,         lastModified: new Date(), changeFrequency: 'weekly', priority: 0.92 },
+    { url: `${BASE_URL}/san-antonio-retail-space`,             lastModified: new Date(), changeFrequency: 'weekly', priority: 0.92 },
     { url: `${BASE_URL}/houston-industrial-space`,             lastModified: new Date(), changeFrequency: 'weekly', priority: 0.92 },
     { url: `${BASE_URL}/austin-office-space`,                  lastModified: new Date(), changeFrequency: 'weekly', priority: 0.92 },
+    { url: `${BASE_URL}/dallas-industrial-space`,              lastModified: new Date(), changeFrequency: 'weekly', priority: 0.92 },
     // CRECO development — 8000 Fair Oaks Pkwy
     { url: `${BASE_URL}/8000-fair-oaks-pkwy`,                  lastModified: new Date(), changeFrequency: 'weekly', priority: 0.95 },
     // CRECO development — 8979 Dietz Elkhorn (Fair Oaks Ranch retail, pre-leasing)

@@ -129,7 +129,7 @@ export default function DallasPage() {
           },
         ],
         propertyLinks: [
-          { label: 'Industrial / warehouse for lease', href: '/texas-industrial-property-for-lease', description: 'Modern bulk distribution and flex across DFW Airport, Alliance, and Mesquite/Lancaster corridors.' },
+          { label: 'Industrial / warehouse for lease', href: '/dallas-industrial-space', description: 'Modern bulk distribution and flex across DFW Airport, Alliance, and Mesquite/Lancaster corridors.' },
           { label: 'Office space for lease — Texas', href: '/texas-office-space-for-lease', description: 'Uptown Dallas trophy, Frisco corporate, and Class B value office across the Metroplex.' },
           { label: 'Retail space for lease', href: '/texas-retail-space-for-lease', description: 'DFW retail — master-planned community centers, urban retail, and pad sites across the Metroplex.' },
           { label: 'Commercial property for sale', href: '/texas-commercial-property-for-sale', description: 'Texas commercial property for sale — investment, owner-user, and 1031 replacement opportunities.' },
