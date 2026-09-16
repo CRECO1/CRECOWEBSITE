@@ -18,9 +18,13 @@ const STEPS = [
   { number: '05', title: 'Diligence to Close', description: 'We coordinate with your attorney, accountant, lender, and the buyer\'s diligence team — and we don\'t disappear after the contract is signed.' },
 ];
 
+// Keep these in sync with the operator-set values in site_settings
+// (stat_sf_transacted, stat_years_experience, stat_active_listings,
+// stat_satisfaction) — the same source the homepage TrustStrip reads.
+// Years was previously a stale hardcoded "15+"; the operator value is 25.
 const STATS = [
   { icon: TrendingUp, value: '2.4M+', label: 'SF Transacted' },
-  { icon: Building2, value: '15+', label: 'Years in San Antonio' },
+  { icon: Building2, value: '25+', label: 'Years in Texas CRE' },
   { icon: FileText, value: '30+', label: 'Active Listings' },
   { icon: Users, value: '98%', label: 'Client Satisfaction' },
 ];

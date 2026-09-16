@@ -29,13 +29,20 @@ import { supabase } from '@/lib/supabase';
 interface TrustData {
   activeListings: number;
   yearsExperience: number;
-  propertiesClosed: number;
+  sfTransacted: string;
 }
 
 async function loadTrustData(): Promise<TrustData> {
   // Run both queries in parallel — they touch different tables and the
   // strip needs both to render. Fallbacks ensure a soft-degraded display
   // if either query fails so we never render with placeholder zeros.
+  //
+  // NOTE: these column names are the source of truth in site_settings
+  // (operator-curated in the CMS). A previous version queried
+  // `stat_homes_sold`, which does not exist — PostgREST failed the whole
+  // select, so BOTH stats silently fell back to hardcoded 200/15 instead
+  // of the real operator values (2.4M SF / 25 yrs). Keep these in sync
+  // with the actual site_settings schema.
   const [activeResult, settingsResult] = await Promise.all([
     supabase
       .from('listings')
@@ -43,15 +50,15 @@ async function loadTrustData(): Promise<TrustData> {
       .in('status', ['active', 'pending']),
     supabase
       .from('site_settings')
-      .select('stat_homes_sold, stat_years_experience')
+      .select('stat_sf_transacted, stat_years_experience')
       .eq('id', 1)
       .maybeSingle(),
   ]);
 
   return {
     activeListings: activeResult.count ?? 0,
-    yearsExperience: settingsResult.data?.stat_years_experience ?? 15,
-    propertiesClosed: settingsResult.data?.stat_homes_sold ?? 200,
+    yearsExperience: settingsResult.data?.stat_years_experience ?? 25,
+    sfTransacted: settingsResult.data?.stat_sf_transacted ?? '2.4M',
   };
 }
 
@@ -63,7 +70,7 @@ export async function TrustStrip() {
     // If the DB is unreachable at render time, fall back to brand-safe
     // defaults rather than crashing the page. Trust strip must never
     // break the homepage.
-    data = { activeListings: 0, yearsExperience: 15, propertiesClosed: 200 };
+    data = { activeListings: 0, yearsExperience: 25, sfTransacted: '2.4M' };
   }
 
   return (
@@ -86,8 +93,8 @@ export async function TrustStrip() {
           />
           <TrustCell
             icon={<ShieldCheck className="h-5 w-5 text-gold" />}
-            value={`${data.propertiesClosed}+`}
-            label="Properties transacted"
+            value={`${data.sfTransacted} SF`}
+            label="Commercial SF transacted"
             sublabel="Lifetime CRECO team"
           />
           <TrustCell

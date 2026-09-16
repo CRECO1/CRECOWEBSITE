@@ -4,6 +4,7 @@ import { ArrowRight, Phone, ShieldCheck, TrendingUp, Calculator, Building2 } fro
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { PropertyValuationForm } from '@/components/forms/PropertyValuationForm';
+import { TrustStrip } from '@/components/marketing/TrustStrip';
 import { jsonLd } from '@/lib/jsonLd';
 
 export const metadata: Metadata = {
@@ -128,6 +129,11 @@ export default function PropertyValuationPage() {
             </div>
           </Container>
         </section>
+
+        {/* Real, operator-set proof signals right under the hero (mirrors the
+            homepage placement). Server component — live counts at paint, and
+            reads the same site_settings stats the homepage does. */}
+        <TrustStrip />
 
         {/* Form + sidebar */}
         <section className="section-luxury bg-background-cream">
