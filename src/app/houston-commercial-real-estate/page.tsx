@@ -124,8 +124,8 @@ export default function HoustonPage() {
           },
         ],
         propertyLinks: [
-          { label: 'Industrial / warehouse for lease', href: '/texas-industrial-property-for-lease', description: 'Modern bulk distribution, flex, and special-use industrial across Houston corridors.' },
-          { label: 'Office space for lease — Texas', href: '/texas-office-space-for-lease', description: 'Class A trophy office in Galleria, Energy Corridor, and Class B value across Houston.' },
+          { label: 'Industrial / warehouse for lease', href: '/houston-industrial-space', description: 'Modern bulk distribution, flex, and special-use industrial across Houston corridors.' },
+          { label: 'Office space for lease', href: '/houston-office-space', description: 'Class A trophy office in Galleria, Energy Corridor, and Class B value across Houston.' },
           { label: 'Retail space for lease', href: '/texas-retail-space-for-lease', description: 'Houston retail — Galleria-area inline, master-planned community centers, and pad sites.' },
           { label: 'Commercial property for sale', href: '/texas-commercial-property-for-sale', description: 'Texas commercial property for sale — investment, owner-user, and 1031 replacement opportunities.' },
         ],

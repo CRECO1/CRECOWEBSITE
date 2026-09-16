@@ -124,8 +124,8 @@ export default function AustinPage() {
           },
         ],
         propertyLinks: [
-          { label: 'Office space for lease — Texas', href: '/texas-office-space-for-lease', description: 'Class A trophy and Class B office across the Austin metro and major Texas markets.' },
-          { label: 'Industrial / warehouse for lease', href: '/texas-industrial-property-for-lease', description: 'Modern bulk distribution, flex, and industrial space — Round Rock, Pflugerville, and Austin-area corridors.' },
+          { label: 'Office space for lease', href: '/austin-office-space', description: 'Class A trophy and Class B office across the Austin metro and major Texas markets.' },
+          { label: 'Industrial / warehouse for lease', href: '/austin-industrial-space', description: 'Modern bulk distribution, flex, and industrial space — Round Rock, Pflugerville, and Austin-area corridors.' },
           { label: 'Retail space for lease', href: '/texas-retail-space-for-lease', description: 'Inline retail, end-cap, and pad sites across The Domain, SoCo, and Austin retail corridors.' },
           { label: 'Commercial property for sale', href: '/texas-commercial-property-for-sale', description: 'Texas commercial property for sale — investment, owner-user, and 1031 replacement opportunities.' },
         ],
