@@ -26,8 +26,10 @@ const footerLinks = {
   ],
   services: [
     { href: '/services/tenant-representation', label: 'Tenant Representation' },
-    { href: '/services/leasing-sales', label: 'Landlord Representation' },
-    { href: '/services/investment-advisory', label: 'Investment Sales & Advisory' },
+    { href: '/landlord-representation', label: 'Landlord & Owner Representation' },
+    { href: '/seller-investor-representation', label: 'Sellers & Investors' },
+    { href: '/services/leasing-sales', label: 'Leasing & Sales' },
+    { href: '/services/investment-advisory', label: 'Investment Advisory' },
     { href: '/services/property-management', label: 'Property Management' },
     { href: '/services/development', label: 'Property Development' },
     { href: '/property-valuation', label: "What's My Property Worth?" },

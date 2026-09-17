@@ -552,6 +552,21 @@ export default function ServicesPage() {
           </Container>
         </section>
 
+        {/* Who CRECO represents — links to the landlord and seller/investor answer pages */}
+        <section className="bg-white border-b border-border py-10" aria-labelledby="who-we-represent-heading">
+          <Container>
+            <div className="mx-auto max-w-5xl">
+              <h2 id="who-we-represent-heading" className="mb-3 font-heading text-heading-xl font-bold text-primary">Who CRECO represents</h2>
+              <p className="mb-5 text-body text-foreground-muted">CRECO is not a tenant-only firm. It represents tenants and buyers, landlords and owners, and sellers and investors — for lease and for sale.</p>
+              <div className="flex flex-wrap gap-3">
+                <Link href="/services/tenant-representation" className="inline-flex items-center gap-2 rounded-lg border border-border px-5 py-2.5 text-body-sm font-semibold text-primary hover:border-gold">Tenants <ArrowRight className="h-4 w-4" /></Link>
+                <Link href="/landlord-representation" className="inline-flex items-center gap-2 rounded-lg border border-border px-5 py-2.5 text-body-sm font-semibold text-primary hover:border-gold">Landlords &amp; owners <ArrowRight className="h-4 w-4" /></Link>
+                <Link href="/seller-investor-representation" className="inline-flex items-center gap-2 rounded-lg border border-border px-5 py-2.5 text-body-sm font-semibold text-primary hover:border-gold">Sellers &amp; investors <ArrowRight className="h-4 w-4" /></Link>
+              </div>
+            </div>
+          </Container>
+        </section>
+
         {/* Services Grid */}
         <section className="section-luxury bg-background-cream">
           <Container>

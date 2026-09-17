@@ -45,6 +45,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // CRECO property — 15033 Main St (Lytle retail leasing). Owner-operator
     // multi-tenant strip on the I-35 corridor in the SA southwest metro.
     { url: `${BASE_URL}/15033-main-st-lytle`,                  lastModified: new Date(), changeFrequency: 'weekly', priority: 0.9  },
+    // "Not tenant-only" answer pages — landlord/owner and seller/investor representation
+    { url: `${BASE_URL}/landlord-representation`,        lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9  },
+    { url: `${BASE_URL}/seller-investor-representation`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9  },
     { url: `${BASE_URL}/owner-services`,              lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9  },
     // Standard pages
     { url: `${BASE_URL}/services`,                    lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9  },

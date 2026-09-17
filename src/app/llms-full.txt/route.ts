@@ -1,4 +1,5 @@
 import { SERVICES } from '@/app/services/page';
+import { REPRESENTATION_PAGES } from '@/lib/representation-pages';
 import { getAvailableListings, filterListings } from '@/lib/public-listings';
 import { ASSET_CLASSES, BUSINESS, CANONICAL_DESCRIPTION, CAPABILITIES, DBA_STATEMENT, CAPABILITY_LINE, FOUNDER, REPRESENTATION_STATEMENT, SITE_URL, assetCategory, listingPriceText, listingUrl } from '@/lib/schema';
 import { SUBMARKETS, PARENT_METRO_LABELS, type ParentMetro } from '@/lib/submarkets-content';
@@ -97,6 +98,13 @@ ${REPRESENTATION_STATEMENT}
 - Investors, buyers, and sellers: investment sales and acquisitions, 1031 exchange replacement property, and a no-obligation broker opinion of value (typically within one to two business days).
 - Intermediary: when both parties authorize it in writing, CRECO can act as an intermediary between landlord and tenant or seller and buyer, as permitted by Texas law.
 - Every engagement is led by a senior broker; inquiries are answered within one business day.
+
+${REPRESENTATION_PAGES.map(p => `## ${p.label}
+URL: ${SITE_URL}${p.path}
+
+${p.directAnswer}
+
+${p.faqs.map(f => `**Q: ${f.q}**\nA: ${f.a}`).join('\n\n')}`).join('\n\n')}
 
 ## Capabilities (enumerated)
 

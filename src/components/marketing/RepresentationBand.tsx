@@ -1,4 +1,5 @@
 import { Briefcase, Building2, LineChart, Handshake } from 'lucide-react';
+import Link from 'next/link';
 import { Container } from '@/components/ui/Container';
 
 /**
@@ -13,21 +14,25 @@ export function RepresentationBand({ place, className = 'bg-white border-b borde
     {
       icon: Briefcase,
       title: 'Tenants & buyers',
+      href: '/services/tenant-representation',
       body: `Businesses leasing or buying retail, restaurant, office, medical office, industrial, or flex space in ${place} — site selection, negotiation, and lease or purchase execution. Tenant rep is typically paid by the landlord.`,
     },
     {
       icon: Building2,
       title: 'Landlords & owners',
+      href: '/landlord-representation',
       body: `Owners leasing or selling commercial property and land in ${place} — pricing, marketing, tenant and buyer sourcing, negotiation, and property management.`,
     },
     {
       icon: LineChart,
-      title: 'Investors',
+      title: 'Sellers & investors',
+      href: '/seller-investor-representation',
       body: `Investment sales and acquisitions, 1031 exchange replacement property, and hold/sell analysis for commercial investors in ${place} and across Texas.`,
     },
     {
       icon: Handshake,
       title: 'Intermediary, when authorized',
+      href: undefined as string | undefined,
       body: 'When both parties authorize it in writing, CRECO can act as an intermediary between landlord and tenant or seller and buyer, as Texas law permits.',
     },
   ];
@@ -43,10 +48,10 @@ export function RepresentationBand({ place, className = 'bg-white border-b borde
             CRECO is not a tenant-only firm. We represent tenants, landlords, owners, and investors — for lease and for sale — across retail (including restaurant space and pad sites), office (including medical office), industrial, flex, and land.
           </p>
           <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {sides.map(({ icon: Icon, title, body }) => (
+            {sides.map(({ icon: Icon, title, body, href }) => (
               <li key={title} className="rounded-xl border border-border bg-white p-5">
                 <Icon className="mb-3 h-6 w-6 text-gold" aria-hidden="true" />
-                <h3 className="mb-2 font-heading text-heading-sm font-bold text-primary">{title}</h3>
+                <h3 className="mb-2 font-heading text-heading-sm font-bold text-primary">{href ? <Link href={href} className="hover:text-gold-dark">{title}</Link> : title}</h3>
                 <p className="text-body-sm leading-relaxed text-foreground-muted">{body}</p>
               </li>
             ))}

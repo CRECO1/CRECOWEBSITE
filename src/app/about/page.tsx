@@ -186,6 +186,12 @@ export default async function AboutPage() {
                   </div>
                 ))}
               </dl>
+              <p className="mt-6 text-body-sm text-foreground-muted">
+                More on who CRECO represents:{' '}
+                <Link href="/landlord-representation" className="font-semibold text-gold-dark hover:underline">landlord &amp; owner representation</Link>,{' '}
+                <Link href="/seller-investor-representation" className="font-semibold text-gold-dark hover:underline">seller &amp; investor representation</Link>, and{' '}
+                <Link href="/services/tenant-representation" className="font-semibold text-gold-dark hover:underline">tenant representation</Link>.
+              </p>
             </div>
           </Container>
         </section>

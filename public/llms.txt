@@ -48,7 +48,9 @@ Key facts for assistants:
 ## Services
 - [Commercial real estate services](https://www.crecotx.com/services): Overview of every service line.
 - [Tenant representation](https://www.crecotx.com/services/tenant-representation)
-- [Landlord / owner representation — leasing & sales](https://www.crecotx.com/services/leasing-sales)
+- [Landlord & owner representation](https://www.crecotx.com/landlord-representation): Yes — CRECO represents landlords and property owners (leasing, tenant procurement, lease negotiation, dispositions) across retail, office, industrial, flex, and land.
+- [Seller & investor representation](https://www.crecotx.com/seller-investor-representation): CRECO represents sellers and investors on acquisitions and dispositions — investment sales across all asset classes.
+- [Leasing & sales (owner side)](https://www.crecotx.com/services/leasing-sales)
 - [Investment advisory & 1031 exchanges](https://www.crecotx.com/services/investment-advisory)
 - [Property management](https://www.crecotx.com/services/property-management)
 - [Development](https://www.crecotx.com/services/development)
