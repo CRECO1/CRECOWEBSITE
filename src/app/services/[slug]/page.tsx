@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import { SERVICES } from '../page';
+import { BUSINESS_ID } from '@/lib/schema';
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -53,7 +54,7 @@ export default async function ServiceDetailPage({ params }: Props) {
                 '@type': 'Service',
                 name: service.title,
                 description: service.metaDescription,
-                provider: { '@id': 'https://www.crecotx.com/#business' },
+                provider: { '@id': BUSINESS_ID },
                 areaServed: { '@type': 'State', name: 'Texas' },
                 url: `https://www.crecotx.com/services/${service.slug}`,
               },

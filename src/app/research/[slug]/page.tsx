@@ -9,6 +9,7 @@ import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { findMarketReport, MARKET_REPORTS, type MarketReport } from '@/lib/market-reports';
+import { BUSINESS_ID } from '@/lib/schema';
 
 /**
  * /research/[slug] — individual quarterly market report.
@@ -98,11 +99,11 @@ export default async function MarketReportPage({ params }: PageProps) {
     dateModified: report.publishedAt,
     author: {
       '@type': 'Organization',
-      '@id': 'https://www.crecotx.com/#business',
+      '@id': BUSINESS_ID,
       name: report.author.name,
       url: 'https://www.crecotx.com/team',
     },
-    publisher: { '@id': 'https://www.crecotx.com/#business' },
+    publisher: { '@id': BUSINESS_ID },
     about: {
       '@type': 'Place',
       name: `${report.submarketLabel}, Texas`,

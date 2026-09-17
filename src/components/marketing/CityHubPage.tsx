@@ -18,7 +18,7 @@ import { jsonLd } from '@/lib/jsonLd';
 import { AvailableListingsTable } from '@/components/marketing/AvailableListingsTable';
 import { RepresentationBand } from '@/components/marketing/RepresentationBand';
 import { filterListings, getAvailableListings } from '@/lib/public-listings';
-import { BUSINESS, businessRef, listingSummary } from '@/lib/schema';
+import { BUSINESS, BUSINESS_ID, businessRef, listingSummary } from '@/lib/schema';
 
 export interface SubmarketCard {
   name: string;
@@ -166,11 +166,11 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
       dateModified: '2026-08-01',
       author: {
         '@type': 'Organization',
-        '@id': 'https://www.crecotx.com/#business',
+        '@id': BUSINESS_ID,
         name: BUSINESS.name,
         url: 'https://www.crecotx.com/about',
       },
-      publisher: { '@id': 'https://www.crecotx.com/#business' },
+      publisher: { '@id': BUSINESS_ID },
     },
     {
       '@context': 'https://schema.org',

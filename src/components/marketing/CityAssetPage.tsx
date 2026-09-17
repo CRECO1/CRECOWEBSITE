@@ -8,7 +8,7 @@ import { FaqSection } from '@/components/marketing/FaqSection';
 import { AvailableListingsTable } from '@/components/marketing/AvailableListingsTable';
 import { RepresentationBand } from '@/components/marketing/RepresentationBand';
 import { filterListings, getAvailableListings } from '@/lib/public-listings';
-import { BUSINESS, listingSummary, type Faq } from '@/lib/schema';
+import { BUSINESS, BUSINESS_ID, listingSummary, type Faq } from '@/lib/schema';
 import type { Listing } from '@/lib/supabase';
 
 /**
@@ -144,11 +144,11 @@ export async function CityAssetPage({ config }: { config: CityAssetConfig }) {
       dateModified: '2026-08-01',
       author: {
         '@type': 'Organization',
-        '@id': 'https://www.crecotx.com/#business',
+        '@id': BUSINESS_ID,
         name: BUSINESS.name,
         url: 'https://www.crecotx.com/about',
       },
-      publisher: { '@id': 'https://www.crecotx.com/#business' },
+      publisher: { '@id': BUSINESS_ID },
     },
     {
       '@context': 'https://schema.org',

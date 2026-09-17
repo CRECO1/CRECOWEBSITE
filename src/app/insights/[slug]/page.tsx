@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { POSTS, findPost } from '@/lib/insights';
+import { BUSINESS_ID } from '@/lib/schema';
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -55,12 +56,11 @@ export default async function InsightDetailPage({ params }: Props) {
             description: post.metaDescription,
             datePublished: post.publishedAt,
             dateModified: post.publishedAt,
-            author: { '@type': 'Organization', name: post.author, url: 'https://www.crecotx.com' },
-            publisher: {
-              '@type': 'Organization',
-              name: 'CRECO',
-              logo: { '@type': 'ImageObject', url: 'https://www.crecotx.com/images/creco-logo.jpg' },
-            },
+            // Author/publisher point at the canonical org node by @id instead of
+            // re-declaring a bare Organization — a detached copy made CRECO look
+            // like a second, thinner entity to crawlers merging the page graph.
+            author: { '@type': 'Organization', '@id': BUSINESS_ID, name: post.author, url: 'https://www.crecotx.com' },
+            publisher: { '@id': BUSINESS_ID },
             mainEntityOfPage: `https://www.crecotx.com/insights/${post.slug}`,
             articleSection: post.category,
           }),

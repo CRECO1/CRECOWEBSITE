@@ -39,7 +39,10 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
+        // llms.txt / llms-full.txt are listed explicitly (not just covered by
+        // '/') so any crawler reading robots.txt as a discovery document finds
+        // the AI-facing summaries without having to guess the convention.
+        allow: ['/', '/llms.txt', '/llms-full.txt'],
         disallow: PRIVATE_PATHS,
       },
       {

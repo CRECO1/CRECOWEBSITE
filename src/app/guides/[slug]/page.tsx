@@ -7,6 +7,7 @@ import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { findGuide, GUIDES } from '@/lib/guides';
+import { BUSINESS_ID } from '@/lib/schema';
 import { GuideReader } from './GuideReader';
 
 interface PageProps {
@@ -68,11 +69,11 @@ export default async function GuidePage({ params }: PageProps) {
     dateModified: '2026-06-01',
     author: {
       '@type': 'Organization',
-      '@id': 'https://www.crecotx.com/#business',
+      '@id': BUSINESS_ID,
       name: 'CRECO',
       url: 'https://www.crecotx.com/team',
     },
-    publisher: { '@id': 'https://www.crecotx.com/#business' },
+    publisher: { '@id': BUSINESS_ID },
     about: { '@type': 'Thing', name: `Texas commercial real estate · ${guide.audience} guidance` },
   };
 

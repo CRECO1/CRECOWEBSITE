@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "generate:types": "payload generate:types",
+    "indexnow": "tsx scripts/indexnow-ping.ts",
     "seed": "tsx scripts/seed.ts"
   },
   "dependencies": {

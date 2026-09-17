@@ -17,7 +17,14 @@ import { BRAND_LEGAL_NAME, BRAND_NAME, BRAND_TREC_LICENSE, CANONICAL_DESCRIPTION
 import { formatLeaseRate, formatPrice, propertyTypeLabel, transactionLabel } from './utils';
 
 export const SITE_URL = 'https://www.crecotx.com';
-export const BUSINESS_ID = `${SITE_URL}/#business`;
+/**
+ * THE canonical entity node id. Every org reference on the site — page schema,
+ * Article author/publisher, Service provider, Offer offeredBy — points here via
+ * `businessRef`, so crawlers and LLMs resolve one organization rather than a
+ * page-local copy. Never hardcode this string in a page; import BUSINESS_ID or
+ * businessRef instead (renaming it once should not orphan a page's reference).
+ */
+export const BUSINESS_ID = `${SITE_URL}/#organization`;
 export const WEBSITE_ID = `${SITE_URL}/#website`;
 export const FOUNDER_ID = `${SITE_URL}/about#zachary-stovall`;
 
@@ -152,7 +159,7 @@ export function siteGraph() {
         '@id': BUSINESS_ID,
         name: BUSINESS.name,
         // name = the public d/b/a; legalName = the licensed brokerage entity.
-        alternateName: [BUSINESS.shortName, 'Commercial Real Estate Company', `${BUSINESS.legalName} d/b/a ${BUSINESS.name}`],
+        alternateName: [BUSINESS.shortName, BUSINESS.legalName, 'Commercial Real Estate Company', `${BUSINESS.legalName} d/b/a ${BUSINESS.name}`],
         legalName: BUSINESS.legalName,
         url: SITE_URL,
         logo: { '@type': 'ImageObject', url: `${SITE_URL}/images/creco-logo.jpg` },
@@ -168,9 +175,15 @@ export function siteGraph() {
         identifier: { '@type': 'PropertyValue', propertyID: 'TREC License', value: BUSINESS.trecLicense },
         hasCredential: {
           '@type': 'EducationalOccupationalCredential',
+          '@id': `${SITE_URL}/#trec-license`,
+          name: `Texas Real Estate Broker License ${BUSINESS.trecLicenseDisplay}`,
           credentialCategory: 'Texas Real Estate Broker License (business entity)',
-          identifier: BUSINESS.trecLicense,
-          recognizedBy: { '@type': 'GovernmentOrganization', name: 'Texas Real Estate Commission', url: 'https://www.trec.texas.gov' },
+          // PropertyValue (rather than a bare string) so the license NUMBER is
+          // machine-readable and labelled — "TREC License 9014367", not a
+          // dangling identifier an agent has to guess the issuer for.
+          identifier: { '@type': 'PropertyValue', propertyID: 'TREC License', value: BUSINESS.trecLicense },
+          recognizedBy: { '@type': 'GovernmentOrganization', name: 'Texas Real Estate Commission', alternateName: 'TREC', url: 'https://www.trec.texas.gov' },
+          validIn: { '@type': 'State', name: 'Texas' },
         },
         contactPoint: [{
           '@type': 'ContactPoint',
@@ -194,14 +207,21 @@ export function siteGraph() {
         ],
         // Enumerated, discrete capabilities: representation sides, transaction
         // types, and every asset class — so agents can repeat the full list.
+        // Both the plain topic nouns an assistant is likely to match a query
+        // against ("commercial real estate leasing", "retail") AND the specific
+        // CRECO capability phrasings. Keep both registers — the short ones are
+        // what gets matched, the long ones are what gets repeated back.
         knowsAbout: [
-          'Tenant representation', 'Landlord representation', 'Owner representation', 'Buyer representation',
-          'Seller representation', 'Investment sales', 'Intermediary brokerage', 'Site selection',
-          'Retail leasing', 'Retail property sales', 'Restaurant space leasing', 'Retail pad sites',
-          'Office leasing', 'Office building sales', 'Medical office leasing',
-          'Industrial and warehouse leasing', 'Industrial property sales', 'Flex space leasing',
-          'Commercial land sales', 'Commercial property management', 'Commercial real estate development',
-          'Investment advisory', '1031 exchanges', 'Broker opinion of value',
+          'Commercial real estate', 'Commercial real estate brokerage', 'Commercial real estate leasing', 'Commercial real estate sales',
+          'Tenant representation', 'Landlord representation', 'Owner representation', 'Landlord/owner representation',
+          'Buyer representation', 'Seller representation', 'Investment sales', 'Intermediary brokerage', 'Site selection',
+          'Retail', 'Retail real estate', 'Retail leasing', 'Retail property sales', 'Restaurant space leasing', 'Retail pad sites',
+          'Office', 'Office real estate', 'Office leasing', 'Office building sales', 'Medical office leasing',
+          'Industrial', 'Industrial real estate', 'Industrial and warehouse leasing', 'Industrial property sales',
+          'Flex', 'Flex space', 'Flex space leasing',
+          'Land', 'Commercial land', 'Commercial land sales',
+          'Commercial property management', 'Commercial real estate development',
+          'Investment advisory', '1031 exchange', '1031 exchanges', 'Broker opinion of value',
           'San Antonio commercial real estate', 'Fair Oaks Ranch commercial real estate', 'Texas Hill Country commercial real estate',
         ],
         makesOffer: CAPABILITIES.map(c => ({

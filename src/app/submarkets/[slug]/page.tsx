@@ -15,6 +15,7 @@ import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { getSubmarketBySlug, getListingsBySubmarket } from '@/lib/supabase';
 import { formatSqft, formatLeaseRate, formatPrice, transactionLabel, propertyTypeLabel } from '@/lib/utils';
+import { BUSINESS_ID } from '@/lib/schema';
 import {
   getSubmarketContent,
   SUBMARKET_LAST_REVIEWED, SUBMARKET_AUTHOR,
@@ -98,11 +99,11 @@ export default async function SubmarketDetailPage({ params }: Props) {
     dateModified: SUBMARKET_LAST_REVIEWED,
     author: {
       '@type': 'Organization',
-      '@id': 'https://www.crecotx.com/#business',
+      '@id': BUSINESS_ID,
       name: SUBMARKET_AUTHOR,
       url: 'https://www.crecotx.com/team',
     },
-    publisher: { '@id': 'https://www.crecotx.com/#business' },
+    publisher: { '@id': BUSINESS_ID },
   };
 
   return (

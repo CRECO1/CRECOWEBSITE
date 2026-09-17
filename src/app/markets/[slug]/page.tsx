@@ -5,6 +5,7 @@ import { CityHubPage } from '@/components/marketing/CityHubPage';
 import {
   findSubmarket, SUBMARKETS, PARENT_METRO_LABELS,
 } from '@/lib/submarkets-content';
+import { BUSINESS_ID } from '@/lib/schema';
 
 /**
  * /markets/[slug] — individual submarket landing page.
@@ -72,7 +73,7 @@ export default async function SubmarketPage({ params }: { params: Promise<{ slug
       '@id': `https://www.crecotx.com/markets/${entry.slug}#service`,
       name: `Commercial real estate brokerage in ${entry.config.city}, Texas`,
       serviceType: 'Commercial real estate brokerage — tenant representation, leasing, sales, and investment advisory',
-      provider: { '@id': 'https://www.crecotx.com/#business' },
+      provider: { '@id': BUSINESS_ID },
       areaServed: { '@type': 'Place', name: `${entry.config.city}, Texas` },
       url: `https://www.crecotx.com/markets/${entry.slug}`,
     },
