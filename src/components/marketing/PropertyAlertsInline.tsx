@@ -15,8 +15,10 @@
  *     Texas listings") until the visitor refines.
  *   - Mirrors MarketReportCapture's frictionless single-field pattern.
  *
- * Honeypot kept. reCAPTCHA dropped (low-damage payload, see
- * MarketReportCapture for the same reasoning). Fires GA4
+ * Posts to /api/subscribe (subscription), never /api/leads (transaction
+ * lead) — see the comment at the fetch call. Honeypot kept; reCAPTCHA token
+ * sent because /api/subscribe rejects tokenless posts once the secret is
+ * configured. Fires GA4
  * `property_alerts_inline_subscribed` so we can separate this surface
  * from the /property-alerts page form.
  */
@@ -24,6 +26,7 @@
 import { useState } from 'react';
 import { ArrowRight, CheckCircle, BellRing } from 'lucide-react';
 import { Honeypot } from '@/components/forms/Honeypot';
+import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
 
 interface PropertyAlertsInlineProps {
@@ -76,14 +79,23 @@ export function PropertyAlertsInline({
     try {
       const namePlaceholder = email.split('@')[0]?.slice(0, 40) || 'Alerts Subscriber';
       const utms = readUtmsFromCookie();
-      const res = await fetch('/api/leads', {
+      // /api/subscribe, NOT /api/leads: this is a subscription, not a
+      // transaction lead. Posting it to the leads endpoint made it arrive at
+      // the CRM as `lead.created` with an unmapped source, which defaulted to
+      // "Buyer" and opened a phantom "Buyer Purchase" deal in the pipeline.
+      // /api/subscribe gates on reCAPTCHA when RECAPTCHA_SECRET_KEY is set;
+      // without a token every submission 400s, the same trap MarketReportCapture
+      // fell into.
+      const recaptchaToken = await getRecaptchaToken('subscribe_property_alerts');
+      const res = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: namePlaceholder,
           email,
+          subscription_type: 'property-alerts',
           source: 'property-alerts-inline',
-          message: `Subscribed to property alerts from ${surface} — broker to apply default Texas filter until refined.`,
+          recaptchaToken,
           ...utms,
         }),
       });

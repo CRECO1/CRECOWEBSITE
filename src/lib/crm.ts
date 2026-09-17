@@ -30,7 +30,83 @@
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-type CrmLeadType = 'Buyer' | 'Seller' | 'Tenant' | 'Landlord/Investor' | 'Agent' | 'Broker';
+type CrmLeadType = 'Buyer' | 'Seller' | 'Tenant' | 'Landlord/Investor' | 'Agent' | 'Broker' | 'Other';
+
+/**
+ * Sources that are SUBSCRIPTIONS, not transactions: alerts, newsletter,
+ * gated-guide downloads, market-report opt-ins. They create a contact but
+ * never a deal, no matter which endpoint or event name they arrive under.
+ *
+ * Matched by prefix, so surface-specific slugs ('property-alerts-inline',
+ * 'newsletter-footer') are covered without listing every one. This is the
+ * fix for the bug where a property-alerts signup posted to /api/leads,
+ * arrived as `lead.created` with an unmapped source, and fell through to
+ * the 'Buyer' default — producing a phantom "Buyer Purchase" deal.
+ */
+const SUBSCRIPTION_SOURCE_PREFIXES = [
+  'property-alerts',
+  'alerts',
+  'newsletter',
+  'lead-magnet',
+  'market-report',
+  'guide',
+  'subscribe',
+] as const;
+
+/** Stages that mean "this deal is still live". */
+const OPEN_DEAL_STAGES = '("Closed","Lost")';
+
+/** How far back to look for an existing Prospect deal for the same person. */
+const DUPLICATE_DEAL_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+function isSubscriptionSource(source: string): boolean {
+  const s = source.trim().toLowerCase();
+  return SUBSCRIPTION_SOURCE_PREFIXES.some(prefix => s === prefix || s.startsWith(`${prefix}-`) || s.startsWith(`${prefix}_`));
+}
+
+/**
+ * True when this payload must never create a deal: an explicit subscriber
+ * event, any declared subscription_type, or a subscription-shaped source.
+ */
+function isSubscription(p: CrmPayload): boolean {
+  return p.event === 'subscriber.created'
+    || Boolean(p.subscription_type)
+    || isSubscriptionSource(p.source);
+}
+
+/**
+ * The single decision point for "does this payload deserve a pipeline deal?"
+ * Pure and exported so the rules can be exercised without a CRM connection.
+ *
+ * Returns the Deal Flow type, or undefined when no deal should exist:
+ *   - subscriptions (alerts / newsletter / lead-magnet / market-report)
+ *   - unmapped sources (previously defaulted to 'Buyer' — the bug)
+ *   - Agent / Broker / Other types, which have no TYPE_TO_DEAL entry
+ */
+export function dealTypeFor(p: CrmPayload): string | undefined {
+  if (isSubscription(p)) return undefined;
+  const mapped = SOURCE_TO_TYPE[p.source];
+  if (!mapped) return undefined;
+  return TYPE_TO_DEAL[mapped];
+}
+
+/** Digits only, US 10-digit normalized — '+1 (210) 817-3443' → '2108173443'. */
+export function normalizePhone(phone: string | null | undefined): string {
+  const digits = (phone ?? '').replace(/\D/g, '');
+  if (digits.length === 11 && digits.startsWith('1')) return digits.slice(1);
+  return digits;
+}
+
+/**
+ * The formats the CRM might have stored the same number in. PostgREST has no
+ * digits-only comparison, so we match against the common renderings instead.
+ */
+function phoneVariants(phone: string | null | undefined): string[] {
+  const d = normalizePhone(phone);
+  if (d.length !== 10) return d ? [d] : [];
+  const [a, b, c] = [d.slice(0, 3), d.slice(3, 6), d.slice(6)];
+  return [d, `(${a}) ${b}-${c}`, `${a}-${b}-${c}`, `${a}.${b}.${c}`, `+1${d}`, `1${d}`, `(${a})${b}-${c}`];
+}
 
 /** Map our source slugs onto the CRM's client-type enum. */
 const SOURCE_TO_TYPE: Record<string, CrmLeadType> = {
@@ -184,16 +260,30 @@ export async function pushToCrm(p: CrmPayload): Promise<boolean> {
     // 1. Find or create the contact (dedupe by email)
     const { first, last } = splitName(p.name);
     const phone = (p.phone ?? '').trim();
+    const company = (p.company ?? '').trim();
     const tags = buildTags(p);
     const message = buildMessage(p);
-    const type: CrmLeadType = SOURCE_TO_TYPE[p.source] ?? 'Buyer';
     const sourceLabel = SOURCE_TO_LABEL[p.source] ?? 'CRECO Website';
 
-    const { data: existing } = await supabase
+    // An UNMAPPED source is not a buyer. It used to default to 'Buyer',
+    // which both mislabeled the contact and (via TYPE_TO_DEAL) manufactured
+    // a "Buyer Purchase" deal. Unknown now means 'Other' and no deal.
+    const type: CrmLeadType = SOURCE_TO_TYPE[p.source] ?? 'Other';
+
+    // Dedupe on email OR phone: the same person often subscribes with a
+    // personal address and later inquires with a work one.
+    const variants = phoneVariants(phone);
+    const matchFilter = [
+      `email.eq.${p.email}`,
+      ...variants.map(v => `phone.eq.${v}`),
+    ].join(',');
+
+    const { data: matches } = await supabase
       .from('crm_clients')
-      .select('id, tags, lead_source, prospect_status, agent_id')
-      .eq('email', p.email)
-      .maybeSingle();
+      .select('id, tags, lead_source, prospect_status, agent_id, business_name')
+      .or(matchFilter)
+      .limit(1);
+    const existing = matches?.[0] ?? null;
 
     let clientId: string | null = null;
     let agentId: string | null = existing?.agent_id ?? null;
@@ -206,6 +296,8 @@ export async function pushToCrm(p: CrmPayload): Promise<boolean> {
         .update({
           tags: mergedTags,
           lead_source: existing.lead_source || sourceLabel,
+          // Fill in a company we captured later; never blank an existing one.
+          ...(company && !existing.business_name ? { business_name: company } : {}),
           // Re-surface to "new" if the broker had moved them elsewhere
           prospect_status: existing.prospect_status === 'closed' ? existing.prospect_status : 'new',
           last_touched_at: new Date().toISOString(),
@@ -233,6 +325,8 @@ export async function pushToCrm(p: CrmPayload): Promise<boolean> {
           last_name:  last || 'Lead',
           email:      p.email,
           phone:      phone || '',
+          // Was dropped entirely, so captured company names vanished.
+          business_name: company || null,
           type,
           notes:      message,
           agent_id:   agentId,
@@ -285,20 +379,49 @@ export async function pushToCrm(p: CrmPayload): Promise<boolean> {
       }
     }
 
-    // 3. Mirror the lead into the Deal Flow "Prospect" column. Only real
-    //    transaction leads (Buyer/Seller/Tenant/Landlord) get a deal —
-    //    newsletter subscribers and agent applicants don't. Skip if the
-    //    contact already has an open deal so re-submissions don't pile up.
-    const dealType = TYPE_TO_DEAL[type];
-    if (dealType && p.event !== 'subscriber.created') {
+    // 3. Mirror the lead into the Deal Flow "Prospect" column.
+    //
+    //    A deal is created ONLY when all three hold:
+    //      - the source maps to a real transaction type (no 'Buyer' default)
+    //      - the payload isn't a subscription (alerts / newsletter /
+    //        lead-magnet / market-report), whatever the event is called
+    //      - the person has no open deal already, matched by client_id OR
+    //        by email/phone within a short window
+    //
+    //    Agent/Broker/Other leads have no TYPE_TO_DEAL entry, so they fall
+    //    out here on their own.
+    const dealType = dealTypeFor(p);
+    if (dealType) {
       const { data: openDeal } = await supabase
         .from('crm_deals')
         .select('id')
         .eq('client_id', clientId)
-        .not('stage', 'in', '("Closed","Lost")')
+        .not('stage', 'in', OPEN_DEAL_STAGES)
         .limit(1)
         .maybeSingle();
+
+      // Same human, different contact row (or a deal created before the
+      // client row existed): look for a recent Prospect deal by email or
+      // phone. Scoped to a 24h window so a genuine new inquiry weeks later
+      // still opens its own deal.
+      let recentDuplicate = false;
       if (!openDeal) {
+        const since = new Date(Date.now() - DUPLICATE_DEAL_WINDOW_MS).toISOString();
+        const dealFilter = [
+          `client_email.eq.${p.email}`,
+          ...variants.map(v => `client_phone.eq.${v}`),
+        ].join(',');
+        const { data: recent } = await supabase
+          .from('crm_deals')
+          .select('id')
+          .eq('stage', 'Prospect')
+          .gte('created_at', since)
+          .or(dealFilter)
+          .limit(1);
+        recentDuplicate = Boolean(recent?.length);
+      }
+
+      if (!openDeal && !recentDuplicate) {
         if (!agentId) {
           const { data: adminProfile } = await supabase
             .from('crm_profiles').select('id').eq('role', 'admin').limit(1).maybeSingle();
