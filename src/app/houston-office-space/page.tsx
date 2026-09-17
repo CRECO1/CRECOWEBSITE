@@ -111,7 +111,7 @@ export default function HoustonOfficeSpacePage() {
           'Fluent in the trophy-vs-commodity split and the energy-cycle submarket dynamics',
           'Senior broker leads every engagement, from a 3,000 SF suite to a full-floor requirement',
           'Concession benchmarking from signed deals — critical in the deepest concession market in Texas',
-          'Landlord pays our commission — no out-of-pocket cost for the tenant',
+          'Full-service representation — tenants, landlords/owners, and investors; tenant rep is typically paid by the landlord',
           'Honest hold-vs-sell-vs-reposition underwriting for owners, with Texas-wide 1031 buyer flow',
         ],
         listingsLink: {

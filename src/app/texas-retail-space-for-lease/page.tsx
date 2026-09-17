@@ -69,7 +69,7 @@ export default async function Page() {
           },
         ],
         whyBullets: [
-          'Tenant-side representation — we never represent the landlord on the same deal',
+          'Tenant representation for retail and restaurant concepts — from a brokerage that also leases and sells retail centers for owners',
           'Traffic-count, demographic, and co-tenancy analysis on every shortlist site',
           'LOI and lease negotiation focused on tenant improvement allowances, free rent, and exclusivity',
           'Buildout coordination from architect to grand opening',

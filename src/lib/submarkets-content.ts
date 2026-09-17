@@ -53,7 +53,7 @@ const STANDARD_PROPERTY_LINKS = [
 const STANDARD_WHY_BULLETS = [
   'Texas-wide network with on-the-ground broker presence',
   'Off-market deal flow across all major property types',
-  'Tenant rep — landlord pays our commission, you get unbiased advocacy',
+  'Full-service representation — tenants, landlords/owners, and investors, for lease and for sale',
   'Owner services for landlords and multi-property investors',
   'Direct broker access — no junior-handoff, every engagement led by a senior',
   'Lease + investment-sale fluency across office, industrial, retail, and land',

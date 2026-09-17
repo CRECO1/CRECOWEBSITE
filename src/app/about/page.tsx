@@ -9,33 +9,37 @@ import { TeamSection, type Agent } from '@/components/team/TeamSection';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { FaqSection } from '@/components/marketing/FaqSection';
 import { supabase } from '@/lib/supabase';
-import { BUSINESS, FOUNDER_ID, SITE_URL, breadcrumbList, businessRef, webPage } from '@/lib/schema';
+import { ASSET_CLASSES, BUSINESS, CANONICAL_DESCRIPTION, CAPABILITIES, FOUNDER_ID, REPRESENTATION_STATEMENT, SITE_URL, breadcrumbList, businessRef, webPage } from '@/lib/schema';
 
 // 30-min ISR — the team grid is fetched on the server so it's in the HTML.
 export const revalidate = 1800;
 
 const AT_A_GLANCE: { label: string; value: string }[] = [
   { label: 'Legal / trade name', value: `${BUSINESS.legalName}, doing business as ${BUSINESS.name}` },
-  { label: 'What CRECO is', value: 'A licensed Texas commercial real estate brokerage and advisory firm' },
+  { label: 'What CRECO is', value: 'A full-service, licensed Texas commercial real estate brokerage — not a tenant-only firm' },
   { label: 'License', value: `Texas Real Estate Commission (TREC) brokerage license #${BUSINESS.trecLicense}` },
   { label: 'Headquarters', value: BUSINESS.fullAddress },
   { label: 'Phone / email', value: `${BUSINESS.phoneDisplay} · ${BUSINESS.email}` },
   { label: 'Office hours', value: BUSINESS.hours },
-  { label: 'Markets', value: 'San Antonio (HQ metro, incl. Fair Oaks Ranch, Boerne, and the Hill Country), Austin, Houston, Dallas–Fort Worth, and statewide Texas' },
-  { label: 'Property types', value: 'Retail, office (incl. medical), industrial / warehouse, flex, land, and investment property — for lease and for sale' },
-  { label: 'Clients represented', value: 'Tenants, buyers, landlords / owners, sellers, and investors (never both sides of the same deal)' },
-  { label: 'Services', value: 'Tenant representation, leasing & sales, investment advisory, 1031 exchange sourcing, property management, development, sustainability consulting' },
+  { label: 'Markets', value: 'Fair Oaks Ranch (HQ) and the Texas Hill Country (Boerne, Comfort, Bulverde), Greater San Antonio (incl. Lytle and the I-35 corridor), plus Austin, Houston, Dallas–Fort Worth, and statewide Texas' },
+  { label: 'Property types (lease & sale)', value: ASSET_CLASSES.join(' · ') },
+  { label: 'Clients represented', value: 'Tenants, buyers, landlords, owners, sellers, and investors — full-service, not tenant-only; intermediary when both parties authorize in writing' },
+  { label: 'Services', value: CAPABILITIES.map(c => c.name).join(' · ') },
   { label: 'Founder', value: 'Zachary A. Stovall, Broker (TREC #691174)' },
 ];
 
 const ABOUT_FAQS = [
   {
     q: 'What is CRECO?',
-    a: `CRECO – Commercial Real Estate Company (${BUSINESS.legalName}) is a licensed Texas commercial real estate brokerage, TREC #${BUSINESS.trecLicense}, headquartered at ${BUSINESS.fullAddress}. It brokers and advises on retail, office, industrial, flex, and land for lease and sale across San Antonio, Austin, Houston, Dallas–Fort Worth, and statewide Texas.`,
+    a: CANONICAL_DESCRIPTION,
   },
   {
     q: 'Does CRECO represent tenants or landlords?',
-    a: 'Both. CRECO represents tenants and buyers searching for space (tenant representation is typically paid by the landlord, so it is usually free to the tenant) and represents owners and landlords leasing or selling property. CRECO does not represent both sides of the same deal. CRECO also owns and leases its own centers in Fair Oaks Ranch and Lytle.',
+    a: `Both — and investors. ${REPRESENTATION_STATEMENT} Tenant representation is typically paid by the landlord, so it is usually free to the tenant. CRECO also owns and leases its own centers in Fair Oaks Ranch and Lytle and is developing Elkhorn Point in Fair Oaks Ranch.`,
+  },
+  {
+    q: 'What property types does CRECO handle?',
+    a: `For lease and for sale: ${ASSET_CLASSES.join('; ')}.`,
   },
   {
     q: 'Who runs CRECO?',
@@ -52,9 +56,8 @@ function agentId(a: Agent): string {
 }
 
 export const metadata: Metadata = {
-  title: 'About CRECO | Texas Commercial Real Estate Company',
-  description:
-    'CRECO is a trailblazing Texas commercial real estate brokerage and advisory firm. Headquartered in Fair Oaks Ranch, serving San Antonio, Austin, Houston, Dallas–Fort Worth, and the Hill Country. Principal-led tenant rep, owner services, and investment advisory.',
+  title: 'About CRECO — Full-Service Commercial Real Estate Brokerage | Fair Oaks Ranch & San Antonio',
+  description: CANONICAL_DESCRIPTION,
   keywords: [
     'CRECO commercial real estate',
     'texas commercial real estate company',
@@ -70,8 +73,7 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://www.crecotx.com/about' },
   openGraph: {
     title: 'About CRECO | Texas Commercial Real Estate',
-    description:
-      'Principal-led Texas commercial real estate brokerage and advisory firm. Tenant rep, owner services, and investment advisory across San Antonio, Austin, Houston, and DFW.',
+    description: CANONICAL_DESCRIPTION,
     url: 'https://www.crecotx.com/about',
     type: 'website',
   },
@@ -122,7 +124,7 @@ export default async function AboutPage() {
                 Where your real estate ventures find the support they deserve.
               </h1>
               <p className="mt-6 text-body-lg text-white/80">
-                CRECO — Commercial Real Estate Company — is a San Antonio-based commercial brokerage and advisory firm built on innovation, expertise, and a relentless commitment to client outcomes.
+                {CANONICAL_DESCRIPTION}
               </p>
             </div>
           </Container>

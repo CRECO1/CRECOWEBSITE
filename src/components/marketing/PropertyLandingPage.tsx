@@ -76,6 +76,23 @@ interface Props {
  * Merge admin-editable DB content into the hardcoded fallback config.
  * DB wins on each field; if DB field is empty, falls back to config.
  */
+/**
+ * Positioning guard: CRECO is full-service (tenants, landlords/owners,
+ * investors). Admin-edited CMS copy once said "we never represent the landlord
+ * on the same deal", which AI assistants turned into "tenant-only firm". Any
+ * DB string that narrows CRECO that way is replaced with a balanced line.
+ */
+const NARROWING = /never represent(s|ing)? the landlord|work(s)? exclusively for tenants|tenant-side representation — we never/i;
+const BALANCED_LINE = 'Full-service representation — tenants, landlords/owners, and investors, for lease and for sale';
+function rebalance(items: string[]): string[];
+function rebalance(items: { q: string; a: string }[]): { q: string; a: string }[];
+function rebalance(items: Array<string | { q: string; a: string }>) {
+  return items.map(item => {
+    if (typeof item === 'string') return NARROWING.test(item) ? BALANCED_LINE : item;
+    return NARROWING.test(item.a) ? { q: item.q, a: `${BALANCED_LINE}.` } : item;
+  });
+}
+
 function mergeConfig(config: PropertyLandingConfig, db: LandingPageContent | null | undefined): PropertyLandingConfig {
   if (!db) return config;
   return {
@@ -84,8 +101,8 @@ function mergeConfig(config: PropertyLandingConfig, db: LandingPageContent | nul
     h1: db.h1 || config.h1,
     subhead: db.subhead || config.subhead,
     marketBullets: (db.market_bullets && db.market_bullets.length > 0) ? db.market_bullets : config.marketBullets,
-    whyBullets: (db.why_bullets && db.why_bullets.length > 0) ? db.why_bullets : config.whyBullets,
-    faqs: (db.faqs && db.faqs.length > 0) ? db.faqs : config.faqs,
+    whyBullets: rebalance((db.why_bullets && db.why_bullets.length > 0) ? db.why_bullets : config.whyBullets),
+    faqs: rebalance((db.faqs && db.faqs.length > 0) ? db.faqs : config.faqs),
   };
 }
 

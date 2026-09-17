@@ -93,7 +93,7 @@ export default function BoernePage() {
         whyBullets: [
           'Texas-wide reach with deep Boerne and Kendall County market knowledge',
           'Sister market to our Fair Oaks Ranch practice — where CRECO owns and operates the 8000 Fair Oaks Pkwy commercial center',
-          'Tenant rep for retail, restaurants, professional services, and Hill Country concepts — landlord pays our commission',
+          'Represents tenants, landlords/owners, and investors — including tenant rep for retail, restaurants, professional services, and Hill Country concepts (typically paid by the landlord)',
           'Owner services for Boerne and Kendall County property owners',
           'Investment advisory connecting Boerne deals to our Texas-wide 1031 + buyer network',
           'Off-market deal flow across Main Street, I-10, and Highway 46 corridors',

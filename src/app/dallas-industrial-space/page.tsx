@@ -111,7 +111,7 @@ export default function DallasIndustrialSpacePage() {
           'Senior broker leads every engagement, from shallow-bay flex to big-box bulk requirements',
           'Concession benchmarking from deals actually being signed, not aggregated marketplace data',
           'We qualify buildings on clear height, power, dock/trailer, and distribution geography up front',
-          'Landlord pays our commission — no out-of-pocket cost for the tenant',
+          'Full-service representation — tenants, landlords/owners, and investors; tenant rep is typically paid by the landlord',
           'Owner-side disposition timed to the institutional capital markets, with 1031 buyer flow',
         ],
         listingsLink: {

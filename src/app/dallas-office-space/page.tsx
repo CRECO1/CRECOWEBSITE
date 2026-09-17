@@ -111,7 +111,7 @@ export default function DallasOfficeSpacePage() {
           'Senior broker leads every engagement, from a 3,000 SF suite to a full-floor corporate requirement',
           'Concession benchmarking from deals actually being signed across Uptown, Legacy, and Las Colinas',
           'We surface hidden contiguous blocks and quiet reposition/conversion stories before you commit',
-          'Landlord pays our commission — no out-of-pocket cost for the tenant',
+          'Full-service representation — tenants, landlords/owners, and investors; tenant rep is typically paid by the landlord',
           'Hold-vs-sell-vs-reposition underwriting for owners, with Texas-wide 1031 buyer flow',
         ],
         listingsLink: {

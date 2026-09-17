@@ -16,8 +16,9 @@ import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { jsonLd } from '@/lib/jsonLd';
 import { AvailableListingsTable } from '@/components/marketing/AvailableListingsTable';
+import { RepresentationBand } from '@/components/marketing/RepresentationBand';
 import { filterListings, getAvailableListings } from '@/lib/public-listings';
-import { BUSINESS, listingSummary } from '@/lib/schema';
+import { BUSINESS, businessRef, listingSummary } from '@/lib/schema';
 
 export interface SubmarketCard {
   name: string;
@@ -76,6 +77,15 @@ export interface CityHubConfig {
    *  (baseCityFaqs) so every city hub renders a real FAQ section + FAQPage
    *  schema even when no page-specific questions are supplied. */
   faqs?: { q: string; a: string }[];
+  /** Optional local-authority block: the complete answer to "who does
+   *  commercial real estate / tenant rep / landlord rep in {city}?" —
+   *  enumerated services + verifiable proof points. Emits Service schema. */
+  authority?: {
+    heading: string;
+    intro: string;
+    services: { title: string; description: string; href?: string }[];
+    proof: { label: string; value: string }[];
+  };
 }
 
 /**
@@ -177,6 +187,28 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
     },
   ] : [];
 
+  if (pageUrl && config.authority) {
+    schemas.push({
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      '@id': `${pageUrl}#services`,
+      name: `CRECO commercial real estate services in ${config.city}`,
+      itemListElement: config.authority.services.map((svc, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        item: {
+          '@type': 'Service',
+          name: `${svc.title} — ${config.city}`,
+          serviceType: svc.title,
+          description: svc.description,
+          provider: businessRef,
+          areaServed: { '@type': 'Place', name: `${config.city}, Texas` },
+          ...(svc.href ? { url: `https://www.crecotx.com${svc.href}` } : {}),
+        },
+      })),
+    });
+  }
+
   // FAQPage schema — always emitted (the baseline guarantees faqs.length > 0).
   // The same questions render visibly below, which Google requires for FAQ rich
   // results and which gives AI answer engines clean Q&A pairs to quote.
@@ -271,6 +303,40 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
                 <p className="text-body-lg text-foreground leading-relaxed">
                   <span className="font-semibold text-primary">In short:</span> {config.quickAnswer}
                 </p>
+              </div>
+            </Container>
+          </section>
+        )}
+
+        <RepresentationBand place={config.city} />
+
+        {config.authority && (
+          <section className="section-luxury bg-background-cream" aria-labelledby="authority-heading">
+            <Container>
+              <div className="mx-auto max-w-5xl">
+                <p className="overline mb-3">Local Authority</p>
+                <h2 id="authority-heading" className="mb-4 font-heading text-display-sm font-bold text-primary">{config.authority.heading}</h2>
+                <p className="mb-10 max-w-3xl text-body-lg leading-relaxed text-foreground">{config.authority.intro}</p>
+                <h3 className="mb-5 font-heading text-heading-lg font-bold text-primary">Services in {config.cityShort}</h3>
+                <ul className="mb-12 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+                  {config.authority.services.map(svc => (
+                    <li key={svc.title} className="rounded-xl border border-border bg-white p-5">
+                      <h4 className="mb-2 font-heading text-heading-sm font-bold text-primary">
+                        {svc.href ? <Link href={svc.href} className="hover:text-gold">{svc.title}</Link> : svc.title}
+                      </h4>
+                      <p className="text-body-sm leading-relaxed text-foreground-muted">{svc.description}</p>
+                    </li>
+                  ))}
+                </ul>
+                <h3 className="mb-5 font-heading text-heading-lg font-bold text-primary">Proof — verifiable facts</h3>
+                <dl className="divide-y divide-border rounded-xl border border-border bg-white">
+                  {config.authority.proof.map(p => (
+                    <div key={p.label} className="grid grid-cols-1 gap-1 px-5 py-4 sm:grid-cols-3 sm:gap-4">
+                      <dt className="text-body-sm font-semibold text-primary">{p.label}</dt>
+                      <dd className="text-body-sm text-foreground-muted sm:col-span-2">{p.value}</dd>
+                    </div>
+                  ))}
+                </dl>
               </div>
             </Container>
           </section>

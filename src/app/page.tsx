@@ -6,12 +6,11 @@ export const revalidate = 1800;
 
 import type { Metadata } from 'next';
 import { jsonLd } from '@/lib/jsonLd';
-import { listingSummary } from '@/lib/schema';
+import { CANONICAL_DESCRIPTION, REPRESENTATION_STATEMENT, listingSummary } from '@/lib/schema';
 
 export const metadata: Metadata = {
-  title: 'Texas Commercial Real Estate | Retail, Industrial & Office | CRECO',
-  description:
-    'Texas commercial real estate — retail, industrial, and office properties for lease and sale. Tenant representation, owner services, and portfolio advisory for multi-property owners across Texas. Headquartered in San Antonio, working deals statewide.',
+  title: 'Texas Commercial Real Estate Brokerage | Tenants, Landlords & Investors | CRECO',
+  description: CANONICAL_DESCRIPTION,
   keywords: [
     'Texas commercial real estate',
     'commercial real estate Texas',
@@ -21,6 +20,9 @@ export const metadata: Metadata = {
     'office space for lease Texas',
     'commercial property for sale Texas',
     'tenant representation Texas',
+    'landlord representation Texas',
+    'investment sales Texas',
+    'Fair Oaks Ranch commercial real estate',
     'commercial property owner services Texas',
     'portfolio commercial real estate Texas',
     'commercial real estate broker Texas',
@@ -30,9 +32,8 @@ export const metadata: Metadata = {
     'Dallas Fort Worth commercial real estate',
   ],
   openGraph: {
-    title: 'Texas Commercial Real Estate | CRECO',
-    description:
-      'Retail, industrial, and office commercial property across Texas. Tenant representation, owner services, and portfolio advisory.',
+    title: 'CRECO — Full-Service Commercial Real Estate | San Antonio, Fair Oaks Ranch & Texas',
+    description: CANONICAL_DESCRIPTION,
     url: 'https://www.crecotx.com',
     type: 'website',
   },
@@ -113,9 +114,9 @@ const DEMO_TESTIMONIALS = [
 
 // SERVICES — ordered by what brings owners and tenants in the door
 const SERVICES = [
-  { icon: Briefcase, title: 'Tenant Representation', description: 'We work for tenants — never landlords on the same deal — to find the right Texas commercial space at the right terms.' },
-  { icon: Building2, title: 'Owner Services & Leasing', description: 'Owner-side leasing and sales across retail, industrial, office, and land. Marketing, negotiation, diligence to close.' },
-  { icon: LineChart, title: 'Investment Advisory', description: 'Underwriting, market analysis, and portfolio strategy for multi-property owners and investors across Texas.' },
+  { icon: Briefcase, title: 'Tenant Representation', description: 'Site selection and lease negotiation for businesses leasing retail, restaurant, office, medical, industrial, and flex space.' },
+  { icon: Building2, title: 'Landlord & Owner Representation', description: 'Leasing and sales for property owners across retail, office, industrial, flex, and land — marketing, tenant and buyer sourcing, negotiation, diligence to close.' },
+  { icon: LineChart, title: 'Investment Sales & Advisory', description: 'Acquisitions, dispositions, underwriting, 1031 exchanges, and portfolio strategy for investors and multi-property owners across Texas.' },
   { icon: Wrench, title: 'Property Management', description: 'Day-to-day operations and tenant relations for commercial assets — built for owners with multiple Texas properties.' },
   { icon: Layers, title: 'Property Development', description: 'Site selection, entitlements, pro forma, and construction coordination — concept through stabilization.' },
   { icon: Leaf, title: 'Sustainability Consulting', description: 'Energy audits, ESG strategy, and retrofit ROI analysis for commercial owners and institutional investors.' },
@@ -143,7 +144,7 @@ const TEXAS_MARKETS = [
 const FAQS = [
   {
     q: 'Does CRECO represent tenants or landlords?',
-    a: 'Both — CRECO represents tenants and buyers looking for commercial space, and landlords, owners, and sellers leasing or selling property. On any one deal CRECO represents one side only. For tenants, representation is typically free because the landlord pays the commission.',
+    a: 'Both — and investors. CRECO is a full-service brokerage, not a tenant-only firm: it represents tenants and buyers looking for space, landlords and owners leasing or selling property, and investors buying and selling commercial real estate, across retail, office, industrial, flex, and land. When both parties authorize it in writing, CRECO can act as an intermediary under Texas law. For tenants, representation is typically free because the landlord pays the commission.',
   },
   {
     q: 'Is CRECO a licensed real estate brokerage?',
@@ -151,7 +152,7 @@ const FAQS = [
   },
   {
     q: 'What types of commercial real estate does CRECO handle in Texas?',
-    a: 'CRECO is a full-service Texas commercial real estate firm. We handle retail (strip centers, restaurants, freestanding, urban storefronts), industrial and warehouse (distribution, light manufacturing, flex-industrial), office (Class A/B/C, medical, professional), flex space, and commercial land — for lease, sale, and investment.',
+    a: 'CRECO is a full-service Texas commercial real estate brokerage representing tenants, landlords, owners, and investors. We handle retail (strip centers, restaurants, freestanding, urban storefronts), industrial and warehouse (distribution, light manufacturing, flex-industrial), office (Class A/B/C, medical, professional), flex space, and commercial land — for lease, sale, and investment.',
   },
   {
     q: 'Where in Texas do you work?',
@@ -162,8 +163,8 @@ const FAQS = [
     a: 'Yes — multi-property owners are core to our practice. We provide portfolio strategy, hold/sell analysis, repositioning, 1031 exchange identification, tenant mix optimization, and ongoing property management for owners with 5 to 100+ commercial Texas properties. Our owner services are built for institutional-quality reporting at boutique-firm responsiveness.',
   },
   {
-    q: 'How does tenant representation work?',
-    a: 'When you hire CRECO as your tenant rep, we work for you exclusively on that transaction — never representing the landlord on the same deal. We identify candidate spaces across Texas, run financial comparison analyses, draft and negotiate the LOI and lease, and coordinate buildout. The landlord pays our commission per market convention, so tenant representation is typically free to the tenant.',
+    q: 'How does tenant representation work at CRECO?',
+    a: 'When CRECO represents a tenant, it identifies candidate spaces across Texas, runs financial comparisons, negotiates the LOI and lease, and coordinates buildout — and the landlord typically pays the commission, so it is usually free to the tenant. Tenant representation is one of CRECO\'s service lines alongside landlord/owner representation and investment sales. If a tenant is interested in a property CRECO also represents for the owner, CRECO discloses that up front and, only with both parties\' written consent, acts as an intermediary under Texas law.',
   },
   {
     q: 'How do I list my commercial property with CRECO?',
@@ -180,8 +181,8 @@ const FAQS = [
 ];
 
 const DEFAULT_SETTINGS = {
-  hero_headline: 'Texas Commercial Real Estate',
-  hero_subheadline: 'Retail, industrial, and office properties for lease and sale across Texas. Tenant representation, owner services, and portfolio advisory — built for multi-property owners and growing tenants statewide.',
+  hero_headline: 'Full-Service Commercial Real Estate',
+  hero_subheadline: CANONICAL_DESCRIPTION,
   hero_image_url: '/images/sa-hero.jpg' as string | null,
   stat_sf_transacted: '2.4M',
   stat_years_experience: 15,
@@ -289,8 +290,13 @@ export default async function HomePage() {
   // .includes()/.split() called on it below — if an editor ever blanks that
   // field, calling a string method on null would throw and drop the ENTIRE
   // homepage to error.tsx. Fall back to the defaults instead.
-  const heroHeadline = s.hero_headline ?? DEFAULT_SETTINGS.hero_headline;
-  const heroSubheadline = s.hero_subheadline ?? DEFAULT_SETTINGS.hero_subheadline;
+  // Hero H1 + intro are code-controlled positioning, NOT the site_settings CMS
+  // row: AI assistants were describing CRECO as tenant-only, so the first
+  // heading and paragraph on the site must state full-service representation
+  // verbatim (CANONICAL_DESCRIPTION). The CMS hero fields are intentionally
+  // ignored here.
+  const heroHeadline = DEFAULT_SETTINGS.hero_headline;
+  const heroSubheadline = DEFAULT_SETTINGS.hero_subheadline;
 
   return (
     <>
@@ -346,7 +352,7 @@ export default async function HomePage() {
         <div className="hero-overlay-luxury absolute inset-0" />
 
         <Container className="relative z-10 text-center text-white">
-          <p className="overline mb-6 animate-fade-in-down text-gold">Texas Commercial Real Estate · Statewide Coverage</p>
+          <p className="overline mb-6 animate-fade-in-down text-gold">Tenants · Landlords · Owners · Investors — Lease &amp; Sale</p>
           <h1 className="mb-6 animate-fade-in-up font-heading text-display-xl font-bold text-white text-shadow-hero fill-both">
             {heroHeadline.includes('\n')
               ? heroHeadline.split('\n').map((line: string, i: number) => (
@@ -355,8 +361,11 @@ export default async function HomePage() {
               : <><span className="text-gradient-gold">{heroHeadline}</span></>
             }
           </h1>
-          <p className="mx-auto mb-10 max-w-2xl animate-fade-in text-body-lg text-white/80 delay-200 fill-both">
+          <p className="mx-auto mb-4 max-w-3xl animate-fade-in text-body-lg text-white/85 delay-200 fill-both">
             {heroSubheadline}
+          </p>
+          <p className="mx-auto mb-10 max-w-3xl animate-fade-in text-body-sm text-white/70 delay-200 fill-both">
+            {REPRESENTATION_STATEMENT}
           </p>
 
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center animate-fade-in delay-300 fill-both">
@@ -662,7 +671,7 @@ export default async function HomePage() {
                 {[
                   'Statewide Texas market knowledge with deep San Antonio roots',
                   'Principal-level service on every engagement — never handed off',
-                  'Owner-side and tenant-side fluency across retail, industrial, office, flex, and land',
+                  'Represents tenants, landlords, owners, and investors — leasing and sales across retail, office, industrial, flex, and land',
                   'Portfolio-level reporting and strategy for multi-property owners',
                 ].map(item => (
                   <li key={item} className="flex items-start gap-3 text-body text-foreground-muted">

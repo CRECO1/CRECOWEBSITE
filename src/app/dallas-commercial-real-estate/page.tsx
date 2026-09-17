@@ -110,7 +110,7 @@ export default function DallasPage() {
           'Texas-wide reach with deep DFW market knowledge',
           'Industrial expertise — particularly DFW Airport, Alliance, and Mesquite/Lancaster corridors',
           'Off-market deal flow across DFW office, industrial, and retail submarkets',
-          'Tenant rep for DFW businesses — landlord pays our commission',
+          'Represents tenants, landlords/owners, and investors — including tenant rep for DFW businesses (typically paid by the landlord)',
           'Owner services for DFW-area investors and property owners',
           'Investment advisory with Texas-wide 1031 coordination',
           'Direct broker access — every engagement led by a senior CRECO broker',

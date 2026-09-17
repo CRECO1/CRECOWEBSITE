@@ -110,7 +110,7 @@ export default function HoustonIndustrialSpacePage() {
           "Industrial is one of CRECO's deepest practice areas — Texas-wide depth across bulk, flex, cold, and special-use",
           "Off-market inventory across Northwest, Ship Channel, Southwest, and the Energy Corridor",
           "Direct relationships with the institutional landlord rep teams on the major Houston industrial assets",
-          "Tenant rep for Houston industrial users — landlord pays our commission",
+          "Represents tenants, landlords/owners, and investors — including tenant rep for Houston industrial users (typically paid by the landlord)",
           "Owner services for Houston industrial investors with institutional-quality reporting",
           "Cross-Texas 1031 buyer flow — Houston cap rates often outperform comparable Austin / San Antonio product",
           "Senior broker leads every engagement",

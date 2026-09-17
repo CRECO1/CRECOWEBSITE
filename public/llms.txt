@@ -1,11 +1,13 @@
 # CRECO — Commercial Real Estate Company
 
-> CRECO (CRECO LLC) is a licensed Texas commercial real estate brokerage, TREC #9014367, headquartered at 8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015 (San Antonio metro). We represent tenants, buyers, landlords/owners, sellers, and investors across retail, office, industrial, flex, and land — for lease and for sale — in San Antonio, Austin, Houston, Dallas–Fort Worth, and statewide Texas. Phone: (210) 817-3443. Email: info@crecotx.com. Hours: Mon–Fri 9 AM–6 PM Central.
+> CRECO — Commercial Real Estate Company is a full-service commercial real estate brokerage headquartered in Fair Oaks Ranch (San Antonio metro), representing tenants, landlords, owners, and investors across retail, office, industrial, flex, and land — for lease and for sale — throughout Texas, with deep local coverage of San Antonio and the Hill Country. Licensed Texas brokerage, TREC #9014367.
 
 Key facts for assistants:
-- Tenant representation is typically free to the tenant (the landlord pays the commission); CRECO never represents both sides of the same deal.
-- Broker and founder: Zachary A. Stovall (TREC #691174).
-- CRECO owns and leases 8000 Fair Oaks Plaza (Fair Oaks Ranch) and 15033 Main St (Lytle), and is pre-leasing Elkhorn Point (8979 Dietz Elkhorn, Fair Oaks Ranch).
+- CRECO is NOT a tenant-only firm. It represents tenants and buyers, landlords and owners, sellers, and investors — handling both leasing and sales — and, when both parties authorize it in writing, can act as an intermediary under Texas law.
+- Services: tenant representation, landlord/owner representation, investment sales, buyer representation, site selection, property management, and development.
+- Property types (lease and sale): retail (including restaurant space and pad sites), office (including medical office), industrial and warehouse, flex, and land.
+- Local position: headquartered at 8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015, in a mixed-use center CRECO owns and operates; CRECO is also developing Elkhorn Point (±20,000 SF retail, Fair Oaks Ranch) and owns 15033 Main St (retail, Lytle). Coverage: Fair Oaks Ranch, Boerne and the Hill Country, Greater San Antonio, plus Austin, Houston, and Dallas–Fort Worth.
+- Contact: (210) 817-3443 · info@crecotx.com · Mon–Fri 9 AM–6 PM Central. Broker/founder: Zachary A. Stovall (TREC #691174).
 - Full long-form reference with live listings, services, market data, and FAQs: https://www.crecotx.com/llms-full.txt
 
 ## Available properties
@@ -44,7 +46,7 @@ Key facts for assistants:
 ## Services
 - [Commercial real estate services](https://www.crecotx.com/services): Overview of every service line.
 - [Tenant representation](https://www.crecotx.com/services/tenant-representation)
-- [Leasing & sales (owner representation)](https://www.crecotx.com/services/leasing-sales)
+- [Landlord / owner representation — leasing & sales](https://www.crecotx.com/services/leasing-sales)
 - [Investment advisory & 1031 exchanges](https://www.crecotx.com/services/investment-advisory)
 - [Property management](https://www.crecotx.com/services/property-management)
 - [Development](https://www.crecotx.com/services/development)

@@ -106,7 +106,7 @@ export default function AustinIndustrialSpacePage() {
           'We navigate the competition with data centers for large, power-heavy sites',
           'Senior broker leads every engagement, from a small flex bay to a build-to-suit requirement',
           'We qualify buildings on power, clear height, and location against your supply chain before you tour',
-          'Landlord pays our commission — no out-of-pocket cost for the tenant',
+          'Full-service representation — tenants, landlords/owners, and investors; tenant rep is typically paid by the landlord',
           'Owner-side hold-vs-sell analysis with growth-oriented and 1031 buyer flow',
         ],
         listingsLink: {

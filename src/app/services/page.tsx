@@ -12,7 +12,7 @@ import { BUSINESS, breadcrumbList, businessRef, webPage } from '@/lib/schema';
 const SERVICES_FAQS = [
   {
     q: 'Does CRECO represent tenants or landlords?',
-    a: 'Both. CRECO\'s tenant representation practice works exclusively for the tenant on a given deal, and its leasing & sales practice represents owners and landlords. CRECO never represents both sides of the same deal.',
+    a: 'Both — plus investors. CRECO is a full-service brokerage: tenant representation for businesses leasing space, landlord/owner representation for property owners leasing or selling, and investment sales for buyers and sellers of commercial property. When both parties authorize it in writing, CRECO can act as an intermediary under Texas law.',
   },
   {
     q: 'How much does tenant representation cost?',
@@ -20,7 +20,7 @@ const SERVICES_FAQS = [
   },
   {
     q: 'What property types and markets does CRECO cover?',
-    a: 'Retail, office (including medical office), industrial and warehouse, flex, land, and investment property — for lease and for sale — in San Antonio, Austin, Houston, Dallas–Fort Worth, the Hill Country, and statewide Texas.',
+    a: 'Retail (including restaurant space and pad sites), office (including medical office), industrial and warehouse, flex, land, and investment property — for lease and for sale — in San Antonio, Austin, Houston, Dallas–Fort Worth, the Hill Country, and statewide Texas.',
   },
   {
     q: 'Can CRECO manage my commercial property or help with a 1031 exchange?',
@@ -101,8 +101,8 @@ export const SERVICES: ServiceContent[] = [
     slug: 'tenant-representation',
     icon: Briefcase,
     title: 'Tenant Representation',
-    shortDescription: 'We work for tenants — never landlords on the same deal — to find the right Texas commercial space at the right terms.',
-    metaDescription: 'Texas tenant representation for retail, industrial, and office tenants. CRECO works exclusively for tenants — never the landlord on the same deal — across San Antonio, Austin, Houston, Dallas–Fort Worth, and statewide.',
+    shortDescription: 'Site selection and lease negotiation for businesses leasing retail, restaurant, office, medical office, industrial, and flex space — one of CRECO\'s full-service lines alongside landlord representation and investment sales.',
+    metaDescription: 'Texas tenant representation for retail, restaurant, office, medical, industrial, and flex tenants from CRECO — a full-service brokerage that also represents landlords, owners, and investors — across San Antonio, Fair Oaks Ranch, the Hill Country, and statewide.',
     keywords: [
       'tenant representation texas',
       'commercial tenant rep texas',
@@ -114,10 +114,10 @@ export const SERVICES: ServiceContent[] = [
       'retail tenant rep texas',
       'industrial tenant rep texas',
     ],
-    heroSubhead: 'Exclusive tenant-side advocacy for retail, industrial, and office space across Texas. We never represent the landlord on a deal we are bringing you.',
+    heroSubhead: 'Dedicated advocacy for tenants leasing retail, restaurant, office, medical, industrial, and flex space across Texas — from a full-service brokerage that also represents landlords, owners, and investors.',
     intro: [
       'Tenant representation is the most undervalued service in Texas commercial real estate. The landlord pays our commission per market convention, which means hiring CRECO as your tenant rep is typically free to your business — yet the right tenant rep can save your company $50,000 to $5,000,000 over the life of a lease through better terms, larger tenant improvement allowances, free rent, and stronger renewal language.',
-      'CRECO works exclusively for tenants on every assignment. We will never represent the landlord on the same deal we are bringing you — that conflict-of-interest is core to how the big national firms work, and it is core to how we don\'t. When we sit across the negotiating table from a Texas landlord, we are 100% in your corner.',
+      'When CRECO represents you as a tenant, our duty on that engagement is to your business. Because CRECO is a full-service brokerage — we also represent landlords, owners, and investors, and we own and lease our own centers — we know exactly how landlords underwrite a deal, and we use that to negotiate for you. If you want to see a property CRECO also represents for the owner, we disclose it up front; CRECO acts as an intermediary only if both you and the owner authorize it in writing, as Texas law requires.',
       'Our practice spans every major Texas commercial real estate market — San Antonio, Austin, Houston, Dallas–Fort Worth, El Paso, and the Hill Country — and every property type: retail (strip centers, restaurants, freestanding), industrial (warehouse, distribution, flex), and office (Class A/B/C, medical, executive). Whether you are a first-time tenant looking for a single 2,500 SF office or a multi-location operator rolling out 20 retail units across Texas, the playbook is the same: rigorous site selection, financial benchmarking, aggressive negotiation, and clean-handoff buildout coordination.',
     ],
     body: [
@@ -151,7 +151,7 @@ export const SERVICES: ServiceContent[] = [
       },
       {
         q: 'How is tenant representation different from a regular real estate agent?',
-        a: 'Residential agents help families buy houses. Tenant reps are commercial real estate brokers who specialize exclusively in advocating for tenants in commercial leases. The skill sets, lease structures, market knowledge, and economic stakes are entirely different. CRECO\'s tenant reps are licensed Texas commercial real estate brokers focused exclusively on commercial tenant work — not residential.',
+        a: 'Residential agents help families buy houses. Tenant reps are commercial real estate brokers who advocate for tenants in commercial leases. The skill sets, lease structures, market knowledge, and economic stakes are entirely different. CRECO\'s brokers are licensed Texas commercial brokers who work tenant, landlord, and investment assignments — commercial only, not residential.',
       },
       {
         q: 'Can I just respond to LoopNet listings myself?',
@@ -241,8 +241,8 @@ export const SERVICES: ServiceContent[] = [
   {
     slug: 'leasing-sales',
     icon: Building2,
-    title: 'Leasing & Sales',
-    shortDescription: 'Owner-side leasing and sales across retail, industrial, office, flex, and land. Marketing, negotiation, diligence to close.',
+    title: 'Landlord Representation: Leasing & Sales',
+    shortDescription: 'Landlord and owner representation — leasing and sales across retail, restaurant, office, medical, industrial, flex, and land. Marketing, negotiation, diligence to close.',
     metaDescription: 'Texas commercial real estate leasing and sales. Owner-side representation for retail, industrial, office, flex, and land properties. Comprehensive marketing, aggressive negotiation, smooth close across Texas.',
     keywords: [
       'commercial real estate leasing texas',

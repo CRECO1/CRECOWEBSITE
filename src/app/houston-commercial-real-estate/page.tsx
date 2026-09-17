@@ -105,7 +105,7 @@ export default function HoustonPage() {
           'Texas-wide reach with depth in Greater Houston specifically',
           'Industrial expertise — one of CRECO\'s strongest practice areas',
           'Off-market deal flow across the Ship Channel, Northwest, Southwest, and Energy Corridor submarkets',
-          'Tenant rep for Houston businesses — landlord pays our commission',
+          'Represents tenants, landlords/owners, and investors — including tenant rep for Houston businesses (typically paid by the landlord)',
           'Owner services for Houston-area investors and property owners',
           'Investment advisory with Texas-wide 1031 buyer network',
           'Direct broker access — every engagement led by a senior CRECO broker',

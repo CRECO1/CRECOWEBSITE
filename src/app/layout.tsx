@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Playfair_Display, Source_Sans_3 } from 'next/font/google';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { siteGraph } from '@/lib/schema';
+import { CANONICAL_DESCRIPTION, siteGraph } from '@/lib/schema';
 import Script from 'next/script';
 import { Suspense } from 'react';
 import { MobileStickyCTA } from '@/components/layout/MobileStickyCTA';
@@ -43,8 +43,7 @@ export const metadata: Metadata = {
     default: 'Texas Commercial Real Estate | Retail, Industrial & Office | CRECO',
     template: '%s',
   },
-  description:
-    'CRECO is a Texas commercial real estate firm specializing in retail, industrial, and office properties for lease and sale. Tenant representation, owner services, and portfolio advisory for multi-property owners across Texas — from our Fair Oaks Ranch headquarters at 8000 Fair Oaks Pkwy.',
+  description: CANONICAL_DESCRIPTION,
   keywords: [
     'Texas commercial real estate',
     'commercial real estate Texas',
@@ -66,9 +65,9 @@ export const metadata: Metadata = {
     'Dallas commercial real estate',
     'Fort Worth commercial real estate',
   ],
-  authors: [{ name: 'CRECO – Commercial Real Estate Company' }],
-  creator: 'CRECO – Commercial Real Estate Company',
-  publisher: 'CRECO – Commercial Real Estate Company',
+  authors: [{ name: 'CRECO — Commercial Real Estate Company' }],
+  creator: 'CRECO — Commercial Real Estate Company',
+  publisher: 'CRECO — Commercial Real Estate Company',
   formatDetection: { telephone: true, address: true, email: true },
   icons: {
     icon: [
@@ -90,18 +89,16 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://www.crecotx.com',
-    siteName: 'CRECO – Texas Commercial Real Estate',
-    title: 'Texas Commercial Real Estate | Retail, Industrial & Office | CRECO',
-    description:
-      'Retail, industrial, and office commercial property across Texas. Tenant representation, owner services, and portfolio advisory. Trusted by multi-property owners and growing tenants statewide.',
+    siteName: 'CRECO — Commercial Real Estate Company',
+    title: 'CRECO — Full-Service Commercial Real Estate | San Antonio, Fair Oaks Ranch & Texas',
+    description: CANONICAL_DESCRIPTION,
     // images intentionally omitted — Next.js auto-discovers /opengraph-image.tsx
     // and uses it as the default for every page (1200×630 branded design).
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Texas Commercial Real Estate | CRECO',
-    description:
-      'Texas commercial real estate — retail, industrial, and office. Tenant representation and owner services for multi-property investors statewide.',
+    title: 'CRECO — Full-Service Commercial Real Estate | Texas',
+    description: CANONICAL_DESCRIPTION,
     // Twitter card image also pulled from /opengraph-image.tsx automatically
   },
   robots: {

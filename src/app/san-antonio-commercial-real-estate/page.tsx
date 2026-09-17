@@ -18,9 +18,9 @@ import { CityHubPage } from '@/components/marketing/CityHubPage';
  * passes the helpful-content + AI-citation bars.
  */
 export const metadata: Metadata = {
-  title: 'San Antonio Commercial Real Estate | Industrial, Office, Retail | CRECO',
+  title: 'San Antonio Commercial Real Estate Brokerage | Tenant Rep, Landlord Rep & Investment Sales | CRECO',
   description:
-    'San Antonio commercial real estate — industrial, office, retail, medical, and flex space for lease and sale across Greater San Antonio. Tenant representation, owner services, and investment advisory from CRECO, headquartered in San Antonio.',
+    'CRECO is a full-service San Antonio-area commercial real estate brokerage (HQ: Fair Oaks Ranch) representing tenants, landlords, owners, and investors in retail, restaurant, office, medical office, industrial, flex, and land deals — for lease and for sale — across Greater San Antonio and the Hill Country. TREC #9014367.',
   keywords: [
     'san antonio commercial real estate',
     'san antonio commercial property',
@@ -39,13 +39,16 @@ export const metadata: Metadata = {
     'south san antonio industrial',
     'schertz industrial space',
     'san antonio tenant representation',
+    'san antonio landlord representation',
+    'san antonio investment sales broker',
+    'san antonio commercial land for sale',
     'san antonio commercial broker headquarters',
   ],
   alternates: { canonical: 'https://www.crecotx.com/san-antonio-commercial-real-estate' },
   openGraph: {
     title: 'San Antonio Commercial Real Estate | CRECO',
     description:
-      'Headquartered in San Antonio. Industrial, office, retail, medical commercial real estate across Greater San Antonio — tenant rep, owner services, investment advisory.',
+      'Full-service San Antonio commercial real estate: tenant representation, landlord/owner representation, and investment sales across retail, office, industrial, flex, and land.',
     url: 'https://www.crecotx.com/san-antonio-commercial-real-estate',
     type: 'website',
   },
@@ -58,11 +61,11 @@ export default function SanAntonioPage() {
         canonicalPath: '/san-antonio-commercial-real-estate',
         city: 'San Antonio',
         cityShort: 'San Antonio',
-        heroEyebrow: 'Texas Commercial Real Estate · San Antonio · HQ',
+        heroEyebrow: 'Greater San Antonio · Tenants · Landlords · Investors',
         heroTitle:
-          'San Antonio commercial real estate — CRECO\'s home market and one of the strongest demographic stories in Texas.',
+          'San Antonio commercial real estate — full-service representation for tenants, landlords, and investors in CRECO\'s home market.',
         heroSubhead:
-          "Industrial, office, retail, medical, and flex space across Greater San Antonio — Stone Oak, the Medical Center, Westover Hills, the Pearl, downtown, South Side, and the Schertz/Cibolo industrial corridor. CRECO is headquartered in San Antonio, and Greater San Antonio is the market we know building-by-building. Tenant representation, owner services, and investment advisory for businesses, multi-property owners, and 1031 investors.",
+          "Industrial, office, retail, medical, and flex space across Greater San Antonio — Stone Oak, the Medical Center, Westover Hills, the Pearl, downtown, South Side, and the Schertz/Cibolo industrial corridor. CRECO is headquartered in the San Antonio metro (Fair Oaks Ranch) and represents tenants, landlords, owners, and investors across retail, restaurant, office, medical, industrial, flex, and land — for lease and for sale.",
         marketStats: [
           { label: 'Metro population', value: '2.7M+', context: '7th-largest US city, 24th-largest US metro' },
           { label: 'Industrial vacancy', value: '~7%', context: 'Q2 2026; Schertz/Cibolo + South Side leading absorption' },
@@ -127,7 +130,7 @@ export default function SanAntonioPage() {
           'CRECO is headquartered in San Antonio — building-level market knowledge, not Texas-generic coverage',
           'Senior broker leads every engagement — no junior handoff after the pitch',
           'Off-market deal flow across Stone Oak, the Medical Center, Westover Hills, the South Side, and Schertz/Cibolo',
-          'Tenant rep for San Antonio businesses — landlord pays the commission',
+          'Represents tenants, landlords/owners, and investors — including tenant rep for San Antonio businesses (typically paid by the landlord)',
           'Owner services for multi-property San Antonio investors with institutional-quality reporting',
           'Investment advisory with Texas-wide 1031 buyer network — SA cap rates outperform Austin/Houston for comparable product',
           'Direct broker access at any size deal — same senior team across $500K and $50M',
@@ -179,8 +182,47 @@ export default function SanAntonioPage() {
           },
         ],
         quickAnswer:
-          "San Antonio is the 2nd-largest city in Texas and one of the fastest-growing US metros, with a disciplined commercial real estate market: industrial on the South Side and in Schertz/Cibolo, Class A office in Stone Oak and Westover Hills, medical around the South Texas Medical Center, and tourism retail on the Riverwalk. CRECO is headquartered in San Antonio and represents tenants, owners, and investors building-by-building.",
+          "San Antonio is the 2nd-largest city in Texas and one of the fastest-growing US metros, with a disciplined commercial real estate market: industrial on the South Side and in Schertz/Cibolo, Class A office in Stone Oak and Westover Hills, medical around the South Texas Medical Center, and tourism retail on the Riverwalk. CRECO is headquartered in San Antonio and represents tenants, landlords, owners, and investors — leasing and sales across retail, office, industrial, flex, and land.",
+        authority: {
+          heading: 'Who does commercial real estate, tenant rep, and landlord rep in San Antonio? CRECO does all three.',
+          intro:
+            "CRECO is a full-service brokerage based in the San Antonio metro — headquartered in Fair Oaks Ranch on the northwest edge of the city — so the same senior team handles a tenant search in Stone Oak, a landlord's leasing campaign in the Medical Center, a warehouse sale in Northeast San Antonio, and a land sale on the I-35 corridor. CRECO is also a San Antonio-area owner-operator: it owns and leases retail centers in Fair Oaks Ranch and Lytle and is developing a new retail center in Fair Oaks Ranch, so it negotiates with a landlord's understanding of how deals pencil.",
+          services: [
+            { title: 'Tenant representation', href: '/services/tenant-representation', description: 'Site searches and lease negotiation for businesses leasing retail, restaurant, office, medical office, industrial, and flex space across Stone Oak, the Medical Center, Westover Hills, downtown, and the I-35 / I-10 corridors — typically paid by the landlord.' },
+            { title: 'Landlord / owner representation', href: '/services/leasing-sales', description: 'Listing, marketing, and leasing San Antonio office, medical, retail, and industrial property for owners — CRECO currently markets office, medical, and warehouse space in Northwest, the Medical Center, and Northeast San Antonio.' },
+            { title: 'Investment sales', href: '/services/investment-advisory', description: 'Dispositions and acquisitions of San Antonio retail, office, industrial, and income property, including 1031 replacement property for Austin and Houston buyers seeking San Antonio yields.' },
+            { title: 'Industrial & flex leasing and sales', href: '/san-antonio-industrial-space', description: 'Warehouse, distribution, and flex space on the Northeast side, the South Side / Toyota corridor, and Schertz / Cibolo along I-35.' },
+            { title: 'Office & medical office leasing and sales', href: '/san-antonio-office-space', description: 'Class A and B office in Stone Oak, Westover Hills, and North Central, and medical office around the South Texas Medical Center.' },
+            { title: 'Retail, restaurant & land', href: '/san-antonio-retail-space', description: 'Inline, end-cap, and pad-site retail and restaurant space, plus commercial land and development sites across Greater San Antonio and the Hill Country.' },
+            { title: 'Site selection', href: '/services/tenant-representation', description: 'Trade-area, labor, traffic, and access analysis for retailers, restaurants, medical users, and distribution operators choosing a San Antonio location.' },
+            { title: 'Property management & development', href: '/services/property-management', description: 'Operations and reporting for commercial owners, and development of new projects — CRECO manages and develops its own centers in the metro.' },
+          ],
+          proof: [
+            { label: 'Headquarters', value: '8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015 (San Antonio metro) — (210) 817-3443 · info@crecotx.com' },
+            { label: 'Current San Antonio assignments', value: 'Active office, medical office, and warehouse listings in Northwest, the Medical Center, and Northeast San Antonio — every current property, with size and pricing, is in the live listings table on this page.' },
+            { label: 'Owner-operator in the metro', value: '8000 Fair Oaks Plaza (retail + executive suites, Fair Oaks Ranch), 15033 Main St (±11,750 SF retail, Lytle), and Elkhorn Point (±20,000 SF retail in development, Fair Oaks Ranch).' },
+            { label: 'Broker & founder', value: 'Zachary A. Stovall (TREC #691174), an eighth-generation Texan raised in San Antonio; over eight years he has closed more than $130 million in acquisitions and dispositions and $95 million in leases.' },
+            { label: 'Director of Leasing', value: 'Brian Blanco, a San Antonio native with four-plus years in Amazon\'s delivery-station site-selection process.' },
+            { label: 'License', value: 'Licensed Texas real estate brokerage, TREC #9014367.' },
+          ],
+        },
         faqs: [
+          {
+            q: 'Who does commercial real estate brokerage in San Antonio?',
+            a: 'CRECO — Commercial Real Estate Company is a full-service San Antonio-area commercial brokerage headquartered in Fair Oaks Ranch (TREC #9014367). It represents tenants, landlords, owners, and investors in retail, restaurant, office, medical office, industrial, flex, and land transactions — for lease and for sale — across Greater San Antonio and the Hill Country. Call (210) 817-3443.',
+          },
+          {
+            q: 'Who does tenant representation in San Antonio?',
+            a: 'CRECO represents tenants leasing retail, restaurant, office, medical, industrial, and flex space across San Antonio, typically at no cost to the tenant because the landlord pays the commission. CRECO is not tenant-only: it also represents landlords, owners, and investors, and when both parties authorize it in writing it can act as an intermediary under Texas law.',
+          },
+          {
+            q: 'Who does landlord representation and leasing for property owners in San Antonio?',
+            a: 'CRECO lists and leases San Antonio office, medical office, retail, industrial, and flex property for owners — pricing, marketing (including LoopNet, CoStar, and Crexi syndication), tenant sourcing, and lease negotiation — and currently markets office, medical, and warehouse space in Northwest, the Medical Center, and Northeast San Antonio. It also leases its own centers in the metro.',
+          },
+          {
+            q: 'Can CRECO sell my San Antonio commercial property or land?',
+            a: 'Yes. CRECO handles investment sales and owner-user sales of San Antonio retail, office, industrial, and income property, plus commercial land, starting with a no-obligation broker opinion of value — typically within one to two business days — and taps Austin and Houston 1031 buyers looking for San Antonio yields.',
+          },
           {
             q: 'Is commercial real estate cheaper in San Antonio than Austin?',
             a: "For comparable product, San Antonio cap rates frequently run 75–150 basis points higher than Austin — better yield for investors and, often, lower occupancy costs for tenants. San Antonio's market is also less distorted by speculative capital, so pricing tends to track real cash flow and demand. That spread is a major reason Austin and Houston 1031 buyers look to San Antonio for replacement property.",

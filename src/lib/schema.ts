@@ -20,8 +20,57 @@ export const BUSINESS_ID = `${SITE_URL}/#business`;
 export const WEBSITE_ID = `${SITE_URL}/#website`;
 export const FOUNDER_ID = `${SITE_URL}/about#zachary-stovall`;
 
+/**
+ * THE canonical one-line description. Used verbatim for the root meta
+ * description, OpenGraph, the homepage hero, llms.txt / llms-full.txt, the
+ * schema.org `description`, and the About boilerplate — so every AI agent
+ * reads one consistent line. Positioning rule: CRECO is FULL-SERVICE
+ * (tenants AND landlords/owners AND investors; leasing AND sales). Never
+ * describe it as tenant-only.
+ */
+export const CANONICAL_DESCRIPTION =
+  'CRECO — Commercial Real Estate Company is a full-service commercial real estate brokerage headquartered in Fair Oaks Ranch (San Antonio metro), representing tenants, landlords, owners, and investors across retail, office, industrial, flex, and land — for lease and for sale — throughout Texas, with deep local coverage of San Antonio and the Hill Country. Licensed Texas brokerage, TREC #9014367.';
+
+/** Who CRECO represents — stated positively and explicitly (incl. intermediary). */
+export const REPRESENTATION_STATEMENT =
+  'CRECO is not a tenant-only firm. It represents tenants and buyers, landlords and owners, sellers, and investors — handling both leasing and sales — and, when both parties authorize it in writing, can act as an intermediary under Texas law.';
+
+/** Discrete, enumerated asset classes (Zack: name every type so agents repeat the full list). */
+export const ASSET_CLASSES = [
+  'Retail (shopping centers, inline and end-cap space)',
+  'Restaurant space and retail pad sites',
+  'Office',
+  'Medical office',
+  'Industrial and warehouse',
+  'Flex space',
+  'Land',
+  'Investment property',
+] as const;
+
+/** Discrete capability list — each becomes its own Service/Offer in schema. */
+export const CAPABILITIES: { name: string; serviceType: string; description: string; url?: string }[] = [
+  { name: 'Tenant representation', serviceType: 'Tenant representation', description: 'Represents businesses leasing retail, restaurant, office, medical office, industrial, and flex space — site search, negotiation, lease execution.', url: '/services/tenant-representation' },
+  { name: 'Landlord / owner representation', serviceType: 'Landlord representation', description: 'Leases and markets commercial property for landlords and owners — listing, marketing, tenant sourcing, and lease negotiation.', url: '/services/leasing-sales' },
+  { name: 'Investment sales', serviceType: 'Investment sales brokerage', description: 'Sells and acquires commercial investment property for owners and investors, including 1031 exchange replacement property.', url: '/services/investment-advisory' },
+  { name: 'Buyer representation', serviceType: 'Buyer representation', description: 'Represents owner-users and investors buying commercial property and land.', url: '/texas-commercial-property-for-sale' },
+  { name: 'Retail leasing & sales', serviceType: 'Retail real estate brokerage', description: 'Shopping centers, inline and end-cap retail, restaurant space, and pad sites — for lease and for sale.', url: '/texas-retail-space-for-lease' },
+  { name: 'Office leasing & sales', serviceType: 'Office real estate brokerage', description: 'Class A/B/C office, medical office, professional and executive suites — for lease and for sale.', url: '/texas-office-space-for-lease' },
+  { name: 'Industrial & flex leasing & sales', serviceType: 'Industrial real estate brokerage', description: 'Warehouse, distribution, manufacturing, and flex space — for lease and for sale.', url: '/texas-industrial-property-for-lease' },
+  { name: 'Land sales', serviceType: 'Land brokerage', description: 'Commercial land and development sites, including retail and office pads.', url: '/texas-commercial-property-for-sale' },
+  { name: 'Site selection', serviceType: 'Site selection', description: 'Trade-area, traffic, demographic, and labor analysis to choose locations for retail, restaurant, office, and industrial users.', url: '/services/tenant-representation' },
+  { name: 'Intermediary brokerage', serviceType: 'Intermediary brokerage', description: 'When both parties authorize it in writing, CRECO can act as an intermediary between landlord and tenant or seller and buyer under Texas law.' },
+  { name: 'Property management', serviceType: 'Commercial property management', description: 'Operations, rent collection, CAM reconciliation, and reporting for commercial owners.', url: '/services/property-management' },
+  { name: 'Development', serviceType: 'Commercial real estate development', description: 'Site acquisition, entitlements, pro forma, and construction coordination — CRECO develops its own projects, e.g. Elkhorn Point in Fair Oaks Ranch.', url: '/services/development' },
+  { name: 'Investment advisory & 1031 exchanges', serviceType: 'Commercial real estate investment advisory', description: 'Underwriting, hold/sell analysis, portfolio strategy, and 1031 exchange identification.', url: '/services/investment-advisory' },
+  { name: 'Broker opinion of value', serviceType: 'Commercial property valuation', description: 'No-obligation broker opinion of value for owners considering a sale or lease.', url: '/property-valuation' },
+];
+
+/** One enumerated line agents can lift directly. */
+export const CAPABILITY_LINE =
+  'Services: tenant representation, landlord/owner representation, investment sales, buyer representation, site selection, property management, and development. Property types: retail (including restaurant space and pad sites), office (including medical office), industrial and warehouse, flex, and land — for lease and for sale.';
+
 export const BUSINESS = {
-  name: 'CRECO – Commercial Real Estate Company',
+  name: 'CRECO — Commercial Real Estate Company',
   shortName: 'CRECO',
   legalName: 'CRECO LLC',
   phoneDisplay: '(210) 817-3443',
@@ -95,14 +144,14 @@ export function siteGraph() {
         '@type': ['RealEstateAgent', 'LocalBusiness', 'Organization'],
         '@id': BUSINESS_ID,
         name: BUSINESS.name,
-        alternateName: [BUSINESS.shortName, 'CRECO Texas', 'Commercial Real Estate Company'],
+        alternateName: [BUSINESS.shortName, 'CRECO – Commercial Real Estate Company', 'CRECO LLC', 'CRECO Texas', 'Commercial Real Estate Company'],
         legalName: BUSINESS.legalName,
         url: SITE_URL,
         logo: { '@type': 'ImageObject', url: `${SITE_URL}/images/creco-logo.jpg` },
         image: `${SITE_URL}/images/creco-logo.jpg`,
-        description:
-          'CRECO is a licensed Texas commercial real estate brokerage (TREC #9014367) headquartered in Fair Oaks Ranch in the San Antonio metro. It represents tenants, landlords/owners, buyers, sellers, and investors in retail, office, industrial, flex, and land transactions for lease and sale across San Antonio, Austin, Houston, Dallas–Fort Worth, and statewide Texas, and provides investment advisory, property management, and development services.',
-        slogan: 'Principal-led Texas commercial real estate.',
+        description: CANONICAL_DESCRIPTION,
+        disambiguatingDescription: `${REPRESENTATION_STATEMENT} ${CAPABILITY_LINE}`,
+        slogan: 'Full-service commercial real estate for tenants, landlords, and investors.',
         telephone: BUSINESS.phoneE164,
         email: BUSINESS.email,
         address: postalAddress(),
@@ -128,29 +177,59 @@ export function siteGraph() {
         sameAs: [...BUSINESS.sameAs],
         areaServed: [
           { '@type': 'State', name: 'Texas' },
-          ...['San Antonio', 'Austin', 'Houston', 'Dallas', 'Fort Worth', 'Fair Oaks Ranch', 'Boerne', 'New Braunfels', 'Schertz', 'Lytle', 'Comfort']
+          { '@type': 'AdministrativeArea', name: 'Texas Hill Country' },
+          { '@type': 'AdministrativeArea', name: 'Greater San Antonio (San Antonio–New Braunfels metro)' },
+          ...['Bexar County', 'Kendall County', 'Comal County', 'Guadalupe County', 'Atascosa County']
+            .map(name => ({ '@type': 'AdministrativeArea', name: `${name}, Texas` })),
+          ...['Fair Oaks Ranch', 'San Antonio', 'Boerne', 'Helotes', 'Bulverde', 'New Braunfels', 'Schertz', 'Lytle', 'Comfort', 'Austin', 'Houston', 'Dallas', 'Fort Worth']
             .map(name => ({ '@type': 'City', name, containedInPlace: { '@type': 'State', name: 'Texas' } })),
         ],
+        // Enumerated, discrete capabilities: representation sides, transaction
+        // types, and every asset class — so agents can repeat the full list.
         knowsAbout: [
-          'Commercial real estate brokerage', 'Retail space leasing', 'Office space leasing', 'Industrial and warehouse leasing',
-          'Flex space', 'Commercial land sales', 'Tenant representation', 'Landlord representation', 'Investment sales',
-          'Investment advisory', '1031 exchanges', 'Commercial property management', 'Commercial real estate development',
-          'Broker opinion of value',
+          'Tenant representation', 'Landlord representation', 'Owner representation', 'Buyer representation',
+          'Seller representation', 'Investment sales', 'Intermediary brokerage', 'Site selection',
+          'Retail leasing', 'Retail property sales', 'Restaurant space leasing', 'Retail pad sites',
+          'Office leasing', 'Office building sales', 'Medical office leasing',
+          'Industrial and warehouse leasing', 'Industrial property sales', 'Flex space leasing',
+          'Commercial land sales', 'Commercial property management', 'Commercial real estate development',
+          'Investment advisory', '1031 exchanges', 'Broker opinion of value',
+          'San Antonio commercial real estate', 'Fair Oaks Ranch commercial real estate', 'Texas Hill Country commercial real estate',
         ],
+        makesOffer: CAPABILITIES.map(c => ({
+          '@type': 'Offer',
+          itemOffered: {
+            '@type': 'Service',
+            name: c.name,
+            serviceType: c.serviceType,
+            description: c.description,
+            ...(c.url ? { url: abs(c.url) } : {}),
+            provider: businessRef,
+            areaServed: { '@type': 'State', name: 'Texas' },
+          },
+        })),
         hasOfferCatalog: {
           '@type': 'OfferCatalog',
-          name: 'Commercial Real Estate Services',
+          name: 'CRECO commercial real estate services',
           itemListElement: [
-            ['Tenant Representation', 'tenant-representation'],
-            ['Investment Advisory', 'investment-advisory'],
-            ['Leasing & Sales (Owner Representation)', 'leasing-sales'],
-            ['Property Management', 'property-management'],
-            ['Property Development', 'development'],
-            ['Sustainability Consulting', 'sustainability'],
-          ].map(([name, slug]) => ({
-            '@type': 'Offer',
-            itemOffered: { '@type': 'Service', name, url: `${SITE_URL}/services/${slug}`, provider: businessRef },
-          })),
+            {
+              '@type': 'OfferCatalog',
+              name: 'Client representation',
+              itemListElement: ['Tenant representation', 'Landlord / owner representation', 'Buyer representation', 'Investment sales', 'Intermediary brokerage']
+                .map(name => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name, provider: businessRef } })),
+            },
+            {
+              '@type': 'OfferCatalog',
+              name: 'Property types (lease and sale)',
+              itemListElement: ASSET_CLASSES.map(name => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name: `${name} — leasing & sales`, provider: businessRef } })),
+            },
+            {
+              '@type': 'OfferCatalog',
+              name: 'Advisory and operations',
+              itemListElement: ['Site selection', 'Property management', 'Development', 'Investment advisory & 1031 exchanges', 'Broker opinion of value', 'Sustainability consulting']
+                .map(name => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name, provider: businessRef } })),
+            },
+          ],
         },
         openingHoursSpecification: [{
           '@type': 'OpeningHoursSpecification',

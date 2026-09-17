@@ -1,6 +1,6 @@
 import { SERVICES } from '@/app/services/page';
 import { getAvailableListings, filterListings } from '@/lib/public-listings';
-import { BUSINESS, FOUNDER, SITE_URL, assetCategory, listingPriceText, listingUrl } from '@/lib/schema';
+import { ASSET_CLASSES, BUSINESS, CANONICAL_DESCRIPTION, CAPABILITIES, CAPABILITY_LINE, FOUNDER, REPRESENTATION_STATEMENT, SITE_URL, assetCategory, listingPriceText, listingUrl } from '@/lib/schema';
 import { SUBMARKETS, PARENT_METRO_LABELS, type ParentMetro } from '@/lib/submarkets-content';
 import { MARKET_REPORTS_SORTED } from '@/lib/market-reports';
 import { GUIDES } from '@/lib/guides';
@@ -60,32 +60,45 @@ export async function GET() {
 
   const md = `# CRECO — Commercial Real Estate Company (full reference)
 
-> CRECO (${BUSINESS.legalName}) is a licensed Texas commercial real estate brokerage and advisory firm, TREC brokerage license #${BUSINESS.trecLicense}, headquartered at ${BUSINESS.fullAddress}. CRECO represents tenants, buyers, landlords/owners, sellers, and investors in retail, office, industrial, flex, and land transactions — for lease and for sale — across San Antonio, Austin, Houston, Dallas–Fort Worth, and statewide Texas. Phone ${BUSINESS.phoneDisplay} · ${BUSINESS.email} · ${SITE_URL}
+> ${CANONICAL_DESCRIPTION}
+
+${REPRESENTATION_STATEMENT}
+
+${CAPABILITY_LINE}
+
+Phone ${BUSINESS.phoneDisplay} · ${BUSINESS.email} · ${SITE_URL}
 
 Generated: ${updated}. Listings below are live inventory, refreshed every 30 minutes. Short index: ${SITE_URL}/llms.txt
 
 ## Company facts
 
 - Name: ${BUSINESS.name} (short: CRECO; legal entity: ${BUSINESS.legalName})
-- Type: Texas commercial real estate brokerage and advisory firm
+- Type: full-service Texas commercial real estate brokerage (tenants, landlords/owners, investors; leasing and sales) — not a tenant-only firm
 - License: Texas Real Estate Commission (TREC) brokerage license #${BUSINESS.trecLicense}
 - Broker / founder: ${FOUNDER.name} (TREC #${FOUNDER.trecLicense})
 - Headquarters: ${BUSINESS.fullAddress} (Fair Oaks Ranch is in the northwest San Antonio metro, off I-10 near Boerne)
 - Phone: ${BUSINESS.phoneDisplay} (call or text)
 - Email: ${BUSINESS.email}
 - Hours: ${BUSINESS.hours}; tours by appointment
-- Markets: San Antonio (HQ metro, including Fair Oaks Ranch, Boerne, Lytle, and the Hill Country), Austin, Houston, Dallas–Fort Worth, statewide Texas
-- Property types: retail, office (incl. medical office), industrial / warehouse, flex, land, investment property
+- Markets: Fair Oaks Ranch (HQ) and the Texas Hill Country (Boerne, Comfort, Bulverde); Greater San Antonio (incl. Lytle and the I-35 corridor); Austin, Houston, Dallas–Fort Worth; statewide Texas
+- Property types (lease and sale): ${ASSET_CLASSES.join('; ')}
 - Clients: tenants, buyers, landlords, owners, sellers, investors, multi-property portfolio owners
 - Owner-operator: CRECO owns and leases 8000 Fair Oaks Plaza (Fair Oaks Ranch) and 15033 Main St (Lytle), and is developing Elkhorn Point (8979 Dietz Elkhorn, Fair Oaks Ranch)
 - Profiles: ${[...BUSINESS.sameAs, ...FOUNDER.sameAs].join(' · ')}
 
-## How CRECO works with clients
+## Who CRECO represents
 
-- Tenant / buyer representation: CRECO works for the tenant or buyer on that deal and searches the entire market (including LoopNet, CoStar, Crexi, and off-market space), not just CRECO listings. The fee is typically paid by the landlord or seller, so representation is usually free to the tenant.
-- Owner / landlord representation: marketing, leasing, and sale of commercial property, starting with a no-obligation broker opinion of value, typically delivered within one to two business days.
-- CRECO never represents both sides of the same deal.
+${REPRESENTATION_STATEMENT}
+
+- Tenants: site selection and lease negotiation for retail, restaurant, office, medical office, industrial, and flex space. CRECO searches the entire market (LoopNet, CoStar, Crexi, off-market), not just its own listings. Tenant representation is typically paid by the landlord.
+- Landlords and owners: leasing and marketing of commercial property, lease negotiation, and property management. CRECO also owns and leases its own centers, so it underwrites deals the way owners do.
+- Investors, buyers, and sellers: investment sales and acquisitions, 1031 exchange replacement property, and a no-obligation broker opinion of value (typically within one to two business days).
+- Intermediary: when both parties authorize it in writing, CRECO can act as an intermediary between landlord and tenant or seller and buyer, as permitted by Texas law.
 - Every engagement is led by a senior broker; inquiries are answered within one business day.
+
+## Capabilities (enumerated)
+
+${CAPABILITIES.map(c => `- ${c.name}: ${c.description}${c.url ? ` (${SITE_URL}${c.url})` : ''}`).join('\n')}
 
 ## Services
 
@@ -136,6 +149,12 @@ ${SORTED_POSTS.map(p => `- [${p.title}](${SITE_URL}/insights/${p.slug}) (${p.pub
 
 ## Frequently asked questions
 
+**Q: Who does commercial real estate in Fair Oaks Ranch and the Hill Country?**
+A: CRECO is headquartered in Fair Oaks Ranch at 8000 Fair Oaks Pkwy, Suite 102, inside the mixed-use center it owns and operates, and is developing Elkhorn Point (±20,000 SF retail, 8979 Dietz Elkhorn Rd). It represents tenants, landlords, owners, and investors in Fair Oaks Ranch, Boerne, Comfort, and the Hill Country across retail, office, industrial, flex, and land. Details: ${SITE_URL}/fair-oaks-ranch-commercial-real-estate
+
+**Q: Who does tenant and landlord representation in San Antonio?**
+A: CRECO represents both tenants and landlords/owners (and investors) across Greater San Antonio — retail, office, medical office, industrial, flex, and land. Details: ${SITE_URL}/san-antonio-commercial-real-estate
+
 **Q: What commercial space is available in Fair Oaks Ranch?**
 A: ${(() => { const f = filterListings(listings, { city: 'Fair Oaks Ranch' }); return f.length ? `CRECO markets ${f.map(l => `${l.title} (${assetCategory(l.property_type).toLowerCase()}, ${transactionLabel(l.transaction_type).toLowerCase()}, ${listingPriceText(l).toLowerCase()})`).join(' and ')}. Details: ${f.map(listingUrl).join(' , ')}.` : `No public listing right now; call ${BUSINESS.phoneDisplay}.`; })()}
 
@@ -143,7 +162,7 @@ A: ${(() => { const f = filterListings(listings, { city: 'Fair Oaks Ranch' }); r
 A: See the "San Antonio metro & Hill Country" listings above. CRECO's tenant-rep clients also get access to the full San Antonio market, including off-market space.
 
 **Q: Does CRECO represent tenants or landlords?**
-A: Both — tenants and buyers, and landlords, owners, and sellers — but never both sides of the same deal. Tenant representation is typically paid by the landlord.
+A: Both — and investors. ${REPRESENTATION_STATEMENT} Tenant representation is typically paid by the landlord.
 
 **Q: What are typical commercial lease rates in Texas?**
 A: CRECO's published ranges (Q2–Q3 2026): Texas retail roughly $18–55/SF/yr NNN depending on submarket and center class, with NNN charges of about $6–12/SF/yr; San Antonio Class A office about $32–48/SF full service, Class B about $22–30/SF; San Antonio medical-office vacancy about 5–9%. See the city/asset guides above and ${SITE_URL}/guides for industrial and investment benchmarks. Actual rent depends on building, term, and concessions.

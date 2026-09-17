@@ -6,6 +6,7 @@ import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { jsonLd } from '@/lib/jsonLd';
 import { FaqSection } from '@/components/marketing/FaqSection';
 import { AvailableListingsTable } from '@/components/marketing/AvailableListingsTable';
+import { RepresentationBand } from '@/components/marketing/RepresentationBand';
 import { filterListings, getAvailableListings } from '@/lib/public-listings';
 import { BUSINESS, listingSummary, type Faq } from '@/lib/schema';
 import type { Listing } from '@/lib/supabase';
@@ -104,7 +105,7 @@ function cityAssetFaqs(config: CityAssetConfig, listings: Listing[]): Faq[] {
     },
     {
       q: `Does CRECO represent tenants or landlords for ${city} ${asset} deals?`,
-      a: `Both — but never both sides of the same deal. CRECO represents tenants and buyers searching for ${asset} space (typically free to the tenant — the landlord pays the commission) and represents owners leasing or selling ${asset} property in ${city}. CRECO is a licensed Texas brokerage, ${BUSINESS.trecLicenseDisplay}.`,
+      a: `Both — and investors. CRECO is a full-service brokerage, not a tenant-only firm: it represents tenants and buyers searching for ${asset} space (tenant rep is typically paid by the landlord), represents landlords and owners leasing or selling ${asset} property in ${city}, and handles investment sales. When both parties authorize it in writing, CRECO can act as an intermediary under Texas law. Licensed Texas brokerage, ${BUSINESS.trecLicenseDisplay}.`,
     },
     {
       q: `How do I contact CRECO about ${asset} space in ${city}?`,
@@ -226,6 +227,8 @@ export async function CityAssetPage({ config }: { config: CityAssetConfig }) {
             </div>
           </Container>
         </section>
+
+        <RepresentationBand place={config.city} className="bg-background-cream border-b border-border py-12" />
 
         {/* Key takeaways */}
         <section className="bg-white py-10 sm:py-12">
@@ -384,10 +387,10 @@ export async function CityAssetPage({ config }: { config: CityAssetConfig }) {
           <Container>
             <div className="max-w-3xl mx-auto text-center">
               <h2 className="font-heading text-heading-lg font-bold mb-3">
-                Looking for {config.asset} space in {config.city}?
+                Leasing, buying, or selling {config.asset} property in {config.city}?
               </h2>
               <p className="text-body text-white/70 mb-6">
-                The landlord pays the commission. Tell us what you need; we'll filter the market down to the 4-5 properties worth a tour.
+                Tenants: we filter the market to the 4-5 properties worth a tour, typically at no cost to you. Owners and investors: we lease and sell {config.asset} property in {config.city}.
               </p>
               <Link
                 href="/get-started"

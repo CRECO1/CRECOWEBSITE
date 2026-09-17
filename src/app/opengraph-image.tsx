@@ -91,7 +91,7 @@ export default async function OG() {
               maxWidth: 900,
             }}
           >
-            Retail · Industrial · Office — for tenants, owners, and investors across Texas
+            Full-service: tenants, landlords & investors · Retail · Office · Industrial · Flex · Land
           </div>
         </div>
 

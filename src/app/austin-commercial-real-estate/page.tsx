@@ -104,7 +104,7 @@ export default function AustinPage() {
         whyBullets: [
           'Texas-wide network with deep Austin-specific market knowledge',
           'Off-market deal flow across all major Austin submarkets',
-          'Tenant rep for businesses scouting Austin space — landlord pays our commission',
+          'Represents tenants, landlords/owners, and investors — including tenant rep for businesses scouting Austin space (typically paid by the landlord)',
           'Owner services for Austin-based investors and property owners',
           'Direct broker access — every engagement led by a senior CRECO broker',
           'Tenant Improvement, abatement, and exit-option negotiation as core competencies',

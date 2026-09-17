@@ -111,7 +111,7 @@ export default function AustinOfficeSpacePage() {
           "Austin office concession data from the deals CRECO is actually closing each quarter — not aggregated marketplace summaries",
           "Direct landlord-rep relationships across the CBD trophy set + Domain + East Austin creative",
           "Knowledge of the trophy contiguous floor plates that aren't yet on the market",
-          "Tenant rep for Austin businesses — landlord pays our commission",
+          "Represents tenants, landlords/owners, and investors — including tenant rep for Austin businesses (typically paid by the landlord)",
           "Cold-eyed sublease evaluation — many subleases beat direct deals on economics, but term-remaining matters",
           "Texas-wide network for tenants with Austin + multi-city footprints",
           "Senior broker leads every engagement",

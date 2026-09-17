@@ -110,7 +110,7 @@ export default function SanAntonioIndustrialSpacePage() {
           'Fluent in the near-shoring / cross-border logistics story that drives SA industrial demand',
           'Senior broker leads every engagement — from a 5,000 SF flex bay to a 300,000 SF distribution requirement',
           'We qualify buildings on power, clear height, trailer parking, and FTZ status before you tour',
-          'Landlord pays our commission — no out-of-pocket cost for the tenant',
+          'Full-service representation — tenants, landlords/owners, and investors; tenant rep is typically paid by the landlord',
           'Concession benchmarking from the deals CRECO is actually closing each quarter, not aggregated marketplace data',
           'Texas-wide network for tenants weighing San Antonio against DFW, Houston, or Austin',
         ],
