@@ -127,10 +127,13 @@ export async function executeSearchListings(input: SearchListingsInput) {
     .order('listing_date', { ascending: false })
     .limit(5);
 
-  // Normalize industrial → warehouse
-  const type = input.property_type?.toLowerCase() === 'industrial' ? 'warehouse' : input.property_type?.toLowerCase();
+  // Normalize industrial → warehouse, and treat 'office' as covering medical
+  // office — a visitor asking for office space should be shown the medical
+  // office building too, not told there's nothing.
+  const asked = input.property_type?.toLowerCase();
+  const type = asked === 'industrial' ? 'warehouse' : asked;
   if (type && type !== 'any') {
-    query = query.eq('property_type', type);
+    query = query.in('property_type', type === 'office' ? ['office', 'medical office'] : [type]);
   }
   const txn = input.transaction_type?.toLowerCase();
   if (txn === 'lease' || txn === 'sale') {

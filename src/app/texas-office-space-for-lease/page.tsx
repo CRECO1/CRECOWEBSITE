@@ -52,7 +52,9 @@ export default async function Page() {
         h1: 'Office Space for Lease in Texas',
         subhead:
           'Class A, B, and C office, medical office, professional suites, executive office, and creative space — across San Antonio, Austin, Houston, DFW, and the rest of the Texas office market. Whether you\'re a 5-person startup looking for executive suites or a 200-person company anchoring a Class A floor, CRECO matches your team size, growth path, and culture to the right Texas office building.',
-        filterPropertyTypes: ['office'],
+        // 'medical office' included deliberately — the subhead above promises
+        // medical office, so the grid must actually show it.
+        filterPropertyTypes: ['office', 'medical office'],
         filterTransactionType: 'lease',
         canonicalPath: '/texas-office-space-for-lease',
         marketBullets: [

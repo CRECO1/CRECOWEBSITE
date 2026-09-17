@@ -7,7 +7,7 @@
  *
  * Why specific > generic:
  *   Real estate is a trust business. "A CRECO principal will follow
- *   up" reads like a call center. "Zach Stovall, Broker — reply in
+ *   up" reads like a call center. "Zachary Stovall, Broker — reply in
  *   your inbox within one business day" reads like a real person.
  *   Every conversion research study we've seen puts a named,
  *   photographed broker adjacent to a form as one of the top-3 lifts.
@@ -63,7 +63,11 @@ export interface Broker {
 }
 
 export const PRIMARY_BROKER: Broker = {
-  name: 'Zach Stovall',
+  // Full legal first name, matching the agents table ("Zachary A. Stovall"),
+  // the TREC license and every syndication feed. The site used to render the
+  // short "Zach" here, which read as a different person from the broker of
+  // record on the same page.
+  name: 'Zachary Stovall',
   title: 'Broker',
   email: 'info@crecotx.com',
   phone_display: '(210) 817-3443',

@@ -54,6 +54,7 @@ const SITE_ASSIGNED_BROKER: Record<string, string> = {
 const ASSET_CLASS: Record<string, string> = {
   retail: 'Retail',
   office: 'Office',
+  'medical office': 'Medical Office',
   industrial: 'Industrial',
   warehouse: 'Industrial',
   flex: 'Flex',

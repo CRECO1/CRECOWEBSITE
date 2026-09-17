@@ -30,6 +30,7 @@ export const Listings: CollectionConfig = {
           name: 'property_type', type: 'select', required: true, defaultValue: 'office',
           options: [
             { label: 'Office', value: 'office' },
+            { label: 'Medical Office', value: 'medical office' },
             { label: 'Warehouse / Industrial', value: 'warehouse' },
             { label: 'Flex', value: 'flex' },
             { label: 'Retail', value: 'retail' },

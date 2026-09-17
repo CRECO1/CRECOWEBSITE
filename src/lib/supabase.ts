@@ -29,7 +29,12 @@ export { supabase };
 
 // ─── Type Definitions (Commercial Real Estate) ──────────────────────────────
 
-export type PropertyType = 'office' | 'warehouse' | 'flex' | 'retail' | 'land' | 'multifamily' | 'mixed-use' | 'industrial';
+// 'medical office' is a distinct value rather than plain 'office' so the asset
+// class survives into syndication feeds and schema.org `additionalType`, where
+// "Medical Office" is its own portal category. Everything that filters by
+// 'office' must include it too — see ASSET_TYPES in ./public-listings and the
+// office landing pages' filterPropertyTypes.
+export type PropertyType = 'office' | 'medical office' | 'warehouse' | 'flex' | 'retail' | 'land' | 'multifamily' | 'mixed-use' | 'industrial';
 export type TransactionType = 'lease' | 'sale' | 'both';
 
 export interface Listing {

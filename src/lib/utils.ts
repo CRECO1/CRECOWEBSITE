@@ -83,6 +83,7 @@ export function propertyTypeLabel(t: string | null | undefined): string {
   if (!t) return '';
   const map: Record<string, string> = {
     office: 'Office',
+    'medical office': 'Medical Office',
     warehouse: 'Warehouse',
     flex: 'Flex',
     retail: 'Retail',

@@ -13,6 +13,7 @@ type Tab = 'listings' | 'sold' | 'agents' | 'submarkets' | 'testimonials' | 'lea
 // "+ Add custom type…" item in the dropdown — they're saved as plain strings.
 const PROPERTY_TYPE_OPTIONS = [
   { value: 'office',       label: 'Office' },
+  { value: 'medical office', label: 'Medical Office' },
   { value: 'warehouse',    label: 'Warehouse / Industrial' },
   { value: 'flex',         label: 'Flex' },
   { value: 'retail',       label: 'Retail' },

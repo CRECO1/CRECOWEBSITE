@@ -30,8 +30,11 @@ METRO_CITIES['fort worth'] = METRO_CITIES.dallas;
 const ASSET_TYPES: Record<string, string[]> = {
   industrial: ['industrial', 'warehouse', 'flex'],
   warehouse: ['industrial', 'warehouse', 'flex'],
-  office: ['office'],
-  'medical office': ['office'],
+  // A medical-office listing is still an office listing: it has to surface on
+  // /texas-office-space-for-lease and every city × office page, not just on a
+  // medical-specific search.
+  office: ['office', 'medical office'],
+  'medical office': ['office', 'medical office'],
   retail: ['retail'],
   flex: ['flex', 'industrial', 'warehouse'],
   land: ['land'],
