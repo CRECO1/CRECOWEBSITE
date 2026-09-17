@@ -36,7 +36,7 @@ const REQUEST_TIMEOUT_MS = 25_000;
 const BROKER = {
   name: 'Zachary Stovall',
   phone: '(210) 817-3443',
-  email: 'zack@crecotx.com',
+  email: 'info@crecotx.com',
   company: 'CRECO - Commercial Real Estate Company',
   license: 'TREC #9014367',
 };

@@ -96,7 +96,11 @@ function applyMerge(template: string, c: Recipient): string {
     .replaceAll('{{client_type}}', 'Broker')
     .replaceAll('{{brokerage}}', 'CRECO')
     .replaceAll('{{agent_name}}', 'Zachary Stovall')
-    .replaceAll('{{agent_email}}', 'zack@crecotx.com')
+    // The public contact address, matching every other surface (BUSINESS.email,
+    // PRIMARY_BROKER.email, the syndication feed). Note the replyTo on the send
+    // below is deliberately still zack@ — that routes replies to Zack directly
+    // and is a delivery setting, not something the recipient reads.
+    .replaceAll('{{agent_email}}', 'info@crecotx.com')
     .replaceAll('{{agent_phone}}', '210-817-3443')
     .replaceAll('{{unsubscribe_url}}', unsubscribeUrl);
 }
