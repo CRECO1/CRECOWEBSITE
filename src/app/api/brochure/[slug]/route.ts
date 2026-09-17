@@ -105,7 +105,7 @@ export async function GET(
     doc.setFontSize(8);
     doc.setTextColor(150);
     doc.text(
-      'CRECO - Commercial Real Estate Company  ·  8000 Fair Oaks Pkwy, Suite 101, Fair Oaks Ranch, TX 78015  ·  TREC #9014367',
+      'CRECO - Commercial Real Estate Company  ·  8000 Fair Oaks Pkwy, Suite 100, Fair Oaks Ranch, TX 78015  ·  TREC #9014367',
       105,
       265,
       { align: 'center' }

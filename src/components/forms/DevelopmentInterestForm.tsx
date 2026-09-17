@@ -332,7 +332,7 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
 
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:justify-between">
         <a
-          href={googleMapsUrl('8000 Fair Oaks Pkwy Suite 101, Fair Oaks Ranch, TX 78015')}
+          href={googleMapsUrl('8000 Fair Oaks Pkwy Suite 100, Fair Oaks Ranch, TX 78015')}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Open 8000 Fair Oaks Pkwy in Google Maps"

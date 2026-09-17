@@ -160,7 +160,7 @@ ${SORTED_POSTS.map(p => `- [${p.title}](${SITE_URL}/insights/${p.slug}) (${p.pub
 ## Frequently asked questions
 
 **Q: Who does commercial real estate in Fair Oaks Ranch and the Hill Country?**
-A: CRECO is headquartered in Fair Oaks Ranch at 8000 Fair Oaks Pkwy, Suite 101, inside the mixed-use center it owns and operates, and is developing Elkhorn Point (±20,000 SF retail, 8979 Dietz Elkhorn Rd). It represents tenants, landlords, owners, and investors in Fair Oaks Ranch, Boerne, Comfort, and the Hill Country across retail, office, industrial, flex, and land. Details: ${SITE_URL}/fair-oaks-ranch-commercial-real-estate
+A: CRECO is headquartered in Fair Oaks Ranch at 8000 Fair Oaks Pkwy, Suite 100, inside the mixed-use center it owns and operates, and is developing Elkhorn Point (±20,000 SF retail, 8979 Dietz Elkhorn Rd). It represents tenants, landlords, owners, and investors in Fair Oaks Ranch, Boerne, Comfort, and the Hill Country across retail, office, industrial, flex, and land. Details: ${SITE_URL}/fair-oaks-ranch-commercial-real-estate
 
 **Q: Who does tenant and landlord representation in San Antonio?**
 A: CRECO represents both tenants and landlords/owners (and investors) across Greater San Antonio — retail, office, medical office, industrial, flex, and land. Details: ${SITE_URL}/san-antonio-commercial-real-estate

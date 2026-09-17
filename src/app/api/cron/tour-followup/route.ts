@@ -127,7 +127,7 @@ function followupHtml(stage: Stage, name: string, propertyInterest: string | nul
       </div>
       ${body}
       <p style="line-height:1.6;margin-top:24px;color:#525252">— The CRECO Team</p>
-      <p style="color:#999;font-size:11px;margin:18px 0 0">TREC #9014367 · 8000 Fair Oaks Pkwy, Suite 101, Fair Oaks Ranch, TX 78015 · (210) 817-3443</p>
+      <p style="color:#999;font-size:11px;margin:18px 0 0">TREC #9014367 · 8000 Fair Oaks Pkwy, Suite 100, Fair Oaks Ranch, TX 78015 · (210) 817-3443</p>
     </div>
   `;
 }

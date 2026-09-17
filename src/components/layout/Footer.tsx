@@ -46,7 +46,7 @@ const CONTACT = {
   email: 'info@crecotx.com',
   // Canonical CRECO office. Multi-line so Footer renders street + city/state on
   // separate lines via the addressLines split.
-  address: '8000 Fair Oaks Pkwy, Suite 101\nFair Oaks Ranch, TX 78015',
+  address: '8000 Fair Oaks Pkwy, Suite 100\nFair Oaks Ranch, TX 78015',
 };
 
 export function Footer() {

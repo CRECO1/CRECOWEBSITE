@@ -126,7 +126,7 @@ function followupHtml(name: string, propertyInterest: string | null, listings: S
         <p style="margin:12px 0 0;color:#999;font-size:11px">Or reply to this email &mdash; we&#39;ll find a time that works.</p>
       </div>
       <p style="color:#525252;margin:24px 0 0">&mdash; The CRECO Team</p>
-      <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367 &middot; 8000 Fair Oaks Pkwy, Suite 101, Fair Oaks Ranch, TX 78015</p>
+      <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367 &middot; 8000 Fair Oaks Pkwy, Suite 100, Fair Oaks Ranch, TX 78015</p>
     </div>
   `;
 }

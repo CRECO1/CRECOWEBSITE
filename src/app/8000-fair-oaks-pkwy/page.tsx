@@ -164,7 +164,7 @@ const FAQS = [
   },
   {
     q: 'Who owns and leases 8000 Fair Oaks Pkwy?',
-    a: 'CRECO - Commercial Real Estate Company owns the property and is its leasing broker (TREC #9014367). CRECO\'s own headquarters is in Suite 101 of the same address, 8000 Fair Oaks Pkwy, Fair Oaks Ranch, TX 78015.',
+    a: 'CRECO - Commercial Real Estate Company owns the property and is its leasing broker (TREC #9014367). CRECO\'s own headquarters is in Suite 100 of the same address, 8000 Fair Oaks Pkwy, Fair Oaks Ranch, TX 78015.',
   },
 ];
 
