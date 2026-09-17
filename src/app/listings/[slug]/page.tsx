@@ -76,29 +76,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-const DEMO: Record<string, object> = {
-  '1222-chulie-dr': {
-    id: '1', title: '1222 Chulie Dr', slug: '1222-chulie-dr',
-    address: '1222 Chulie Dr', city: 'San Antonio', state: 'TX', zip: '78219',
-    property_type: 'warehouse', transaction_type: 'lease',
-    sale_price: null, lease_rate: 9.50, lease_rate_basis: 'NNN',
-    sqft: 16100, available_sqft: 16100, lot_size: 1.2, zoning: 'I-1', year_built: 1998,
-    clear_height: 22, dock_doors: 4, grade_doors: 1,
-    headline: '16,100 SF warehouse with dock and grade doors',
-    description: 'Well-located industrial building in the Northeast San Antonio submarket. Heavy power, cross-dock-friendly layout, and a fenced & paved yard make this an excellent fit for distribution, light manufacturing, or service operations. Easy access to I-35 and Loop 410.',
-    features: ['4 dock-high doors', '1 grade-level door', '22\' clear height', 'Fenced & paved yard', 'Heavy 3-phase power', 'Office build-out included'],
-    images: null, brochure_url: null, virtual_tour_url: null, status: 'active',
-    listing_date: '2026-04-10', submarket: 'Northeast',
-  },
-};
-
 interface Props { params: Promise<{ slug: string }> }
 
 export default async function ListingDetailPage({ params }: Props) {
   const { slug } = await params;
 
-  let listing = await getListing(slug).catch(() => null);
-  if (!listing && DEMO[slug]) listing = DEMO[slug] as any;
+  // No hardcoded fallback: a stale in-code copy of a listing (this used to
+  // carry 1222 Chulie Dr at $9.50/SF while the DB said $10.00) would publish a
+  // wrong asking rate — into the page AND its JSON-LD — on any transient DB
+  // failure. A 404 is the honest failure mode for inventory we can't read.
+  const listing = await getListing(slug).catch(() => null);
   if (!listing) notFound();
 
   const images = (listing!.images as string[] | null) ?? [];

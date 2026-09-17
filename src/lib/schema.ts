@@ -380,6 +380,10 @@ function listingOffers(l: Listing, url: string) {
     '@type': 'Offer',
     url,
     availability,
+    // When the property came to market. Syndication targets and Google both
+    // use it to sort "new to market"; omitted (via compact) when unknown
+    // rather than defaulted to today, which would fake freshness.
+    validFrom: l.listing_date ?? undefined,
     // Offer.category carries the asset class (retail / office / industrial…);
     // RealEstateListing itself has no `category` property in schema.org.
     category: assetCategory(l.property_type),
@@ -433,6 +437,25 @@ export function listingSchema(
   const category = assetCategory(l.property_type);
   const sqft = l.sqft && l.sqft > 0 ? l.sqft : null;
   const available = l.available_sqft && l.available_sqft > 0 ? l.available_sqft : null;
+  const acres = l.lot_size && l.lot_size > 0 ? l.lot_size : null;
+
+  // The property address / coordinates, built once and attached BOTH to the
+  // listing node and to the Accommodation it's about. Consumers are split on
+  // where they look: Google's rich-result parsers and most syndication
+  // scrapers read the top-level node, while a linked-data client follows
+  // `about`. Duplicating a few literal properties is cheap; being invisible to
+  // half of them is not.
+  const address = {
+    '@type': 'PostalAddress',
+    streetAddress: l.address,
+    addressLocality: l.city,
+    addressRegion: l.state || 'TX',
+    postalCode: l.zip,
+    addressCountry: 'US',
+  };
+  const geo = l.latitude != null && l.longitude != null
+    ? { '@type': 'GeoCoordinates', latitude: Number(l.latitude), longitude: Number(l.longitude) }
+    : undefined;
 
   const additionalProperty = [
     { name: 'Transaction type', value: transactionLabel(l.transaction_type) },
@@ -461,6 +484,12 @@ export function listingSchema(
     datePosted: l.listing_date ?? (l.created_at || undefined),
     dateModified: l.updated_at || undefined,
     keywords: [category, transactionLabel(l.transaction_type), l.city, l.submarket, 'Texas commercial real estate'].filter(Boolean).join(', '),
+    // The CRECO-side listing id. Syndication feeds and re-crawls key off this
+    // to recognize the same property across platforms instead of creating a
+    // duplicate record per site.
+    identifier: { '@type': 'PropertyValue', propertyID: 'CRECO listing slug', value: l.slug },
+    address,
+    geo,
     about: {
       // Accommodation is the schema.org Place subtype that carries floorSize /
       // yearBuilt / amenityFeature — the closest valid fit for a commercial building.
@@ -468,19 +497,14 @@ export function listingSchema(
       '@id': `${url}#property`,
       name: l.title,
       additionalType: category,
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: l.address,
-        addressLocality: l.city,
-        addressRegion: l.state || 'TX',
-        postalCode: l.zip,
-        addressCountry: 'US',
-      },
-      geo: l.latitude != null && l.longitude != null
-        ? { '@type': 'GeoCoordinates', latitude: Number(l.latitude), longitude: Number(l.longitude) }
-        : undefined,
+      address,
+      geo,
       containedInPlace: l.city ? { '@type': 'City', name: `${l.city}, Texas` } : undefined,
       floorSize: sqft ? { '@type': 'QuantitativeValue', value: sqft, unitCode: 'FTK', unitText: 'square feet' } : undefined,
+      // Land acreage as a real typed property, not just an additionalProperty
+      // string — this is the field a land buyer (or an agent answering "how
+      // many acres?") actually reads.
+      lotSize: acres ? { '@type': 'QuantitativeValue', value: acres, unitCode: 'ACR', unitText: 'acres' } : undefined,
       yearBuilt: l.year_built ?? undefined,
       amenityFeature: features.map(name => ({ '@type': 'LocationFeatureSpecification', name, value: true })),
       additionalProperty,

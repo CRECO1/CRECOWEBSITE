@@ -10,6 +10,7 @@
     "lint": "next lint",
     "generate:types": "payload generate:types",
     "indexnow": "tsx scripts/indexnow-ping.ts",
+    "export:listings": "tsx scripts/export-listings-feed.ts",
     "seed": "tsx scripts/seed.ts"
   },
   "dependencies": {
