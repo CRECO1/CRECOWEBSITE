@@ -5,6 +5,8 @@ import { verifyRecaptcha } from '@/lib/recaptcha';
 import { escapeHtml, clampString, isValidEmail, safePhone, MAX_LEN } from '@/lib/sanitize';
 import { pushToCrm } from '@/lib/crm';
 import { enforceRateLimit } from '@/lib/rate-limit';
+import { buildLeadNotificationEmail, leadNotificationSubject, type LeadAnswer } from '@/lib/lead-notification-email';
+import { buildInquiryAutoreplyEmail, INQUIRY_AUTOREPLY_SUBJECT } from '@/lib/inquiry-autoreply-email';
 
 /**
  * Unified inquiry endpoint — handles all 5 paths from /get-started:
@@ -30,13 +32,17 @@ function getFromEmail(): string {
   return 'onboarding@resend.dev';
 }
 
+/**
+ * `subject` doubles as the email's H1, so it reads as a sentence fragment a
+ * human would write ("New Tenant Inquiry"), not a log tag ("Tenant Inquiry").
+ */
 const PATH_LABELS: Record<string, { subject: string; source: string; humanLabel: string }> = {
-  tenant:    { subject: 'Tenant Inquiry',                  source: 'tenant-needs',      humanLabel: 'Looking for space' },
-  buyer:     { subject: 'Buyer / Investment Inquiry',      source: 'buyer-inquiry',     humanLabel: 'Looking to buy' },
-  seller:    { subject: 'Seller / Listing Inquiry',        source: 'owner-inquiry',     humanLabel: 'Want to sell or list' },
-  pm:        { subject: 'Property Management Inquiry',     source: 'pm-inquiry',        humanLabel: 'Needs property management' },
-  exploring: { subject: 'New Lead — Exploring',            source: 'exploring',         humanLabel: 'Just exploring' },
-  agent:     { subject: 'Agent Application',               source: 'agent-application', humanLabel: 'Wants to join CRECO as an agent' },
+  tenant:    { subject: 'New Tenant Inquiry',              source: 'tenant-needs',      humanLabel: 'Looking for space' },
+  buyer:     { subject: 'New Buyer / Investment Inquiry',  source: 'buyer-inquiry',     humanLabel: 'Looking to buy' },
+  seller:    { subject: 'New Seller / Listing Inquiry',    source: 'owner-inquiry',     humanLabel: 'Want to sell or list' },
+  pm:        { subject: 'New Property Management Inquiry', source: 'pm-inquiry',        humanLabel: 'Needs property management' },
+  exploring: { subject: 'New Inquiry — Exploring',         source: 'exploring',         humanLabel: 'Just exploring' },
+  agent:     { subject: 'New Agent Application',           source: 'agent-application', humanLabel: 'Wants to join CRECO as an agent' },
 };
 
 const FIELD_LABELS: Record<string, string> = {
@@ -82,21 +88,26 @@ const FIELD_LABELS: Record<string, string> = {
 };
 
 /**
- * Format the answers object to a plain-text summary for storage + email.
- * Each value is clamped to a sane length so a malicious submitter can't
- * dump a megabyte of input into a single field.
+ * Turn the raw answers object into labeled label/value pairs. Each value is
+ * clamped to a sane length so a malicious submitter can't dump a megabyte of
+ * input into a single field.
+ *
+ * The email renders these as table rows; `summarizeAnswers` flattens the same
+ * pairs to the plain-text form stored on the lead row and pushed to the CRM.
  */
-function summarizeAnswers(answers: Record<string, unknown> | undefined | null): string {
-  if (!answers) return '';
-  return Object.entries(answers)
-    .map(([k, v]) => {
-      const label = FIELD_LABELS[k] ?? k;
-      const value = Array.isArray(v)
-        ? (v as unknown[]).map(x => clampString(x, MAX_LEN.shortField)).filter(Boolean).join(', ')
-        : clampString(v, MAX_LEN.message);
-      return `${label}: ${value}`;
-    })
-    .join('\n');
+function answerEntries(answers: Record<string, unknown> | undefined | null): LeadAnswer[] {
+  if (!answers) return [];
+  return Object.entries(answers).map(([k, v]) => ({
+    label: FIELD_LABELS[k] ?? k,
+    value: Array.isArray(v)
+      ? (v as unknown[]).map(x => clampString(x, MAX_LEN.shortField)).filter(Boolean).join(', ')
+      : clampString(v, MAX_LEN.message),
+  }));
+}
+
+/** Plain-text summary for storage + CRM (unchanged format). */
+function summarizeAnswers(entries: LeadAnswer[]): string {
+  return entries.map(({ label, value }) => `${label}: ${value}`).join('\n');
 }
 
 export async function POST(req: NextRequest) {
@@ -147,7 +158,8 @@ export async function POST(req: NextRequest) {
     }
 
     const meta = PATH_LABELS[path];
-    const answerSummary = summarizeAnswers(answers);
+    const entries = answerEntries(answers);
+    const answerSummary = summarizeAnswers(entries);
 
     // Save lead
     let leadId: string | null = null;
@@ -182,45 +194,36 @@ export async function POST(req: NextRequest) {
       metadata: { path, answers },
     });
 
-    // Notification email — every interpolated value escaped to block any
-    // HTML injection in the broker's inbox.
+    // Notification email — every interpolated value is escaped inside the
+    // renderer to block any HTML injection in the broker's inbox.
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
 
       await resend.emails.send({
         from: getFromEmail(),
         to: NOTIFICATION_EMAIL,
-        subject: `${meta.subject}: ${name}${company ? ` (${company})` : ''}`,
-        html: `
-          <div style="font-family:sans-serif;max-width:600px">
-            <h2 style="color:#1A1A1A">${escapeHtml(meta.subject)} — CRECO</h2>
-            <p style="color:#525252;font-style:italic;margin:0 0 16px">Path selected: <strong>${escapeHtml(meta.humanLabel)}</strong></p>
-            <table style="border-collapse:collapse;width:100%">
-              <tr><td style="padding:8px 12px;font-weight:bold;background:#FAFAF8;border:1px solid #E8E5E0">Name</td><td style="padding:8px 12px;border:1px solid #E8E5E0">${escapeHtml(name)}</td></tr>
-              <tr><td style="padding:8px 12px;font-weight:bold;background:#FAFAF8;border:1px solid #E8E5E0">Company</td><td style="padding:8px 12px;border:1px solid #E8E5E0">${escapeHtml(company || '—')}</td></tr>
-              <tr><td style="padding:8px 12px;font-weight:bold;background:#FAFAF8;border:1px solid #E8E5E0">Email</td><td style="padding:8px 12px;border:1px solid #E8E5E0"><a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></td></tr>
-              <tr><td style="padding:8px 12px;font-weight:bold;background:#FAFAF8;border:1px solid #E8E5E0">Phone</td><td style="padding:8px 12px;border:1px solid #E8E5E0"><a href="tel:${escapeHtml(phone)}">${escapeHtml(phone)}</a></td></tr>
-            </table>
-            <h3 style="color:#1A1A1A;margin-top:20px">Their Responses:</h3>
-            <pre style="background:#FAFAF8;padding:12px;border-radius:4px;white-space:pre-wrap;border:1px solid #E8E5E0;font-family:monospace;font-size:13px">${escapeHtml(answerSummary)}</pre>
-          </div>
-        `,
+        // Hitting reply in the broker's inbox goes straight to the lead
+        // instead of to the no-reply sender.
+        replyTo: email,
+        subject: leadNotificationSubject({ heading: meta.subject, name, company }),
+        html: buildLeadNotificationEmail({
+          heading: meta.subject,
+          pathLabel: meta.humanLabel,
+          name,
+          company,
+          email,
+          phone,
+          answers: entries,
+        }),
       });
 
-      // Auto-reply
+      // Auto-reply to the prospect — same brand chrome as the internal copy.
       await resend.emails.send({
         from: getFromEmail(),
         to: email,
-        subject: 'We received your inquiry — CRECO',
-        html: `
-          <div style="font-family:sans-serif;max-width:600px">
-            <h2 style="color:#1A1A1A">Hi ${escapeHtml(name)},</h2>
-            <p>Thanks for reaching out to <strong>CRECO - Commercial Real Estate Company</strong>. A broker on our team will review your responses and reach out within one business day.</p>
-            <p>Need to talk sooner? Call us at <a href="tel:+12108173443" style="color:#C9A962">(210) 817-3443</a>.</p>
-            <br/>
-            <p>— The CRECO Team<br/>8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015</p>
-          </div>
-        `,
+        replyTo: NOTIFICATION_EMAIL,
+        subject: INQUIRY_AUTOREPLY_SUBJECT,
+        html: buildInquiryAutoreplyEmail({ name, pathLabel: meta.humanLabel }),
       });
     }
 
