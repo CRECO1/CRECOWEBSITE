@@ -4,6 +4,11 @@ import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { jsonLd } from '@/lib/jsonLd';
+import { FaqSection } from '@/components/marketing/FaqSection';
+import { AvailableListingsTable } from '@/components/marketing/AvailableListingsTable';
+import { filterListings, getAvailableListings } from '@/lib/public-listings';
+import { BUSINESS, listingSummary, type Faq } from '@/lib/schema';
+import type { Listing } from '@/lib/supabase';
 
 /**
  * CityAssetPage — shared template for city × asset-class landing pages
@@ -69,9 +74,48 @@ export interface CityAssetConfig {
    *  Place + Article + BreadcrumbList JSON-LD (matching the submarket template).
    *  Optional so shared consumers without a canonical stay schema-free. */
   canonicalPath?: string;
+  /** Optional page-specific FAQs, prepended to the data-derived set. */
+  faqs?: Faq[];
 }
 
-export function CityAssetPage({ config }: { config: CityAssetConfig }) {
+/**
+ * Answer-shaped FAQs built from the page's own config (stats, submarkets) and
+ * live inventory — so every answer is consistent with what the page shows and
+ * never goes stale relative to the listings table.
+ */
+function cityAssetFaqs(config: CityAssetConfig, listings: Listing[]): Faq[] {
+  const { city, asset } = config;
+  const statLine = config.stats.map(s => `${s.label}: ${s.value}${s.note ? ` (${s.note})` : ''}`).join('; ');
+  return [
+    ...(config.faqs ?? []),
+    {
+      q: `What are current ${asset} lease rates and vacancy in ${city}?`,
+      a: `CRECO's current ${city} ${asset} benchmarks — ${statLine}. These are market ranges from CRECO's deal flow and published data, not quotes; actual rent depends on building class, submarket, term, and concessions. ${config.quickAnswer}`,
+    },
+    {
+      q: `What ${asset} space is available in ${city} right now?`,
+      a: listings.length > 0
+        ? `CRECO currently markets: ${listings.map(l => `${l.title} (${listingSummary(l)})`).join('; ')}. CRECO's tenant-rep clients also see every other ${city} ${asset} option on the market, including off-market space.`
+        : `CRECO has no public ${asset} listing in ${city} at this moment, but as a tenant-representation brokerage it searches the entire ${city} ${asset} market — including LoopNet/CoStar inventory and off-market space — for its clients. Call ${BUSINESS.phoneDisplay} for a current availability survey.`,
+    },
+    {
+      q: `Which ${city} submarkets are best for ${asset} space?`,
+      a: `${config.submarkets.map(sm => `${sm.name} — ${sm.characterization}`).join('; ')}. The right fit depends on labor, access, customer base, and budget; CRECO shortlists by submarket before touring.`,
+    },
+    {
+      q: `Does CRECO represent tenants or landlords for ${city} ${asset} deals?`,
+      a: `Both — but never both sides of the same deal. CRECO represents tenants and buyers searching for ${asset} space (typically free to the tenant — the landlord pays the commission) and represents owners leasing or selling ${asset} property in ${city}. CRECO is a licensed Texas brokerage, ${BUSINESS.trecLicenseDisplay}.`,
+    },
+    {
+      q: `How do I contact CRECO about ${asset} space in ${city}?`,
+      a: `Call ${BUSINESS.phoneDisplay}, email ${BUSINESS.email}, or use the Get Started form at crecotx.com/get-started. CRECO is headquartered at ${BUSINESS.fullAddress} and works ${city} and statewide Texas; a broker responds within one business day.`,
+    },
+  ];
+}
+
+export async function CityAssetPage({ config }: { config: CityAssetConfig }) {
+  const available = filterListings(await getAvailableListings(), { metro: config.city, asset: config.asset });
+  const faqs = cityAssetFaqs(config, available);
   // Structured data (Place + Article + BreadcrumbList) — ports the submarket
   // template's AI-citation pattern to these city × asset pages, which shipped
   // with no JSON-LD at all. quickAnswer feeds the answer-first description.
@@ -290,8 +334,25 @@ export function CityAssetPage({ config }: { config: CityAssetConfig }) {
           </Container>
         </section>
 
+        {config.canonicalPath && (
+          <AvailableListingsTable
+            listings={available}
+            path={config.canonicalPath}
+            title={`${config.city} ${config.asset} listings represented by CRECO`}
+            intro={`Live CRECO inventory for ${config.asset} space in the ${config.city} area. Tenant-rep clients also get access to every other option on the market.`}
+            emptyText={`No public CRECO ${config.asset} listing in ${config.city} right now — CRECO searches the full market (including off-market space) for tenant-rep clients. Call ${BUSINESS.phoneDisplay}.`}
+          />
+        )}
+
+        <FaqSection
+          faqs={faqs}
+          path={config.canonicalPath}
+          heading={`${config.city} ${config.asset} space — FAQ`}
+          className="section-luxury bg-background-cream border-t border-border"
+        />
+
         {/* Cross-links */}
-        <section className="section-luxury bg-background-cream border-t border-border">
+        <section className="section-luxury bg-white border-t border-border">
           <Container>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <Link

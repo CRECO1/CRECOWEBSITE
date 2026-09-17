@@ -11,6 +11,8 @@ import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import { getLandingPage } from '@/lib/supabase';
 
+import { JsonLd } from '@/components/seo/JsonLd';
+import { breadcrumbList } from '@/lib/schema';
 // Hourly ISR — landing-page CMS content changes rarely (operator
 // edits maybe once a week); hourly revalidation is plenty fresh.
 export const revalidate = 3600;
@@ -150,6 +152,8 @@ export default async function OwnerServicesPage() {
           }),
         }}
       />
+
+      <JsonLd data={breadcrumbList([{ name: 'Owner Services', path: '/owner-services' }])} />
 
       <Header />
       <main className="min-h-screen pt-20">

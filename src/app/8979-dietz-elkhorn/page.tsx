@@ -5,6 +5,9 @@ export const revalidate = 1800;
 
 import type { Metadata } from 'next';
 import { jsonLd } from '@/lib/jsonLd';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { DIETZ_ELKHORN_LISTING } from '@/lib/featured-properties';
+import { breadcrumbList, listingSchema } from '@/lib/schema';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -229,31 +232,17 @@ export default async function DietzElkhornPage() {
   // lets AI assistants (chatgpt.com, copilot.com) deep-link the right
   // Q&A directly. FAQs come from the same source the page renders, so
   // schema stays in sync with displayed copy.
-  const REAL_ESTATE_SCHEMA = {
-    '@context': 'https://schema.org',
-    '@type': 'RealEstateListing',
-    name: 'Elkhorn Point — 8979 Dietz Elkhorn',
-    url: 'https://www.crecotx.com/8979-dietz-elkhorn',
-    image: ['https://www.crecotx.com/site-plans/8979-dietz-elkhorn-site-plan.png'],
-    description:
-      'New ±20,000 SF neighborhood retail center pre-leasing on Dietz Elkhorn in Fair Oaks Ranch, TX. Ten demisable suites, two F&B end caps with patio envelopes, and 2-3 food-ready bays.',
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: '8979 Dietz Elkhorn Rd',
-      addressLocality: 'Fair Oaks Ranch',
-      addressRegion: 'TX',
-      postalCode: '78015',
-      addressCountry: 'US',
-    },
-    geo: { '@type': 'GeoCoordinates', latitude: 29.7506, longitude: -98.6920 },
-    broker: {
-      '@type': 'RealEstateAgent',
-      name: 'CRECO',
-      url: 'https://www.crecotx.com',
-      telephone: '+1-210-817-3443',
-    },
-    areaServed: { '@type': 'City', name: 'Fair Oaks Ranch' },
-  };
+  const SCHEMAS = [
+    listingSchema(DIETZ_ELKHORN_LISTING, {
+      url: '/8979-dietz-elkhorn',
+      description:
+        'Elkhorn Point: new ±20,000 SF neighborhood retail center pre-leasing at 8979 Dietz Elkhorn Rd, Fair Oaks Ranch, TX 78015. About ten demisable suites of ±1,500 SF, two F&B end caps with patio envelopes, and 2–3 food-ready bays. Developed and leased by CRECO; call for pricing.',
+    }),
+    breadcrumbList([
+      { name: 'Listings', path: '/listings' },
+      { name: 'Elkhorn Point — 8979 Dietz Elkhorn', path: '/8979-dietz-elkhorn' },
+    ]),
+  ];
   const FAQ_SCHEMA = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -266,10 +255,7 @@ export default async function DietzElkhornPage() {
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: jsonLd(REAL_ESTATE_SCHEMA) }}
-      />
+      <JsonLd data={SCHEMAS} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLd(FAQ_SCHEMA) }}

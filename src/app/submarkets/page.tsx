@@ -11,6 +11,8 @@ import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import { getSubmarkets } from '@/lib/supabase';
 
+import { JsonLd } from '@/components/seo/JsonLd';
+import { breadcrumbList } from '@/lib/schema';
 export const metadata: Metadata = {
   title: 'San Antonio Commercial Real Estate Submarkets | CRECO',
   description:
@@ -33,6 +35,7 @@ export default async function SubmarketsPage() {
 
   return (
     <>
+      <JsonLd data={breadcrumbList([{ name: 'San Antonio Submarkets', path: '/submarkets' }])} />
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}

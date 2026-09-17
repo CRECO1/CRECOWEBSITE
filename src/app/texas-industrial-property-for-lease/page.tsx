@@ -55,11 +55,7 @@ export default async function Page() {
           'Distribution centers, light and heavy manufacturing, flex-industrial, last-mile logistics, cold storage, and bulk warehouse — across all the major Texas industrial submarkets. Whether you need 10,000 SF for a regional service business or 250,000 SF for a Texas distribution hub, CRECO brings vetted options with the right clear height, dock-door count, power, parking, and yard.',
         filterPropertyTypes: ['warehouse', 'industrial', 'flex'],
         filterTransactionType: 'lease',
-        demoListings: [
-          { id: 'd1', title: 'Northeast San Antonio Warehouse', slug: '#', address: '— San Antonio —', city: 'San Antonio', property_type: 'warehouse', transaction_type: 'lease', sqft: 24000, clear_height: 24, dock_doors: 6, headline: '24,000 SF cross-dock warehouse on I-35 with 6 dock doors and yard', images: null, lease_rate: 8.75, lease_rate_basis: 'NNN' },
-          { id: 'd2', title: 'Houston North Industrial', slug: '#', address: '— Houston —', city: 'Houston', property_type: 'warehouse', transaction_type: 'lease', sqft: 60000, clear_height: 32, dock_doors: 12, headline: '60,000 SF Class A distribution near Beltway 8', images: null, lease_rate: 9.25, lease_rate_basis: 'NNN' },
-          { id: 'd3', title: 'DFW Flex Industrial', slug: '#', address: '— Arlington —', city: 'Arlington', property_type: 'flex', transaction_type: 'lease', sqft: 18500, clear_height: 18, dock_doors: 3, headline: '18,500 SF flex with showroom front and rear loading', images: null, lease_rate: 12.50, lease_rate_basis: 'NNN' },
-        ],
+        canonicalPath: '/texas-industrial-property-for-lease',
         marketBullets: [
           {
             title: 'Texas is the #1 industrial market in the U.S.',

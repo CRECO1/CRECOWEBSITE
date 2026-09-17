@@ -1,3 +1,7 @@
+// 30-min ISR — the page embeds live CRECO inventory (table + ItemList + FAQ).
+export const revalidate = 1800;
+
+
 import type { Metadata } from 'next';
 import { CityHubPage } from '@/components/marketing/CityHubPage';
 
@@ -99,7 +103,6 @@ export default function SanAntonioPage() {
             characterization: 'Creative office + lifestyle retail',
             description:
               "San Antonio's premier mixed-use district — adaptive-reuse creative office (Pearl Brewery), award-winning food + beverage retail, and walkable density that operates more like Austin's East Side than typical SA. Premium rents.",
-            href: '/markets/the-pearl',
           },
           {
             name: 'Downtown / Riverwalk',

@@ -53,11 +53,7 @@ export default async function Page() {
           'Strip centers, freestanding restaurants, urban storefronts, mixed-use, and shopping-center inline space — all across the major Texas markets. Whether you\'re a single-location operator scouting your first space or a franchise developer rolling out 20 locations, CRECO brings vetted Texas retail real estate options that match your concept, traffic counts, demographics, and budget.',
         filterPropertyTypes: ['retail'],
         filterTransactionType: 'lease',
-        demoListings: [
-          { id: 'd1', title: 'Stone Oak Retail Endcap', slug: '#', address: '— San Antonio —', city: 'San Antonio', property_type: 'retail', transaction_type: 'lease', sqft: 2400, headline: 'Endcap with high visibility on signalized intersection in Stone Oak', images: null, lease_rate: 32, lease_rate_basis: 'NNN' },
-          { id: 'd2', title: 'Austin South Lamar Storefront', slug: '#', address: '— Austin —', city: 'Austin', property_type: 'retail', transaction_type: 'lease', sqft: 1800, headline: 'Walkable South Lamar storefront — restaurant or boutique fit', images: null, lease_rate: 48, lease_rate_basis: 'NNN' },
-          { id: 'd3', title: 'Houston Galleria Inline', slug: '#', address: '— Houston —', city: 'Houston', property_type: 'retail', transaction_type: 'lease', sqft: 3200, headline: 'Class A inline retail space in established Galleria-area center', images: null, lease_rate: 38, lease_rate_basis: 'NNN' },
-        ],
+        canonicalPath: '/texas-retail-space-for-lease',
         marketBullets: [
           {
             title: 'Texas retail demand is strong.',

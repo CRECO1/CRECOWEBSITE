@@ -9,6 +9,8 @@ import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { Honeypot } from '@/components/forms/Honeypot';
 import { googleMapsUrl } from '@/lib/utils';
 import { PhoneCallText } from '@/components/marketing/PhoneCallText';
+import { FaqSection } from '@/components/marketing/FaqSection';
+import { CONTACT_FAQS } from './faqs';
 
 const CONTACT_REASONS = [
   'Looking for space to lease or buy',
@@ -226,6 +228,7 @@ export default function ContactPage() {
             </div>
           </Container>
         </section>
+        <FaqSection faqs={CONTACT_FAQS} path="/contact" heading="Contacting CRECO — FAQ" className="section-luxury bg-background-cream" />
       </main>
       <Footer />
     </>

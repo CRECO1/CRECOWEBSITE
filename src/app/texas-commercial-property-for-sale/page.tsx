@@ -55,11 +55,7 @@ export default async function Page() {
           'Retail centers, industrial buildings, office buildings, mixed-use, and commercial land — investment-grade and owner-user opportunities across the major Texas markets. Whether you\'re acquiring your first asset, executing a 1031 exchange, or building a multi-property Texas portfolio, CRECO underwrites every deal with institutional rigor and brings off-market opportunities our network sees first.',
         filterPropertyTypes: undefined,
         filterTransactionType: 'sale',
-        demoListings: [
-          { id: 'd1', title: 'San Antonio Retail Center', slug: '#', address: '— San Antonio —', city: 'San Antonio', property_type: 'retail', transaction_type: 'sale', sqft: 22000, headline: '22,000 SF stabilized retail strip — 95% occupied, NOI growing', images: null, sale_price: 4250000 },
-          { id: 'd2', title: 'Austin Industrial Park', slug: '#', address: '— Austin —', city: 'Austin', property_type: 'warehouse', transaction_type: 'sale', sqft: 75000, headline: 'Three-building flex industrial park, value-add opportunity', images: null, sale_price: 12500000 },
-          { id: 'd3', title: 'Houston Medical Office', slug: '#', address: '— Houston —', city: 'Houston', property_type: 'office', transaction_type: 'sale', sqft: 38000, headline: 'Medical office building near Texas Medical Center, long-term tenants', images: null, sale_price: 18900000 },
-        ],
+        canonicalPath: '/texas-commercial-property-for-sale',
         marketBullets: [
           {
             title: 'Texas is in a transition cycle.',

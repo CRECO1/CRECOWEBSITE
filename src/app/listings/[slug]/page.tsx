@@ -5,7 +5,9 @@
 export const revalidate = 1800;
 
 import type { Metadata } from 'next';
-import { jsonLd } from '@/lib/jsonLd';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { FaqSection } from '@/components/marketing/FaqSection';
+import { BUSINESS, assetCategory, breadcrumbList, listingPriceText, listingSchema, listingSummary } from '@/lib/schema';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { MapPin, Calendar, Building2, CheckCircle, Layers, Ruler, Truck, Download, Map, Video } from 'lucide-react';
@@ -116,134 +118,43 @@ export default async function ListingDetailPage({ params }: Props) {
     ? formatMonthlyRent(listing!.lease_rate, listing!.sqft, listing!.lease_rate_basis)
     : '';
 
-  // Build the offer block once — used by the consolidated RealEstateListing
-  // schema below. Lease and sale need different shapes: sale gets a flat
-  // Offer with `price`, lease gets a UnitPriceSpecification under an Offer
-  // with the per-SF-per-year rate. `businessFunction` makes the lease-vs-
-  // sale distinction explicit (HTTP/LeaseOut vs Sell) — Google and LLM
-  // entity graphs both use this to classify the listing.
-  const offerBlock = listing!.transaction_type === 'sale' && listing!.sale_price
-    ? {
-        '@type': 'Offer',
-        businessFunction: 'https://schema.org/Sell',
-        price: listing!.sale_price,
-        priceCurrency: 'USD',
-        availability: 'https://schema.org/InStock',
-        url: `https://www.crecotx.com/listings/${listing!.slug}`,
-        seller: { '@id': 'https://www.crecotx.com/#business' },
-      }
-    : listing!.lease_rate
-      ? {
-          '@type': 'Offer',
-          businessFunction: 'https://schema.org/LeaseOut',
-          priceSpecification: {
-            '@type': 'UnitPriceSpecification',
-            price: listing!.lease_rate,
-            priceCurrency: 'USD',
-            unitCode: 'FTK', // Square Foot (UN/CEFACT)
-            billingIncrement: 'yearly',
-            description: `${listing!.lease_rate_basis ?? 'NNN'} per SF per year`,
-          },
-          availability: 'https://schema.org/InStock',
-          url: `https://www.crecotx.com/listings/${listing!.slug}`,
-          seller: { '@id': 'https://www.crecotx.com/#business' },
-        }
-      : undefined;
-
-  // Build amenityFeature from the listing's freeform features[] array +
-  // structured industrial fields (clear_height, dock_doors, grade_doors).
-  // LLMs and Google rich results both use amenityFeature to compare
-  // properties — populated values directly improve entity-graph fit.
-  const amenityFeatures: Array<{ '@type': 'LocationFeatureSpecification'; name: string; value?: number | boolean }> = [];
-  // Features array — comes from Payload's array field as [{feature: '...'}]
-  const rawFeatures = (listing as { features?: Array<{ feature?: string }> }).features ?? [];
-  for (const f of rawFeatures) {
-    if (f?.feature) amenityFeatures.push({ '@type': 'LocationFeatureSpecification', name: f.feature, value: true });
-  }
-  if (listing!.clear_height) {
-    amenityFeatures.push({ '@type': 'LocationFeatureSpecification', name: 'Clear height (ft)', value: Number(listing!.clear_height) });
-  }
-  if (listing!.dock_doors) {
-    amenityFeatures.push({ '@type': 'LocationFeatureSpecification', name: 'Dock-high doors', value: Number(listing!.dock_doors) });
-  }
-  if (listing!.grade_doors) {
-    amenityFeatures.push({ '@type': 'LocationFeatureSpecification', name: 'Grade-level doors', value: Number(listing!.grade_doors) });
-  }
-  if (listing!.zoning) {
-    amenityFeatures.push({ '@type': 'LocationFeatureSpecification', name: `Zoning: ${listing!.zoning}` });
-  }
-
-  // Single consolidated RealEstateListing schema. Previously the page
-  // emitted both Product + RealEstateListing — Google treats duplicate
-  // schemas for the same entity as a signal of confusion. This is one
-  // canonical record with everything search engines + LLMs need.
-  const listingSchema: Record<string, unknown> = {
-    '@context': 'https://schema.org',
-    '@type': 'RealEstateListing',
-    '@id': `https://www.crecotx.com/listings/${listing!.slug}#listing`,
-    name: listing!.title,
-    url: `https://www.crecotx.com/listings/${listing!.slug}`,
-    description:
-      listing!.description
-      ?? listing!.headline
-      ?? `${listing!.property_type} property at ${listing!.address}, ${listing!.city}, ${listing!.state}`,
-    image: images.length > 0 ? images : ['https://www.crecotx.com/images/creco-logo.jpg'],
-    datePosted: listing!.listing_date ?? listing!.created_at,
-    category: `Commercial Real Estate · ${listing!.property_type}`,
-    mainEntity: {
-      '@type': 'CommercialProperty',
-      name: listing!.title,
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: listing!.address,
-        addressLocality: listing!.city,
-        addressRegion: listing!.state,
-        postalCode: listing!.zip,
-        addressCountry: 'US',
-      },
-      // geo gives Google + LLMs the lat/lng so the listing can show in
-      // local-pack / map-based rich results and surface in "industrial
-      // space near X" AI answers. Only emit when geocoded — incorrect
-      // coordinates are worse than missing ones.
-      geo: listing!.latitude != null && listing!.longitude != null
-        ? {
-            '@type': 'GeoCoordinates',
-            latitude: Number(listing!.latitude),
-            longitude: Number(listing!.longitude),
-          }
-        : undefined,
-      floorSize: listing!.sqft
-        ? { '@type': 'QuantitativeValue', value: listing!.sqft, unitCode: 'FTK' }
-        : undefined,
-      yearBuilt: listing!.year_built ?? undefined,
-      amenityFeature: amenityFeatures.length > 0 ? amenityFeatures : undefined,
+  // RealEstateListing (property as Accommodation w/ floorSize, geo, amenity
+  // features; lease/sale Offer incl. "contact for pricing"; broker = CRECO @id)
+  // + BreadcrumbList mirroring the visible crumb strip. Built in @/lib/schema
+  // so listing pages, ItemLists and llms-full.txt all describe inventory the
+  // same way.
+  const broker = getBrokerForListing(listing!.slug);
+  const listingFaqs = [
+    {
+      q: `Is ${listing!.title} still available?`,
+      a: listing!.status === 'active'
+        ? `Yes. As of the latest update, ${listing!.title} is actively marketed by CRECO — ${listingSummary(listing!)}. Call ${BUSINESS.phoneDisplay} or email ${BUSINESS.email} to confirm current availability.`
+        : `${listing!.title} is currently marked "${listing!.status}". Contact CRECO at ${BUSINESS.phoneDisplay} for its current status and for comparable ${assetCategory(listing!.property_type).toLowerCase()} options.`,
     },
-    offers: offerBlock,
-    broker: { '@id': 'https://www.crecotx.com/#business' },
-  };
-
-  // Visible breadcrumb above is mirrored by this BreadcrumbList JSON-LD —
-  // Google's recommendation is to keep schema and rendered HTML in sync
-  // so the two reinforce each other.
-  const breadcrumbSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Home',     item: 'https://www.crecotx.com/' },
-      { '@type': 'ListItem', position: 2, name: 'Listings', item: 'https://www.crecotx.com/listings' },
-      { '@type': 'ListItem', position: 3, name: listing!.title, item: `https://www.crecotx.com/listings/${listing!.slug}` },
-    ],
-  };
+    {
+      q: `What is the asking ${listing!.transaction_type === 'sale' ? 'price' : 'rate'} for ${listing!.title}?`,
+      a: `${listingPriceText(listing!)}.${listing!.sqft ? ` The property is ${listing!.sqft.toLocaleString()} SF` : ''}${listing!.available_sqft && listing!.available_sqft !== listing!.sqft ? ` with ${listing!.available_sqft.toLocaleString()} SF available` : ''}${listing!.sqft ? '.' : ''} Final terms depend on lease length, build-out, and credit — CRECO provides a full pricing package on request.`,
+    },
+    {
+      q: `Who is the listing broker for ${listing!.title}?`,
+      a: `${listing!.title} is listed by ${BUSINESS.name} (${BUSINESS.trecLicenseDisplay}), ${BUSINESS.fullAddress}. Inquiries go to ${broker.name}, ${broker.title} — ${broker.phone_display}, ${broker.email}.`,
+    },
+    {
+      q: `How do I tour ${listing!.title}?`,
+      a: `Request a tour with the form on this page or call ${BUSINESS.phoneDisplay}. CRECO responds within one business day and can arrange in-person or virtual tours.`,
+    },
+  ];
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: jsonLd(listingSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbSchema) }}
+      <JsonLd
+        data={[
+          listingSchema(listing!, { url: `/listings/${listing!.slug}` }),
+          breadcrumbList([
+            { name: 'Listings', path: '/listings' },
+            { name: listing!.title, path: `/listings/${listing!.slug}` },
+          ]),
+        ]}
       />
       <Header variant="minimal" />
       {/* pb-24 lg:pb-0 reserves space under the MobileInquiryBar so the
@@ -477,7 +388,7 @@ export default async function ListingDetailPage({ params }: Props) {
                   listingTitle={listing!.title}
                   listingSlug={listing!.slug}
                   listingAddress={`${listing!.address}, ${listing!.city}, ${listing!.state} ${listing!.zip ?? ''}`.trim()}
-                  broker={getBrokerForListing(listing!.slug)}
+                  broker={broker}
                 />
                 {/* Named broker + direct contact + optional Cal.com
                     slot. Replaces the anonymous "Or call us directly"
@@ -519,6 +430,13 @@ export default async function ListingDetailPage({ params }: Props) {
             </div>
           </div>
         </Container>
+
+        <FaqSection
+          faqs={listingFaqs}
+          path={`/listings/${listing!.slug}`}
+          heading={`${listing!.title} — questions & answers`}
+          className="section-luxury bg-background-cream border-t border-border"
+        />
 
         {/* More Available Properties — cross-sell */}
         <RelatedListings

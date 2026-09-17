@@ -66,8 +66,8 @@ export const FAIR_OAKS_PLAZA_LISTING: Listing = {
   closed_date: null,
   submarket: 'Fair Oaks Ranch',
   featured: true,
-  latitude: 29.7456,                         // approx — Fair Oaks Pkwy / Hwy 10
-  longitude: -98.6739,
+  latitude: 29.734008,                       // OSM house-level geocode (Sept 2026)
+  longitude: -98.643139,
   geocoded_at: null,
   created_at: '',
   updated_at: '',
@@ -128,8 +128,8 @@ export const DIETZ_ELKHORN_LISTING: Listing = {
   closed_date: null,
   submarket: 'Fair Oaks Ranch',
   featured: true,
-  latitude: 29.7506,                         // approx — Dietz Elkhorn / Fair Oaks Ranch
-  longitude: -98.6920,
+  latitude: 29.73119,                        // OSM house-level geocode (Sept 2026)
+  longitude: -98.662645,
   geocoded_at: null,
   created_at: '',
   updated_at: '',
@@ -200,9 +200,9 @@ export const LYTLE_MAIN_ST_LISTING: Listing = {
   closed_date: null,
   submarket: 'San Antonio Southwest',
   featured: true,
-  // Approx coords for Lytle, TX Main St — refine when the live data lands.
-  latitude: 29.2347,
-  longitude: -98.7944,
+  // OSM house-level geocode for 15033 Main St (Sept 2026).
+  latitude: 29.233958,
+  longitude: -98.794303,
   geocoded_at: null,
   created_at: '',
   updated_at: '',

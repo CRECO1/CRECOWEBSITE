@@ -5,6 +5,32 @@ import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { FaqSection } from '@/components/marketing/FaqSection';
+import { BUSINESS, breadcrumbList, businessRef, webPage } from '@/lib/schema';
+
+const SERVICES_FAQS = [
+  {
+    q: 'Does CRECO represent tenants or landlords?',
+    a: 'Both. CRECO\'s tenant representation practice works exclusively for the tenant on a given deal, and its leasing & sales practice represents owners and landlords. CRECO never represents both sides of the same deal.',
+  },
+  {
+    q: 'How much does tenant representation cost?',
+    a: 'Typically nothing out of pocket. In Texas commercial leasing the landlord pays the brokerage commission under market convention, and that commission is usually built into the listing agreement whether or not the tenant has a broker.',
+  },
+  {
+    q: 'What property types and markets does CRECO cover?',
+    a: 'Retail, office (including medical office), industrial and warehouse, flex, land, and investment property — for lease and for sale — in San Antonio, Austin, Houston, Dallas–Fort Worth, the Hill Country, and statewide Texas.',
+  },
+  {
+    q: 'Can CRECO manage my commercial property or help with a 1031 exchange?',
+    a: 'Yes. CRECO provides commercial property management (operations, rent collection, CAM reconciliations, monthly reporting) and investment advisory including 1031 replacement-property identification within the 45-day window.',
+  },
+  {
+    q: 'How do I start working with CRECO?',
+    a: `Call ${BUSINESS.phoneDisplay}, email ${BUSINESS.email}, or submit the Get Started form. A senior broker responds within one business day. CRECO is licensed by the Texas Real Estate Commission, ${BUSINESS.trecLicenseDisplay}.`,
+  },
+];
 
 export const metadata: Metadata = {
   title: 'Texas Commercial Real Estate Services | CRECO',
@@ -492,6 +518,23 @@ export const SERVICES: ServiceContent[] = [
 export default function ServicesPage() {
   return (
     <>
+      <JsonLd
+        data={[
+          webPage('CollectionPage', '/services', 'Texas Commercial Real Estate Services — CRECO',
+            'Tenant representation, leasing & sales, investment advisory, property management, development, and sustainability consulting.',
+            {
+              mainEntity: {
+                '@type': 'ItemList',
+                itemListElement: SERVICES.map((svc, i) => ({
+                  '@type': 'ListItem',
+                  position: i + 1,
+                  item: { '@type': 'Service', name: svc.title, url: `https://www.crecotx.com/services/${svc.slug}`, provider: businessRef, areaServed: { '@type': 'State', name: 'Texas' } },
+                })),
+              },
+            }),
+          breadcrumbList([{ name: 'Services', path: '/services' }]),
+        ]}
+      />
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}
@@ -555,6 +598,7 @@ export default function ServicesPage() {
             </div>
           </Container>
         </section>
+        <FaqSection faqs={SERVICES_FAQS} path="/services" heading="CRECO services — FAQ" className="section-luxury bg-white" />
       </main>
       <Footer />
     </>

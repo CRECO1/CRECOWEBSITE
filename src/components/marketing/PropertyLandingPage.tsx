@@ -6,7 +6,9 @@
  * Each instance:
  *  - Renders an SEO-optimized hero with the target keyword as the H1
  *  - Pulls live listings filtered to the relevant property_type / transaction_type
- *  - Falls back to demo content if the DB has nothing in this category yet
+ *  - Includes CRECO-owned synthetic properties; shows an honest empty state
+ *    (never placeholder cards) when nothing matches
+ *  - Emits ItemList (RealEstateListing nodes) + BreadcrumbList + FAQPage JSON-LD
  *  - Includes an FAQ block + FAQ schema for "People Also Ask" featured snippets
  *  - Cross-links to related pages and the tenant-needs / sell forms
  */
@@ -26,6 +28,9 @@ import {
 } from '@/lib/utils';
 import type { Listing, PropertyType, TransactionType, LandingPageContent } from '@/lib/supabase';
 import { getListings } from '@/lib/supabase';
+import { withSyntheticListings, listingLinkProps } from '@/lib/featured-properties';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { breadcrumbList, listingItemList } from '@/lib/schema';
 
 export interface LandingFAQ { q: string; a: string }
 
@@ -39,8 +44,11 @@ export interface PropertyLandingConfig {
   /** Filter to apply when fetching listings. */
   filterPropertyTypes?: PropertyType[];
   filterTransactionType?: TransactionType | null;   // null = sale OR both
-  /** Demo listings if DB is empty. */
-  demoListings: Partial<Listing>[];
+  /** @deprecated Placeholder cards are no longer rendered (they read as real
+   *  inventory to crawlers/AI agents). Kept optional for config compatibility. */
+  demoListings?: Partial<Listing>[];
+  /** Canonical path, e.g. "/texas-retail-space-for-lease" — enables ItemList + BreadcrumbList. */
+  canonicalPath?: string;
   /** "Why Texas" market-context bullet points. */
   marketBullets: { title: string; body: string }[];
   /** "Why CRECO" advantage bullet points. */
@@ -84,7 +92,8 @@ function mergeConfig(config: PropertyLandingConfig, db: LandingPageContent | nul
 export async function PropertyLandingPage({ config: configIn, dbContent }: Props) {
   const config = mergeConfig(configIn, dbContent);
   // Fetch listings and apply the configured filters
-  const allListings = await getListings('active').catch(() => [] as Listing[]);
+  const allListings = withSyntheticListings(await getListings('active').catch(() => [] as Listing[]))
+    .filter(l => l.status === 'active' || l.status === 'pending');
   const filtered = allListings.filter(l => {
     const typeOk = !config.filterPropertyTypes || config.filterPropertyTypes.includes(l.property_type);
     const txnOk = !config.filterTransactionType
@@ -93,10 +102,21 @@ export async function PropertyLandingPage({ config: configIn, dbContent }: Props
     return typeOk && txnOk;
   });
 
-  const listings = filtered.length > 0 ? filtered.slice(0, 6) : config.demoListings;
+  const listings = filtered.slice(0, 6);
 
   return (
     <>
+      {config.canonicalPath && (
+        <JsonLd
+          data={[
+            listingItemList(filtered, config.canonicalPath, config.h1, config.subhead),
+            breadcrumbList([
+              { name: 'Listings', path: '/listings' },
+              { name: config.h1, path: config.canonicalPath },
+            ]),
+          ]}
+        />
+      )}
       {/* FAQ Schema */}
       <script
         type="application/ld+json"
@@ -151,7 +171,7 @@ export async function PropertyLandingPage({ config: configIn, dbContent }: Props
                 <h2 className="font-heading text-display-sm font-bold text-primary gold-line gold-line-center inline-block pb-3">Available Properties</h2>
                 <p className="mx-auto mt-4 max-w-xl text-body text-foreground-muted">
                   {listings.length > 0
-                    ? `${listings.length} properties available now — vetted by CRECO principals.`
+                    ? `${filtered.length} ${filtered.length === 1 ? 'property' : 'properties'} available now — represented by CRECO.`
                     : 'New properties coming soon. Submit your requirements and we will bring vetted options to you.'}
                 </p>
               </div>
@@ -160,7 +180,7 @@ export async function PropertyLandingPage({ config: configIn, dbContent }: Props
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
               {listings.map((listing: any, i: number) => (
                 <RevealOnScroll key={listing.id ?? i} delay={i * 80}>
-                  <Link href={`/listings/${listing.slug}`} className="card-luxury group block">
+                  <Link {...listingLinkProps(listing)} className="card-luxury group block">
                     <div className="image-luxury aspect-property bg-background-warm relative">
                       {listing.images && (listing.images as string[])[0] ? (
                         <Image src={(listing.images as string[])[0]} alt={listing.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />

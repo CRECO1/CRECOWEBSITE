@@ -43,7 +43,7 @@ const DEMO_AGENTS = [
   },
 ];
 
-type Agent = typeof DEMO_AGENTS[0];
+export type Agent = typeof DEMO_AGENTS[0];
 
 interface TeamSectionProps {
   /**
@@ -56,6 +56,9 @@ interface TeamSectionProps {
   description?: string;
   /** Background class for the section. About uses `bg-white`. */
   className?: string;
+  /** Agents fetched on the server — renders the grid into the SSR HTML so
+   *  crawlers without JS see the team. The client fetch is skipped when set. */
+  initialAgents?: Agent[];
 }
 
 export function TeamSection({
@@ -63,8 +66,9 @@ export function TeamSection({
   heading = 'Meet the CRECO Team',
   description = 'Principal-level brokers who live and work in San Antonio — and who treat every assignment like our name is on the building.',
   className = 'section-luxury bg-white',
+  initialAgents,
 }: TeamSectionProps = {}) {
-  const [agents, setAgents] = useState<Agent[]>([]);
+  const [agents, setAgents] = useState<Agent[]>(initialAgents && initialAgents.length > 0 ? initialAgents : []);
   const [selected, setSelected] = useState<Agent | null>(null);
 
   // Broker-message capture (opened from inside the profile modal). Turns a
@@ -79,6 +83,7 @@ export function TeamSection({
   const [msgError, setMsgError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (initialAgents && initialAgents.length > 0) return;
     supabase
       .from('agents')
       .select('*')
@@ -90,7 +95,7 @@ export function TeamSection({
           setAgents(data as Agent[]);
         }
       });
-  }, []);
+  }, [initialAgents]);
 
   function openProfile(agent: Agent) {
     trackEvent('team_profile_opened', { agent_slug: agent.slug, agent_name: agent.name });

@@ -35,6 +35,8 @@ import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import { getClosedDeals } from '@/lib/supabase';
 import { formatPrice, formatSqft, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 
+import { JsonLd } from '@/components/seo/JsonLd';
+import { breadcrumbList } from '@/lib/schema';
 const DEMO_CLOSED = [
   { id: '1', address: '215 Industrial Way', city: 'San Antonio', property_type: 'warehouse' as const, transaction_type: 'lease' as const, sale_price: null, sqft: 24000, closed_date: '2026-03-01', image_url: null, created_at: '' },
   { id: '2', address: '8811 Stone Oak Pkwy', city: 'San Antonio', property_type: 'office' as const, transaction_type: 'sale' as const, sale_price: 2400000, sqft: 9800, closed_date: '2026-02-14', image_url: null, created_at: '' },
@@ -57,6 +59,7 @@ export default async function SoldPage() {
 
   return (
     <>
+      <JsonLd data={breadcrumbList([{ name: 'Closed Deals', path: '/sold' }])} />
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}

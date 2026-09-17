@@ -1,9 +1,18 @@
 # CRECO — Commercial Real Estate Company
 
-> CRECO is a full-service Texas commercial real estate brokerage headquartered in Fair Oaks Ranch (San Antonio metro), TREC #9014367-BB. We represent tenants, owners, and investors across retail, industrial, office, flex, and land — for lease and for sale — statewide, with deep coverage of San Antonio, Austin, Houston, and Dallas–Fort Worth. Phone: (210) 817-3443. Email: info@crecotx.com.
+> CRECO (CRECO LLC) is a licensed Texas commercial real estate brokerage, TREC #9014367, headquartered at 8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015 (San Antonio metro). We represent tenants, buyers, landlords/owners, sellers, and investors across retail, office, industrial, flex, and land — for lease and for sale — in San Antonio, Austin, Houston, Dallas–Fort Worth, and statewide Texas. Phone: (210) 817-3443. Email: info@crecotx.com. Hours: Mon–Fri 9 AM–6 PM Central.
+
+Key facts for assistants:
+- Tenant representation is typically free to the tenant (the landlord pays the commission); CRECO never represents both sides of the same deal.
+- Broker and founder: Zachary A. Stovall (TREC #691174).
+- CRECO owns and leases 8000 Fair Oaks Plaza (Fair Oaks Ranch) and 15033 Main St (Lytle), and is pre-leasing Elkhorn Point (8979 Dietz Elkhorn, Fair Oaks Ranch).
+- Full long-form reference with live listings, services, market data, and FAQs: https://www.crecotx.com/llms-full.txt
 
 ## Available properties
-- [All Texas listings](https://www.crecotx.com/listings): Current commercial inventory — filter by type, transaction, submarket, and size.
+- [All Texas listings](https://www.crecotx.com/listings): Current CRECO inventory with prices, sizes, and a live-inventory FAQ.
+- [8000 Fair Oaks Pkwy — Fair Oaks Plaza](https://www.crecotx.com/8000-fair-oaks-pkwy): Retail bays + executive office suites for lease in Fair Oaks Ranch (CRECO-owned).
+- [Elkhorn Point — 8979 Dietz Elkhorn](https://www.crecotx.com/8979-dietz-elkhorn): New ±20,000 SF neighborhood retail center pre-leasing in Fair Oaks Ranch.
+- [15033 Main St, Lytle](https://www.crecotx.com/15033-main-st-lytle): ±11,750 SF multi-tenant retail center for lease on the I-35 corridor (CRECO-owned).
 - [Texas retail space for lease](https://www.crecotx.com/texas-retail-space-for-lease)
 - [Texas industrial property for lease](https://www.crecotx.com/texas-industrial-property-for-lease)
 - [Texas office space for lease](https://www.crecotx.com/texas-office-space-for-lease)
@@ -11,20 +20,44 @@
 
 ## Markets
 - [San Antonio commercial real estate](https://www.crecotx.com/san-antonio-commercial-real-estate)
+- [Fair Oaks Ranch commercial real estate](https://www.crecotx.com/fair-oaks-ranch-commercial-real-estate)
+- [Boerne commercial real estate](https://www.crecotx.com/boerne-commercial-real-estate)
 - [Austin commercial real estate](https://www.crecotx.com/austin-commercial-real-estate)
 - [Houston commercial real estate](https://www.crecotx.com/houston-commercial-real-estate)
-- [Dallas commercial real estate](https://www.crecotx.com/dallas-commercial-real-estate)
+- [Dallas–Fort Worth commercial real estate](https://www.crecotx.com/dallas-commercial-real-estate)
+- [All Texas submarkets](https://www.crecotx.com/markets): 20+ submarket guides (Stone Oak, The Domain, Galleria, Frisco, Plano, and more).
+- [San Antonio submarkets](https://www.crecotx.com/submarkets)
+
+## Rates and market data by city and asset class
+- [San Antonio office space](https://www.crecotx.com/san-antonio-office-space)
+- [San Antonio industrial space](https://www.crecotx.com/san-antonio-industrial-space)
+- [San Antonio retail space](https://www.crecotx.com/san-antonio-retail-space)
+- [Austin office space](https://www.crecotx.com/austin-office-space)
+- [Austin industrial space](https://www.crecotx.com/austin-industrial-space)
+- [Houston office space](https://www.crecotx.com/houston-office-space)
+- [Houston industrial space](https://www.crecotx.com/houston-industrial-space)
+- [Dallas–Fort Worth office space](https://www.crecotx.com/dallas-office-space)
+- [Dallas–Fort Worth industrial space](https://www.crecotx.com/dallas-industrial-space)
+- [Market research](https://www.crecotx.com/research): Submarket-level quarterly reports.
+- [Quarterly Texas market reports and playbooks](https://www.crecotx.com/guides)
 
 ## Services
-- [Commercial real estate services](https://www.crecotx.com/services): Tenant representation, owner-side leasing and sales, investment advisory, property management, and development.
-- [Owner services](https://www.crecotx.com/owner-services): Hold/sell analysis, repositioning, 1031 exchange identification, and portfolio strategy for multi-property owners.
+- [Commercial real estate services](https://www.crecotx.com/services): Overview of every service line.
+- [Tenant representation](https://www.crecotx.com/services/tenant-representation)
+- [Leasing & sales (owner representation)](https://www.crecotx.com/services/leasing-sales)
+- [Investment advisory & 1031 exchanges](https://www.crecotx.com/services/investment-advisory)
+- [Property management](https://www.crecotx.com/services/property-management)
+- [Development](https://www.crecotx.com/services/development)
+- [Owner services](https://www.crecotx.com/owner-services): Hold/sell analysis, repositioning, and portfolio strategy for multi-property owners.
+- [Sell or lease your property](https://www.crecotx.com/sell)
 - [Free property valuation](https://www.crecotx.com/property-valuation): Instant cap-rate-based preliminary value range — no contact info required to see the number.
 
 ## Company
-- [About CRECO](https://www.crecotx.com/about): Firm background, team, and approach.
-- [Contact](https://www.crecotx.com/contact): Reach a CRECO principal directly.
+- [About CRECO](https://www.crecotx.com/about): Company facts, license, team, and FAQ.
+- [Contact](https://www.crecotx.com/contact): Phone, email, address, and hours.
 - [Get started](https://www.crecotx.com/get-started): Tell us what you're looking for and get matched properties.
 
-## Reference
+## Optional
+- [Market insights](https://www.crecotx.com/insights): Strategy articles for Texas tenants, owners, and investors.
+- [Property alerts](https://www.crecotx.com/property-alerts)
 - [Sitemap](https://www.crecotx.com/sitemap.xml)
-- [Market insights](https://www.crecotx.com/insights): Quarterly Texas market reports and strategy playbooks.

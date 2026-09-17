@@ -15,6 +15,9 @@ import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { jsonLd } from '@/lib/jsonLd';
+import { AvailableListingsTable } from '@/components/marketing/AvailableListingsTable';
+import { filterListings, getAvailableListings } from '@/lib/public-listings';
+import { BUSINESS, listingSummary } from '@/lib/schema';
 
 export interface SubmarketCard {
   name: string;
@@ -107,7 +110,21 @@ function baseCityFaqs(city: string): { q: string; a: string }[] {
   ];
 }
 
-export function CityHubPage({ config }: { config: CityHubConfig }) {
+export async function CityHubPage({ config }: { config: CityHubConfig }) {
+  // Live CRECO inventory for this market — rendered as a table + ItemList and
+  // summarized in the first FAQ so "what space is available in {city}?" has a
+  // current, citable answer in the server HTML.
+  const available = config.canonicalPath
+    ? filterListings(await getAvailableListings(), { metro: config.city })
+    : [];
+  const availabilityFaq = config.canonicalPath
+    ? [{
+        q: `What commercial space is available in ${config.city} right now?`,
+        a: available.length > 0
+          ? `CRECO currently markets ${available.length} ${available.length === 1 ? 'property' : 'properties'} in the ${config.city} area: ${available.map(l => `${l.title} (${listingSummary(l)})`).join('; ')}. CRECO's tenant- and buyer-rep clients also get access to all other ${config.cityShort} inventory, including off-market space. Call ${BUSINESS.phoneDisplay}.`
+          : `CRECO has no public listing in ${config.city} at this moment, but it represents tenants and buyers across the full ${config.cityShort} market — including LoopNet/CoStar inventory and off-market space. Call ${BUSINESS.phoneDisplay} or email ${BUSINESS.email} for a current availability survey.`,
+      }]
+    : [];
   // Structured data (Place + Article + BreadcrumbList) — these city hubs shipped
   // with no JSON-LD. heroSubhead feeds the description (no quickAnswer field on
   // this template). Only emitted when the caller supplies a canonical path.
@@ -115,7 +132,7 @@ export function CityHubPage({ config }: { config: CityHubConfig }) {
   const crumbTrail = config.breadcrumbs && config.breadcrumbs.length > 0
     ? config.breadcrumbs
     : [{ label: config.city }];
-  const faqs = [...(config.faqs ?? []), ...baseCityFaqs(config.cityShort)];
+  const faqs = [...availabilityFaq, ...(config.faqs ?? []), ...baseCityFaqs(config.cityShort)];
   const schemas: Record<string, unknown>[] = pageUrl ? [
     {
       '@context': 'https://schema.org',
@@ -414,6 +431,17 @@ export function CityHubPage({ config }: { config: CityHubConfig }) {
             </div>
           </Container>
         </section>
+
+        {config.canonicalPath && (
+          <AvailableListingsTable
+            listings={available}
+            path={config.canonicalPath}
+            title={`${config.city} commercial listings represented by CRECO`}
+            intro={`Currently available CRECO inventory in the ${config.city} area — retail, office, industrial, flex, and land.`}
+            emptyText={`No public CRECO listing in ${config.city} right now. CRECO searches the entire ${config.cityShort} market, including off-market space, for tenant- and buyer-rep clients — call ${BUSINESS.phoneDisplay}.`}
+            className="section-luxury bg-white border-t border-border"
+          />
+        )}
 
         {/* Related Insights */}
         {config.relatedInsights.length > 0 && (

@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
-import { jsonLd } from '@/lib/jsonLd';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { FaqSection } from '@/components/marketing/FaqSection';
+import { FAIR_OAKS_PLAZA_LISTING } from '@/lib/featured-properties';
+import { breadcrumbList, listingSchema } from '@/lib/schema';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -129,42 +132,46 @@ const WHY_HERE = [
 // AI assistant deep-link discoverability (chatgpt.com referrals are
 // already in the GA mix, this widens that channel). Mirrors the
 // schema shape used on /listings/[slug] for consistency.
-const REAL_ESTATE_SCHEMA = {
-  '@context': 'https://schema.org',
-  '@type': 'RealEstateListing',
-  name: '8000 Fair Oaks Plaza',
-  url: 'https://www.crecotx.com/8000-fair-oaks-pkwy',
-  image: [
-    'https://www.crecotx.com/properties/8000-fair-oaks-pkwy/monument-sign.jpg',
-    'https://www.crecotx.com/properties/8000-fair-oaks-pkwy/retail-strip-wide.jpg',
-  ],
-  description:
-    'Mixed-use commercial center in Fair Oaks Ranch, TX — 4-bay retail building plus two two-story executive office suite buildings, owned and operated by CRECO. Now leasing retail bays and executive office suites.',
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: '8000 Fair Oaks Pkwy',
-    addressLocality: 'Fair Oaks Ranch',
-    addressRegion: 'TX',
-    postalCode: '78015',
-    addressCountry: 'US',
+const PAGE_PATH = '/8000-fair-oaks-pkwy';
+
+// RealEstateListing built from the shared synthetic listing record so the
+// address/geo/offer facts match /listings, ItemLists and llms-full.txt.
+const SCHEMAS = [
+  listingSchema(FAIR_OAKS_PLAZA_LISTING, {
+    url: PAGE_PATH,
+    images: [PHOTOS.monumentSign, PHOTOS.retailStripWide, PHOTOS.executiveSuitesSouth],
+    description:
+      'Mixed-use commercial center at 8000 Fair Oaks Pkwy, Fair Oaks Ranch, TX 78015 — a 4-bay retail building plus two two-story executive office suite buildings, owned and operated by CRECO. Now leasing retail bays and executive office suites; contact CRECO for pricing.',
+  }),
+  breadcrumbList([
+    { name: 'Listings', path: '/listings' },
+    { name: '8000 Fair Oaks Pkwy', path: PAGE_PATH },
+  ]),
+];
+
+const FAQS = [
+  {
+    q: 'What space is available at 8000 Fair Oaks Pkwy?',
+    a: 'Two kinds of space: retail bays in the 4-bay retail center on Fair Oaks Pkwy (current tenants include Spotted Deer Coffee, Parker\'s Ice Creams, Fair Oaks Salon, and Blume Haus) and private executive office suites in two two-story office buildings on the same lot. Contact CRECO at (210) 817-3443 for currently open bays and suites.',
   },
-  geo: { '@type': 'GeoCoordinates', latitude: 29.7456, longitude: -98.6739 },
-  broker: {
-    '@type': 'RealEstateAgent',
-    name: 'CRECO',
-    url: 'https://www.crecotx.com',
-    telephone: '+1-210-817-3443',
+  {
+    q: 'How much does retail or office space cost at 8000 Fair Oaks Pkwy?',
+    a: 'Pricing is not published — rent depends on the bay or suite, size, and term. Call (210) 817-3443 or email info@crecotx.com for current rates. Executive suites are offered with flexible lease terms.',
   },
-  areaServed: { '@type': 'City', name: 'Fair Oaks Ranch' },
-};
+  {
+    q: 'What businesses fit the retail bays at 8000 Fair Oaks Pkwy?',
+    a: 'Coffee and quick-service, fast-casual restaurants, boutique fitness, medical or dental practices, specialty retail, service businesses (salon, spa, dry cleaner), and professional-services storefronts.',
+  },
+  {
+    q: 'Who owns and leases 8000 Fair Oaks Pkwy?',
+    a: 'CRECO – Commercial Real Estate Company owns the property and is its leasing broker (TREC #9014367). CRECO\'s own headquarters is in Suite 102 of the same address, 8000 Fair Oaks Pkwy, Fair Oaks Ranch, TX 78015.',
+  },
+];
 
 export default function FairOaksDevPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: jsonLd(REAL_ESTATE_SCHEMA) }}
-      />
+      <JsonLd data={SCHEMAS} />
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero — monument sign photo as the background. Site-shot
@@ -635,6 +642,7 @@ export default function FairOaksDevPage() {
             </div>
           </Container>
         </section>
+        <FaqSection faqs={FAQS} path={PAGE_PATH} heading="8000 Fair Oaks Pkwy — FAQ" />
       </main>
       {/* Sticky inquiry pill — catches the scroll-past-hero visitor.
           Wraps the same DevelopmentInquiryButton the inline retail-bay

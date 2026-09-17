@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { BUSINESS, breadcrumbList, businessRef, webPage } from '@/lib/schema';
 
 export const metadata: Metadata = {
   title: 'Contact CRECO | Texas Commercial Real Estate Brokers',
@@ -27,6 +29,18 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://www.crecotx.com/contact' },
 };
 
+
 export default function ContactLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <>
+      <JsonLd
+        data={[
+          webPage('ContactPage', '/contact', 'Contact CRECO', `Contact CRECO – Commercial Real Estate Company: ${BUSINESS.phoneDisplay}, ${BUSINESS.email}, ${BUSINESS.fullAddress}.`,
+            { mainEntity: businessRef }),
+          breadcrumbList([{ name: 'Contact', path: '/contact' }]),
+        ]}
+      />
+      {children}
+    </>
+  );
 }

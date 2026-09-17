@@ -1,3 +1,7 @@
+// 30-min ISR — the page embeds live CRECO inventory (table + ItemList + FAQ).
+export const revalidate = 1800;
+
+
 import type { Metadata } from 'next';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
@@ -89,7 +93,6 @@ export default function SanAntonioOfficeSpacePage() {
             name: 'The Pearl / Tobin Hill',
             characterization: 'Creative office, premium rents',
             description: "Adaptive-reuse creative office at the Pearl Brewery. Rents per SF read more like Austin's East Side than typical SA. Walkable density.",
-            href: '/markets/the-pearl',
           },
           {
             name: 'Downtown / Riverwalk',

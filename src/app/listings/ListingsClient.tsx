@@ -60,7 +60,7 @@ const SIZE_RANGES: { label: string; min: number; max: number }[] = [
   { label: '50,000+ SF', min: 50000, max: Infinity },
 ];
 
-export function ListingsClient({ initialListings }: { initialListings: Listing[] }) {
+export function ListingsClient({ initialListings, children }: { initialListings: Listing[]; children?: React.ReactNode }) {
   const router = useRouter();
 
   // Seeded from the server-fetched inventory (rendered in the SSR HTML). The
@@ -449,6 +449,8 @@ export function ListingsClient({ initialListings }: { initialListings: Listing[]
             </div>
           </Container>
         </div>
+        {/* Server-rendered extras from page.tsx (live-inventory FAQ). */}
+        {children}
       </main>
 
       <SaveSearchModal

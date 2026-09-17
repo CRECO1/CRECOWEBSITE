@@ -8,6 +8,8 @@ import { TrustStrip } from '@/components/marketing/TrustStrip';
 import { Testimonials } from '@/components/marketing/Testimonials';
 import { jsonLd } from '@/lib/jsonLd';
 
+import { JsonLd } from '@/components/seo/JsonLd';
+import { breadcrumbList } from '@/lib/schema';
 export const metadata: Metadata = {
   title: "What's My Commercial Property Worth? | Free Texas CRE Valuation | CRECO",
   description:
@@ -111,6 +113,7 @@ export default function PropertyValuationPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(faqSchema) }} />
+      <JsonLd data={breadcrumbList([{ name: 'Property Valuation', path: '/property-valuation' }])} />
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}

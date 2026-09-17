@@ -6,6 +6,28 @@ import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import { SellInquiryForm } from './SellInquiryForm';
 import { Testimonials } from '@/components/marketing/Testimonials';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { FaqSection } from '@/components/marketing/FaqSection';
+import { BUSINESS, breadcrumbList, businessRef } from '@/lib/schema';
+
+const SELL_FAQS = [
+  {
+    q: 'How do I sell or lease my commercial property in Texas with CRECO?',
+    a: `Request a broker opinion of value on this page or call ${BUSINESS.phoneDisplay}. CRECO tours the property, reviews the rent roll and operating history, benchmarks comparable Texas transactions, and delivers a no-obligation value range and marketing strategy — typically within one to two business days.`,
+  },
+  {
+    q: 'How will CRECO market my property?',
+    a: 'Broker book, professional and drone photography, a property website, syndication on CoStar, LoopNet, and Crexi, and direct outreach to qualified buyers and tenants in CRECO\'s Texas owner and broker network — including principals who never search public listings.',
+  },
+  {
+    q: 'What types of commercial property does CRECO sell and lease for owners?',
+    a: 'Retail centers and freestanding retail, office and medical office, industrial and warehouse, flex, land, and investment property anywhere in Texas, with the deepest coverage in San Antonio, Austin, Houston, and Dallas–Fort Worth.',
+  },
+  {
+    q: 'Can CRECO help me with a 1031 exchange when I sell?',
+    a: 'Yes. CRECO coordinates the sale timeline with your qualified intermediary and identifies replacement properties across Texas within the 45-day identification window.',
+  },
+];
 
 const STEPS = [
   { number: '01', title: 'Property Evaluation', description: 'We tour the asset, review rent rolls and operating history, and benchmark against comparable transactions to establish a defensible value range.' },
@@ -29,6 +51,21 @@ const STATS = [
 export default function SellPage() {
   return (
     <>
+      <JsonLd
+        data={[
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Service',
+            '@id': 'https://www.crecotx.com/sell#service',
+            name: 'Commercial property disposition and owner leasing — Texas',
+            serviceType: 'Commercial real estate listing brokerage (sale and lease)',
+            provider: businessRef,
+            areaServed: { '@type': 'State', name: 'Texas' },
+            url: 'https://www.crecotx.com/sell',
+          },
+          breadcrumbList([{ name: 'Sell or Lease Your Property', path: '/sell' }]),
+        ]}
+      />
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}
@@ -161,6 +198,7 @@ export default function SellPage() {
           heading="Owners and tenants we've represented"
           bg="bg-background-cream"
         />
+        <FaqSection faqs={SELL_FAQS} path="/sell" heading="Selling or leasing your property — FAQ" className="section-luxury bg-white" />
       </main>
       <Footer />
     </>

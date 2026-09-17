@@ -54,11 +54,7 @@ export default async function Page() {
           'Class A, B, and C office, medical office, professional suites, executive office, and creative space — across San Antonio, Austin, Houston, DFW, and the rest of the Texas office market. Whether you\'re a 5-person startup looking for executive suites or a 200-person company anchoring a Class A floor, CRECO matches your team size, growth path, and culture to the right Texas office building.',
         filterPropertyTypes: ['office'],
         filterTransactionType: 'lease',
-        demoListings: [
-          { id: 'd1', title: 'Stone Oak Class A Office', slug: '#', address: '— San Antonio —', city: 'San Antonio', property_type: 'office', transaction_type: 'lease', sqft: 4200, headline: 'Class A office in Stone Oak — full-floor available', images: null, lease_rate: 30, lease_rate_basis: 'Full Service' },
-          { id: 'd2', title: 'Austin Domain Creative', slug: '#', address: '— Austin —', city: 'Austin', property_type: 'office', transaction_type: 'lease', sqft: 6800, headline: 'Creative office in The Domain — exposed brick, polished concrete, conference room', images: null, lease_rate: 48, lease_rate_basis: 'Full Service' },
-          { id: 'd3', title: 'Houston Galleria Class A', slug: '#', address: '— Houston —', city: 'Houston', property_type: 'office', transaction_type: 'lease', sqft: 12500, headline: '12,500 SF Class A in established Galleria tower', images: null, lease_rate: 36, lease_rate_basis: 'Full Service' },
-        ],
+        canonicalPath: '/texas-office-space-for-lease',
         marketBullets: [
           {
             title: 'Texas office is bifurcating.',

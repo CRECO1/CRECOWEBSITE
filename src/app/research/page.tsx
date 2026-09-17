@@ -5,6 +5,8 @@ import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { MARKET_REPORTS_SORTED, type MarketReport } from '@/lib/market-reports';
 
+import { JsonLd } from '@/components/seo/JsonLd';
+import { breadcrumbList } from '@/lib/schema';
 /**
  * /research — index of quarterly market reports.
  *
@@ -43,6 +45,7 @@ function formatPubDate(iso: string): string {
 export default function ResearchIndexPage() {
   return (
     <>
+      <JsonLd data={breadcrumbList([{ name: 'Market Research', path: '/research' }])} />
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}

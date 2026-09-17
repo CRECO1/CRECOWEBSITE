@@ -12,7 +12,7 @@ import {
  * Reads from src/lib/submarkets-content.ts and renders via the same
  * CityHubPage component the major-city pages use. Per-page metadata
  * generated from the submarket entry. JSON-LD includes Place (the
- * submarket), LocalBusiness (CRECO with areaServed = this submarket),
+ * submarket), Service (provided by the sitewide CRECO @id, areaServed = this submarket),
  * and BreadcrumbList.
  *
  * SSG via generateStaticParams so every submarket page is pre-rendered
@@ -50,7 +50,7 @@ export default async function SubmarketPage({ params }: { params: Promise<{ slug
 
   // Structured data:
   //   Place — describes the geographic area (the submarket)
-  //   LocalBusiness — CRECO's local presence serving the submarket
+  //   Service — CRECO's brokerage service scoped to the submarket
   //   BreadcrumbList — Home > Markets > [submarket]
   // All three help search engines understand the page and qualify for
   // rich results (local pack, breadcrumbs in search, organization card).
@@ -64,22 +64,17 @@ export default async function SubmarketPage({ params }: { params: Promise<{ slug
       containedInPlace: { '@type': 'AdministrativeArea', name: PARENT_METRO_LABELS[entry.parentMetro] },
     },
     {
+      // Service scoped to this submarket, provided by the ONE sitewide business
+      // entity (@id) — previously a second LocalBusiness node per market page,
+      // which split CRECO into 20 look-alike entities for knowledge graphs.
       '@context': 'https://schema.org',
-      '@type': 'LocalBusiness',
-      '@id': `https://www.crecotx.com/markets/${entry.slug}#localbusiness`,
-      name: 'CRECO – Commercial Real Estate Company',
-      url: `https://www.crecotx.com/markets/${entry.slug}`,
-      telephone: '+1-210-817-3443',
+      '@type': 'Service',
+      '@id': `https://www.crecotx.com/markets/${entry.slug}#service`,
+      name: `Commercial real estate brokerage in ${entry.config.city}, Texas`,
+      serviceType: 'Commercial real estate brokerage — tenant representation, leasing, sales, and investment advisory',
+      provider: { '@id': 'https://www.crecotx.com/#business' },
       areaServed: { '@type': 'Place', name: `${entry.config.city}, Texas` },
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: '8000 Fair Oaks Pkwy, Suite 102',
-        addressLocality: 'Fair Oaks Ranch',
-        addressRegion: 'TX',
-        postalCode: '78015',
-        addressCountry: 'US',
-      },
-      priceRange: '$$$',
+      url: `https://www.crecotx.com/markets/${entry.slug}`,
     },
     {
       '@context': 'https://schema.org',

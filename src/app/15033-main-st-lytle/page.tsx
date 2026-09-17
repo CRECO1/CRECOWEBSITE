@@ -2,7 +2,10 @@
 export const revalidate = 1800;
 
 import type { Metadata } from 'next';
-import { jsonLd } from '@/lib/jsonLd';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { FaqSection } from '@/components/marketing/FaqSection';
+import { LYTLE_MAIN_ST_LISTING } from '@/lib/featured-properties';
+import { breadcrumbList, listingSchema } from '@/lib/schema';
 import Link from 'next/link';
 import Image from 'next/image';
 import {
@@ -152,41 +155,46 @@ export const metadata: Metadata = {
 };
 
 // ─── Schema markup ───────────────────────────────────────────────────
-const REAL_ESTATE_SCHEMA = {
-  '@context': 'https://schema.org',
-  '@type': 'RealEstateListing',
-  name: '15033 Main St — Lytle Retail Leasing',
-  url: 'https://www.crecotx.com/15033-main-st-lytle',
-  description:
-    'Multi-tenant retail center in Lytle, TX now leasing. Five active local co-tenants across daily-needs, F&B, and specialty retail. San Antonio metro / I-35 corridor. Owned and represented by CRECO.',
-  address: {
-    '@type': 'PostalAddress',
-    streetAddress: '15033 Main St',
-    addressLocality: 'Lytle',
-    addressRegion: 'TX',
-    postalCode: '78052',
-    addressCountry: 'US',
+const PAGE_PATH = '/15033-main-st-lytle';
+
+const SCHEMAS = [
+  listingSchema(LYTLE_MAIN_ST_LISTING, {
+    url: PAGE_PATH,
+    images: [PHOTOS.heroCorner, PHOTOS.frontWide, PHOTOS.aerial],
+    description:
+      `Multi-tenant retail center for lease at 15033 Main St, Lytle, TX 78052 on the I-35 corridor (San Antonio southwest metro): ±${TOTAL_SF.toLocaleString()} SF across 6 in-line suites (${SMALLEST_SUITE.toLocaleString()}–${LARGEST_SUITE.toLocaleString()} SF) plus a 650 SF standalone building, NNN. Five established co-tenants. Owned and leased by CRECO; call for pricing.`,
+  }),
+  breadcrumbList([
+    { name: 'Listings', path: '/listings' },
+    { name: '15033 Main St, Lytle', path: PAGE_PATH },
+  ]),
+];
+
+const FAQS = [
+  {
+    q: 'What retail space is available at 15033 Main St in Lytle, TX?',
+    a: `The center totals ±${TOTAL_SF.toLocaleString()} SF: six in-line suites from ${SMALLEST_SUITE.toLocaleString()} to ${LARGEST_SUITE.toLocaleString()} SF plus a 650 SF standalone building. Suite availability changes — call CRECO at (210) 817-3443 for which units are open now.`,
   },
-  // Approximate coords from public records — refine when the live data lands.
-  geo: { '@type': 'GeoCoordinates', latitude: 29.2347, longitude: -98.7944 },
-  broker: {
-    '@type': 'RealEstateAgent',
-    name: 'CRECO',
-    url: 'https://www.crecotx.com',
-    telephone: '+1-210-817-3443',
+  {
+    q: 'What is the rent at 15033 Main St, Lytle?',
+    a: 'Leases are NNN (triple net). Base rent is quoted per suite — contact CRECO at (210) 817-3443 or info@crecotx.com for current rates.',
   },
-  areaServed: { '@type': 'City', name: 'Lytle' },
-};
+  {
+    q: 'Who are the current tenants at 15033 Main St?',
+    a: TENANTS.map(t => `${t.name} (${t.category.toLowerCase()})`).join(', ') + ' — a daily-needs mix that drives repeat weekly traffic.',
+  },
+  {
+    q: 'Who owns and leases 15033 Main St?',
+    a: 'CRECO – Commercial Real Estate Company (TREC #9014367) owns the center and is its leasing broker, so tenants deal directly with the decision-maker.',
+  },
+];
 
 // ─── Page ─────────────────────────────────────────────────────────────
 
 export default function LytleMainStPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: jsonLd(REAL_ESTATE_SCHEMA) }}
-      />
+      <JsonLd data={SCHEMAS} />
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero — corner-angle photo as the background (Naomi's Diner
@@ -542,6 +550,7 @@ export default function LytleMainStPage() {
             </div>
           </Container>
         </section>
+        <FaqSection faqs={FAQS} path={PAGE_PATH} heading="15033 Main St, Lytle — FAQ" />
       </main>
       <Footer />
     </>

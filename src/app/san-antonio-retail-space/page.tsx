@@ -1,3 +1,7 @@
+// 30-min ISR — the page embeds live CRECO inventory (table + ItemList + FAQ).
+export const revalidate = 1800;
+
+
 import type { Metadata } from 'next';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
@@ -89,7 +93,6 @@ export default function SanAntonioRetailSpacePage() {
             name: 'Pearl / Southtown / Downtown',
             characterization: 'Urban + experiential',
             description: 'Adaptive-reuse and street retail driven by tourism, walkable density, and food-and-beverage. A curated, high-rent-per-SF micro-market distinct from suburban strip.',
-            href: '/markets/the-pearl',
           },
           {
             name: 'I-35 Northeast (toward New Braunfels)',

@@ -6,6 +6,7 @@ export const revalidate = 1800;
 
 import type { Metadata } from 'next';
 import { jsonLd } from '@/lib/jsonLd';
+import { listingSummary } from '@/lib/schema';
 
 export const metadata: Metadata = {
   title: 'Texas Commercial Real Estate | Retail, Industrial & Office | CRECO',
@@ -141,6 +142,14 @@ const TEXAS_MARKETS = [
 
 const FAQS = [
   {
+    q: 'Does CRECO represent tenants or landlords?',
+    a: 'Both — CRECO represents tenants and buyers looking for commercial space, and landlords, owners, and sellers leasing or selling property. On any one deal CRECO represents one side only. For tenants, representation is typically free because the landlord pays the commission.',
+  },
+  {
+    q: 'Is CRECO a licensed real estate brokerage?',
+    a: 'Yes. CRECO – Commercial Real Estate Company (CRECO LLC) is licensed by the Texas Real Estate Commission, TREC #9014367. Its broker and founder is Zachary A. Stovall (TREC #691174).',
+  },
+  {
     q: 'What types of commercial real estate does CRECO handle in Texas?',
     a: 'CRECO is a full-service Texas commercial real estate firm. We handle retail (strip centers, restaurants, freestanding, urban storefronts), industrial and warehouse (distribution, light manufacturing, flex-industrial), office (Class A/B/C, medical, professional), flex space, and commercial land — for lease, sale, and investment.',
   },
@@ -159,6 +168,10 @@ const FAQS = [
   {
     q: 'How do I list my commercial property with CRECO?',
     a: 'Submit a property opinion request on our /sell page or call us at (210) 817-3443. We will tour the property, review your rent roll and operating history, benchmark recent comparable Texas transactions, and deliver a no-obligation Broker Opinion of Value (BOV) and recommended marketing strategy within one to two business days.',
+  },
+  {
+    q: 'How do I contact CRECO?',
+    a: 'Call or text (210) 817-3443, email info@crecotx.com, or visit the office at 8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015 (Monday–Friday, 9 AM–6 PM). A senior broker responds within one business day.',
   },
   {
     q: 'What makes CRECO different from CBRE, JLL, or Cushman & Wakefield?',
@@ -246,6 +259,19 @@ export default async function HomePage() {
   const remaining = allListings.filter((l: any) => !FEATURED_SLUG_ORDER.includes(l.slug));
   const featuredListings = [...ordered, ...remaining].slice(0, 6);
 
+  // Live-inventory answer for the question AI assistants ask most
+  // ("what space does CRECO have in Fair Oaks Ranch / San Antonio?").
+  const availableNow = allListings.filter((l: any) => l.status === 'active' || l.status === 'pending');
+  const faqs = [
+    {
+      q: 'What commercial space is available in Fair Oaks Ranch and San Antonio right now?',
+      a: availableNow.length > 0
+        ? `CRECO currently markets: ${availableNow.map((l: any) => `${l.title} (${listingSummary(l)})`).join('; ')}. See all details at crecotx.com/listings or call (210) 817-3443.`
+        : 'New inventory is being added — see crecotx.com/listings or call (210) 817-3443 for current and off-market options.',
+    },
+    ...FAQS,
+  ];
+
   const featuredTestimonials = testimonialsResult.status === 'fulfilled' && testimonialsResult.value.length > 0
     ? testimonialsResult.value.slice(0, 3) : DEMO_TESTIMONIALS;
 
@@ -275,7 +301,8 @@ export default async function HomePage() {
           __html: jsonLd({
             '@context': 'https://schema.org',
             '@type': 'FAQPage',
-            mainEntity: FAQS.map(f => ({
+            '@id': 'https://www.crecotx.com/#faq',
+            mainEntity: faqs.map(f => ({
               '@type': 'Question',
               name: f.q,
               acceptedAnswer: { '@type': 'Answer', text: f.a },
@@ -706,7 +733,7 @@ export default async function HomePage() {
             </div>
           </RevealOnScroll>
           <div className="mx-auto max-w-3xl space-y-3">
-            {FAQS.map((faq, i) => (
+            {faqs.map((faq, i) => (
               <RevealOnScroll key={faq.q} delay={i * 50}>
                 <details className="group rounded-xl border border-border bg-white open:border-gold open:shadow-card-hover transition-all">
                   <summary className="flex cursor-pointer items-start justify-between gap-4 p-6 text-left font-heading text-heading-sm font-semibold text-primary marker:hidden list-none">

@@ -1,3 +1,7 @@
+// 30-min ISR — the page embeds live CRECO inventory (table + ItemList + FAQ).
+export const revalidate = 1800;
+
+
 import type { Metadata } from 'next';
 import { CityHubPage } from '@/components/marketing/CityHubPage';
 

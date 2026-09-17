@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Playfair_Display, Source_Sans_3 } from 'next/font/google';
-import { jsonLd } from '@/lib/jsonLd';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { siteGraph } from '@/lib/schema';
 import Script from 'next/script';
 import { Suspense } from 'react';
 import { MobileStickyCTA } from '@/components/layout/MobileStickyCTA';
@@ -139,117 +140,10 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
-        {/* JSON-LD Structured Data — RealEstateAgent + LocalBusiness + WebSite */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: jsonLd({
-              '@context': 'https://schema.org',
-              '@graph': [
-                {
-                  '@type': ['RealEstateAgent', 'LocalBusiness', 'Organization'],
-                  '@id': 'https://www.crecotx.com/#business',
-                  name: 'CRECO – Commercial Real Estate Company',
-                  alternateName: 'CRECO',
-                  url: 'https://www.crecotx.com',
-                  logo: 'https://www.crecotx.com/images/creco-logo.jpg',
-                  image: 'https://www.crecotx.com/images/creco-logo.jpg',
-                  description:
-                    'Texas commercial real estate firm specializing in retail, industrial, and office properties. Tenant representation, owner services, investment advisory, leasing & sales, property management, and portfolio strategy for multi-property owners across Texas.',
-                  telephone: '+1-210-817-3443',
-                  email: 'info@crecotx.com',
-                  identifier: {
-                    '@type': 'PropertyValue',
-                    propertyID: 'TREC License',
-                    value: '9014367-BB',
-                  },
-                  address: {
-                    '@type': 'PostalAddress',
-                    streetAddress: '8000 Fair Oaks Pkwy, Suite 102',
-                    addressLocality: 'Fair Oaks Ranch',
-                    addressRegion: 'TX',
-                    postalCode: '78015',
-                    addressCountry: 'US',
-                  },
-                  geo: {
-                    '@type': 'GeoCoordinates',
-                    // Approximate coords for 8000 Fair Oaks Pkwy, Fair Oaks Ranch
-                    latitude: 29.7449,
-                    longitude: -98.6303,
-                  },
-                  // Texas-wide service area
-                  areaServed: [
-                    { '@type': 'State', name: 'Texas' },
-                    { '@type': 'City', name: 'San Antonio' },
-                    { '@type': 'City', name: 'Austin' },
-                    { '@type': 'City', name: 'Houston' },
-                    { '@type': 'City', name: 'Dallas' },
-                    { '@type': 'City', name: 'Fort Worth' },
-                    { '@type': 'City', name: 'El Paso' },
-                    { '@type': 'City', name: 'Corpus Christi' },
-                    { '@type': 'City', name: 'New Braunfels' },
-                    { '@type': 'City', name: 'Boerne' },
-                    { '@type': 'City', name: 'Fair Oaks Ranch' },
-                    { '@type': 'City', name: 'Schertz' },
-                  ],
-                  knowsAbout: [
-                    'Retail commercial real estate',
-                    'Industrial commercial real estate',
-                    'Warehouse leasing',
-                    'Office leasing',
-                    'Tenant representation',
-                    'Investment advisory',
-                    'Property management',
-                    'Property development',
-                    'Commercial real estate sales',
-                    'Multi-property owner services',
-                    'Portfolio asset management',
-                    '1031 exchanges',
-                  ],
-                  hasOfferCatalog: {
-                    '@type': 'OfferCatalog',
-                    name: 'Commercial Real Estate Services',
-                    itemListElement: [
-                      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Tenant Representation', url: 'https://www.crecotx.com/services/tenant-representation' } },
-                      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Investment Advisory', url: 'https://www.crecotx.com/services/investment-advisory' } },
-                      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Leasing & Sales', url: 'https://www.crecotx.com/services/leasing-sales' } },
-                      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Property Management', url: 'https://www.crecotx.com/services/property-management' } },
-                      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Property Development', url: 'https://www.crecotx.com/services/development' } },
-                      { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Sustainability Consulting', url: 'https://www.crecotx.com/services/sustainability' } },
-                    ],
-                  },
-                  openingHoursSpecification: [
-                    {
-                      '@type': 'OpeningHoursSpecification',
-                      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-                      opens: '09:00',
-                      closes: '18:00',
-                    },
-                  ],
-                  priceRange: '$$$',
-                },
-                {
-                  '@type': 'WebSite',
-                  '@id': 'https://www.crecotx.com/#website',
-                  url: 'https://www.crecotx.com',
-                  name: 'CRECO – Texas Commercial Real Estate',
-                  description:
-                    'Texas commercial real estate. Retail, industrial, and office properties for lease and sale. Tenant representation and owner services statewide.',
-                  publisher: { '@id': 'https://www.crecotx.com/#business' },
-                  potentialAction: {
-                    '@type': 'SearchAction',
-                    target: {
-                      '@type': 'EntryPoint',
-                      urlTemplate: 'https://www.crecotx.com/listings?q={search_term_string}',
-                    },
-                    'query-input': 'required name=search_term_string',
-                  },
-                  inLanguage: 'en-US',
-                },
-              ],
-            }),
-          }}
-        />
+        {/* JSON-LD: RealEstateAgent/LocalBusiness/Organization + founder
+            Person + WebSite (SearchAction). Facts live in @/lib/schema so every
+            page references the same @id and NAP. */}
+        <JsonLd data={siteGraph()} />
         {/* GA loads only on the production hostnames (crecotx.com) — never on
             Vercel preview/deploy URLs or localhost, which otherwise leaked into
             the GA4 property. See GoogleAnalytics. */}
