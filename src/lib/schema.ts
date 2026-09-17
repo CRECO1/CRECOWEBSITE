@@ -13,6 +13,7 @@
  */
 import type { Listing } from './supabase';
 import { listingHref } from './featured-properties';
+import { BRAND_LEGAL_NAME, BRAND_NAME, BRAND_TREC_LICENSE, CANONICAL_DESCRIPTION, DBA_STATEMENT } from './brand';
 import { formatLeaseRate, formatPrice, propertyTypeLabel, transactionLabel } from './utils';
 
 export const SITE_URL = 'https://www.crecotx.com';
@@ -21,15 +22,14 @@ export const WEBSITE_ID = `${SITE_URL}/#website`;
 export const FOUNDER_ID = `${SITE_URL}/about#zachary-stovall`;
 
 /**
- * THE canonical one-line description. Used verbatim for the root meta
- * description, OpenGraph, the homepage hero, llms.txt / llms-full.txt, the
- * schema.org `description`, and the About boilerplate — so every AI agent
- * reads one consistent line. Positioning rule: CRECO is FULL-SERVICE
- * (tenants AND landlords/owners AND investors; leasing AND sales). Never
- * describe it as tenant-only.
+ * THE canonical positioning line + DBA identity live in ./brand (so client
+ * components can share them). Used verbatim for the root meta description,
+ * OpenGraph, the homepage hero, footer, llms.txt / llms-full.txt, the
+ * schema.org `description`, and the About boilerplate. Positioning rule: CRECO
+ * is FULL-SERVICE (tenants AND landlords/owners AND investors; leasing AND
+ * sales). Never describe it as tenant-only.
  */
-export const CANONICAL_DESCRIPTION =
-  'CRECO — Commercial Real Estate Company is a full-service commercial real estate brokerage headquartered in Fair Oaks Ranch (San Antonio metro), representing tenants, landlords, owners, and investors across retail, office, industrial, flex, and land — for lease and for sale — throughout Texas, with deep local coverage of San Antonio and the Hill Country. Licensed Texas brokerage, TREC #9014367.';
+export { BRAND_NAME, CANONICAL_DESCRIPTION, DBA_STATEMENT } from './brand';
 
 /** Who CRECO represents — stated positively and explicitly (incl. intermediary). */
 export const REPRESENTATION_STATEMENT =
@@ -70,9 +70,9 @@ export const CAPABILITY_LINE =
   'Services: tenant representation, landlord/owner representation, investment sales, buyer representation, site selection, property management, and development. Property types: retail (including restaurant space and pad sites), office (including medical office), industrial and warehouse, flex, and land — for lease and for sale.';
 
 export const BUSINESS = {
-  name: 'CRECO — Commercial Real Estate Company',
+  name: BRAND_NAME,
   shortName: 'CRECO',
-  legalName: 'CRECO LLC',
+  legalName: BRAND_LEGAL_NAME,
   phoneDisplay: '(210) 817-3443',
   phoneE164: '+1-210-817-3443',
   email: 'info@crecotx.com',
@@ -84,13 +84,20 @@ export const BUSINESS = {
   fullAddress: '8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015',
   latitude: 29.734008,
   longitude: -98.643139,
-  trecLicense: '9014367',
-  trecLicenseDisplay: 'TREC #9014367-BB',
+  trecLicense: BRAND_TREC_LICENSE,
+  trecLicenseDisplay: `TREC #${BRAND_TREC_LICENSE}`,
   hours: 'Monday–Friday, 9:00 AM–6:00 PM Central',
   markets: ['San Antonio', 'Austin', 'Houston', 'Dallas–Fort Worth'],
-  /** Third-party profiles verified to exist and belong to CRECO. Add the
-   *  Google Business Profile URL here once confirmed. */
-  sameAs: ['https://www.loopnet.com/company/creco-llc/san-antonio-tx/w7l0jcll/'],
+  /** Third-party profiles verified to exist and belong to CRECO. Only add a
+   *  URL once it's confirmed — never guess one. */
+  sameAs: [
+    'https://www.loopnet.com/company/creco-llc/san-antonio-tx/w7l0jcll/',
+    // TODO(Zack): Google Business Profile URL (maps.app.goo.gl/… or google.com/maps?cid=…)
+    // TODO(Zack): LinkedIn company page — footer links linkedin.com/company/crecotx, which returned 404
+    // TODO(Zack): Facebook page — footer links facebook.com/crecotx (unverified)
+    // TODO(Zack): Instagram — footer links instagram.com/crecotx (unverified)
+    // TODO(Zack): Crexi company/broker profile URL
+  ],
 } as const;
 
 export const FOUNDER = {
@@ -144,13 +151,14 @@ export function siteGraph() {
         '@type': ['RealEstateAgent', 'LocalBusiness', 'Organization'],
         '@id': BUSINESS_ID,
         name: BUSINESS.name,
-        alternateName: [BUSINESS.shortName, 'CRECO – Commercial Real Estate Company', 'CRECO LLC', 'CRECO Texas', 'Commercial Real Estate Company'],
+        // name = the public d/b/a; legalName = the licensed brokerage entity.
+        alternateName: [BUSINESS.shortName, 'Commercial Real Estate Company', `${BUSINESS.legalName} d/b/a ${BUSINESS.name}`],
         legalName: BUSINESS.legalName,
         url: SITE_URL,
         logo: { '@type': 'ImageObject', url: `${SITE_URL}/images/creco-logo.jpg` },
         image: `${SITE_URL}/images/creco-logo.jpg`,
         description: CANONICAL_DESCRIPTION,
-        disambiguatingDescription: `${REPRESENTATION_STATEMENT} ${CAPABILITY_LINE}`,
+        disambiguatingDescription: `${DBA_STATEMENT} ${REPRESENTATION_STATEMENT} ${CAPABILITY_LINE}`,
         slogan: 'Full-service commercial real estate for tenants, landlords, and investors.',
         telephone: BUSINESS.phoneE164,
         email: BUSINESS.email,
@@ -260,7 +268,8 @@ export function siteGraph() {
         '@type': 'WebSite',
         '@id': WEBSITE_ID,
         url: SITE_URL,
-        name: 'CRECO – Texas Commercial Real Estate',
+        name: BUSINESS.name,
+        alternateName: 'CRECO',
         description: 'Texas commercial real estate listings, market data, and brokerage services — retail, office, industrial, flex, and land for lease and sale.',
         publisher: businessRef,
         inLanguage: 'en-US',

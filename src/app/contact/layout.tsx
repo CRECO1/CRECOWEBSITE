@@ -35,7 +35,7 @@ export default function ContactLayout({ children }: { children: React.ReactNode 
     <>
       <JsonLd
         data={[
-          webPage('ContactPage', '/contact', 'Contact CRECO', `Contact CRECO – Commercial Real Estate Company: ${BUSINESS.phoneDisplay}, ${BUSINESS.email}, ${BUSINESS.fullAddress}.`,
+          webPage('ContactPage', '/contact', 'Contact CRECO', `Contact CRECO - Commercial Real Estate Company: ${BUSINESS.phoneDisplay}, ${BUSINESS.email}, ${BUSINESS.fullAddress}.`,
             { mainEntity: businessRef }),
           breadcrumbList([{ name: 'Contact', path: '/contact' }]),
         ]}

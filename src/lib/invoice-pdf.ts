@@ -87,7 +87,7 @@ export async function renderInvoicePdf(invoice: Invoice): Promise<Uint8Array> {
   doc.setTextColor(...CRECO_BLACK);
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
-  doc.text('CRECO – Commercial Real Estate Company', margin, y + 6);
+  doc.text('CRECO - Commercial Real Estate Company', margin, y + 6);
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
@@ -97,7 +97,7 @@ export async function renderInvoicePdf(invoice: Invoice): Promise<Uint8Array> {
       'Fair Oaks Ranch, TX 78015',
       '(210) 817-3443',
       'info@crecotx.com',
-      'TREC #9014367-BB',
+      'TREC #9014367',
     ],
     margin,
     y + 11,
@@ -251,7 +251,7 @@ export async function renderInvoicePdf(invoice: Invoice): Promise<Uint8Array> {
     payLines.push('Pay online (card or ACH): ' + invoice.stripe_payment_link_url);
   }
   payLines.push('Mail check to: 8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015');
-  payLines.push('Make checks payable to: CRECO – Commercial Real Estate Company');
+  payLines.push('Make checks payable to: CRECO - Commercial Real Estate Company');
   doc.text(payLines, margin + 4, y + 13);
 
   y += 28;
@@ -280,7 +280,7 @@ export async function renderInvoicePdf(invoice: Invoice): Promise<Uint8Array> {
   doc.setFontSize(8);
   doc.setTextColor(...MUTED);
   doc.text(
-    'CRECO – Commercial Real Estate Company  ·  TREC #9014367-BB  ·  crecotx.com',
+    'CRECO - Commercial Real Estate Company  ·  TREC #9014367  ·  crecotx.com',
     pageWidth / 2,
     273,
     { align: 'center' },

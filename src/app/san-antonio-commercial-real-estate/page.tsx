@@ -209,7 +209,7 @@ export default function SanAntonioPage() {
         faqs: [
           {
             q: 'Who does commercial real estate brokerage in San Antonio?',
-            a: 'CRECO — Commercial Real Estate Company is a full-service San Antonio-area commercial brokerage headquartered in Fair Oaks Ranch (TREC #9014367). It represents tenants, landlords, owners, and investors in retail, restaurant, office, medical office, industrial, flex, and land transactions — for lease and for sale — across Greater San Antonio and the Hill Country. Call (210) 817-3443.',
+            a: 'CRECO - Commercial Real Estate Company is a full-service commercial real estate brokerage representing tenants, landlords, owners, and investors across retail, office, industrial, flex, and land — for lease and for sale — throughout Texas, with deep local coverage of San Antonio and the Hill Country. It is headquartered in Fair Oaks Ranch (San Antonio metro) at 8000 Fair Oaks Pkwy, Suite 102, and is a licensed Texas brokerage (TREC #9014367). In Greater San Antonio it handles retail, restaurant, office, medical office, industrial, flex, and land transactions. Call (210) 817-3443.',
           },
           {
             q: 'Who does tenant representation in San Antonio?',

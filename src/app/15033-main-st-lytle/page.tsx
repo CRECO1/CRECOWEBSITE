@@ -185,7 +185,7 @@ const FAQS = [
   },
   {
     q: 'Who owns and leases 15033 Main St?',
-    a: 'CRECO – Commercial Real Estate Company (TREC #9014367) owns the center and is its leasing broker, so tenants deal directly with the decision-maker.',
+    a: 'CRECO - Commercial Real Estate Company (TREC #9014367) owns the center and is its leasing broker, so tenants deal directly with the decision-maker.',
   },
 ];
 

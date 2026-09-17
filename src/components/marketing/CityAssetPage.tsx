@@ -145,7 +145,7 @@ export async function CityAssetPage({ config }: { config: CityAssetConfig }) {
       author: {
         '@type': 'Organization',
         '@id': 'https://www.crecotx.com/#business',
-        name: 'CRECO – Commercial Real Estate Company',
+        name: BUSINESS.name,
         url: 'https://www.crecotx.com/about',
       },
       publisher: { '@id': 'https://www.crecotx.com/#business' },

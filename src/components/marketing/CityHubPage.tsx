@@ -167,7 +167,7 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
       author: {
         '@type': 'Organization',
         '@id': 'https://www.crecotx.com/#business',
-        name: 'CRECO – Commercial Real Estate Company',
+        name: BUSINESS.name,
         url: 'https://www.crecotx.com/about',
       },
       publisher: { '@id': 'https://www.crecotx.com/#business' },

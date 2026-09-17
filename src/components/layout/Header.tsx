@@ -72,10 +72,10 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
           {/* Logo — different file per header variant so the colors read
               against the background (transparent black BG over dark hero,
               transparent white BG on solid white headers). No more pill. */}
-          <Link href="/" className="flex items-center" aria-label="CRECO – Commercial Real Estate Company home">
+          <Link href="/" className="flex items-center" aria-label="CRECO - Commercial Real Estate Company home">
             <Image
               src={isTransparent ? '/images/creco-logo-dark.png' : '/images/creco-logo-light.png'}
-              alt="CRECO – Texas Commercial Real Estate Company"
+              alt="CRECO - Commercial Real Estate Company"
               width={240}
               height={64}
               className="h-14 w-auto object-contain transition-opacity"

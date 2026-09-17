@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://www.crecotx.com'),
   title: {
     // Each page provides its own complete title (already includes "| CRECO")
-    default: 'Texas Commercial Real Estate | Retail, Industrial & Office | CRECO',
+    default: 'Texas Commercial Real Estate | Retail, Industrial & Office | CRECO - Commercial Real Estate Company',
     template: '%s',
   },
   description: CANONICAL_DESCRIPTION,
@@ -65,9 +65,9 @@ export const metadata: Metadata = {
     'Dallas commercial real estate',
     'Fort Worth commercial real estate',
   ],
-  authors: [{ name: 'CRECO — Commercial Real Estate Company' }],
-  creator: 'CRECO — Commercial Real Estate Company',
-  publisher: 'CRECO — Commercial Real Estate Company',
+  authors: [{ name: 'CRECO - Commercial Real Estate Company' }],
+  creator: 'CRECO - Commercial Real Estate Company',
+  publisher: 'CRECO - Commercial Real Estate Company',
   formatDetection: { telephone: true, address: true, email: true },
   icons: {
     icon: [
@@ -89,15 +89,15 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://www.crecotx.com',
-    siteName: 'CRECO — Commercial Real Estate Company',
-    title: 'CRECO — Full-Service Commercial Real Estate | San Antonio, Fair Oaks Ranch & Texas',
+    siteName: 'CRECO - Commercial Real Estate Company',
+    title: 'CRECO - Commercial Real Estate Company | Full-Service Commercial Real Estate Brokerage in Texas',
     description: CANONICAL_DESCRIPTION,
     // images intentionally omitted — Next.js auto-discovers /opengraph-image.tsx
     // and uses it as the default for every page (1200×630 branded design).
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'CRECO — Full-Service Commercial Real Estate | Texas',
+    title: 'CRECO - Commercial Real Estate Company | Full-Service Commercial Real Estate Brokerage in Texas',
     description: CANONICAL_DESCRIPTION,
     // Twitter card image also pulled from /opengraph-image.tsx automatically
   },

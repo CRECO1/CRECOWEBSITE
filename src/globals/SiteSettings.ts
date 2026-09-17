@@ -4,7 +4,7 @@ export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
   admin: { group: 'Administration' },
   fields: [
-    { name: 'siteName', type: 'text', defaultValue: 'CRECO – Commercial Real Estate Company' },
+    { name: 'siteName', type: 'text', defaultValue: 'CRECO - Commercial Real Estate Company' },
     { name: 'phone', type: 'text', defaultValue: '(210) 817-3443' },
     { name: 'email', type: 'email', defaultValue: 'info@crecotx.com' },
     {

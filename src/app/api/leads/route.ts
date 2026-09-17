@@ -46,7 +46,7 @@ function valuationConfirmationHtml(name: string): string {
       </ul>
       <p style="line-height:1.6;margin-top:20px">If anything changes about your timeline or what you need, reply to this email or call <a href="tel:+12108173443" style="color:#C9A962">(210) 817-3443</a>.</p>
       <p style="color:#525252;margin:24px 0 0">— The CRECO Team</p>
-      <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367-BB · 8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015</p>
+      <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367 · 8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015</p>
     </div>
   `;
 }
@@ -119,7 +119,7 @@ function genericConfirmationHtml(name: string, propertyInterest: string | null):
       </div>
       <p style="line-height:1.6;color:#525252;font-size:14px">While you wait, feel free to <a href="https://www.crecotx.com/listings" style="color:#B8973F">browse active Texas properties</a> or read the <a href="https://www.crecotx.com/insights" style="color:#B8973F">latest market insights</a>.</p>
       <p style="color:#525252;margin:24px 0 0">&mdash; The CRECO Team</p>
-      <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367-BB &middot; 8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015</p>
+      <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367 &middot; 8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015</p>
     </div>
   `;
 }

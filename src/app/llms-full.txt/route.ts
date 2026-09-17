@@ -1,6 +1,6 @@
 import { SERVICES } from '@/app/services/page';
 import { getAvailableListings, filterListings } from '@/lib/public-listings';
-import { ASSET_CLASSES, BUSINESS, CANONICAL_DESCRIPTION, CAPABILITIES, CAPABILITY_LINE, FOUNDER, REPRESENTATION_STATEMENT, SITE_URL, assetCategory, listingPriceText, listingUrl } from '@/lib/schema';
+import { ASSET_CLASSES, BUSINESS, CANONICAL_DESCRIPTION, CAPABILITIES, DBA_STATEMENT, CAPABILITY_LINE, FOUNDER, REPRESENTATION_STATEMENT, SITE_URL, assetCategory, listingPriceText, listingUrl } from '@/lib/schema';
 import { SUBMARKETS, PARENT_METRO_LABELS, type ParentMetro } from '@/lib/submarkets-content';
 import { MARKET_REPORTS_SORTED } from '@/lib/market-reports';
 import { GUIDES } from '@/lib/guides';
@@ -58,9 +58,11 @@ export async function GET() {
   const metros = Object.keys(PARENT_METRO_LABELS) as ParentMetro[];
   const updated = new Date().toISOString().slice(0, 10);
 
-  const md = `# CRECO — Commercial Real Estate Company (full reference)
+  const md = `# ${BUSINESS.name} (full reference)
 
 > ${CANONICAL_DESCRIPTION}
+
+${DBA_STATEMENT}
 
 ${REPRESENTATION_STATEMENT}
 
@@ -72,7 +74,7 @@ Generated: ${updated}. Listings below are live inventory, refreshed every 30 min
 
 ## Company facts
 
-- Name: ${BUSINESS.name} (short: CRECO; legal entity: ${BUSINESS.legalName})
+- Name: ${BUSINESS.name} (short: CRECO) — a d/b/a of ${BUSINESS.legalName}, the licensed Texas brokerage (TREC #${BUSINESS.trecLicense})
 - Type: full-service Texas commercial real estate brokerage (tenants, landlords/owners, investors; leasing and sales) — not a tenant-only firm
 - License: Texas Real Estate Commission (TREC) brokerage license #${BUSINESS.trecLicense}
 - Broker / founder: ${FOUNDER.name} (TREC #${FOUNDER.trecLicense})

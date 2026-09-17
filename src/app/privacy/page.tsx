@@ -26,7 +26,7 @@ export default function PrivacyPage() {
         <Container className="py-12 max-w-3xl">
           <article className="prose prose-lg space-y-6 text-foreground-muted leading-relaxed">
             <p>
-              CRECO – Commercial Real Estate Company (&ldquo;CRECO,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) respects your privacy. This policy describes how we collect, use, and protect information you provide to us through our website at <a href="https://www.crecotx.com" className="text-gold-dark hover:underline">crecotx.com</a>.
+              CRECO - Commercial Real Estate Company (&ldquo;CRECO,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) respects your privacy. This policy describes how we collect, use, and protect information you provide to us through our website at <a href="https://www.crecotx.com" className="text-gold-dark hover:underline">crecotx.com</a>.
             </p>
 
             <h2 className="font-heading text-heading-lg font-bold text-primary mt-10">Information We Collect</h2>

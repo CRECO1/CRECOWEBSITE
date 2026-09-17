@@ -39,7 +39,7 @@ export default function TermsPage() {
         <Container className="py-12 max-w-3xl">
           <article className="prose prose-lg space-y-6 text-foreground-muted leading-relaxed">
             <p>
-              Welcome to CRECO &mdash; Commercial Real Estate Company (&ldquo;CRECO,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;). These Terms of Use (&ldquo;Terms&rdquo;) govern your access to and use of the website located at{' '}
+              Welcome to CRECO - Commercial Real Estate Company (&ldquo;CRECO,&rdquo; &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;). These Terms of Use (&ldquo;Terms&rdquo;) govern your access to and use of the website located at{' '}
               <a href="https://www.crecotx.com" className="text-gold-dark hover:underline">crecotx.com</a> (the &ldquo;Site&rdquo;). By using the Site, you agree to be bound by these Terms. If you do not agree, please do not use the Site.
             </p>
 

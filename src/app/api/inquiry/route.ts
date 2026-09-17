@@ -215,7 +215,7 @@ export async function POST(req: NextRequest) {
         html: `
           <div style="font-family:sans-serif;max-width:600px">
             <h2 style="color:#1A1A1A">Hi ${escapeHtml(name)},</h2>
-            <p>Thanks for reaching out to <strong>CRECO – Commercial Real Estate Company</strong>. A broker on our team will review your responses and reach out within one business day.</p>
+            <p>Thanks for reaching out to <strong>CRECO - Commercial Real Estate Company</strong>. A broker on our team will review your responses and reach out within one business day.</p>
             <p>Need to talk sooner? Call us at <a href="tel:+12108173443" style="color:#C9A962">(210) 817-3443</a>.</p>
             <br/>
             <p>— The CRECO Team<br/>8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015</p>

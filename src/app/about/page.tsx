@@ -56,7 +56,7 @@ function agentId(a: Agent): string {
 }
 
 export const metadata: Metadata = {
-  title: 'About CRECO — Full-Service Commercial Real Estate Brokerage | Fair Oaks Ranch & San Antonio',
+  title: 'About CRECO - Commercial Real Estate Company | Full-Service Texas Commercial Brokerage',
   description: CANONICAL_DESCRIPTION,
   keywords: [
     'CRECO commercial real estate',
@@ -72,7 +72,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/about' },
   openGraph: {
-    title: 'About CRECO | Texas Commercial Real Estate',
+    title: 'About CRECO - Commercial Real Estate Company',
     description: CANONICAL_DESCRIPTION,
     url: 'https://www.crecotx.com/about',
     type: 'website',
@@ -94,7 +94,7 @@ export default async function AboutPage() {
     <>
       <JsonLd
         data={[
-          webPage('AboutPage', '/about', 'About CRECO – Commercial Real Estate Company',
+          webPage('AboutPage', '/about', 'About CRECO - Commercial Real Estate Company',
             'Company facts, license, markets, services, and team for CRECO, a Texas commercial real estate brokerage.',
             { mainEntity: businessRef }),
           breadcrumbList([{ name: 'About', path: '/about' }]),

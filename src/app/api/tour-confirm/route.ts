@@ -72,7 +72,7 @@ function htmlPage(title: string, body: string, status = 200): NextResponse {
 <body>
   <div class="card">
     ${body}
-    <p class="meta">CRECO · TREC #9014367-BB</p>
+    <p class="meta">CRECO · TREC #9014367</p>
   </div>
 </body>
 </html>`;
@@ -184,7 +184,7 @@ export async function GET(req: NextRequest) {
             <p style="line-height:1.6;margin-top:16px"><strong>Before the tour:</strong> if anything changes on your end, reply to this email or call <a href="tel:+12108173443" style="color:#C9A962">(210) 817-3443</a> and we'll reschedule.</p>
             <p style="line-height:1.6;margin-top:16px">If you'd like to share what you're hoping to learn during the walkthrough — use case, headcount, layout preferences, timeline — feel free to reply ahead of time. The more context, the better the conversation.</p>
             <p style="color:#525252;margin:24px 0 0">— The CRECO Team</p>
-            <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367-BB · 8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015</p>
+            <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367 · 8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015</p>
           </div>
         `,
       });

@@ -56,13 +56,13 @@ export function buildInvoiceEmailHtml({ invoice, message }: InvoiceEmailHtmlOpti
 
       ${payLinkBlock}
 
-      <p style="margin:20px 0;color:#525252">Mail check to:<br/>CRECO – Commercial Real Estate Company<br/>8000 Fair Oaks Pkwy, Suite 102<br/>Fair Oaks Ranch, TX 78015</p>
+      <p style="margin:20px 0;color:#525252">Mail check to:<br/>CRECO - Commercial Real Estate Company<br/>8000 Fair Oaks Pkwy, Suite 102<br/>Fair Oaks Ranch, TX 78015</p>
 
       <p style="margin:20px 0;color:#525252">Questions? Reply here or call <a href="tel:+12108173443" style="color:#C9A962">(210) 817-3443</a>.</p>
 
       <br/>
       <p style="color:#525252;margin:0">— The CRECO Team</p>
-      <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367-BB · crecotx.com</p>
+      <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367 · crecotx.com</p>
     </div>
   `;
 }

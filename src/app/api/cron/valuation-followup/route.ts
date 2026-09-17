@@ -86,7 +86,7 @@ function followupHtml(name: string, propertyInterest: string | null): string {
       </div>
       <p style="line-height:1.6;margin-top:14px">If now isn't the right moment, no worries — I'll close the loop on my end and you can always reach back out when timing makes sense. Either way, glad you used the tool.</p>
       <p style="color:#525252;margin:24px 0 0">— The CRECO Team</p>
-      <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367-BB · 8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015</p>
+      <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367 · 8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015</p>
     </div>
   `;
 }

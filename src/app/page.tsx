@@ -9,7 +9,7 @@ import { jsonLd } from '@/lib/jsonLd';
 import { CANONICAL_DESCRIPTION, REPRESENTATION_STATEMENT, listingSummary } from '@/lib/schema';
 
 export const metadata: Metadata = {
-  title: 'Texas Commercial Real Estate Brokerage | Tenants, Landlords & Investors | CRECO',
+  title: 'CRECO - Commercial Real Estate Company | Texas Commercial Real Estate Brokerage for Tenants, Landlords & Investors',
   description: CANONICAL_DESCRIPTION,
   keywords: [
     'Texas commercial real estate',
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     'Dallas Fort Worth commercial real estate',
   ],
   openGraph: {
-    title: 'CRECO — Full-Service Commercial Real Estate | San Antonio, Fair Oaks Ranch & Texas',
+    title: 'CRECO - Commercial Real Estate Company | Full-Service Commercial Real Estate Brokerage in Texas',
     description: CANONICAL_DESCRIPTION,
     url: 'https://www.crecotx.com',
     type: 'website',
@@ -148,7 +148,7 @@ const FAQS = [
   },
   {
     q: 'Is CRECO a licensed real estate brokerage?',
-    a: 'Yes. CRECO – Commercial Real Estate Company (CRECO LLC) is licensed by the Texas Real Estate Commission, TREC #9014367. Its broker and founder is Zachary A. Stovall (TREC #691174).',
+    a: 'Yes. CRECO - Commercial Real Estate Company is a d/b/a of CRECO LLC, licensed by the Texas Real Estate Commission, TREC #9014367. Its broker and founder is Zachary A. Stovall (TREC #691174).',
   },
   {
     q: 'What types of commercial real estate does CRECO handle in Texas?',

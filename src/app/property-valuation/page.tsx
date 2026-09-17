@@ -55,7 +55,7 @@ const HOW_IT_WORKS = [
 ];
 
 const TRUST = [
-  'Texas-licensed broker since day one — TREC #9014367-BB',
+  'Texas-licensed broker since day one — TREC #9014367',
   "Founder operates from his own commercial center at 8000 Fair Oaks Pkwy",
   'Cap rates pulled from active 2026 Texas market activity, not stale data',
   'Your inputs stay confidential — never shared, never sold',

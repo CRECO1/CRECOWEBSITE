@@ -1,12 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Mail, MapPin, Facebook, Instagram, Linkedin } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { NewsletterSignup } from '@/components/forms/NewsletterSignup';
-import { supabase } from '@/lib/supabase';
+import { BRAND_LEGAL_NAME, BRAND_NAME, BRAND_TREC_LICENSE, CANONICAL_DESCRIPTION } from '@/lib/brand';
 import { googleMapsUrl } from '@/lib/utils';
 import { trackEvent } from '@/lib/analytics';
 import { PhoneCallText } from '@/components/marketing/PhoneCallText';
@@ -38,7 +37,9 @@ const footerLinks = {
   ],
 };
 
-const DEFAULTS = {
+// NAP is pinned in code (not read from the site_settings CMS row) so the
+// footer on every page matches the schema.org entity and llms.txt exactly.
+const CONTACT = {
   phone: '(210) 817-3443',
   email: 'info@crecotx.com',
   // Canonical CRECO office. Multi-line so Footer renders street + city/state on
@@ -47,23 +48,8 @@ const DEFAULTS = {
 };
 
 export function Footer() {
-  const [contact, setContact] = useState(DEFAULTS);
+  const contact = CONTACT;
   const currentYear = new Date().getFullYear();
-
-  useEffect(() => {
-    supabase
-      .from('site_settings')
-      .select('phone, email, address')
-      .eq('id', 1)
-      .single()
-      .then(({ data }) => {
-        if (data) setContact({
-          phone: data.phone ?? DEFAULTS.phone,
-          email: data.email ?? DEFAULTS.email,
-          address: data.address ?? DEFAULTS.address,
-        });
-      });
-  }, []);
 
   const addressLines = contact.address.split('\n');
 
@@ -77,14 +63,14 @@ export function Footer() {
               <Link href="/" className="inline-block mb-6" aria-label="CRECO home">
                 <Image
                   src="/images/creco-logo.jpg"
-                  alt="CRECO – Commercial Real Estate Company"
+                  alt="CRECO - Commercial Real Estate Company"
                   width={200}
                   height={60}
                   className="h-14 w-auto object-contain bg-white rounded-md p-1"
                 />
               </Link>
               <p className="text-white/70 text-body-sm leading-relaxed mb-6 max-w-xs">
-                Where your real estate ventures find the support they deserve. San Antonio commercial real estate experts.
+                {CANONICAL_DESCRIPTION}
               </p>
               <div className="flex gap-4">
                 <a href="https://facebook.com/crecotx" target="_blank" rel="noopener noreferrer" aria-label="Facebook"
@@ -265,7 +251,7 @@ export function Footer() {
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             {/* Copyright + license */}
             <p className="text-caption text-white/70 text-center md:text-left">
-              © {currentYear} CRECO – Commercial Real Estate Company · Licensed Texas Real Estate Brokerage · TREC #9014367-BB
+              © {currentYear} {BRAND_NAME} · d/b/a of {BRAND_LEGAL_NAME}, a Licensed Texas Real Estate Brokerage · TREC #{BRAND_TREC_LICENSE}
             </p>
             {/* Disclosure + policy links */}
             <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-4 gap-y-1">
