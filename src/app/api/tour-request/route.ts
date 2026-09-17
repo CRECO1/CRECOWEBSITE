@@ -273,7 +273,7 @@ export async function POST(req: NextRequest) {
             <p style="margin:20px 0;color:#525252">Need to reschedule or have questions? Reply to this email or call <a href="tel:+12108173443" style="color:#C9A962">(210) 817-3443</a>.</p>
             <br/>
             <p style="color:#525252;margin:0">— The CRECO Team</p>
-            <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367 · 8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015</p>
+            <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367 · 8000 Fair Oaks Pkwy, Suite 101, Fair Oaks Ranch, TX 78015</p>
           </div>
         `,
         attachments: [

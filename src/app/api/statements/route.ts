@@ -171,7 +171,7 @@ export async function POST(req: NextRequest) {
         <p style="line-height:1.6">Attached is your account statement covering <strong>${escapeHtml(formatDate(periodStart))} to ${escapeHtml(formatDate(periodEnd))}</strong>.</p>
         <p style="line-height:1.6">If anything looks off — or if you'd like a different cut of the period — just reply to this email and we'll resend.</p>
         <p style="color:#525252;margin:24px 0 0">— The CRECO Team</p>
-        <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367 · 8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015</p>
+        <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367 · 8000 Fair Oaks Pkwy, Suite 101, Fair Oaks Ranch, TX 78015</p>
       </div>
     `,
     attachments: [

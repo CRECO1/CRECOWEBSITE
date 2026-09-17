@@ -210,7 +210,7 @@ export async function renderStatementPdf(input: StatementInput): Promise<Uint8Ar
   doc.text(input.client.email, margin, leftY);
 
   let rightY = y + 11;
-  doc.text('8000 Fair Oaks Pkwy, Suite 102', pageWidth - margin - 70, rightY); rightY += 4;
+  doc.text('8000 Fair Oaks Pkwy, Suite 101', pageWidth - margin - 70, rightY); rightY += 4;
   doc.text('Fair Oaks Ranch, TX 78015', pageWidth - margin - 70, rightY); rightY += 4;
   doc.text('TREC #9014367', pageWidth - margin - 70, rightY); rightY += 4;
   doc.text('(210) 817-3443', pageWidth - margin - 70, rightY);

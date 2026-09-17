@@ -93,7 +93,7 @@ export async function renderInvoicePdf(invoice: Invoice): Promise<Uint8Array> {
   doc.setFontSize(9);
   doc.text(
     [
-      '8000 Fair Oaks Pkwy, Suite 102',
+      '8000 Fair Oaks Pkwy, Suite 101',
       'Fair Oaks Ranch, TX 78015',
       '(210) 817-3443',
       'info@crecotx.com',
@@ -250,7 +250,7 @@ export async function renderInvoicePdf(invoice: Invoice): Promise<Uint8Array> {
   if (invoice.stripe_payment_link_url) {
     payLines.push('Pay online (card or ACH): ' + invoice.stripe_payment_link_url);
   }
-  payLines.push('Mail check to: 8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015');
+  payLines.push('Mail check to: 8000 Fair Oaks Pkwy, Suite 101, Fair Oaks Ranch, TX 78015');
   payLines.push('Make checks payable to: CRECO - Commercial Real Estate Company');
   doc.text(payLines, margin + 4, y + 13);
 

@@ -83,7 +83,7 @@ export function renderGuideEmailHtml(opts: { guide: Guide; recipientName: string
 
     <p style="color:${BRAND.muted};font-size:12px;margin:24px 0 0;line-height:1.55">
       CRECO - Commercial Real Estate Company · TREC #9014367<br/>
-      8000 Fair Oaks Pkwy, Suite 102, Fair Oaks Ranch, TX 78015<br/>
+      8000 Fair Oaks Pkwy, Suite 101, Fair Oaks Ranch, TX 78015<br/>
       <a href="https://www.crecotx.com" style="color:${BRAND.gold}">crecotx.com</a>
     </p>
   </div>
