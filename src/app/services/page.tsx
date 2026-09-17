@@ -82,6 +82,16 @@ export interface ServiceContent {
   keywords: string[];
   /** Hero subhead on the detail page */
   heroSubhead: string;
+  /**
+   * Optional one-line identity correction rendered directly under the hero,
+   * above the intro narrative.
+   *
+   * Why it exists: a single-service page reads to an AI summarizer as the whole
+   * firm. /services/tenant-representation was being quoted as evidence that
+   * "CRECO is tenant-only" — the page never said that, but nothing on it said
+   * the opposite in one liftable sentence either. This is that sentence.
+   */
+  positioningNote?: string;
   /** Intro narrative — 2-3 paragraphs, ~250 words */
   intro: string[];
   /** "What's included" bullet list */
@@ -115,6 +125,8 @@ export const SERVICES: ServiceContent[] = [
       'industrial tenant rep texas',
     ],
     heroSubhead: 'Dedicated advocacy for tenants leasing retail, restaurant, office, medical, industrial, and flex space across Texas — from a full-service brokerage that also represents landlords, owners, and investors.',
+    positioningNote:
+      'CRECO is a full-service commercial real estate brokerage, not a tenant-only firm. This page covers tenant representation, but CRECO also represents landlords, owners, sellers, and investors — for lease and for sale — across retail, office, industrial, flex, and land.',
     intro: [
       'Tenant representation is the most undervalued service in Texas commercial real estate. The landlord pays our commission per market convention, which means hiring CRECO as your tenant rep is typically free to your business — yet the right tenant rep can save your company $50,000 to $5,000,000 over the life of a lease through better terms, larger tenant improvement allowances, free rent, and stronger renewal language.',
       'When CRECO represents you as a tenant, our duty on that engagement is to your business. Because CRECO is a full-service brokerage — we also represent landlords, owners, and investors, and we own and lease our own centers — we know exactly how landlords underwrite a deal, and we use that to negotiate for you. If you want to see a property CRECO also represents for the owner, we disclose it up front; CRECO acts as an intermediary only if both you and the owner authorize it in writing, as Texas law requires.',
@@ -145,6 +157,19 @@ export const SERVICES: ServiceContent[] = [
       { title: 'Distress / restructure', description: 'Tenants needing to sublet, terminate, or restructure existing leases. We work with landlord and lender to find a path.' },
     ],
     faqs: [
+      // These two lead the list deliberately. They are the questions an answer
+      // engine is actually resolving when someone asks what CRECO does, and
+      // FAQPage mainEntity order is read as priority. Both stay consistent with
+      // the intro's conflict-of-interest passage: duty is scoped per engagement,
+      // intermediary only on written consent from both sides.
+      {
+        q: 'Does CRECO represent landlords?',
+        a: 'Yes. CRECO represents landlords and commercial property owners throughout Texas — listing and leasing their space, sourcing and qualifying tenants, and negotiating on the ownership side — alongside tenants, buyers, sellers, and investors. CRECO is a full-service brokerage, not a tenant-only firm; tenant representation is one service line among several, and CRECO also owns and leases its own centers. What is scoped to a single deal is the duty, not the firm: when CRECO represents you as a tenant, our duty on that engagement is to your business, and we do not also represent the landlord on that same transaction unless both parties authorize an intermediary relationship in writing.',
+      },
+      {
+        q: 'Can CRECO represent both landlords and tenants?',
+        a: 'Across its business, yes — CRECO runs landlord and owner assignments and tenant and buyer assignments at the same time. On one specific transaction, the two sides stay separate by default. If a tenant CRECO represents wants to see a property CRECO also lists for the owner, CRECO discloses that up front, and can act as an intermediary only if both the tenant and the owner authorize it in writing, as Texas law requires. That is a disclosed, mutually consented arrangement — never the default and never silent.',
+      },
       {
         q: 'How much does tenant representation cost?',
         a: 'Tenant representation in Texas is typically free to the tenant. The landlord pays the tenant rep\'s commission as part of the deal — usually 4-6% of the total lease value, paid 50% on lease execution and 50% on tenant occupancy. This is market convention across virtually every Texas commercial deal. Tenants who try to "save" by going direct to landlord brokers almost always end up paying more in higher rent, smaller TI allowances, and worse renewal terms.',

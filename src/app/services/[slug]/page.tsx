@@ -96,6 +96,21 @@ export default async function ServiceDetailPage({ params }: Props) {
           </Container>
         </section>
 
+        {/* Identity correction — server-rendered directly under the hero, above
+            the intro, so it sits in the first screenful of copy an extractor
+            reads. Plain <p>, no scroll-reveal wrapper: it must be in the static
+            HTML, not gated behind a client-side animation. */}
+        {service.positioningNote && (
+          <section className="border-b border-border bg-background-cream py-6">
+            <Container>
+              <p className="mx-auto max-w-3xl text-body text-foreground-muted leading-relaxed">
+                <span className="font-semibold text-primary">Full-service, not tenant-only. </span>
+                {service.positioningNote}
+              </p>
+            </Container>
+          </section>
+        )}
+
         {/* Intro narrative */}
         <section className="section-luxury bg-white">
           <Container>
