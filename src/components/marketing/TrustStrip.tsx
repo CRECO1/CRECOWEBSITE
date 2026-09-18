@@ -4,62 +4,43 @@
  * /property-alerts). Server Component so the numbers are real at the
  * moment of paint, not stale on a static prerender.
  *
- * Data sources, ranked by trustworthiness:
- *   1. Operator-curated stats in site_settings — stat_homes_sold (count of
- *      lifetime transactions), stat_years_experience, stat_satisfaction.
- *      These are signed off by the operator and what they're comfortable
- *      having on the marketing surface.
- *   2. Real-time count of currently-active listings from the listings
- *      table. Updates as inventory turns.
- *   3. Static brand positioning — "Same business day response," "Texas
- *      brokerage" — non-numeric trust signals that don't depend on metrics.
+ * Data sources, in order of how the cells are built:
+ *   1. Real-time count of currently-active listings from the listings table.
+ *      Updates as inventory turns. This is the only number in the strip.
+ *   2. Checkable brand facts — the TREC licence number, the representation
+ *      scope, the response commitment, the HQ. Nothing here needs a metric
+ *      behind it, and all of it can be confirmed from outside the site.
  *
  * Notes on honest framing:
- *   - We never display "$X closed this year" unless the closed_date +
- *     sold_price columns have populated values. Inventing or rounding-up
- *     would erode trust the strip is supposed to build.
- *   - The 3-4 cell layout is intentionally non-cluttered. Each cell carries
- *     one quantified or qualified signal, not a stat dump.
+ *   - No track-record metrics. The operator-curated site_settings stats this
+ *     used to read (2.4M SF transacted, 25 years' experience, 98% client
+ *     satisfaction) could not be supported for a brokerage founded in 2024,
+ *     and no aggregate closed-deal figure goes back in until real closed_date
+ *     + sale_price rows exist to total.
+ *   - The 4-cell layout is intentionally non-cluttered. Each cell carries one
+ *     quantified or qualified signal, not a stat dump.
  */
 
 import { Building2, ShieldCheck, Clock, MapPin } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { supabase } from '@/lib/supabase';
+import { BUSINESS } from '@/lib/schema';
 
 interface TrustData {
   activeListings: number;
-  yearsExperience: number;
-  sfTransacted: string;
 }
 
 async function loadTrustData(): Promise<TrustData> {
-  // Run both queries in parallel — they touch different tables and the
-  // strip needs both to render. Fallbacks ensure a soft-degraded display
-  // if either query fails so we never render with placeholder zeros.
-  //
-  // NOTE: these column names are the source of truth in site_settings
-  // (operator-curated in the CMS). A previous version queried
-  // `stat_homes_sold`, which does not exist — PostgREST failed the whole
-  // select, so BOTH stats silently fell back to hardcoded 200/15 instead
-  // of the real operator values (2.4M SF / 25 yrs). Keep these in sync
-  // with the actual site_settings schema.
-  const [activeResult, settingsResult] = await Promise.all([
-    supabase
-      .from('listings')
-      .select('id', { count: 'exact', head: true })
-      .in('status', ['active', 'pending']),
-    supabase
-      .from('site_settings')
-      .select('stat_sf_transacted, stat_years_experience')
-      .eq('id', 1)
-      .maybeSingle(),
-  ]);
+  // Only one number is displayed now, and it is counted live rather than
+  // curated: how many listings are actually on the market. The operator-set
+  // stat_sf_transacted / stat_years_experience values this used to read were
+  // unsupportable for a firm founded in 2024 and are no longer displayed.
+  const { count } = await supabase
+    .from('listings')
+    .select('id', { count: 'exact', head: true })
+    .in('status', ['active', 'pending']);
 
-  return {
-    activeListings: activeResult.count ?? 0,
-    yearsExperience: settingsResult.data?.stat_years_experience ?? 25,
-    sfTransacted: settingsResult.data?.stat_sf_transacted ?? '2.4M',
-  };
+  return { activeListings: count ?? 0 };
 }
 
 export async function TrustStrip() {
@@ -70,7 +51,7 @@ export async function TrustStrip() {
     // If the DB is unreachable at render time, fall back to brand-safe
     // defaults rather than crashing the page. Trust strip must never
     // break the homepage.
-    data = { activeListings: 0, yearsExperience: 25, sfTransacted: '2.4M' };
+    data = { activeListings: 0 };
   }
 
   return (
@@ -91,11 +72,18 @@ export async function TrustStrip() {
             label={data.activeListings > 0 ? 'Active Texas listings' : 'Texas coverage'}
             sublabel={data.activeListings > 0 ? 'Updated daily' : 'San Antonio · Austin · Houston · DFW'}
           />
+          {/* The licence number and the representation scope are both facts a
+              visitor can verify — TREC's public lookup for the first, every
+              other page on the site for the second. They replaced a "2.4M SF
+              transacted / lifetime CRECO team" cell and a "25+ yrs Texas market
+              experience" cell: CRECO was founded in 2024, and the agents table
+              puts the founder at 9 years in the business, so neither figure
+              could be supported. */}
           <TrustCell
             icon={<ShieldCheck className="h-5 w-5 text-gold" />}
-            value={`${data.sfTransacted} SF`}
-            label="Commercial SF transacted"
-            sublabel="Lifetime CRECO team"
+            value={`TREC #${BUSINESS.trecLicense}`}
+            label="Licensed Texas brokerage"
+            sublabel="Texas Real Estate Commission"
           />
           <TrustCell
             icon={<Clock className="h-5 w-5 text-gold" />}
@@ -105,8 +93,8 @@ export async function TrustStrip() {
           />
           <TrustCell
             icon={<MapPin className="h-5 w-5 text-gold" />}
-            value={`${data.yearsExperience}+ yrs`}
-            label="Texas market experience"
+            value="Full-service"
+            label="Tenants, owners & investors"
             sublabel="HQ in Fair Oaks Ranch"
           />
         </div>

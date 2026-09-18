@@ -37,17 +37,19 @@ const STEPS = [
   { number: '05', title: 'Diligence to Close', description: 'We coordinate with your attorney, accountant, lender, and the buyer\'s diligence team — and we don\'t disappear after the contract is signed.' },
 ];
 
-// Keep these in sync with the operator-set values in site_settings
-// (stat_sf_transacted, stat_years_experience, stat_active_listings,
-// stat_satisfaction) — the same source the homepage TrustStrip reads.
-// Years was previously a stale hardcoded "15+"; the operator value is 25.
+// Checkable facts only. This band previously read "2.4M+ SF Transacted /
+// 25+ Years in Texas CRE / 30+ Active Listings / 98% Client Satisfaction"
+// from the operator-set site_settings values. CRECO was founded in 2024, the
+// agents table puts the founder at 9 years in the business, the site has
+// never had 30 active listings (it has 9), and no client-satisfaction survey
+// exists. Track-record numbers go back only when there are closed deals to
+// total.
 const STATS = [
-  { icon: TrendingUp, value: '2.4M+', label: 'SF Transacted' },
-  { icon: Building2, value: '25+', label: 'Years in Texas CRE' },
-  { icon: FileText, value: '30+', label: 'Active Listings' },
-  { icon: Users, value: '98%', label: 'Client Satisfaction' },
+  { icon: Building2, value: 'Full-service', label: 'Leasing & investment sales' },
+  { icon: FileText, value: `TREC #${BUSINESS.trecLicense}`, label: 'Licensed Texas brokerage' },
+  { icon: TrendingUp, value: 'No-obligation', label: 'Broker opinion of value' },
+  { icon: Users, value: 'Same day', label: 'Response, business days' },
 ];
-
 export default function SellPage() {
   return (
     <>

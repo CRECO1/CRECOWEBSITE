@@ -52,13 +52,19 @@ export const SiteSettings: GlobalConfig = {
       name: 'cta_subheadline', type: 'textarea',
       defaultValue: 'Submit your tenant needs in 2 minutes and we\'ll send vetted options that match your size, budget, and submarket.',
     },
+    // Track-record stats intentionally have NO seeded defaults. The previous
+    // values ('2.4M' SF transacted, 15 years, '98%' satisfaction, 30 active
+    // listings) shipped as defaults and were then published as fact: CRECO was
+    // founded in 2024, the site has 9 active listings, and no satisfaction
+    // survey exists. Leave these empty until there is a real figure with
+    // something behind it; nothing on the public site reads them today.
     {
       name: 'stats', type: 'group',
       fields: [
-        { name: 'stat_sf_transacted', type: 'text', defaultValue: '2.4M' },
-        { name: 'stat_years_experience', type: 'number', defaultValue: 15 },
-        { name: 'stat_satisfaction', type: 'text', defaultValue: '98%' },
-        { name: 'stat_active_listings', type: 'number', defaultValue: 30 },
+        { name: 'stat_sf_transacted', type: 'text' },
+        { name: 'stat_years_experience', type: 'number' },
+        { name: 'stat_satisfaction', type: 'text' },
+        { name: 'stat_active_listings', type: 'number' },
       ],
     },
     { name: 'metaTitle', type: 'text' },

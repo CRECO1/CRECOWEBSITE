@@ -213,7 +213,7 @@ export const SERVICES: ServiceContent[] = [
     intro: [
       'Smart Texas commercial real estate investors don\'t buy on cap rate alone. They buy on a defensible thesis built from current submarket comps, tenant credit analysis, mark-to-market upside, lease rollover risk, capex backlog, and disposition path. CRECO brings that level of underwriting rigor to every engagement, whether you are an entrepreneur evaluating your first acquisition or a family office pacing through your tenth deal.',
       'Our investment advisory practice spans every Texas market and asset type. We work with private investors, family offices, real estate operators, and high-net-worth individuals deploying $1M to $50M in Texas commercial real estate. Many of our clients have 5 to 50+ property portfolios, and we are deeply engaged in the strategic decisions that compound returns: which assets to hold, which to reposition, when to dispose, where to redeploy 1031 proceeds.',
-      'We also bring deal flow. Through 15+ years of Texas commercial real estate relationships, our network sees off-market acquisition opportunities that never hit LoopNet, CoStar, or Crexi — including family-office portfolio dispositions, owner-operator retirements, and quiet auction processes. When you engage CRECO as your investment advisor, you tap that network.',
+      'We also bring deal flow. Through the Texas commercial real estate relationships our brokers have built — owners, brokers, attorneys, lenders, family offices, and operators — our network sees off-market acquisition opportunities that never hit LoopNet, CoStar, or Crexi, including family-office portfolio dispositions, owner-operator retirements, and quiet auction processes. When you engage CRECO as your investment advisor, you tap that network.',
     ],
     body: [
       'Acquisition underwriting and pro forma modeling on every property you evaluate',
@@ -250,7 +250,7 @@ export const SERVICES: ServiceContent[] = [
       },
       {
         q: 'How do you find off-market deals?',
-        a: 'Through 15+ years of Texas commercial real estate relationships — owners we\'ve repped, brokers we\'ve closed with, attorneys, lenders, family offices, and operators. When a private owner is ready to sell quietly, they often call us first. We don\'t guarantee off-market flow on every assignment, but it\'s a meaningful part of what we bring.',
+        a: 'Through the Texas commercial real estate relationships our brokers have built — owners we\'ve repped, brokers we\'ve closed with, attorneys, lenders, family offices, and operators. When a private owner is ready to sell quietly, they often call us first. We don\'t guarantee off-market flow on every assignment, but it\'s a meaningful part of what we bring.',
       },
       {
         q: 'Do you help with debt placement?',

@@ -58,53 +58,6 @@ import { withSyntheticListings, listingLinkProps } from '@/lib/featured-properti
 import { TrustStrip } from '@/components/marketing/TrustStrip';
 import { LeadMagnetBand } from '@/components/marketing/LeadMagnetBand';
 
-const DEMO_LISTINGS = [
-  {
-    id: '1',
-    title: '1222 Chulie Dr',
-    slug: '1222-chulie-dr',
-    address: '1222 Chulie Dr, San Antonio, TX',
-    city: 'San Antonio',
-    property_type: 'warehouse',
-    transaction_type: 'lease',
-    sqft: 16100,
-    lot_size: null,
-    zoning: 'I-1',
-    headline: '16,100 SF industrial warehouse with dock and grade doors',
-    images: null,
-    status: 'active',
-  },
-  {
-    id: '2',
-    title: '1346 Parkridge Dr',
-    slug: '1346-parkridge-dr',
-    address: '1346 Parkridge Dr, San Antonio, TX',
-    city: 'San Antonio',
-    property_type: 'office',
-    transaction_type: 'sale',
-    sqft: 2475,
-    lot_size: 1.7,
-    zoning: 'C-2',
-    headline: 'Texas office building on 1.7 acres — owner / user opportunity',
-    images: null,
-    status: 'active',
-  },
-  {
-    id: '3',
-    title: '2250 Chipley Circle',
-    slug: '2250-chipley-circle',
-    address: '2250 Chipley Cir, San Antonio, TX',
-    city: 'San Antonio',
-    property_type: 'warehouse',
-    transaction_type: 'lease',
-    sqft: 26400,
-    lot_size: null,
-    zoning: 'I-1',
-    headline: '26,400 SF industrial warehouse, I-1 zoning',
-    images: null,
-    status: 'active',
-  },
-];
 
 // SERVICES — ordered by what brings owners and tenants in the door
 const SERVICES = [
@@ -178,9 +131,6 @@ const DEFAULT_SETTINGS = {
   hero_headline: 'Full-Service Commercial Real Estate',
   hero_subheadline: CANONICAL_DESCRIPTION,
   hero_image_url: '/images/sa-hero.jpg' as string | null,
-  stat_sf_transacted: '2.4M',
-  stat_years_experience: 15,
-  stat_satisfaction: '98%',
   about_headline: 'A trailblazing approach to Texas commercial real estate.',
   about_text: 'CRECO is built on innovation, expertise, and a relentless commitment to client outcomes. We blend deep Texas market knowledge with the analytical rigor you would expect from a national firm — and we keep our roster small enough that every client works directly with a principal. From single-asset tenants to multi-property portfolio owners, we treat your assignment like our name is on the building.',
   cta_headline: 'Need space — or have space to fill?',
@@ -202,14 +152,12 @@ export default async function HomePage() {
   // the DB has fewer than 3 active rows. Slice to 3 for the homepage —
   // /listings shows the full set.
   //
-  // The cast to `any` is intentional: DEMO_LISTINGS is a stripped-down
-  // partial Listing shape used purely as a fallback for the card UI, and
-  // the homepage cards already render with `as any` casts on every field
-  // read. withSyntheticListings only inspects `slug` for dedupe, so the
-  // partial shape is safe here.
-  const dbListings = listingsResult.status === 'fulfilled' && listingsResult.value.length > 0
-    ? listingsResult.value
-    : (DEMO_LISTINGS as any[]);
+  // No DEMO_LISTINGS fallback: it carried specs that had drifted from the
+  // real rows (2250 Chipley at 26,400 SF against an actual 29,750; 1346
+  // Parkridge shown active long after it leased), so a transient DB failure
+  // would have published wrong square footage as live inventory. The
+  // code-defined CRECO properties below are real and always render.
+  const dbListings = listingsResult.status === 'fulfilled' ? listingsResult.value : [];
 
   // Curated order for the homepage Featured grid. Synthetics and DB
   // listings are interleaved deliberately — the default
@@ -276,10 +224,17 @@ export default async function HomePage() {
     ? settingsResult.value.data
     : DEFAULT_SETTINGS;
 
+  // Every cell here has to be something a visitor could check for themselves.
+  // This band previously read "2.4M+ SF Transacted / 25+ Years in Texas CRE /
+  // 98% Client Satisfaction" from site_settings. CRECO was founded in 2024 and
+  // its own agents table puts the founder at 9 years in the business, so the
+  // years figure contradicted the site's own data, and there is no survey
+  // behind a satisfaction percentage. Counts and commitments only — no
+  // track-record metrics until there are real closed deals to total up.
   const STATS = [
-    { value: `${s.stat_sf_transacted ?? DEFAULT_SETTINGS.stat_sf_transacted}+`, label: 'SF Transacted', icon: Building2 },
-    { value: `${s.stat_years_experience ?? DEFAULT_SETTINGS.stat_years_experience}+`, label: 'Years in Texas CRE', icon: Award },
-    { value: s.stat_satisfaction ?? DEFAULT_SETTINGS.stat_satisfaction, label: 'Client Satisfaction', icon: Star },
+    { value: String(allListings.length), label: 'Active Texas listings', icon: Building2 },
+    { value: 'Full-service', label: 'Tenants · owners · investors', icon: Award },
+    { value: 'Same day', label: 'Response, business days', icon: Star },
   ];
 
   // Guard the nullable CMS hero fields. hero_headline in particular has

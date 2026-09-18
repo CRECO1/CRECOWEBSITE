@@ -7,10 +7,11 @@
  * CTA) was specific to the /team route and stays out of this
  * component — embed contexts compose their own surrounding sections.
  *
- * The data flow is unchanged: hit Supabase `agents` ordered by `order`,
- * fall back to DEMO_AGENTS when empty or errored so the section never
- * renders blank. Clicking a card opens a centered bio modal with
- * phone + email CTAs; click-outside or X closes it.
+ * The data flow: hit Supabase `agents` ordered by `order`. If that comes
+ * back empty or errored the grid stays empty — a brokerage must never show
+ * a placeholder broker with an invented licence number. Clicking a card
+ * opens a centered bio modal with phone + email CTAs; click-outside or X
+ * closes it.
  *
  * The wrapping <section> includes id="team" so /about#team deep-links
  * (and the /team → /about#team redirect) scroll the user straight to
@@ -25,25 +26,28 @@ import { Honeypot } from '@/components/forms/Honeypot';
 import { supabase } from '@/lib/supabase';
 import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
 
-const DEMO_AGENTS = [
-  {
-    id: '1',
-    name: 'Add your team in /admin',
-    slug: 'placeholder',
-    title: 'Principal Broker',
-    email: 'info@crecotx.com',
-    phone: '(210) 817-3443',
-    image_url: null,
-    license_number: 'TX-XXXXXXX',
-    years_experience: 15,
-    featured: true,
-    order: 1,
-    specialties: ['Office Leasing', 'Investment Sales', 'Tenant Representation'],
-    bio: 'Replace this placeholder with your team. Add agents in the Payload admin panel at /admin → Agents.',
-  },
-];
-
-export type Agent = typeof DEMO_AGENTS[0];
+/**
+ * Shape of a row in the `agents` table. This used to be derived from a
+ * DEMO_AGENTS placeholder ("Add your team in /admin", licence TX-XXXXXXX,
+ * 15 years' experience) that rendered whenever the query came back empty or
+ * errored — a fake broker with a fake licence number on a brokerage's team
+ * section. The section now renders nothing in that case.
+ */
+export interface Agent {
+  id: string;
+  name: string;
+  slug: string;
+  title: string;
+  email: string;
+  phone: string | null;
+  image_url: string | null;
+  license_number: string | null;
+  years_experience: number | null;
+  featured: boolean;
+  order: number;
+  specialties: string[] | null;
+  bio: string | null;
+}
 
 interface TeamSectionProps {
   /**
@@ -89,11 +93,9 @@ export function TeamSection({
       .select('*')
       .order('order', { ascending: true })
       .then(({ data, error }) => {
-        if (error || !data || data.length === 0) {
-          setAgents(DEMO_AGENTS);
-        } else {
-          setAgents(data as Agent[]);
-        }
+        // No placeholder fallback — an empty or failed query leaves the
+        // grid empty rather than inventing a broker.
+        setAgents(error || !data ? [] : (data as Agent[]));
       });
   }, [initialAgents]);
 
