@@ -38,17 +38,47 @@ begin;
 
 -- leads — inbound contact/valuation/tour submissions
 drop policy if exists "public insert leads" on public.leads;
+drop policy if exists "authenticated insert leads" on public.leads;
 create policy "authenticated insert leads" on public.leads
   for insert to authenticated
   with check (true);
 
 -- subscribers — newsletter signups
 drop policy if exists "public insert subscribers" on public.subscribers;
+drop policy if exists "authenticated insert subscribers" on public.subscribers;
 create policy "authenticated insert subscribers" on public.subscribers
   for insert to authenticated
   with check (true);
 
 commit;
+
+-- ----------------------------------------------------------------------------
+-- 2. Belt and braces: take the write privileges away from `anon` entirely.
+--
+-- Supabase grants anon INSERT/UPDATE/DELETE/TRUNCATE on every table in `public`
+-- by default, which leaves RLS as the single point of failure. Two findings made
+-- that worth closing at the privilege level rather than trusting policies alone:
+--
+--   * `invoices` could not be proven safe empirically. Its policy is
+--     `ALL TO authenticated USING (is_workspace_member(workspace_id))`, so anon
+--     should be denied — but the RLS check is never reached: the BEFORE INSERT
+--     trigger `assign_invoice_number` is SECURITY DEFINER, writes to
+--     invoice_counters first, and fails there (23502 / 23503). Proving the point
+--     would have meant creating a real invoice and perturbing the invoice-number
+--     counter on a live financial table, which is not worth it when the
+--     privilege can simply be removed.
+--   * `invoice_counters` has RLS enabled and zero policies, yet is written by
+--     that SECURITY DEFINER trigger — correct, and unaffected by this revoke.
+--
+-- anon keeps SELECT: RLS still decides which rows it may read, and the six
+-- marketing tables depend on it. service_role and authenticated are untouched.
+-- ----------------------------------------------------------------------------
+
+revoke insert, update, delete, truncate on all tables in schema public from anon;
+
+-- Future tables must not silently re-grant these to anon.
+alter default privileges in schema public
+  revoke insert, update, delete, truncate on tables from anon;
 
 -- ============================================================================
 -- VERIFY (read-only)
