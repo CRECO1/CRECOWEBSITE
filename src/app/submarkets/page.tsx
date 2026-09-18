@@ -20,18 +20,11 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://www.crecotx.com/submarkets' },
 };
 
-const DEMO_SUBMARKETS = [
-  { id: '1', name: 'Northwest', slug: 'northwest', description: 'I-10 corridor, La Cantera, UTSA — strong office and medical demand, growing flex inventory.', image_url: null, highlights: ['Class A office demand', 'Medical concentration', 'High-end retail'], zip_codes: ['78230', '78249', '78256', '78257'], featured: true, order: 1 },
-  { id: '2', name: 'North Central', slug: 'north-central', description: 'Loop 410, Stone Oak, San Pedro — established office market with infill retail and multifamily activity.', image_url: null, highlights: ['Established office', 'Strong demographics', 'Infill development'], zip_codes: ['78213', '78216', '78217', '78232', '78258'], featured: true, order: 2 },
-  { id: '3', name: 'Northeast', slug: 'northeast', description: 'I-35 industrial corridor — bulk distribution, warehouse, and last-mile logistics.', image_url: null, highlights: ['Industrial corridor', 'Distribution & logistics', 'I-35 access'], zip_codes: ['78219', '78220', '78233', '78239'], featured: true, order: 3 },
-  { id: '4', name: 'Downtown / Central', slug: 'downtown', description: 'CBD, River Walk, Pearl District — historic core with adaptive reuse, hospitality, and creative office.', image_url: null, highlights: ['Adaptive reuse', 'Hospitality', 'Creative office'], zip_codes: ['78205', '78215'], featured: true, order: 4 },
-  { id: '5', name: 'South Side', slug: 'south-side', description: 'I-35/I-37 — emerging industrial and Toyota corridor activity.', image_url: null, highlights: ['Emerging industrial', 'Toyota corridor', 'Affordability'], zip_codes: ['78214', '78221', '78223'], featured: false, order: 5 },
-  { id: '6', name: 'Far West / 1604', slug: 'far-west', description: 'Loop 1604 NW — newer flex, retail growth, and large land tracts for development.', image_url: null, highlights: ['Newer flex', 'Retail growth', 'Land for development'], zip_codes: ['78023', '78254', '78255', '78269'], featured: false, order: 6 },
-];
-
 export default async function SubmarketsPage() {
-  const result = await getSubmarkets().catch(() => []);
-  const submarkets = result.length > 0 ? result : DEMO_SUBMARKETS;
+  // The submarkets table is the source of truth and drives /submarkets/[slug],
+  // so there is no demo fallback: listing submarkets that have no record behind
+  // them would link to pages that cannot render.
+  const submarkets = await getSubmarkets().catch(() => []);
 
   return (
     <>
@@ -52,6 +45,12 @@ export default async function SubmarketsPage() {
         {/* Grid */}
         <section className="section-luxury bg-background-cream">
           <Container>
+            {submarkets.length === 0 && (
+              <p className="text-center text-body text-foreground-muted">
+                Submarket guides aren&apos;t available right now. Tell us the area you&apos;re targeting on the{' '}
+                <Link href="/get-started" className="text-gold underline">Get Started</Link> form and we&apos;ll bring options across any San Antonio submarket.
+              </p>
+            )}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {submarkets.map((s: any, i: number) => (
                 <RevealOnScroll key={s.id} delay={i * 80}>

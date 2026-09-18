@@ -106,12 +106,6 @@ const DEMO_LISTINGS = [
   },
 ];
 
-const DEMO_TESTIMONIALS = [
-  { id: '1', client_name: 'Michael Reyes', client_location: 'Operations Director, South Texas Logistics', quote: 'CRECO found us a 24,000 SF Texas warehouse in Northeast San Antonio that fit our docking and clear-height needs perfectly — and negotiated three months free rent. Smooth from tour to keys.', rating: 5 },
-  { id: '2', client_name: 'Janet Whitaker', client_location: 'Owner, Whitaker Family Holdings (12-property Texas portfolio)', quote: 'We were sitting on an underperforming retail strip for years. CRECO repositioned the tenant mix, raised NOI 22%, and sold above pro forma. They get how multi-property owners think.', rating: 5 },
-  { id: '3', client_name: 'David Kim', client_location: 'Founder, Alamo Tech Studio', quote: 'First-time office lease for our team and they walked us through every line of the LOI. No pressure, no jargon — just straight advice.', rating: 5 },
-];
-
 // SERVICES — ordered by what brings owners and tenants in the door
 const SERVICES = [
   { icon: Briefcase, title: 'Tenant Representation', description: 'Site selection and lease negotiation for businesses leasing retail, restaurant, office, medical, industrial, and flex space.' },
@@ -273,8 +267,10 @@ export default async function HomePage() {
     ...FAQS,
   ];
 
-  const featuredTestimonials = testimonialsResult.status === 'fulfilled' && testimonialsResult.value.length > 0
-    ? testimonialsResult.value.slice(0, 3) : DEMO_TESTIMONIALS;
+  // No demo fallback: with no real featured testimonials the section renders
+  // nothing rather than invented client quotes.
+  const featuredTestimonials = testimonialsResult.status === 'fulfilled'
+    ? testimonialsResult.value.slice(0, 3) : [];
 
   const s = (settingsResult.status === 'fulfilled' && settingsResult.value.data)
     ? settingsResult.value.data
@@ -703,6 +699,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── Testimonials ─────────────────────────────────────────────── */}
+      {featuredTestimonials.length > 0 && (
       <section className="section-luxury bg-background-cream">
         <Container>
           <RevealOnScroll>
@@ -731,6 +728,7 @@ export default async function HomePage() {
           </div>
         </Container>
       </section>
+      )}
 
       {/* ── FAQ ──────────────────────────────────────────────────────── */}
       <section className="section-luxury bg-white">

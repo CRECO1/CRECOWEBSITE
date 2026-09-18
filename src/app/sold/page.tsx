@@ -37,25 +37,10 @@ import { formatPrice, formatSqft, transactionLabel, propertyTypeLabel } from '@/
 
 import { JsonLd } from '@/components/seo/JsonLd';
 import { breadcrumbList } from '@/lib/schema';
-const DEMO_CLOSED = [
-  { id: '1', address: '215 Industrial Way', city: 'San Antonio', property_type: 'warehouse' as const, transaction_type: 'lease' as const, sale_price: null, sqft: 24000, closed_date: '2026-03-01', image_url: null, created_at: '' },
-  { id: '2', address: '8811 Stone Oak Pkwy', city: 'San Antonio', property_type: 'office' as const, transaction_type: 'sale' as const, sale_price: 2400000, sqft: 9800, closed_date: '2026-02-14', image_url: null, created_at: '' },
-  { id: '3', address: '4421 Loop 410', city: 'San Antonio', property_type: 'retail' as const, transaction_type: 'lease' as const, sale_price: null, sqft: 4200, closed_date: '2026-01-29', image_url: null, created_at: '' },
-  { id: '4', address: '1702 Distribution Dr', city: 'San Antonio', property_type: 'warehouse' as const, transaction_type: 'sale' as const, sale_price: 4850000, sqft: 52000, closed_date: '2026-01-10', image_url: null, created_at: '' },
-  { id: '5', address: '9203 Far West Plaza', city: 'San Antonio', property_type: 'flex' as const, transaction_type: 'lease' as const, sale_price: null, sqft: 12500, closed_date: '2025-12-20', image_url: null, created_at: '' },
-  { id: '6', address: '317 Pearl District', city: 'San Antonio', property_type: 'mixed-use' as const, transaction_type: 'sale' as const, sale_price: 6200000, sqft: 18500, closed_date: '2025-12-01', image_url: null, created_at: '' },
-];
-
-const STATS = [
-  { icon: Building2, value: '2.4M+', label: 'SF Transacted' },
-  { icon: TrendingUp, value: '$120M+', label: 'Deal Volume' },
-  { icon: Award, value: '15+', label: 'Years in San Antonio' },
-  { icon: CheckCircle, value: '98%', label: 'Client Satisfaction' },
-];
-
 export default async function SoldPage() {
-  const closed = await getClosedDeals(12).catch(() => []);
-  const properties = closed.length > 0 ? closed : DEMO_CLOSED;
+  // No demo fallback: an empty result renders an empty state rather than
+  // presenting invented transactions as CRECO's track record.
+  const properties = await getClosedDeals(12).catch(() => []);
 
   return (
     <>
@@ -73,21 +58,6 @@ export default async function SoldPage() {
           </Container>
         </div>
 
-        {/* Stats */}
-        <div className="bg-gold py-10">
-          <Container>
-            <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
-              {STATS.map(({ icon: Icon, value, label }) => (
-                <div key={label} className="text-center">
-                  <Icon className="mx-auto mb-2 h-6 w-6 text-primary/60" />
-                  <div className="font-heading text-display-sm font-bold text-primary">{value}</div>
-                  <div className="text-caption uppercase tracking-wider text-primary/60">{label}</div>
-                </div>
-              ))}
-            </div>
-          </Container>
-        </div>
-
         {/* Grid */}
         <section className="section-luxury bg-background-cream">
           <Container>
@@ -97,6 +67,12 @@ export default async function SoldPage() {
               </h2>
             </RevealOnScroll>
 
+            {properties.length === 0 && (
+              <p className="text-center text-body text-foreground-muted">
+                Recently closed transactions aren&apos;t listed here right now. Please{' '}
+                <Link href="/contact" className="text-gold underline">contact us</Link> and a CRECO principal will walk you through comparable deals we&apos;ve closed.
+              </p>
+            )}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {properties.map((p: any, i: number) => (
                 <RevealOnScroll key={p.id} delay={i * 80}>
