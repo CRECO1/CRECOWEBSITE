@@ -152,7 +152,12 @@ export async function POST(req: NextRequest) {
     // the broker filter these out in the inbox)
     let leadId: string | null = null;
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+    // Server-side write: use the service-role key. The publishable key is the
+    // browser's anon key, and the anon role no longer has INSERT on this table
+    // (see supabase/rls-anon-write-lockdown.sql). Falling back to it would log a
+    // row-level-security error and silently drop the submission.
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!supabaseKey) console.error('[tour-request] SUPABASE_SERVICE_ROLE_KEY is not set — the submission cannot be stored.');
     if (supabaseUrl && supabaseKey) {
       const supabase = createClient(supabaseUrl, supabaseKey);
       const messageBody = [
