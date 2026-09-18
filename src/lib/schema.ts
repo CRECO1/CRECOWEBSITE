@@ -99,7 +99,10 @@ export const BUSINESS = {
    *  URL once it's confirmed — never guess one. */
   sameAs: [
     'https://www.loopnet.com/company/creco-llc/san-antonio-tx/w7l0jcll/',
-    // TODO(Zack): Google Business Profile URL (maps.app.goo.gl/… or google.com/maps?cid=…)
+    // Google Business Profile — verified Sept 2026. The ?cid= form is the
+    // canonical, stable identity URL; the review link is a call to action,
+    // not an identity, so it does not belong in sameAs.
+    'https://www.google.com/maps?cid=112850793807045067',
     // TODO(Zack): LinkedIn company page — footer links linkedin.com/company/crecotx, which returned 404
     // TODO(Zack): Facebook page — footer links facebook.com/crecotx (unverified)
     // TODO(Zack): Instagram — footer links instagram.com/crecotx (unverified)
