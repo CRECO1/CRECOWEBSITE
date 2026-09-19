@@ -74,7 +74,7 @@ export function SellInquiryForm() {
               <input name="company" placeholder="Company / Entity" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold" />
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <input name="phone" type="tel" required placeholder="Phone Number" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold" />
+              <input name="phone" type="tel" placeholder="Phone Number (optional)" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold" />
               <input name="email" type="email" required placeholder="Email Address" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold" />
             </div>
             <input name="address" required placeholder="Property Address" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold" />
