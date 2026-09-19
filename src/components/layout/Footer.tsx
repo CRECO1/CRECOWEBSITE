@@ -258,7 +258,7 @@ export function Footer() {
             {/* Disclosure + policy links */}
             <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-4 gap-y-1">
               <a
-                href="https://www.dropbox.com/scl/fi/f2mtiupgx22xhzx81vnwn/IABSCRECOTX.pdf?rlkey=7fs8jtl92j3pq97he11blehwm&e=1&dl=0"
+                href="/legal/IABS-CRECO.pdf"
                 target="_blank" rel="noopener noreferrer"
                 className="text-caption text-white/50 transition-colors hover:text-gold"
               >
