@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { sendLeadToCrm } from '@/lib/crm-lead';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { verifyRecaptcha } from '@/lib/recaptcha';
@@ -217,6 +218,13 @@ export async function POST(req: NextRequest) {
         utm_source, utm_medium, utm_campaign, utm_term, utm_content,
         referrer, landing_page,
       }]).select('id').single();
+
+      // Also create the contact in the CRM (owner: the broker). Non-blocking.
+      await sendLeadToCrm({
+        name, email, phone, company, message,
+        source: `website — crecotx.com (${source})`,
+        type: source === 'valuation-request' || source === 'sell' ? 'Seller' : 'Tenant',
+      });
 
       if (error) {
         console.error('[leads] DB insert failed:', error.message);

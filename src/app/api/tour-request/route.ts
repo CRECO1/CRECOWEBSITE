@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { sendLeadToCrm } from '@/lib/crm-lead';
 import { randomBytes } from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
@@ -191,6 +192,15 @@ export async function POST(req: NextRequest) {
         utm_source, utm_medium, utm_campaign, utm_term, utm_content,
         referrer, landing_page,
       }]).select('id').single();
+
+      // Also create the contact in the CRM (owner: the broker). Non-blocking.
+      await sendLeadToCrm({
+        name, email, phone,
+        message: [listingTitle || listingSlug, preferredDate, preferredTime].filter(Boolean).join(' · ') || null,
+        source: `website — crecotx.com (tour request${listingSlug ? `: ${listingSlug}` : ''})`,
+        type: 'Tenant',
+        tags: ['Tour Request'],
+      });
       if (error) console.error('[tour-request] DB insert failed:', error.message);
       else leadId = data?.id ?? null;
     }
