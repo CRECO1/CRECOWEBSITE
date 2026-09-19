@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { jsonLd } from '@/lib/jsonLd';
 import Link from 'next/link';
 import {
@@ -35,6 +36,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/owner-services' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'Texas Commercial Property Owner Services | CRECO',
     description:
       'Strategic owner services for Texas commercial property investors with portfolios. Repositioning, 1031, tenant optimization, asset management.',

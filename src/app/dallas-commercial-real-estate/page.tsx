@@ -3,6 +3,7 @@ export const revalidate = 1800;
 
 
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { CityHubPage } from '@/components/marketing/CityHubPage';
 
 export const metadata: Metadata = {
@@ -24,6 +25,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/dallas-commercial-real-estate' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'Dallas–Fort Worth Commercial Real Estate | CRECO',
     description:
       'DFW commercial real estate — office, industrial, retail. Tenant representation and owner services across Dallas, Fort Worth, Frisco, Plano, and the DFW Airport corridor.',

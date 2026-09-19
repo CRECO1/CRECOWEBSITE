@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { Playfair_Display, Source_Sans_3 } from 'next/font/google';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { CANONICAL_DESCRIPTION, siteGraph } from '@/lib/schema';
@@ -92,14 +93,13 @@ export const metadata: Metadata = {
     siteName: 'CRECO - Commercial Real Estate Company',
     title: 'CRECO - Commercial Real Estate Company | Full-Service Commercial Real Estate Brokerage in Texas',
     description: CANONICAL_DESCRIPTION,
-    // images intentionally omitted — Next.js auto-discovers /opengraph-image.tsx
-    // and uses it as the default for every page (1200×630 branded design).
+    images: [DEFAULT_OG_IMAGE],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'CRECO - Commercial Real Estate Company | Full-Service Commercial Real Estate Brokerage in Texas',
     description: CANONICAL_DESCRIPTION,
-    // Twitter card image also pulled from /opengraph-image.tsx automatically
+    images: [DEFAULT_OG_IMAGE.url],
   },
   robots: {
     index: true,

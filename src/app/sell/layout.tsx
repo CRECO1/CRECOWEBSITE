@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 
 /**
  * The /sell page is a client component and can't export metadata itself, and it
@@ -25,6 +26,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/sell' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'Sell Your Commercial Property in Texas | CRECO',
     description:
       'Full-service disposition brokerage for Texas commercial real estate — broker valuation, targeted marketing, negotiation, and 1031 support. Retail, industrial, office, and investment assets statewide.',

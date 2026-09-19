@@ -3,6 +3,7 @@
 export const revalidate = 1800;
 
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { PropertyLandingPage } from '@/components/marketing/PropertyLandingPage';
 import { getLandingPage } from '@/lib/supabase';
 
@@ -25,6 +26,7 @@ const baseMetadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/texas-office-space-for-lease' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'Office Space for Lease in Texas | CRECO',
     description:
       'Texas office space — Class A/B/C, medical, professional, executive, creative. San Antonio, Austin, Houston, DFW, statewide coverage.',

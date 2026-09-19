@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 
 export const metadata: Metadata = {
   title: 'Texas Commercial Real Estate Listings | Lease & Sale | CRECO',
@@ -17,6 +18,7 @@ export const metadata: Metadata = {
     'creco listings',
   ],
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'Texas Commercial Real Estate Listings | CRECO',
     description:
       'Active commercial real estate listings across Texas — office, warehouse, retail, flex, and land. Updated daily.',

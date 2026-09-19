@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import Link from 'next/link';
 import { ArrowRight, BarChart3, Calendar, FileText } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
@@ -30,6 +31,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/research' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'Texas Commercial Real Estate Market Reports | CRECO',
     description:
       'Quarterly market reports — vacancy, asking rents, absorption, and concession data across Texas commercial real estate submarkets.',

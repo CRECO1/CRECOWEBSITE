@@ -3,6 +3,7 @@
 export const revalidate = 1800;
 
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { PropertyLandingPage } from '@/components/marketing/PropertyLandingPage';
 import { getLandingPage } from '@/lib/supabase';
 
@@ -24,6 +25,7 @@ const baseMetadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/texas-retail-space-for-lease' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'Retail Space for Lease in Texas | CRECO',
     description:
       'Texas retail space — strip centers, freestanding restaurants, urban storefronts, and shopping centers across San Antonio, Austin, Houston, and DFW.',

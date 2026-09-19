@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import Link from 'next/link';
 import { CheckCircle, Award, Users, Building2 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
@@ -76,6 +77,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/about' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'About CRECO - Commercial Real Estate Company',
     description: ABOUT_DESCRIPTION,
     url: 'https://www.crecotx.com/about',

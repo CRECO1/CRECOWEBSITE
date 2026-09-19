@@ -3,6 +3,7 @@ export const revalidate = 1800;
 
 
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
 export const metadata: Metadata = {
@@ -27,6 +28,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/san-antonio-office-space' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'San Antonio Office Space for Lease | CRECO',
     description:
       'Class A in Stone Oak + Medical Center, creative office at the Pearl, Class B value downtown. San Antonio office market — tenant rep, submarket-by-submarket coverage.',

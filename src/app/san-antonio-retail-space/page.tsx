@@ -3,6 +3,7 @@ export const revalidate = 1800;
 
 
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
 export const metadata: Metadata = {
@@ -27,6 +28,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/san-antonio-retail-space' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'San Antonio Retail Space for Lease | CRECO',
     description:
       'Power centers + grocery-anchored strip on the 1604 loop and Alamo Ranch, lifestyle retail at The Rim and La Cantera, urban retail at the Pearl, and high-growth pad sites. San Antonio retail — tenant + landlord rep.',

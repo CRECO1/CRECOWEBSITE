@@ -1,4 +1,7 @@
 import type { Metadata } from 'next';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { breadcrumbList } from '@/lib/schema';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 
 /**
  * Layout-level metadata for /get-started — the page itself is a
@@ -27,6 +30,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/get-started' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'Get Started with CRECO',
     description:
       'Submit your tenant needs or owner requirements — a CRECO principal responds within one business day with vetted options.',
@@ -37,5 +41,10 @@ export const metadata: Metadata = {
 };
 
 export default function GetStartedLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <>
+      <JsonLd data={breadcrumbList([{ name: 'Get Started', path: '/get-started' }])} />
+      {children}
+    </>
+  );
 }

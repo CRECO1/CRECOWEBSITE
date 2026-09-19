@@ -2,6 +2,7 @@
 export const revalidate = 1800;
 
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { FaqSection } from '@/components/marketing/FaqSection';
 import { LYTLE_MAIN_ST_LISTING } from '@/lib/featured-properties';
@@ -145,6 +146,7 @@ export const metadata: Metadata = {
   keywords: BASE_KEYWORDS,
   alternates: { canonical: 'https://www.crecotx.com/15033-main-st-lytle' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: '15033 Main St — Now Leasing | Lytle, TX',
     description:
       'Multi-tenant retail center in Lytle, TX on the I-35 corridor. Now leasing — established co-tenants, owner-operator landlord. Represented by CRECO.',

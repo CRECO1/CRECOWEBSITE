@@ -1,4 +1,7 @@
 import type { Metadata } from 'next';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { breadcrumbList, faqPage } from '@/lib/schema';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import Link from 'next/link';
 import {
   Briefcase, ArrowRight, Phone, Users, TrendingUp, Sparkles,
@@ -26,6 +29,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/careers' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'Careers at CRECO | Texas Commercial Real Estate',
     description:
       'CRECO is hiring commercial real estate agents across Texas. Small principal-led team, every agent works directly with clients, headquartered in Fair Oaks Ranch.',
@@ -102,6 +106,7 @@ const FAQS = [
 export default function CareersPage() {
   return (
     <>
+      <JsonLd data={[breadcrumbList([{ name: 'Careers', path: '/careers' }]), faqPage(FAQS, '/careers')]} />
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}

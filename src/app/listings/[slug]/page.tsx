@@ -5,6 +5,7 @@
 export const revalidate = 1800;
 
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { metaDescription } from '@/lib/seo-meta';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { FaqSection } from '@/components/marketing/FaqSection';
@@ -73,6 +74,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     description,
     alternates: { canonical: `https://www.crecotx.com/listings/${listing.slug}` },
     openGraph: {
+      images: [DEFAULT_OG_IMAGE],
       title,
       description,
       url: `https://www.crecotx.com/listings/${listing.slug}`,

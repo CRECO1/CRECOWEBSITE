@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { SourcesMethodology, asOfMonth } from '@/components/marketing/SourcesMethodology';
 import { metaTitle, metaDescription } from '@/lib/seo-meta';
 import { jsonLd } from '@/lib/jsonLd';
@@ -46,6 +47,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     keywords: report.keywords,
     alternates: { canonical: `https://www.crecotx.com/research/${report.slug}` },
     openGraph: {
+      images: [DEFAULT_OG_IMAGE],
       title: report.metaTitle,
       description: report.metaDescription,
       url: `https://www.crecotx.com/research/${report.slug}`,

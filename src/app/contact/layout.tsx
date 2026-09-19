@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { BUSINESS, breadcrumbList, businessRef, webPage } from '@/lib/schema';
 
@@ -20,6 +21,7 @@ export const metadata: Metadata = {
     'CRECO phone number',
   ],
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'Contact CRECO | Texas Commercial Real Estate',
     description:
       'Reach out to CRECO for tenant representation, investment advisory, leasing & sales, owner services, and property management across Texas.',

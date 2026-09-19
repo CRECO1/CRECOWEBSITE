@@ -3,6 +3,7 @@
 export const revalidate = 1800;
 
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { PropertyLandingPage } from '@/components/marketing/PropertyLandingPage';
 import { getLandingPage } from '@/lib/supabase';
 
@@ -26,6 +27,7 @@ const baseMetadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/texas-commercial-property-for-sale' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'Commercial Property for Sale in Texas | CRECO',
     description:
       'Texas commercial property for sale — retail, industrial, office, and land. Investment advisory and 1031 exchange identification statewide.',

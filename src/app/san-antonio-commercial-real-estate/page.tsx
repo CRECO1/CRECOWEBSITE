@@ -3,6 +3,7 @@ export const revalidate = 1800;
 
 
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { CityHubPage } from '@/components/marketing/CityHubPage';
 
 /**
@@ -46,6 +47,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/san-antonio-commercial-real-estate' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'San Antonio Commercial Real Estate | CRECO',
     description:
       'Full-service San Antonio commercial real estate: tenant representation, landlord/owner representation, and investment sales across retail, office, industrial, flex, and land.',

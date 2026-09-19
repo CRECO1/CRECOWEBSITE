@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { metaTitle, metaDescription } from '@/lib/seo-meta';
 import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
@@ -37,6 +38,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     keywords: entry.keywords,
     alternates: { canonical: `https://www.crecotx.com/markets/${entry.slug}` },
     openGraph: {
+      images: [DEFAULT_OG_IMAGE],
       title: entry.metaTitle,
       description: entry.metaDescription,
       url: `https://www.crecotx.com/markets/${entry.slug}`,

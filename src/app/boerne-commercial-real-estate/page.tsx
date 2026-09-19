@@ -3,6 +3,7 @@ export const revalidate = 1800;
 
 
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { CityHubPage } from '@/components/marketing/CityHubPage';
 
 export const metadata: Metadata = {
@@ -23,6 +24,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/boerne-commercial-real-estate' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'Boerne Commercial Real Estate | CRECO',
     description:
       "Boerne commercial real estate — historic Main Street, I-10 corridor, and the Hill Country gateway market. CRECO's broker practice covers Boerne end-to-end.",

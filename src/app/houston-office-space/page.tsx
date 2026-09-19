@@ -3,6 +3,7 @@ export const revalidate = 1800;
 
 
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
 export const metadata: Metadata = {
@@ -27,6 +28,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/houston-office-space' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'Houston Office Space for Lease | CRECO',
     description:
       'Trophy Class A downtown and Uptown/Galleria, energy tenancy in the Energy Corridor and Westchase, corporate campuses in The Woodlands. One of the most tenant-favorable office markets in the US — tenant rep by submarket.',

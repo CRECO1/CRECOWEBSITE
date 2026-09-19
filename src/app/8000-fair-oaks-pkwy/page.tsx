@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { FaqSection } from '@/components/marketing/FaqSection';
 import { FAIR_OAKS_PLAZA_LISTING } from '@/lib/featured-properties';
@@ -78,6 +79,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/8000-fair-oaks-pkwy' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: '8000 Fair Oaks Pkwy — Retail Bays + Executive Office Suites',
     description:
       "Mixed-use commercial center in Fair Oaks Ranch, TX — 4 retail bays + two two-story executive office suite buildings. Owned and represented by CRECO.",

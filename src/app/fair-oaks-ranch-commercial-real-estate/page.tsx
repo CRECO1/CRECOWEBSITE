@@ -3,6 +3,7 @@ export const revalidate = 1800;
 
 
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { CityHubPage } from '@/components/marketing/CityHubPage';
 
 export const metadata: Metadata = {
@@ -28,6 +29,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/fair-oaks-ranch-commercial-real-estate' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'Fair Oaks Ranch Commercial Real Estate | CRECO — Headquartered Here',
     description:
       'Full-service commercial real estate headquartered in Fair Oaks Ranch: tenant, landlord/owner, and investment representation across retail, office, industrial, flex, and land in Fair Oaks Ranch, Boerne, and the Hill Country.',

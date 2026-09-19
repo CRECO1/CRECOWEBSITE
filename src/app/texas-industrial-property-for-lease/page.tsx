@@ -3,6 +3,7 @@
 export const revalidate = 1800;
 
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { PropertyLandingPage } from '@/components/marketing/PropertyLandingPage';
 import { getLandingPage } from '@/lib/supabase';
 
@@ -26,6 +27,7 @@ const baseMetadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/texas-industrial-property-for-lease' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'Industrial & Warehouse Property for Lease in Texas | CRECO',
     description:
       'Texas industrial real estate — distribution, manufacturing, flex, last-mile. I-35 corridor, Houston Ship Channel, DFW industrial markets, and statewide.',

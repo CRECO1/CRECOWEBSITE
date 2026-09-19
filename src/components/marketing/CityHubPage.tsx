@@ -7,6 +7,7 @@
  */
 
 import Link from 'next/link';
+import { findGuide } from '@/lib/guides';
 import { SourcesMethodology, asOfMonth } from '@/components/marketing/SourcesMethodology';
 import {
   ArrowRight, MapPin, TrendingUp, Building2, Phone, BellRing,
@@ -527,7 +528,7 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
                 {config.relatedInsights.map(post => (
                   <Link
                     key={post.slug}
-                    href={`/insights/${post.slug}`}
+                    href={findGuide(post.slug) ? `/guides/${post.slug}` : `/insights/${post.slug}`}
                     className="group surface-card surface-card-hover flex flex-col"
                   >
                     <BookOpen className="h-7 w-7 text-gold mb-4" />

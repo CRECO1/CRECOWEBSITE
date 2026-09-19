@@ -4,6 +4,7 @@
 export const revalidate = 1800;
 
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { jsonLd } from '@/lib/jsonLd';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { DIETZ_ELKHORN_LISTING } from '@/lib/featured-properties';
@@ -203,6 +204,7 @@ export async function generateMetadata(): Promise<Metadata> {
     keywords: BASE_KEYWORDS,
     alternates: { canonical: 'https://www.crecotx.com/8979-dietz-elkhorn' },
     openGraph: {
+      images: [DEFAULT_OG_IMAGE],
       title: '8979 Dietz Elkhorn — Now Pre-Leasing | Fair Oaks Ranch',
       description: description,
       url: 'https://www.crecotx.com/8979-dietz-elkhorn',

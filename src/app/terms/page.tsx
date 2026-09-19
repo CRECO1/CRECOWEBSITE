@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { breadcrumbList } from '@/lib/schema';
 import Link from 'next/link';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
@@ -26,6 +28,7 @@ const LAST_UPDATED = 'July 13, 2026';
 export default function TermsPage() {
   return (
     <>
+      <JsonLd data={breadcrumbList([{ name: 'Terms of Use', path: '/terms' }])} />
       <Header />
       <main className="min-h-screen pt-20 bg-white">
         <div className="bg-primary py-12 text-white">

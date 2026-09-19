@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import Link from 'next/link';
 import { Briefcase, LineChart, Building2, Wrench, Layers, Leaf, ArrowRight } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
@@ -52,6 +53,7 @@ export const metadata: Metadata = {
   // but a /services-specific share card converts noticeably better in
   // social previews than the generic homepage one.
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'Texas Commercial Real Estate Services | CRECO',
     description:
       'Tenant representation, investment advisory, leasing & sales, property management, development, and sustainability consulting across Texas.',

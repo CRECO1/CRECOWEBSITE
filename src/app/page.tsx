@@ -5,6 +5,7 @@
 export const revalidate = 1800;
 
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { jsonLd } from '@/lib/jsonLd';
 import { CANONICAL_DESCRIPTION, REPRESENTATION_STATEMENT, listingSummary } from '@/lib/schema';
 
@@ -33,6 +34,7 @@ export const metadata: Metadata = {
     'Dallas Fort Worth commercial real estate',
   ],
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'CRECO - Commercial Real Estate Company | Full-Service Commercial Real Estate Brokerage in Texas',
     description: CANONICAL_DESCRIPTION,
     url: 'https://www.crecotx.com',

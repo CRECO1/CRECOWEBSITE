@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import Link from 'next/link';
 import { ArrowRight, Phone, ShieldCheck, TrendingUp, Calculator, Building2 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
@@ -28,6 +29,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/property-valuation' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: "What's My Commercial Property Worth? | CRECO",
     description:
       'Get an instant preliminary valuation for your Texas commercial property — industrial, retail, office, flex. Free, no obligation.',

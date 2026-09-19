@@ -4,6 +4,7 @@
 export const revalidate = 3600;
 
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 
 export const metadata: Metadata = {
   title: 'Recently Closed Deals | CRECO',
@@ -17,6 +18,7 @@ export const metadata: Metadata = {
     'commercial leases San Antonio',
   ],
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'Recently Closed Deals | CRECO',
     description: 'Recent CRECO transactions across the San Antonio commercial market.',
     url: 'https://www.crecotx.com/sold',

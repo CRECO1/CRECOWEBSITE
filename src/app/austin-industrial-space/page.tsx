@@ -3,6 +3,7 @@ export const revalidate = 1800;
 
 
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
 export const metadata: Metadata = {
@@ -27,6 +28,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/austin-industrial-space' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'Austin Industrial Space for Lease | CRECO',
     description:
       'Distribution + flex in the Northeast (Pflugerville, Hutto, Taylor), Southeast near the airport and SH-130, and the I-35 South corridor. Semiconductor + EV megaprojects anchor demand. Austin industrial — tenant rep + owner services.',

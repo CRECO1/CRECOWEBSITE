@@ -3,6 +3,7 @@ export const revalidate = 1800;
 
 
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
 export const metadata: Metadata = {
@@ -27,6 +28,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/dallas-office-space' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'Dallas–Fort Worth Office Space for Lease | CRECO',
     description:
       'Trophy Class A in Uptown, corporate campuses in Legacy/Frisco, Las Colinas and the Telecom Corridor, and Class B value across the Metroplex. DFW office — tenant rep, submarket by submarket.',

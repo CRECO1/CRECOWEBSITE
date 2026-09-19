@@ -3,6 +3,7 @@ export const revalidate = 1800;
 
 
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
 export const metadata: Metadata = {
@@ -27,6 +28,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/austin-office-space' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'Austin Office Space for Lease | CRECO',
     description:
       'Trophy Class A in the CBD and the Domain, creative office in East Austin, Class B value across the metro. Austin office market — tenant rep, submarket-by-submarket.',

@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { breadcrumbList } from '@/lib/schema';
 import Link from 'next/link';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
@@ -13,6 +15,7 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <>
+      <JsonLd data={breadcrumbList([{ name: 'Privacy Policy', path: '/privacy' }])} />
       <Header />
       <main className="min-h-screen pt-20 bg-white">
         <div className="bg-primary py-12 text-white">

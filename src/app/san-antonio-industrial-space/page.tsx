@@ -3,6 +3,7 @@ export const revalidate = 1800;
 
 
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
 export const metadata: Metadata = {
@@ -27,6 +28,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/san-antonio-industrial-space' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'San Antonio Industrial Space for Lease | CRECO',
     description:
       'Modern bulk on the I-35 near-shoring corridor + Schertz, Toyota-anchored South Side manufacturing, Port San Antonio advanced industry, and infill flex. San Antonio industrial — tenant rep + owner services.',

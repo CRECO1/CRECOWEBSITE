@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { jsonLd } from '@/lib/jsonLd';
 import Link from 'next/link';
 import { ArrowRight, MapPin, Building2 } from 'lucide-react';
@@ -39,6 +40,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/markets' },
   openGraph: {
+    images: [DEFAULT_OG_IMAGE],
     title: 'Texas Commercial Real Estate Markets | CRECO',
     description:
       'Submarket-level guide to Texas commercial real estate — Austin, Houston, DFW, San Antonio, Hill Country. Local market data + CRECO broker contacts.',

@@ -1,4 +1,7 @@
 import type { Metadata } from 'next';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { breadcrumbList } from '@/lib/schema';
+import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { metaTitle, metaDescription } from '@/lib/seo-meta';
 import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
@@ -24,6 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     keywords: service.keywords,
     alternates: { canonical: `https://www.crecotx.com/services/${service.slug}` },
     openGraph: {
+      images: [DEFAULT_OG_IMAGE],
       title: `${service.title} | CRECO`,
       description: service.metaDescription,
       url: `https://www.crecotx.com/services/${service.slug}`,
@@ -44,6 +48,7 @@ export default async function ServiceDetailPage({ params }: Props) {
 
   return (
     <>
+      <JsonLd data={breadcrumbList([{ name: 'Services', path: '/services' }, { name: service.title, path: `/services/${service.slug}` }])} />
       {/* Service Schema + FAQ Schema */}
       <script
         type="application/ld+json"
