@@ -7,6 +7,7 @@
  */
 
 import Link from 'next/link';
+import { SourcesMethodology, asOfMonth } from '@/components/marketing/SourcesMethodology';
 import {
   ArrowRight, MapPin, TrendingUp, Building2, Phone, BellRing,
   CheckCircle, BookOpen,
@@ -40,6 +41,9 @@ export interface MarketStat {
 }
 
 export interface CityHubConfig {
+  /** Month the market figures on this page were last written, e.g. "May 2026" —
+   *  renders the Sources & methodology block. Omit on pages with no figures. */
+  sourcesAsOf?: string;
   city: string;
   /** Short noun phrase like "Austin", "Houston", "Dallas–Fort Worth" */
   cityShort: string;
@@ -598,6 +602,7 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
             </div>
           </Container>
         </section>
+        {config.sourcesAsOf && <SourcesMethodology asOf={config.sourcesAsOf} />}
       </main>
       <Footer />
     </>

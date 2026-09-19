@@ -14,6 +14,7 @@
  */
 
 import Link from 'next/link';
+import { SourcesMethodology } from '@/components/marketing/SourcesMethodology';
 import { jsonLd } from '@/lib/jsonLd';
 import Image from 'next/image';
 import {
@@ -35,6 +36,9 @@ import { breadcrumbList, listingItemList } from '@/lib/schema';
 export interface LandingFAQ { q: string; a: string }
 
 export interface PropertyLandingConfig {
+  /** Month the market figures on this page were last written, e.g. "April 2026" —
+   *  renders the Sources & methodology block. */
+  sourcesAsOf?: string;
   /** Used in <title> and H1 — must contain the primary target keyword. */
   h1: string;
   /** Hero subheadline — supporting paragraph that reinforces intent. */
@@ -358,6 +362,7 @@ export async function PropertyLandingPage({ config: configIn, dbContent }: Props
             </div>
           </Container>
         </section>
+        {configIn.sourcesAsOf && <SourcesMethodology asOf={configIn.sourcesAsOf} />}
       </main>
       <Footer />
     </>

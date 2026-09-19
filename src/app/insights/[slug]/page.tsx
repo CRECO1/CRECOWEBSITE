@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { SourcesMethodology, asOfMonth } from '@/components/marketing/SourcesMethodology';
 import { metaTitle, metaDescription } from '@/lib/seo-meta';
 import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
@@ -194,6 +195,7 @@ export default async function InsightDetailPage({ params }: Props) {
             </Container>
           </section>
         )}
+        <SourcesMethodology asOf={asOfMonth(post.publishedAt)} />
       </main>
       <Footer />
     </>

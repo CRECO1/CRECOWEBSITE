@@ -39,6 +39,7 @@ export default function DallasIndustrialSpacePage() {
   return (
     <CityAssetPage
       config={{
+        sourcesAsOf: 'September 2026',
         canonicalPath: '/dallas-industrial-space',
         city: 'Dallas–Fort Worth',
         asset: 'industrial',

@@ -36,6 +36,7 @@ export default function BoernePage() {
     <CityHubPage
       config={{
         canonicalPath: '/boerne-commercial-real-estate',
+        sourcesAsOf: 'May 2026',
         city: 'Boerne',
         cityShort: 'Boerne',
         heroEyebrow: 'Texas Commercial Real Estate · Boerne',

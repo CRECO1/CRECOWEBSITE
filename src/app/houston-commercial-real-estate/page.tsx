@@ -37,6 +37,7 @@ export default function HoustonPage() {
     <CityHubPage
       config={{
         canonicalPath: '/houston-commercial-real-estate',
+        sourcesAsOf: 'May 2026',
         city: 'Houston',
         cityShort: 'Houston',
         heroEyebrow: 'Texas Commercial Real Estate · Houston',

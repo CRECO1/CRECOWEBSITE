@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { SourcesMethodology, asOfMonth } from '@/components/marketing/SourcesMethodology';
 import { metaTitle, metaDescription } from '@/lib/seo-meta';
 import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
@@ -37,6 +38,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     twitter: { card: 'summary_large_image', title: guide.title, description: guide.excerpt },
   };
 }
+
+// When each guide's figures were written (the commit that added it; none changed since).
+const GUIDE_AS_OF: Record<string, string> = {
+  'texas-tenant-lease-negotiation-playbook': 'May 2026',
+  'texas-owner-disposition-strategy-guide': 'May 2026',
+  'q2-2026-texas-industrial-market-report': 'May 2026',
+  'q2-2026-texas-investment-outlook-report': 'May 2026',
+  'q2-2026-texas-office-market-report': 'May 2026',
+  'q2-2026-texas-retail-market-report': 'May 2026',
+  'q3-2026-texas-industrial-market-report': 'July 2026',
+  'q3-2026-texas-investment-outlook-report': 'July 2026',
+  'q3-2026-texas-office-market-report': 'July 2026',
+  'q3-2026-texas-retail-market-report': 'July 2026',
+};
 
 export default async function GuidePage({ params }: PageProps) {
   const { slug } = await params;
@@ -204,6 +219,7 @@ export default async function GuidePage({ params }: PageProps) {
             </div>
           </Container>
         </section>
+        <SourcesMethodology asOf={GUIDE_AS_OF[guide.slug] ?? 'July 2026'} />
       </main>
       <Footer />
     </>

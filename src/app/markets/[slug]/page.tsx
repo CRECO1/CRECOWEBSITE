@@ -98,6 +98,8 @@ export default async function SubmarketPage({ params }: { params: Promise<{ slug
       <CityHubPage
         config={{
           ...entry.config,
+          // Figures in submarkets-content.ts were last written May 2026 (git history).
+          sourcesAsOf: 'May 2026',
           // Visible breadcrumb mirrors the BreadcrumbList JSON-LD above.
           breadcrumbs: [
             { label: 'Markets', href: '/markets' },

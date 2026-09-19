@@ -47,6 +47,7 @@ export default async function Page() {
     <PropertyLandingPage
       dbContent={dbContent}
       config={{
+        sourcesAsOf: 'April 2026',
         eyebrow: 'Texas Commercial Real Estate · Retail',
         h1: 'Retail Space for Lease in Texas',
         subhead:

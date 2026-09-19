@@ -59,6 +59,7 @@ export default function SanAntonioPage() {
     <CityHubPage
       config={{
         canonicalPath: '/san-antonio-commercial-real-estate',
+        sourcesAsOf: 'September 2026',
         city: 'San Antonio',
         cityShort: 'San Antonio',
         heroEyebrow: 'Greater San Antonio · Tenants · Landlords · Investors',

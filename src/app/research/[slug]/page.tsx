@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { SourcesMethodology, asOfMonth } from '@/components/marketing/SourcesMethodology';
 import { metaTitle, metaDescription } from '@/lib/seo-meta';
 import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
@@ -285,6 +286,7 @@ export default async function MarketReportPage({ params }: PageProps) {
             </div>
           </Container>
         </section>
+        <SourcesMethodology asOf={asOfMonth(report.publishedAt)} />
       </main>
       <Footer />
     </>

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { SourcesMethodology } from '@/components/marketing/SourcesMethodology';
 import { ArrowRight, BarChart3, Building2, MapPin, Phone, CheckCircle2 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
@@ -46,6 +47,9 @@ export interface CityAssetSubmarketCard {
 }
 
 export interface CityAssetConfig {
+  /** Month the market figures on this page were last written, e.g. "April 2026" —
+   *  renders the Sources & methodology block. */
+  sourcesAsOf?: string;
   /** "Austin", "Houston", "San Antonio" */
   city: string;
   /** "office", "industrial", "retail", "medical office", "flex" */
@@ -401,6 +405,7 @@ export async function CityAssetPage({ config }: { config: CityAssetConfig }) {
             </div>
           </Container>
         </section>
+        {config.sourcesAsOf && <SourcesMethodology asOf={config.sourcesAsOf} />}
       </main>
       <Footer />
     </>

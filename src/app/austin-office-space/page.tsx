@@ -39,6 +39,7 @@ export default function AustinOfficeSpacePage() {
   return (
     <CityAssetPage
       config={{
+        sourcesAsOf: 'June 2026',
         canonicalPath: '/austin-office-space',
         city: 'Austin',
         asset: 'office',

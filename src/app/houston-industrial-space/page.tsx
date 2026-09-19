@@ -39,6 +39,7 @@ export default function HoustonIndustrialSpacePage() {
   return (
     <CityAssetPage
       config={{
+        sourcesAsOf: 'June 2026',
         canonicalPath: '/houston-industrial-space',
         city: 'Houston',
         asset: 'industrial',

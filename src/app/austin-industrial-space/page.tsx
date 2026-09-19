@@ -39,6 +39,7 @@ export default function AustinIndustrialSpacePage() {
   return (
     <CityAssetPage
       config={{
+        sourcesAsOf: 'September 2026',
         canonicalPath: '/austin-industrial-space',
         city: 'Austin',
         asset: 'industrial',

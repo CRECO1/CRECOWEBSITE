@@ -4,6 +4,7 @@
 export const revalidate = 1800;
 
 import type { Metadata } from 'next';
+import { SourcesMethodology, asOfMonth } from '@/components/marketing/SourcesMethodology';
 import { metaDescription } from '@/lib/seo-meta';
 import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
@@ -439,6 +440,8 @@ export default async function SubmarketDetailPage({ params }: Props) {
             </div>
           </Container>
         </section>
+        {/* Figures in submarket-content.ts were last written June 2026 (git history). */}
+        <SourcesMethodology asOf="June 2026" />
       </main>
       <Footer />
     </>

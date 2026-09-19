@@ -39,6 +39,7 @@ export default function HoustonOfficeSpacePage() {
   return (
     <CityAssetPage
       config={{
+        sourcesAsOf: 'September 2026',
         canonicalPath: '/houston-office-space',
         city: 'Houston',
         asset: 'office',

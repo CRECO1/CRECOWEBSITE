@@ -39,6 +39,7 @@ export default function SanAntonioOfficeSpacePage() {
   return (
     <CityAssetPage
       config={{
+        sourcesAsOf: 'June 2026',
         canonicalPath: '/san-antonio-office-space',
         city: 'San Antonio',
         asset: 'office',

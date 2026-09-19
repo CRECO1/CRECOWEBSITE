@@ -39,6 +39,7 @@ export default function SanAntonioIndustrialSpacePage() {
   return (
     <CityAssetPage
       config={{
+        sourcesAsOf: 'September 2026',
         canonicalPath: '/san-antonio-industrial-space',
         city: 'San Antonio',
         asset: 'industrial',

@@ -39,6 +39,7 @@ export default function DallasOfficeSpacePage() {
   return (
     <CityAssetPage
       config={{
+        sourcesAsOf: 'September 2026',
         canonicalPath: '/dallas-office-space',
         city: 'Dallas–Fort Worth',
         asset: 'office',

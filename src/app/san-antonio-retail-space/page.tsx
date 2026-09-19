@@ -39,6 +39,7 @@ export default function SanAntonioRetailSpacePage() {
   return (
     <CityAssetPage
       config={{
+        sourcesAsOf: 'September 2026',
         canonicalPath: '/san-antonio-retail-space',
         city: 'San Antonio',
         asset: 'retail',

@@ -41,6 +41,7 @@ export default function FairOaksRanchPage() {
     <CityHubPage
       config={{
         canonicalPath: '/fair-oaks-ranch-commercial-real-estate',
+        sourcesAsOf: 'September 2026',
         city: 'Fair Oaks Ranch',
         cityShort: 'Fair Oaks Ranch',
         heroEyebrow: 'Headquartered in Fair Oaks Ranch · Tenants · Landlords · Investors',
