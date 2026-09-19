@@ -9,9 +9,9 @@ import { Container } from '@/components/ui/Container';
 import { CareerApplicationForm } from '@/components/forms/CareerApplicationForm';
 
 export const metadata: Metadata = {
-  title: 'Careers at CRECO | Join Our Texas Commercial Real Estate Team',
+  title: 'Careers at CRECO | Texas Commercial Real Estate',
   description:
-    "CRECO is hiring commercial real estate agents across Texas. Apply to join a small principal-led team headquartered at 8000 Fair Oaks Pkwy in Fair Oaks Ranch, with active practices in San Antonio, Austin, Houston, Dallas–Fort Worth, and the Hill Country. Tenant rep, owner services, investment advisory.",
+    "CRECO is hiring commercial real estate agents across Texas. Join a small principal-led team headquartered at 8000 Fair Oaks Pkwy in Fair Oaks Ranch.",
   keywords: [
     'commercial real estate agent jobs texas',
     'commercial real estate broker careers',
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: 'https://www.crecotx.com/careers' },
   openGraph: {
-    title: 'Careers at CRECO | Join Our Texas Commercial Real Estate Team',
+    title: 'Careers at CRECO | Texas Commercial Real Estate',
     description:
       'CRECO is hiring commercial real estate agents across Texas. Small principal-led team, every agent works directly with clients, headquartered in Fair Oaks Ranch.',
     url: 'https://www.crecotx.com/careers',

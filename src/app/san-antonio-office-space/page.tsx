@@ -6,9 +6,9 @@ import type { Metadata } from 'next';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
 export const metadata: Metadata = {
-  title: 'San Antonio Office Space for Lease | Class A, B, Medical | CRECO',
+  title: 'San Antonio Office Space for Lease | CRECO',
   description:
-    'San Antonio office space for lease — Class A in Stone Oak and the Medical Center, creative office at the Pearl, Class B value across downtown. Asking rents, vacancy by submarket, and tenant rep from CRECO, headquartered in San Antonio.',
+    'San Antonio office space for lease — Class A in Stone Oak and the Medical Center, creative office at the Pearl, Class B value across downtown.',
   keywords: [
     'san antonio office space for lease',
     'office space san antonio',

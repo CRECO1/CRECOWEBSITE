@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { metaTitle, metaDescription } from '@/lib/seo-meta';
 import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -23,8 +24,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const guide = findGuide(slug);
   if (!guide) return { title: 'Guide not found | CRECO' };
   return {
-    title: guide.metaTitle,
-    description: guide.metaDescription,
+    title: metaTitle(guide.metaTitle),
+    description: metaDescription(guide.metaDescription),
     keywords: guide.keywords,
     alternates: { canonical: `https://www.crecotx.com/guides/${guide.slug}` },
     openGraph: {

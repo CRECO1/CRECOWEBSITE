@@ -5,7 +5,7 @@ import { BUSINESS, breadcrumbList, businessRef, webPage } from '@/lib/schema';
 export const metadata: Metadata = {
   title: 'Contact CRECO | Texas Commercial Real Estate Brokers',
   description:
-    'Contact CRECO — Texas commercial real estate brokers serving San Antonio, Austin, Houston, Dallas–Fort Worth, and the Hill Country. Tenant representation, investment advisory, leasing & sales, owner services, and property management. (210) 817-3443.',
+    'Contact CRECO, Texas commercial real estate brokers for San Antonio, Austin, Houston, DFW, and the Hill Country. Call (210) 817-3443 or email info@crecotx.com.',
   keywords: [
     'contact CRECO',
     'texas commercial real estate broker',

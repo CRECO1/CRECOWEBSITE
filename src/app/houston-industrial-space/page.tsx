@@ -6,9 +6,9 @@ import type { Metadata } from 'next';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
 export const metadata: Metadata = {
-  title: 'Houston Industrial Space for Lease | Warehouse, Distribution, Flex | CRECO',
+  title: 'Houston Industrial Space for Lease | CRECO',
   description:
-    'Houston industrial space for lease — modern bulk distribution along Northwest 290, Ship Channel logistics, Southwest fulfillment, and Energy Corridor flex. Asking rents, vacancy by submarket, and tenant rep from CRECO.',
+    'Houston industrial space for lease — modern bulk distribution along Northwest 290, Ship Channel logistics, Southwest fulfillment, and Energy Corridor flex.',
   keywords: [
     'houston industrial space for lease',
     'houston warehouse for lease',

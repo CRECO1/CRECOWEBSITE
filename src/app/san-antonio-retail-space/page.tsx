@@ -6,9 +6,9 @@ import type { Metadata } from 'next';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
 export const metadata: Metadata = {
-  title: 'San Antonio Retail Space for Lease | Power Centers, Grocery-Anchored, Pad Sites | CRECO',
+  title: 'San Antonio Retail Space for Lease | CRECO',
   description:
-    'San Antonio retail space for lease — power centers and grocery-anchored strip along the 1604 loop and Alamo Ranch, lifestyle retail at The Rim and La Cantera, urban retail at the Pearl and downtown, and high-growth pad sites on the Northeast and Southwest corridors. Rents, vacancy, and tenant + landlord rep from CRECO.',
+    'San Antonio retail space for lease — power centers, grocery-anchored strips, lifestyle and urban retail, and pad sites, with tenant and landlord rep from CRECO.',
   keywords: [
     'san antonio retail space for lease',
     'retail space san antonio',

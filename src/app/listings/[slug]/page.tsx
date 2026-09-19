@@ -5,6 +5,7 @@
 export const revalidate = 1800;
 
 import type { Metadata } from 'next';
+import { metaDescription } from '@/lib/seo-meta';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { FaqSection } from '@/components/marketing/FaqSection';
 import { BUSINESS, assetCategory, breadcrumbList, listingPriceText, listingSchema, listingSummary } from '@/lib/schema';
@@ -56,9 +57,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const txn = transactionLabel(listing.transaction_type) || 'Available';
   const type = propertyTypeLabel(listing.property_type) || 'Commercial Property';
   const sf = listing.sqft ? `${listing.sqft.toLocaleString()} SF ` : '';
-  const title = `${listing.title} — ${sf}${type} ${txn} in ${listing.city ?? 'Texas'} | CRECO`;
+  // Fit the ~60-character results-page title: drop the city, then the size, before
+  // anything that identifies the property.
+  const title = [
+    `${listing.title} — ${sf}${type} ${txn} in ${listing.city ?? 'Texas'} | CRECO`,
+    `${listing.title} — ${sf}${type} ${txn} | CRECO`,
+    `${listing.title} — ${type} ${txn} | CRECO`,
+  ].find(t => t.length <= 60) ?? `${listing.title} | CRECO`;
   const description =
-    (listing.description && String(listing.description).trim().slice(0, 160)) ||
+    (listing.description && metaDescription(String(listing.description))) ||
     listing.headline ||
     `${type} ${txn.toLowerCase()} at ${listing.address}, ${listing.city ?? 'Texas'}, TX. Contact CRECO for full details, photos, and a tour.`;
   return {

@@ -6,9 +6,9 @@ import type { Metadata } from 'next';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
 export const metadata: Metadata = {
-  title: 'San Antonio Industrial Space for Lease | Warehouse, Distribution, Flex | CRECO',
+  title: 'San Antonio Industrial Space for Lease | CRECO',
   description:
-    'San Antonio industrial space for lease — modern bulk distribution along the I-35 near-shoring corridor and Schertz, Toyota-anchored South Side manufacturing, Port San Antonio advanced industry, and infill flex. Asking rents, vacancy by submarket, and tenant rep from CRECO, headquartered in San Antonio.',
+    'San Antonio industrial space for lease — bulk distribution on the I-35 corridor and in Schertz, South Side manufacturing, Port San Antonio, and infill flex.',
   keywords: [
     'san antonio industrial space for lease',
     'san antonio warehouse for lease',

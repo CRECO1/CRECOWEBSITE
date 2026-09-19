@@ -6,9 +6,9 @@ import type { Metadata } from 'next';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
 export const metadata: Metadata = {
-  title: 'Austin Industrial Space for Lease | Warehouse, Flex, Advanced Manufacturing | CRECO',
+  title: 'Austin Industrial Space for Lease | CRECO',
   description:
-    'Austin industrial space for lease — distribution and flex in the Northeast (Pflugerville, Hutto, Taylor), Southeast near the airport and SH-130, and the I-35 South corridor toward San Antonio. Semiconductor and EV megaprojects anchor demand. Asking rents, vacancy by submarket, and tenant rep from CRECO.',
+    'Austin industrial space for lease — distribution and flex in Pflugerville, Hutto, and Taylor, near the airport and SH-130, and on the I-35 South corridor.',
   keywords: [
     'austin industrial space for lease',
     'austin warehouse for lease',

@@ -9,7 +9,7 @@ import { getLandingPage } from '@/lib/supabase';
 const baseMetadata: Metadata = {
   title: 'Office Space for Lease in Texas | CRECO',
   description:
-    'Office space for lease across Texas — Class A, B, and C, medical office, professional suites, executive office, and creative office. CRECO places companies into the right Texas office submarkets in San Antonio, Austin, Houston, and DFW.',
+    'Office space for lease across Texas — Class A, B, and C, medical office, professional suites, executive office, and creative office.',
   keywords: [
     'office space for lease texas',
     'texas office space',

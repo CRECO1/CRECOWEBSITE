@@ -6,9 +6,9 @@ import type { Metadata } from 'next';
 import { CityHubPage } from '@/components/marketing/CityHubPage';
 
 export const metadata: Metadata = {
-  title: 'Austin Commercial Real Estate | Office, Industrial, Retail | CRECO',
+  title: 'Austin Commercial Real Estate | CRECO',
   description:
-    'Austin commercial real estate — office, industrial, retail, and flex space for lease and sale across the Austin metro. Tenant representation, owner services, and investment advisory from CRECO.',
+    'Austin commercial real estate — office, industrial, retail, and flex space for lease and sale across the Austin metro.',
   keywords: [
     'austin commercial real estate',
     'austin commercial property',

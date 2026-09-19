@@ -16,7 +16,7 @@ import { breadcrumbList } from '@/lib/schema';
 export const metadata: Metadata = {
   title: 'San Antonio Commercial Real Estate Submarkets | CRECO',
   description:
-    'Explore the major commercial real estate submarkets of San Antonio — Northwest, North Central, Northeast, Downtown, South Side, and Far West — with available properties, market commentary, and submarket profiles.',
+    'Profiles of San Antonio\'s commercial real estate submarkets — Northwest, North Central, Northeast, Downtown, South Side, and Far West — with available space.',
   alternates: { canonical: 'https://www.crecotx.com/submarkets' },
 };
 

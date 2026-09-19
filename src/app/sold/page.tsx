@@ -6,7 +6,7 @@ export const revalidate = 3600;
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Recently Closed Deals | CRECO Commercial Real Estate San Antonio',
+  title: 'Recently Closed Deals | CRECO',
   description:
     'Recent commercial real estate transactions closed by CRECO in San Antonio — leases and sales across office, warehouse, flex, retail, and land.',
   keywords: [
@@ -93,12 +93,15 @@ export default async function SoldPage() {
                     </div>
                     <div className="p-5">
                       <p className="text-caption text-foreground-muted">
-                        {propertyTypeLabel(p.property_type)} · {transactionLabel(p.transaction_type)}
+                        {/* A closed deal: "Lease"/"Sale", not the "For Lease" of an open listing. */}
+                        {propertyTypeLabel(p.property_type)} · {p.transaction_type === 'lease' ? 'Lease' : p.transaction_type === 'sale' ? 'Sale' : transactionLabel(p.transaction_type)}
                       </p>
                       <h3 className="mt-1 font-heading text-heading-sm font-semibold text-primary">{p.address}</h3>
                       <p className="text-caption text-foreground-muted mt-0.5">{p.city}, TX</p>
                       <p className="mt-3 font-heading text-heading font-bold text-gold">
-                        {p.sale_price ? formatPrice(p.sale_price) : 'Lease — terms confidential'}
+                        {/* Never print a sale-style price on a lease: 1346 Parkridge (a lease) carries a
+                            sale_price in the data and showed as "$875,000". */}
+                        {p.transaction_type !== 'lease' && p.sale_price ? formatPrice(p.sale_price) : p.transaction_type === 'lease' ? 'Lease — terms confidential' : 'Price confidential'}
                       </p>
                       <div className="mt-3 flex items-center gap-4 text-caption text-foreground-muted border-t border-border pt-3">
                         {p.sqft && <span>{formatSqft(p.sqft)}</span>}

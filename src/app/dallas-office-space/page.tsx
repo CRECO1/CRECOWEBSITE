@@ -6,9 +6,9 @@ import type { Metadata } from 'next';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
 export const metadata: Metadata = {
-  title: 'Dallas–Fort Worth Office Space for Lease | Uptown, Legacy, Las Colinas | CRECO',
+  title: 'DFW Office Space for Lease | CRECO',
   description:
-    'Dallas–Fort Worth office space for lease — trophy Class A in Uptown, corporate campuses in Legacy/Frisco, Las Colinas and the Telecom Corridor, and deep Class B value across the Metroplex. Asking rents, vacancy by submarket, and tenant representation from CRECO.',
+    'Dallas–Fort Worth office space for lease — Class A in Uptown, corporate campuses in Legacy/Frisco and Las Colinas, and Class B value across the Metroplex.',
   keywords: [
     'dallas office space for lease',
     'dfw office space for lease',

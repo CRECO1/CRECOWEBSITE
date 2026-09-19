@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'Texas Commercial Real Estate Listings | Lease & Sale | CRECO',
   description:
-    'Active commercial real estate listings across Texas — office, warehouse, retail, flex, and land for lease and sale in San Antonio, Austin, Houston, DFW, and the Hill Country. Filter by type, submarket, and size. Updated daily.',
+    'Commercial real estate listings across Texas — office, warehouse, retail, flex, and land for lease and sale. Filter by property type, submarket, and size.',
   keywords: [
     'texas commercial real estate listings',
     'commercial property for sale texas',

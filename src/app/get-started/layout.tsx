@@ -12,9 +12,9 @@ import type { Metadata } from 'next';
  * antonio" should rank here. Metadata is tuned for that intent.
  */
 export const metadata: Metadata = {
-  title: 'Get Started with CRECO | Texas Commercial Real Estate Inquiry',
+  title: 'Get Started with CRECO | CRECO',
   description:
-    'Tell us what you need — tenant rep, owner services, investment advisory, or property leasing. A CRECO principal follows up within one business day with vetted options or a no-obligation property opinion. Texas-wide.',
+    'Tell us what you need — tenant rep, owner services, investment advisory, or property leasing.',
   keywords: [
     'commercial real estate inquiry texas',
     'find commercial real estate broker texas',

@@ -6,9 +6,9 @@ import type { Metadata } from 'next';
 import { CityHubPage } from '@/components/marketing/CityHubPage';
 
 export const metadata: Metadata = {
-  title: 'Boerne Commercial Real Estate | Retail, Office, Hill Country | CRECO',
+  title: 'Boerne Commercial Real Estate | CRECO',
   description:
-    'Boerne commercial real estate — retail, office, and land for lease and sale across the Hill Country gateway market. Tenant representation, owner services, and investment advisory from CRECO\'s Texas-wide practice.',
+    'Boerne commercial real estate — retail, office, and land for lease and sale across the Hill Country gateway market.',
   keywords: [
     'boerne commercial real estate',
     'boerne tx commercial property',

@@ -6,9 +6,9 @@ import type { Metadata } from 'next';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
 export const metadata: Metadata = {
-  title: 'Austin Office Space for Lease | Class A, Creative, East Side | CRECO',
+  title: 'Austin Office Space for Lease | CRECO',
   description:
-    'Austin office space for lease — trophy Class A in the CBD and the Domain, creative office in East Austin, Class B value in North and South Austin. Asking rents, vacancy by submarket, and tenant rep from CRECO.',
+    'Austin office space for lease — trophy Class A in the CBD and the Domain, creative office in East Austin, Class B value in North and South Austin.',
   keywords: [
     'austin office space for lease',
     'office space austin',

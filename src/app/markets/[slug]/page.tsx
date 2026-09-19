@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { metaTitle, metaDescription } from '@/lib/seo-meta';
 import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
 import { CityHubPage } from '@/components/marketing/CityHubPage';
@@ -31,8 +32,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     return { title: 'Market not found | CRECO' };
   }
   return {
-    title: entry.metaTitle,
-    description: entry.metaDescription,
+    title: metaTitle(entry.metaTitle),
+    description: metaDescription(entry.metaDescription),
     keywords: entry.keywords,
     alternates: { canonical: `https://www.crecotx.com/markets/${entry.slug}` },
     openGraph: {

@@ -9,7 +9,7 @@ import { getLandingPage } from '@/lib/supabase';
 const baseMetadata: Metadata = {
   title: 'Retail Space for Lease in Texas | CRECO',
   description:
-    'Retail space for lease across Texas — strip centers, freestanding restaurants, urban storefronts, mixed-use, and shopping center inline space. CRECO connects retail tenants and franchisees with vetted Texas locations across San Antonio, Austin, Houston, Dallas–Fort Worth, and beyond.',
+    'Retail space for lease across Texas — strip centers, freestanding restaurants, urban storefronts, mixed-use, and shopping center inline space.',
   keywords: [
     'retail space for lease texas',
     'texas retail space',

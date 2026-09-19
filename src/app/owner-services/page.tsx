@@ -20,7 +20,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: 'Texas Commercial Property Owner Services | CRECO',
   description:
-    'Owner services for Texas commercial property investors with multi-property portfolios. Hold/sell analysis, repositioning strategy, 1031 exchange, tenant mix optimization, property management, and asset management — built for owners with 5 to 100+ Texas commercial properties.',
+    'Owner services for Texas commercial property investors: hold/sell analysis, repositioning, 1031 exchange, tenant mix, and property and asset management.',
   keywords: [
     'commercial property owner services texas',
     'texas commercial property management',
@@ -91,7 +91,7 @@ const FAQS = [
   },
   {
     q: 'Do you handle properties outside San Antonio?',
-    a: 'Yes — CRECO is a Texas-wide owner services firm. We actively manage and advise on properties across San Antonio, Austin, Houston, DFW, El Paso, Corpus Christi, and the Hill Country. For owners with multi-market Texas portfolios, having one firm coordinating across all of them simplifies reporting, leasing strategy, and disposition timing.',
+    a: 'Yes — CRECO is a Texas-wide owner services firm. We actively manage and advise on properties across San Antonio, Austin, Houston, DFW, El Paso, and the Hill Country. For owners with multi-market Texas portfolios, having one firm coordinating across all of them simplifies reporting, leasing strategy, and disposition timing.',
   },
   {
     q: 'Can I keep my existing property manager and just engage CRECO for strategy?',

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { metaTitle, metaDescription } from '@/lib/seo-meta';
 import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -18,8 +19,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!service) return {};
 
   return {
-    title: `${service.title} – Texas Commercial Real Estate | CRECO`,
-    description: service.metaDescription,
+    title: metaTitle(`${service.title} – Texas Commercial Real Estate | CRECO`),
+    description: metaDescription(service.metaDescription),
     keywords: service.keywords,
     alternates: { canonical: `https://www.crecotx.com/services/${service.slug}` },
     openGraph: {

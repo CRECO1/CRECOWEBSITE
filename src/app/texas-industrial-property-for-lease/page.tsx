@@ -9,7 +9,7 @@ import { getLandingPage } from '@/lib/supabase';
 const baseMetadata: Metadata = {
   title: 'Industrial & Warehouse Property for Lease in Texas | CRECO',
   description:
-    'Industrial property and warehouse for lease across Texas — distribution, light manufacturing, flex-industrial, last-mile logistics, and cold storage. CRECO works the I-35 corridor, Houston Ship Channel, DFW industrial submarkets, and beyond.',
+    'Industrial property and warehouse for lease across Texas — distribution, light manufacturing, flex-industrial, last-mile logistics, and cold storage.',
   keywords: [
     'industrial property for lease texas',
     'warehouse for lease texas',

@@ -9,7 +9,7 @@ import { TeamSection, type Agent } from '@/components/team/TeamSection';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { FaqSection } from '@/components/marketing/FaqSection';
 import { supabase } from '@/lib/supabase';
-import { ASSET_CLASSES, BUSINESS, CANONICAL_DESCRIPTION, CAPABILITIES, FOUNDER_ID, REPRESENTATION_STATEMENT, SITE_URL, breadcrumbList, businessRef, webPage } from '@/lib/schema';
+import { ASSET_CLASSES, BUSINESS, CANONICAL_DESCRIPTION, CAPABILITIES, DIRECTOR_OF_LEASING, FOUNDER_ID, REPRESENTATION_STATEMENT, SITE_URL, breadcrumbList, businessRef, webPage } from '@/lib/schema';
 
 // 30-min ISR — the team grid is fetched on the server so it's in the HTML.
 export const revalidate = 1800;
@@ -26,6 +26,7 @@ const AT_A_GLANCE: { label: string; value: string }[] = [
   { label: 'Clients represented', value: 'Tenants, buyers, landlords, owners, sellers, and investors — full-service, not tenant-only; intermediary when both parties authorize in writing' },
   { label: 'Services', value: CAPABILITIES.map(c => c.name).join(' · ') },
   { label: 'Founder', value: 'Zachary A. Stovall, Broker (TREC #691174)' },
+  { label: 'Director of Leasing', value: `${DIRECTOR_OF_LEASING.name} (TREC #${DIRECTOR_OF_LEASING.trecLicense})` },
 ];
 
 const ABOUT_FAQS = [
@@ -43,7 +44,7 @@ const ABOUT_FAQS = [
   },
   {
     q: 'Who runs CRECO?',
-    a: 'CRECO was founded by Zachary A. Stovall, a San Antonio native and Texas broker (TREC #691174). The team includes Brian Blanco, Director of Leasing, who spent four-plus years at Amazon as part of its delivery-station site-selection process. Every engagement is handled by a senior broker.',
+    a: 'CRECO was founded by Zachary A. Stovall, a San Antonio native and Texas broker (TREC #691174). The team includes Brian Blanco, Director of Leasing (TREC #848449), who spent four-plus years at Amazon as part of its delivery-station site-selection process. Every engagement is handled by a senior broker.',
   },
   {
     q: 'How do I contact CRECO?',
@@ -55,9 +56,12 @@ function agentId(a: Agent): string {
   return /stovall/i.test(a.name) ? FOUNDER_ID : `${SITE_URL}/about#${a.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 }
 
+// Distinct from the homepage's description (they used to be identical).
+const ABOUT_DESCRIPTION = 'About CRECO - Commercial Real Estate Company: a TREC-licensed Texas brokerage (#9014367) headquartered in Fair Oaks Ranch. Team, license, markets, and services.';
+
 export const metadata: Metadata = {
-  title: 'About CRECO - Commercial Real Estate Company | Full-Service Texas Commercial Brokerage',
-  description: CANONICAL_DESCRIPTION,
+  title: 'About CRECO | Texas Commercial Real Estate Brokerage',
+  description: ABOUT_DESCRIPTION,
   keywords: [
     'CRECO commercial real estate',
     'texas commercial real estate company',
@@ -73,7 +77,7 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://www.crecotx.com/about' },
   openGraph: {
     title: 'About CRECO - Commercial Real Estate Company',
-    description: CANONICAL_DESCRIPTION,
+    description: ABOUT_DESCRIPTION,
     url: 'https://www.crecotx.com/about',
     type: 'website',
   },
@@ -110,6 +114,15 @@ export default async function AboutPage() {
             worksFor: businessRef,
             knowsAbout: a.specialties ?? undefined,
             description: a.bio ? a.bio.split('\n')[0].slice(0, 500) : undefined,
+            ...(a.license_number ? {
+              identifier: { '@type': 'PropertyValue', propertyID: 'TREC License', value: a.license_number },
+              hasCredential: {
+                '@type': 'EducationalOccupationalCredential',
+                credentialCategory: /stovall/i.test(a.name) ? 'Texas Real Estate Broker License' : 'Texas Real Estate Sales Agent License',
+                identifier: a.license_number,
+                recognizedBy: { '@type': 'GovernmentOrganization', name: 'Texas Real Estate Commission', url: 'https://www.trec.texas.gov' },
+              },
+            } : {}),
           })),
         ]}
       />

@@ -183,7 +183,10 @@ export function TeamSection({
                 )}
               </div>
               <h3 className="font-heading text-heading font-semibold text-primary">{agent.name}</h3>
-              <p className="text-body-sm text-foreground-muted mt-1 mb-4">{agent.title}</p>
+              <p className="text-body-sm text-foreground-muted mt-1">{agent.title}</p>
+              {agent.license_number
+                ? <p className="text-caption text-foreground-muted mt-1 mb-4">TREC License #{agent.license_number}</p>
+                : <div className="mb-4" />}
               {agent.specialties && (
                 <div className="flex flex-wrap justify-center gap-2 mb-5">
                   {(agent.specialties as string[]).slice(0, 3).map((s) => (
@@ -250,6 +253,9 @@ export function TeamSection({
                 {selected.title}
               </p>
               <h2 className="font-heading text-heading-xl font-bold text-primary mb-2">{selected.name}</h2>
+              {selected.license_number && (
+                <p className="text-caption text-foreground-muted mb-3">TREC License #{selected.license_number}</p>
+              )}
 
               {selected.years_experience && (
                 <div className="flex items-center gap-1.5 mb-3">

@@ -8,9 +8,9 @@ import type { Metadata } from 'next';
  * property in Texas" / disposition.
  */
 export const metadata: Metadata = {
-  title: 'Sell Your Commercial Property in Texas | Broker Disposition Services | CRECO',
+  title: 'Sell Your Commercial Property in Texas | CRECO',
   description:
-    'Sell your Texas commercial property with CRECO — full-service disposition brokerage for retail, industrial, office, flex, and investment assets. Broker valuation, targeted marketing (CoStar, LoopNet, our principal network), aggressive offer negotiation, and 1031-exchange support. Serving San Antonio, Austin, Houston, Dallas–Fort Worth, and the Hill Country.',
+    'Sell your Texas commercial property with CRECO — broker valuation, targeted marketing, offer negotiation, and 1031-exchange support for commercial assets.',
   keywords: [
     'sell commercial property texas',
     'sell my commercial building texas',

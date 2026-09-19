@@ -61,9 +61,9 @@ const GALLERY = [
 ];
 
 export const metadata: Metadata = {
-  title: '8000 Fair Oaks Pkwy — Retail Bays + Executive Office Suites | Fair Oaks Ranch | CRECO',
+  title: '8000 Fair Oaks Pkwy Retail & Office Suites | CRECO',
   description:
-    "8000 Fair Oaks Pkwy in Fair Oaks Ranch, TX — a mixed-use commercial center with a 4-bay retail building and two two-story executive office suite buildings. Now leasing retail bays and executive suites. Owned and represented by CRECO.",
+    "8000 Fair Oaks Pkwy in Fair Oaks Ranch, TX — a mixed-use commercial center with a 4-bay retail building and two two-story executive office suite buildings.",
   keywords: [
     '8000 fair oaks pkwy',
     '8000 fair oaks parkway',

@@ -141,7 +141,7 @@ const BASE_KEYWORDS = [
 export const metadata: Metadata = {
   title: '15033 Main St — Retail Space for Lease | Lytle, TX | CRECO',
   description:
-    '15033 Main St in Lytle, TX — multi-tenant retail center now leasing on the I-35 corridor in the San Antonio southwest metro. Established co-tenants drive daily-needs traffic. Owned and represented by CRECO.',
+    '15033 Main St in Lytle, TX — multi-tenant retail center now leasing on the I-35 corridor in the San Antonio southwest metro.',
   keywords: BASE_KEYWORDS,
   alternates: { canonical: 'https://www.crecotx.com/15033-main-st-lytle' },
   openGraph: {

@@ -65,9 +65,9 @@ const PHONE_HREF = 'tel:+12108173443';
 // the page still renders identically with this copy.
 
 const FALLBACK = {
-  meta_title: '8979 Dietz Elkhorn — New Retail Center Pre-Leasing | Fair Oaks Ranch | CRECO',
+  meta_title: '8979 Dietz Elkhorn Retail Pre-Leasing | CRECO',
   meta_description:
-    '8979 Dietz Elkhorn — a new ±20,000 SF neighborhood retail center in Fair Oaks Ranch, TX. Ten ±1,500 SF suites, demisable, with end-cap F&B and food-ready bays. Pre-leasing now — local operators welcome. Median HHI $168K, 2x Texas median. Represented by CRECO.',
+    'A new ±20,000 SF neighborhood retail center in Fair Oaks Ranch, TX — ten ±1,500 SF demisable suites with end-cap F&B and food-ready bays. Pre-leasing now.',
   eyebrow: 'Now Pre-Leasing',
   h1: '8979 Dietz Elkhorn.',
   subhead:

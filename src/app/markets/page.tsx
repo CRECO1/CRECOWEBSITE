@@ -24,9 +24,9 @@ import {
  */
 
 export const metadata: Metadata = {
-  title: 'Texas Commercial Real Estate Markets | Submarket Guide | CRECO',
+  title: 'Texas Commercial Real Estate Markets | CRECO',
   description:
-    "Submarket-level guide to Texas commercial real estate — Austin, Houston, Dallas–Fort Worth, San Antonio, and Hill Country. Local market data, current rents, who's leasing where, and CRECO broker contacts in each market.",
+    "Submarket-level guide to Texas commercial real estate — Austin, Houston, Dallas–Fort Worth, San Antonio, and Hill Country.",
   keywords: [
     'texas commercial real estate markets',
     'texas commercial submarkets',

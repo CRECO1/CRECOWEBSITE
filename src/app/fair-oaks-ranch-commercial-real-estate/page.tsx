@@ -6,9 +6,9 @@ import type { Metadata } from 'next';
 import { CityHubPage } from '@/components/marketing/CityHubPage';
 
 export const metadata: Metadata = {
-  title: 'Fair Oaks Ranch Commercial Real Estate Broker | Tenant, Landlord & Investment Sales | CRECO',
+  title: 'Fair Oaks Ranch Commercial Real Estate Broker | CRECO',
   description:
-    'CRECO is the full-service commercial real estate brokerage headquartered in Fair Oaks Ranch, TX — representing tenants, landlords, owners, and investors in retail, restaurant, office, medical, industrial, flex, and land deals for lease and for sale across Fair Oaks Ranch, Boerne, and the Hill Country. HQ: 8000 Fair Oaks Pkwy, Suite 100. TREC #9014367.',
+    'CRECO is the commercial real estate brokerage headquartered in Fair Oaks Ranch, TX — tenant, landlord, and investment sales across Boerne and the Hill Country.',
   keywords: [
     'fair oaks ranch commercial real estate',
     'fair oaks ranch retail space',

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Mail, MapPin, Facebook, Instagram, Linkedin } from 'lucide-react';
+import { Mail, MapPin, Facebook, Instagram } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { NewsletterSignup } from '@/components/forms/NewsletterSignup';
 import { BRAND_LEGAL_NAME, BRAND_NAME, BRAND_TREC_LICENSE, CANONICAL_DESCRIPTION } from '@/lib/brand';
@@ -83,10 +83,8 @@ export function Footer() {
                   className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white/60 transition-colors hover:border-gold hover:text-gold">
                   <Instagram className="h-4 w-4" />
                 </a>
-                <a href="https://www.linkedin.com/company/crecotx" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white/60 transition-colors hover:border-gold hover:text-gold">
-                  <Linkedin className="h-4 w-4" />
-                </a>
+                {/* No LinkedIn company link: linkedin.com/company/crecotx is a 404 and no
+                    real CRECO company page has been confirmed. Add it back once one exists. */}
               </div>
 
               {/* Newsletter signup — extra top margin so the social icons +
@@ -265,7 +263,7 @@ export function Footer() {
                 Brokerage Services Notice
               </a>
               <a
-                href="https://www.trec.texas.gov/sites/default/files/pdf-forms/CN%201-4_1.pdf"
+                href="https://www.trec.texas.gov/sites/default/files/pdf-forms/CN%201-5_0.pdf"
                 target="_blank" rel="noopener noreferrer"
                 className="text-caption text-white/50 transition-colors hover:text-gold"
               >

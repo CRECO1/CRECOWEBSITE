@@ -35,7 +35,7 @@ const SERVICES_FAQS = [
 export const metadata: Metadata = {
   title: 'Texas Commercial Real Estate Services | CRECO',
   description:
-    'Full-service Texas commercial real estate firm. Tenant representation, investment advisory, leasing & sales, property management, development, and sustainability consulting across San Antonio, Austin, Houston, Dallas–Fort Worth, and statewide.',
+    'Tenant representation, investment advisory, leasing and sales, property management, development, and sustainability consulting across Texas, from CRECO.',
   keywords: [
     'commercial real estate services texas',
     'tenant representation texas',

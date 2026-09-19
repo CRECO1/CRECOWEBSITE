@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { metaTitle, metaDescription } from '@/lib/seo-meta';
 import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -39,8 +40,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const report = findMarketReport(slug);
   if (!report) return { title: 'Market report not found | CRECO' };
   return {
-    title: report.metaTitle,
-    description: report.metaDescription,
+    title: metaTitle(report.metaTitle),
+    description: metaDescription(report.metaDescription),
     keywords: report.keywords,
     alternates: { canonical: `https://www.crecotx.com/research/${report.slug}` },
     openGraph: {

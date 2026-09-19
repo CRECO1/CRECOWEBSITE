@@ -11,7 +11,7 @@ import { MarketReportCapture } from '@/components/marketing/MarketReportCapture'
 export const metadata: Metadata = {
   title: 'Insights | Texas Commercial Real Estate Analysis | CRECO',
   description:
-    'Texas commercial real estate insights, market analysis, and strategic guidance from CRECO. Outlook reports, owner strategy, tenant strategy, and investment perspectives across retail, industrial, and office.',
+    'Texas commercial real estate insights, market analysis, and strategic guidance from CRECO.',
   keywords: [
     'texas commercial real estate insights',
     'texas commercial real estate market analysis',

@@ -6,9 +6,9 @@ import type { Metadata } from 'next';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
 export const metadata: Metadata = {
-  title: 'Houston Office Space for Lease | CBD, Galleria, Energy Corridor, Woodlands | CRECO',
+  title: 'Houston Office Space for Lease | CRECO',
   description:
-    'Houston office space for lease — trophy Class A downtown and in Uptown/Galleria, energy tenancy in the Energy Corridor and Westchase, and corporate campuses in The Woodlands. One of the most tenant-favorable office markets in the US — asking rents, vacancy by submarket, and tenant rep from CRECO.',
+    'Houston office space for lease — Class A downtown and in Uptown/Galleria, the Energy Corridor and Westchase, and corporate campuses in The Woodlands.',
   keywords: [
     'houston office space for lease',
     'office space houston',

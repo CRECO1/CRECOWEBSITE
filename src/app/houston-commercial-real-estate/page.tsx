@@ -6,9 +6,9 @@ import type { Metadata } from 'next';
 import { CityHubPage } from '@/components/marketing/CityHubPage';
 
 export const metadata: Metadata = {
-  title: 'Houston Commercial Real Estate | Industrial, Office, Retail | CRECO',
+  title: 'Houston Commercial Real Estate | CRECO',
   description:
-    'Houston commercial real estate — industrial, office, retail, and flex space for lease and sale across Greater Houston. Tenant representation, owner services, and investment advisory from CRECO.',
+    'Houston commercial real estate — industrial, office, retail, and flex space for lease and sale across Greater Houston.',
   keywords: [
     'houston commercial real estate',
     'houston commercial property',

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { metaTitle, metaDescription } from '@/lib/seo-meta';
 import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -17,8 +18,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = findPost(slug);
   if (!post) return {};
   return {
-    title: post.metaTitle,
-    description: post.metaDescription,
+    title: metaTitle(post.metaTitle),
+    description: metaDescription(post.metaDescription),
     keywords: post.keywords,
     alternates: { canonical: `https://www.crecotx.com/insights/${post.slug}` },
     openGraph: {

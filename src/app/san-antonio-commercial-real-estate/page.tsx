@@ -18,9 +18,9 @@ import { CityHubPage } from '@/components/marketing/CityHubPage';
  * passes the helpful-content + AI-citation bars.
  */
 export const metadata: Metadata = {
-  title: 'San Antonio Commercial Real Estate Brokerage | Tenant Rep, Landlord Rep & Investment Sales | CRECO',
+  title: 'San Antonio Commercial Real Estate Brokerage | CRECO',
   description:
-    'CRECO is a full-service San Antonio-area commercial real estate brokerage (HQ: Fair Oaks Ranch) representing tenants, landlords, owners, and investors in retail, restaurant, office, medical office, industrial, flex, and land deals — for lease and for sale — across Greater San Antonio and the Hill Country. TREC #9014367.',
+    'Full-service San Antonio commercial real estate brokerage for tenants, landlords, owners, and investors — retail, office, industrial, flex, and land.',
   keywords: [
     'san antonio commercial real estate',
     'san antonio commercial property',

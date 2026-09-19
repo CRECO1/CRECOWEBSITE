@@ -4,6 +4,7 @@
 export const revalidate = 1800;
 
 import type { Metadata } from 'next';
+import { metaDescription } from '@/lib/seo-meta';
 import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
@@ -29,10 +30,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const richContent = getSubmarketContent(slug);
   const name = submarket?.name ?? slug;
   return {
-    title: `San Antonio ${name} Commercial Real Estate | Submarket Profile | CRECO`,
-    description:
-      richContent?.overview[0]?.substring(0, 160)
-      ?? `Commercial real estate in San Antonio's ${name} submarket — retail, industrial, office, and flex properties for lease and sale. Submarket profile, market fundamentals, and current listings from CRECO.`,
+    title: `San Antonio ${name} Commercial Real Estate | CRECO`,
+    description: metaDescription(
+      richContent?.overview[0]
+      ?? `Commercial real estate in San Antonio's ${name} submarket — retail, industrial, office, and flex properties for lease and sale. Submarket profile, market fundamentals, and current listings from CRECO.`),
     keywords: [
       `${name.toLowerCase()} san antonio commercial real estate`,
       `${name.toLowerCase()} commercial property`,

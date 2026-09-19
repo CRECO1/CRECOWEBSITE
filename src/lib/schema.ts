@@ -27,6 +27,8 @@ export const SITE_URL = 'https://www.crecotx.com';
 export const BUSINESS_ID = `${SITE_URL}/#organization`;
 export const WEBSITE_ID = `${SITE_URL}/#website`;
 export const FOUNDER_ID = `${SITE_URL}/about#zachary-stovall`;
+// Matches the id /about gives Brian's Person node (agentId()), so the two join.
+export const BRIAN_ID = `${SITE_URL}/about#brian-blanco`;
 
 /**
  * THE canonical positioning line + DBA identity live in ./brand (so client
@@ -120,6 +122,14 @@ export const FOUNDER = {
   ],
 };
 
+/** Director of Leasing. His individual TREC licence is taken from his IABS
+ *  (transaction-forms/agents/iabs-<profile>.pdf), where he is the sales agent. */
+export const DIRECTOR_OF_LEASING = {
+  name: 'Brian Blanco',
+  jobTitle: 'Director of Leasing',
+  trecLicense: '848449',
+};
+
 export type Crumb = { name: string; path: string };
 export type Faq = { q: string; a: string };
 
@@ -197,7 +207,16 @@ export function siteGraph() {
           availableLanguage: ['English'],
         }],
         founder: { '@id': FOUNDER_ID },
-        employee: [{ '@id': FOUNDER_ID }],
+        employee: [{ '@id': FOUNDER_ID }, { '@id': BRIAN_ID }],
+        // Fair Oaks Realty Group is the residential brand on the same TREC licence
+        // (#9014367). Its graph declares parentOrganization → this node; this is the
+        // inverse, under the exact @id fairoaksrealtygroup.com publishes.
+        subOrganization: {
+          '@type': ['RealEstateAgent', 'Organization'],
+          '@id': 'https://www.fairoaksrealtygroup.com/#organization',
+          name: 'Fair Oaks Realty Group',
+          url: 'https://www.fairoaksrealtygroup.com',
+        },
         sameAs: [...BUSINESS.sameAs],
         areaServed: [
           { '@type': 'State', name: 'Texas' },
@@ -286,6 +305,21 @@ export function siteGraph() {
           recognizedBy: { '@type': 'GovernmentOrganization', name: 'Texas Real Estate Commission' },
         },
         sameAs: FOUNDER.sameAs,
+      },
+      {
+        '@type': 'Person',
+        '@id': BRIAN_ID,
+        name: DIRECTOR_OF_LEASING.name,
+        jobTitle: DIRECTOR_OF_LEASING.jobTitle,
+        worksFor: businessRef,
+        url: `${SITE_URL}/about#team`,
+        identifier: { '@type': 'PropertyValue', propertyID: 'TREC License', value: DIRECTOR_OF_LEASING.trecLicense },
+        hasCredential: {
+          '@type': 'EducationalOccupationalCredential',
+          credentialCategory: 'Texas Real Estate Sales Agent License',
+          identifier: DIRECTOR_OF_LEASING.trecLicense,
+          recognizedBy: { '@type': 'GovernmentOrganization', name: 'Texas Real Estate Commission' },
+        },
       },
       {
         '@type': 'WebSite',

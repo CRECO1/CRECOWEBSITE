@@ -7,9 +7,9 @@ import { Container } from '@/components/ui/Container';
 import { SORTED_GUIDES, type Guide } from '@/lib/guides';
 
 export const metadata: Metadata = {
-  title: 'Texas Commercial Real Estate Guides & Market Reports | Free Downloads | CRECO',
+  title: 'Texas Commercial Real Estate Guides & Reports | CRECO',
   description:
-    "Free in-depth guides and quarterly market reports for Texas commercial real estate — lease negotiation, disposition strategy, and Q3 2026 industrial, retail, office, and investment market data from CRECO's broker team.",
+    "Free Texas commercial real estate guides and quarterly market reports — lease negotiation, disposition strategy, and industrial, retail, office, and investment.",
   keywords: [
     'texas commercial real estate guide',
     'commercial lease negotiation guide texas',

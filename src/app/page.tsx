@@ -9,8 +9,9 @@ import { jsonLd } from '@/lib/jsonLd';
 import { CANONICAL_DESCRIPTION, REPRESENTATION_STATEMENT, listingSummary } from '@/lib/schema';
 
 export const metadata: Metadata = {
-  title: 'CRECO - Commercial Real Estate Company | Texas Commercial Real Estate Brokerage for Tenants, Landlords & Investors',
-  description: CANONICAL_DESCRIPTION,
+  title: 'Texas Commercial Real Estate Brokerage | CRECO',
+  // The full CANONICAL_DESCRIPTION runs ~300 characters; this is the search-result length.
+  description: 'Full-service Texas commercial real estate brokerage for tenants, landlords, owners, and investors — retail, office, industrial, flex, and land, lease and sale.',
   keywords: [
     'Texas commercial real estate',
     'commercial real estate Texas',
@@ -85,7 +86,6 @@ const TEXAS_MARKETS = [
   { city: 'Houston', headline: '', tagline: 'Galleria, Energy Corridor, Northwest, Sugar Land' },
   { city: 'Dallas–Fort Worth', headline: '', tagline: 'Uptown, Las Colinas, Plano, Frisco, Arlington' },
   { city: 'New Braunfels', headline: '', tagline: 'I-35 corridor between Austin & San Antonio' },
-  { city: 'Corpus Christi', headline: '', tagline: 'Coastal industrial and retail' },
 ];
 
 const FAQS = [
@@ -103,7 +103,7 @@ const FAQS = [
   },
   {
     q: 'Where in Texas do you work?',
-    a: 'We are headquartered at 8000 Fair Oaks Pkwy in Fair Oaks Ranch, with active brokerage and advisory work across the major Texas commercial markets — San Antonio, Austin, Houston, Dallas–Fort Worth, El Paso, Corpus Christi, New Braunfels, Boerne, and the Hill Country. If your property or search is in Texas, we cover it.',
+    a: 'We are headquartered at 8000 Fair Oaks Pkwy in Fair Oaks Ranch, with active brokerage and advisory work across the major Texas commercial markets — San Antonio, Austin, Houston, Dallas–Fort Worth, El Paso, New Braunfels, Boerne, and the Hill Country. If your property or search is in Texas, we cover it.',
   },
   {
     q: 'Do you work with multi-property owners and investors?',
@@ -232,7 +232,10 @@ export default async function HomePage() {
   // behind a satisfaction percentage. Counts and commitments only — no
   // track-record metrics until there are real closed deals to total up.
   const STATS = [
-    { value: String(allListings.length), label: 'Active Texas listings', icon: Building2 },
+    // The same number TrustStrip counts live (listings table, active + pending), so the
+    // page can't show two different counts. allListings also holds leased rows and
+    // the hard-coded pages for CRECO's own properties, which made this read 10 vs 6.
+    { value: String((dbListings as any[]).filter((l: any) => l.status === 'active' || l.status === 'pending').length), label: 'Active Texas listings', icon: Building2 },
     { value: 'Full-service', label: 'Tenants · owners · investors', icon: Award },
     { value: 'Same day', label: 'Response, business days', icon: Star },
   ];

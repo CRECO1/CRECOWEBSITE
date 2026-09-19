@@ -18,7 +18,7 @@ import { breadcrumbList } from '@/lib/schema';
 export const metadata: Metadata = {
   title: 'Texas Commercial Real Estate Market Reports | CRECO Research',
   description:
-    'Quarterly market reports for Texas commercial real estate — submarket vacancy, asking rents, absorption, and concession data across San Antonio, Austin, Houston, and Dallas-Fort Worth. Proprietary CRECO data refreshed each quarter.',
+    'Quarterly Texas commercial real estate market reports — submarket vacancy, asking rents, absorption, and concessions for San Antonio, Austin, Houston, and DFW.',
   keywords: [
     'texas commercial real estate market report',
     'san antonio office market report',

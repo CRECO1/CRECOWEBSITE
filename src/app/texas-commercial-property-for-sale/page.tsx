@@ -9,7 +9,7 @@ import { getLandingPage } from '@/lib/supabase';
 const baseMetadata: Metadata = {
   title: 'Commercial Property for Sale in Texas | CRECO',
   description:
-    'Commercial property for sale across Texas — retail centers, industrial buildings, office buildings, mixed-use, and land. CRECO advises investors and owner-users on Texas CRE acquisitions in San Antonio, Austin, Houston, DFW, and statewide.',
+    'Commercial property for sale across Texas — retail centers, industrial buildings, office buildings, mixed-use, and land.',
   keywords: [
     'commercial property for sale texas',
     'commercial real estate for sale texas',

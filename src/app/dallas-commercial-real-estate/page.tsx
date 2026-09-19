@@ -6,9 +6,9 @@ import type { Metadata } from 'next';
 import { CityHubPage } from '@/components/marketing/CityHubPage';
 
 export const metadata: Metadata = {
-  title: 'Dallas–Fort Worth Commercial Real Estate | DFW Office, Industrial, Retail | CRECO',
+  title: 'Dallas–Fort Worth Commercial Real Estate | CRECO',
   description:
-    'Dallas–Fort Worth commercial real estate — DFW office, industrial, retail, and flex space for lease and sale across the Metroplex. Tenant representation, owner services, and investment advisory from CRECO.',
+    'Dallas–Fort Worth commercial real estate — DFW office, industrial, retail, and flex space for lease and sale across the Metroplex.',
   keywords: [
     'dallas commercial real estate',
     'fort worth commercial real estate',

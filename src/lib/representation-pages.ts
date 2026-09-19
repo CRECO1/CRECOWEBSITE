@@ -38,9 +38,10 @@ const TENANT_ONLY_ANSWER =
 export const LANDLORD_PAGE: RepresentationPageContent = {
   path: '/landlord-representation',
   label: 'Landlord & Owner Representation',
-  metaTitle: 'Landlord & Owner Representation in Texas | Does CRECO Represent Landlords? Yes | CRECO - Commercial Real Estate Company',
+  metaTitle: 'Landlord & Owner Representation in Texas | CRECO',
   metaDescription:
-    `Yes — CRECO - Commercial Real Estate Company represents landlords and property owners: leasing, tenant procurement, and dispositions across ${PROPERTY_TYPES_SENTENCE} throughout Texas. Licensed Texas brokerage, TREC #${BUSINESS.trecLicense}.`,
+    // Kept under ~160 characters so search results show it whole.
+    'Yes — CRECO represents landlords and property owners: leasing, tenant procurement, and dispositions for retail, office, industrial, flex, and land across Texas.',
   eyebrow: 'Landlord & Owner Representation',
   h1: 'Yes — CRECO represents landlords and property owners.',
   directAnswer:
@@ -111,9 +112,9 @@ export const LANDLORD_PAGE: RepresentationPageContent = {
 export const SELLER_INVESTOR_PAGE: RepresentationPageContent = {
   path: '/seller-investor-representation',
   label: 'Sellers & Investors',
-  metaTitle: 'Seller & Investor Representation in Texas | Investment Sales, Acquisitions & Dispositions | CRECO - Commercial Real Estate Company',
+  metaTitle: 'Seller & Investor Representation in Texas | CRECO',
   metaDescription:
-    `CRECO - Commercial Real Estate Company represents sellers and investors on commercial acquisitions and dispositions — investment sales and for-sale property across ${PROPERTY_TYPES_SENTENCE} throughout Texas. TREC #${BUSINESS.trecLicense}.`,
+    'CRECO represents sellers and investors on Texas commercial acquisitions and dispositions — retail, office, industrial, flex, and land. TREC #9014367.',
   eyebrow: 'Sellers & Investors',
   h1: 'CRECO represents sellers and investors — acquisitions and dispositions.',
   directAnswer:

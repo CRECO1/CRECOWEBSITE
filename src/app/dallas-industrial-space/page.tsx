@@ -6,9 +6,9 @@ import type { Metadata } from 'next';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
 export const metadata: Metadata = {
-  title: 'Dallas–Fort Worth Industrial Space for Lease | Warehouse, Distribution, Flex | CRECO',
+  title: 'DFW Industrial Space for Lease | CRECO',
   description:
-    'Dallas–Fort Worth industrial space for lease — modern bulk distribution in South Dallas / I-45, AllianceTexas and North Fort Worth intermodal, the Great Southwest district, and DFW Airport infill. Asking rents, vacancy by submarket, and tenant rep from CRECO across one of the largest industrial markets in the US.',
+    'Dallas–Fort Worth industrial space for lease — bulk distribution in South Dallas, AllianceTexas, the Great Southwest district, and DFW Airport infill.',
   keywords: [
     'dallas industrial space for lease',
     'dfw industrial space for lease',

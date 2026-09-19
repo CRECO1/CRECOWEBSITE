@@ -9,7 +9,7 @@ import { breadcrumbList } from '@/lib/schema';
 export const metadata: Metadata = {
   title: 'Texas Commercial Property Alerts | CRECO',
   description:
-    'Get alerts the moment a Texas commercial property matching your filters hits the CRECO listings — retail, industrial, office, flex, and land across San Antonio, Austin, Houston, Dallas, and Fort Worth. Free, no obligation.',
+    'Get alerts when a Texas commercial property matching your filters is listed with CRECO — retail, industrial, office, flex, and land. Free, no obligation.',
   keywords: [
     'texas commercial property alerts',
     'commercial real estate alerts texas',
