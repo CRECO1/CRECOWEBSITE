@@ -73,7 +73,7 @@ export default function InsightsIndex() {
             <p className="overline mb-2 text-gold">Texas Commercial Real Estate · Insights</p>
             <h1 className="font-heading text-display-sm font-bold">CRECO Insights</h1>
             <p className="mt-3 max-w-2xl text-body text-white/60">
-              Market analysis, strategic guidance, and on-the-ground perspectives on Texas commercial real estate. Written by CRECO principals for owners, tenants, and investors who want to think clearly about commercial real estate decisions.
+              Texas commercial real estate, read by the principals who work it — for owners, tenants and investors.
             </p>
           </Container>
         </section>

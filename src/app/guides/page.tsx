@@ -79,7 +79,7 @@ export default function GuidesIndex() {
               In-depth analysis for the decisions that matter.
             </h1>
             <p className="text-body-lg text-white/70 max-w-3xl leading-relaxed">
-              Quarterly Texas CRE market reports plus practical strategy playbooks — written by CRECO's broker team. Each piece is the analysis we'd hand a client before our first conversation. Free in exchange for an email.
+              Market reports and strategy playbooks from CRECO's broker team — the analysis we'd hand a client before the first conversation.
             </p>
           </Container>
         </section>
