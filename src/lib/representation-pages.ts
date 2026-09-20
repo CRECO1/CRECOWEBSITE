@@ -114,6 +114,7 @@ export const LANDLORD_PAGE: RepresentationPageContent = {
 
 export const SELLER_INVESTOR_PAGE: RepresentationPageContent = {
   path: '/seller-investor-representation',
+  showValuationCta: true,
   label: 'Sellers & Investors',
   metaTitle: 'Seller & Investor Representation in Texas | CRECO',
   metaDescription:
