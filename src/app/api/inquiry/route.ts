@@ -198,7 +198,8 @@ export async function POST(req: NextRequest) {
           ? 'Agent application — crecotx.com/careers'
           : `website — crecotx.com (${typeof path === 'string' ? path : 'inquiry'})`,
         type: isAgentApplication ? 'Agent' : 'Tenant',
-        tags: isAgentApplication ? ['Recruiting', 'Recruiting: Prospect', 'CRECO'] : undefined,
+        // The webhook already tags commercial contacts CRECO — don't duplicate it.
+        tags: isAgentApplication ? ['Recruiting', 'Recruiting: Prospect'] : undefined,
       });
       if (error) console.error('[inquiry] DB insert failed:', error.message);
       else leadId = data?.id ?? null;
