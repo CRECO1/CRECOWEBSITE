@@ -23,16 +23,18 @@ export const CANONICAL_DESCRIPTION =
  *
  * The homepage used to stack CANONICAL_DESCRIPTION and REPRESENTATION_STATEMENT
  * one under the other, which said the same thing twice and read as a wall of
- * text on a phone. This blends them: full-service, who we represent, lease and
- * sale, Texas with local depth, and the not-tenant-only correction — in two
- * sentences.
+ * text on a phone. This blends them into one line: full-service, who we
+ * represent, lease and sale, Texas with local depth.
  *
- * It does NOT replace them. Both long statements remain the canonical answers
- * and still render server-side in the FAQ, the organization schema, the
- * representation pages and the llms feeds, where machines read them.
+ * Stated positively on purpose. The correction this exists to make — that
+ * CRECO is not tenant-only — is carried by naming landlords, owners and
+ * investors outright, which reads better than the denial did. The explicit
+ * denial still lives where it answers a question rather than greets a visitor:
+ * the FAQs, the organization schema, the representation pages and the llms
+ * feeds, which is where it was ever doing search work.
  */
 export const HERO_POSITIONING =
-  'A full-service Texas commercial brokerage — not a tenant-only firm. CRECO represents tenants, landlords, owners and investors on both leasing and sales, statewide, with deep coverage of San Antonio and the Hill Country.';
+  'A full-service Texas commercial brokerage representing tenants, landlords, owners and investors on both leasing and sales — statewide, with deep coverage of San Antonio and the Hill Country.';
 
 /** One-line DBA / license disclosure. */
 export const DBA_STATEMENT = `${BRAND_NAME} is a d/b/a of ${BRAND_LEGAL_NAME}, a licensed Texas real estate brokerage (TREC license #${BRAND_TREC_LICENSE}).`;

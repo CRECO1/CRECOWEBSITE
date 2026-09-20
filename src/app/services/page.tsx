@@ -128,7 +128,7 @@ export const SERVICES: ServiceContent[] = [
     ],
     heroSubhead: 'Dedicated advocacy for tenants leasing retail, restaurant, office, medical, industrial, and flex space across Texas — from a full-service brokerage that also represents landlords, owners, and investors.',
     positioningNote:
-      'CRECO is a full-service commercial real estate brokerage, not a tenant-only firm. This page covers tenant representation, but CRECO also represents landlords, owners, sellers, and investors — for lease and for sale — across retail, office, industrial, flex, and land.',
+      'CRECO is a full-service commercial real estate brokerage. This page covers tenant representation; CRECO also represents landlords, owners, sellers, and investors — for lease and for sale — across retail, office, industrial, flex, and land.',
     intro: [
       'Tenant representation is the most undervalued service in Texas commercial real estate. The landlord pays our commission per market convention, which means hiring CRECO as your tenant rep is typically free to your business — yet the right tenant rep can save your company $50,000 to $5,000,000 over the life of a lease through better terms, larger tenant improvement allowances, free rent, and stronger renewal language.',
       'When CRECO represents you as a tenant, our duty on that engagement is to your business. Because CRECO is a full-service brokerage — we also represent landlords, owners, and investors, and we own and lease our own centers — we know exactly how landlords underwrite a deal, and we use that to negotiate for you. If you want to see a property CRECO also represents for the owner, we disclose it up front; CRECO acts as an intermediary only if both you and the owner authorize it in writing, as Texas law requires.',
@@ -584,7 +584,7 @@ export default function ServicesPage() {
           <Container>
             <div className="mx-auto max-w-5xl">
               <h2 id="who-we-represent-heading" className="mb-3 font-heading text-heading-xl font-bold text-primary">Who CRECO represents</h2>
-              <p className="mb-5 text-body text-foreground-muted">CRECO is not a tenant-only firm. It represents tenants and buyers, landlords and owners, and sellers and investors — for lease and for sale.</p>
+              <p className="mb-5 text-body text-foreground-muted">CRECO represents tenants and buyers, landlords and owners, and sellers and investors — for lease and for sale.</p>
               <div className="flex flex-wrap gap-3">
                 <Link href="/services/tenant-representation" className="inline-flex items-center gap-2 rounded-lg border border-border px-5 py-2.5 text-body-sm font-semibold text-primary hover:border-gold">Tenants <ArrowRight className="h-4 w-4" /></Link>
                 <Link href="/landlord-representation" className="inline-flex items-center gap-2 rounded-lg border border-border px-5 py-2.5 text-body-sm font-semibold text-primary hover:border-gold">Landlords &amp; owners <ArrowRight className="h-4 w-4" /></Link>

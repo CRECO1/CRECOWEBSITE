@@ -45,7 +45,7 @@ export function RepresentationBand({ place, className = 'bg-white border-b borde
             Who CRECO represents in {place}
           </h2>
           <p className="mx-auto mb-8 max-w-3xl text-center text-body text-foreground-muted">
-            CRECO is not a tenant-only firm. We represent tenants, landlords, owners, and investors — for lease and for sale — across retail (including restaurant space and pad sites), office (including medical office), industrial, flex, and land.
+            CRECO represents tenants, landlords, owners, and investors — for lease and for sale — across retail (including restaurant space and pad sites), office (including medical office), industrial, flex, and land.
           </p>
           <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {sides.map(({ icon: Icon, title, body, href }) => (

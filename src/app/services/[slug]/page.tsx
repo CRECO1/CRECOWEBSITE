@@ -110,7 +110,7 @@ export default async function ServiceDetailPage({ params }: Props) {
           <section className="border-b border-border bg-background-cream py-6">
             <Container>
               <p className="mx-auto max-w-3xl text-body text-foreground-muted leading-relaxed">
-                <span className="font-semibold text-primary">Full-service, not tenant-only. </span>
+                <span className="font-semibold text-primary">Full-service brokerage. </span>
                 {service.positioningNote}
               </p>
             </Container>

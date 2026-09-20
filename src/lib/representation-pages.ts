@@ -60,7 +60,7 @@ export const LANDLORD_PAGE: RepresentationPageContent = {
   heroLine:
     'Leasing, tenant procurement and dispositions for owners of retail, office, industrial, flex and land across Texas.',
   directAnswer:
-    `CRECO - Commercial Real Estate Company represents landlords and commercial property owners — leasing their space, procuring and negotiating with tenants, and selling their properties — across ${PROPERTY_TYPES_SENTENCE}, for lease and for sale, throughout Texas. CRECO is a full-service brokerage, not a tenant-only firm.`,
+    `CRECO - Commercial Real Estate Company represents landlords and commercial property owners — leasing their space, procuring and negotiating with tenants, and selling their properties — across ${PROPERTY_TYPES_SENTENCE}, for lease and for sale, throughout Texas. CRECO is a full-service brokerage representing tenants, landlords, owners, and investors.`,
   serviceName: 'Landlord and owner representation',
   serviceType: ['Landlord representation', 'Owner representation', 'Commercial leasing (listing side)', 'Tenant procurement', 'Commercial property disposition'],
   sections: [
@@ -136,7 +136,7 @@ export const SELLER_INVESTOR_PAGE: RepresentationPageContent = {
   heroLine:
     'Selling commercial property for owners, and sourcing it for investors and owner-users, across Texas.',
   directAnswer:
-    `CRECO - Commercial Real Estate Company represents sellers, buyers, and investors in commercial real estate transactions — selling property for owners and helping investors and owner-users acquire it — across ${PROPERTY_TYPES_SENTENCE}, throughout Texas. CRECO is a full-service brokerage, not a tenant-only firm.`,
+    `CRECO - Commercial Real Estate Company represents sellers, buyers, and investors in commercial real estate transactions — selling property for owners and helping investors and owner-users acquire it — across ${PROPERTY_TYPES_SENTENCE}, throughout Texas. CRECO is a full-service brokerage representing tenants, landlords, owners, and investors.`,
   serviceName: 'Seller and investor representation',
   serviceType: ['Investment sales brokerage', 'Seller representation', 'Buyer representation', 'Commercial property acquisitions', 'Commercial property dispositions', '1031 exchange replacement property'],
   sections: [

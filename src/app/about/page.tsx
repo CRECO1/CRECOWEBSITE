@@ -18,14 +18,14 @@ export const revalidate = 1800;
 
 const AT_A_GLANCE: { label: string; value: string }[] = [
   { label: 'Legal / trade name', value: `${BUSINESS.legalName}, doing business as ${BUSINESS.name}` },
-  { label: 'What CRECO is', value: 'A full-service, licensed Texas commercial real estate brokerage — not a tenant-only firm' },
+  { label: 'What CRECO is', value: 'A full-service, licensed Texas commercial real estate brokerage representing tenants, landlords, owners and investors' },
   { label: 'License', value: `Texas Real Estate Commission (TREC) brokerage license #${BUSINESS.trecLicense}` },
   { label: 'Headquarters', value: BUSINESS.fullAddress },
   { label: 'Phone / email', value: `${BUSINESS.phoneDisplay} · ${BUSINESS.email}` },
   { label: 'Office hours', value: BUSINESS.hours },
   { label: 'Markets', value: 'Fair Oaks Ranch (HQ) and the Texas Hill Country (Boerne, Comfort, Bulverde), Greater San Antonio (incl. Lytle and the I-35 corridor), plus Austin, Houston, Dallas–Fort Worth, and statewide Texas' },
   { label: 'Property types (lease & sale)', value: ASSET_CLASSES.join(' · ') },
-  { label: 'Clients represented', value: 'Tenants, buyers, landlords, owners, sellers, and investors — full-service, not tenant-only; intermediary when both parties authorize in writing' },
+  { label: 'Clients represented', value: 'Tenants, buyers, landlords, owners, sellers, and investors — across leasing and sales; intermediary when both parties authorize in writing' },
   { label: 'Services', value: CAPABILITIES.map(c => c.name).join(' · ') },
   { label: 'Founder', value: 'Zachary A. Stovall, Broker (TREC #691174)' },
   { label: 'Director of Leasing', value: `${DIRECTOR_OF_LEASING.name} (TREC #${DIRECTOR_OF_LEASING.trecLicense})` },
