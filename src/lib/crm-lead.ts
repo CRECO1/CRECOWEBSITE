@@ -21,7 +21,7 @@ export interface CrmLeadPayload {
   /** Where it came from, e.g. "website — crecotx.com (tour request)". */
   source: string;
   /** CRM contact type; the webhook falls back to Buyer for anything else. */
-  type?: 'Buyer' | 'Seller' | 'Tenant' | 'Landlord/Investor';
+  type?: 'Buyer' | 'Seller' | 'Tenant' | 'Landlord/Investor' | 'Agent' | 'Broker';
   tags?: string[];
 }
 

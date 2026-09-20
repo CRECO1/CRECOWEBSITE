@@ -159,6 +159,9 @@ export async function POST(req: NextRequest) {
     }
 
     const meta = PATH_LABELS[path];
+    // Recruiting is handled differently from a client inquiry at two points:
+    // where the contact lands in the CRM, and whether we auto-reply at all.
+    const isAgentApplication = path === 'agent';
     const entries = answerEntries(answers);
     const answerSummary = summarizeAnswers(entries);
 
@@ -185,11 +188,17 @@ export async function POST(req: NextRequest) {
       }]).select('id').single();
 
       // Also create the contact in the CRM (owner: the broker). Non-blocking.
+      // Agent applications are people we may hire, not clients: they land in
+      // the recruiting funnel (tagged Recruiting + Recruiting: Prospect) so
+      // they never mix into the client pipeline.
       await sendLeadToCrm({
         name, email, phone, company,
         message: typeof meta?.subject === 'string' ? meta.subject : null,
-        source: `website — crecotx.com (${typeof path === 'string' ? path : 'inquiry'})`,
-        type: 'Tenant',
+        source: isAgentApplication
+          ? 'Agent application — crecotx.com/careers'
+          : `website — crecotx.com (${typeof path === 'string' ? path : 'inquiry'})`,
+        type: isAgentApplication ? 'Agent' : 'Tenant',
+        tags: isAgentApplication ? ['Recruiting', 'Recruiting: Prospect', 'CRECO'] : undefined,
       });
       if (error) console.error('[inquiry] DB insert failed:', error.message);
       else leadId = data?.id ?? null;
@@ -232,13 +241,17 @@ export async function POST(req: NextRequest) {
       });
 
       // Auto-reply to the prospect — same brand chrome as the internal copy.
-      await resend.emails.send({
-        from: getFromEmail(),
-        to: email,
-        replyTo: NOTIFICATION_EMAIL,
-        subject: INQUIRY_AUTOREPLY_SUBJECT,
-        html: buildInquiryAutoreplyEmail({ name, pathLabel: meta.humanLabel }),
-      });
+      // Not for agent applicants: recruiting conversations start with a real
+      // message from Zack, never an automated acknowledgement.
+      if (!isAgentApplication) {
+        await resend.emails.send({
+          from: getFromEmail(),
+          to: email,
+          replyTo: NOTIFICATION_EMAIL,
+          subject: INQUIRY_AUTOREPLY_SUBJECT,
+          html: buildInquiryAutoreplyEmail({ name, pathLabel: meta.humanLabel }),
+        });
+      }
     }
 
     return NextResponse.json({ success: true });

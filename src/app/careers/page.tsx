@@ -5,8 +5,9 @@ import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import Link from 'next/link';
 import {
   Briefcase, ArrowRight, Phone, Users, TrendingUp, Sparkles,
-  Building2, MapPin, ShieldCheck, HandshakeIcon,
+  Building2, MapPin, ShieldCheck, HandshakeIcon, Search as SearchIcon,
 } from 'lucide-react';
+import { CRECO_VALUE_PROPS } from '@/lib/recruiting';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { CareerApplicationForm } from '@/components/forms/CareerApplicationForm';
@@ -38,36 +39,15 @@ export const metadata: Metadata = {
   },
 };
 
+// Copy comes from lib/recruiting.ts so the page, the CRECO one-pager and the
+// Fair Oaks side of the pitch cannot drift. Icons are resolved here.
+const ICONS = { UserCheck: Users, Laptop: Sparkles, Megaphone: TrendingUp, Search: SearchIcon, Network: HandshakeIcon, DollarSign: ShieldCheck } as const;
 const WHY_CRECO = [
-  {
-    icon: Users,
-    title: 'Small team, principal-led',
-    body: "We don't run an agent farm. Every CRECO broker works directly with the principals on every assignment. You learn how deals actually get done — not how a 200-agent shop processes leads.",
-  },
-  {
-    icon: TrendingUp,
-    title: 'Real Texas-wide deal flow',
-    body: 'Active practice in San Antonio, Fair Oaks Ranch / Boerne, Austin, Houston, DFW, and the I-35 corridor. Tenant rep, owner services, investment advisory — pick the lane that fits you, build a book that compounds.',
-  },
+  ...CRECO_VALUE_PROPS.map(p => ({ icon: ICONS[p.icon], title: p.title, body: p.body })),
   {
     icon: Building2,
     title: 'Skin in the game',
     body: "We don't just broker — we own and operate the mixed-use commercial center at 8000 Fair Oaks Pkwy. That conviction shows up in how we underwrite, how we negotiate, and how we coach.",
-  },
-  {
-    icon: ShieldCheck,
-    title: 'Honest splits, no theatrics',
-    body: 'Splits are competitive and transparent. No mystery fees. No required marketing tax. No cap-and-residual schemes. We pay agents to do good work, not to fund the brokerage.',
-  },
-  {
-    icon: Sparkles,
-    title: 'A platform that does the boring work',
-    body: 'CRM, listing portal, branded brochures, market data subscriptions, transaction coordination, marketing — already built. You spend your time with clients, not setting up your tech stack.',
-  },
-  {
-    icon: HandshakeIcon,
-    title: 'A long-term seat',
-    body: "We hire to build careers. If you're looking for the brokerage where you'll spend the next decade — and we get along — that's the conversation we want to have.",
   },
 ];
 
@@ -83,7 +63,7 @@ const WHO_WE_LOOK_FOR = [
 const FAQS = [
   {
     q: "I'm a residential agent. Can I make the switch to commercial?",
-    a: "Yes — we've coached the transition before. Commercial is a different rhythm than residential: longer sales cycles, more underwriting, sophisticated counterparties, but more interesting work and bigger checks. If you have the discipline and the network, you can build a real practice. Tell us about your background in the application and we'll talk through the path.",
+    a: "Yes. Commercial is a different rhythm than residential: longer sales cycles, more underwriting, sophisticated counterparties, but more interesting work and bigger checks. If you have the discipline and the network, you can build a real practice — and because our sister brokerage handles residential, the book you already have does not go to waste. Tell us about your background in the application and Zack will talk through the path.",
   },
   {
     q: "I'm not licensed yet. Should I still apply?",
@@ -91,11 +71,11 @@ const FAQS = [
   },
   {
     q: 'Where do CRECO agents work from?',
-    a: "Our headquarters is at 8000 Fair Oaks Pkwy in Fair Oaks Ranch — a mixed-use commercial center we own and operate, with executive office suites available for our agents. Most of our team works hybrid: in-office for client meetings and team time, in the field for tours, and from anywhere for desk work.",
+    a: "Our headquarters is at 8000 Fair Oaks Pkwy in Fair Oaks Ranch — a mixed-use commercial center we own and operate. [Desk / office space for agents — confirm]. Most of our team works hybrid: in-office for client meetings and team time, in the field for tours, and from anywhere for desk work.",
   },
   {
     q: 'What does the comp look like?',
-    a: "Competitive splits with no hidden fees. We pay you a real share of the commission on every deal you close, with bonuses on volume milestones. The platform (CRM, listing system, marketing, data) comes with the seat — we don't bill it back. Specifics in the first call.",
+    a: "Commission split [commission split — confirm], [cap / post-cap structure — confirm], [desk / monthly fees — confirm]. Zack goes through the exact numbers with you on the first call rather than publishing a headline figure here. What is settled: the platform — the CRM with e-signature, the listing system and the marketing behind it — comes with the seat.",
   },
   {
     q: "Is the application confidential?",
