@@ -18,6 +18,22 @@ export const BRAND_TREC_LICENSE = '9014367';
 export const CANONICAL_DESCRIPTION =
   'CRECO - Commercial Real Estate Company is a full-service commercial real estate brokerage representing tenants, landlords, owners, and investors across retail, office, industrial, flex, and land — for lease and for sale — throughout Texas, with deep local coverage of San Antonio and the Hill Country.';
 
+/**
+ * The hero's short form of the positioning.
+ *
+ * The homepage used to stack CANONICAL_DESCRIPTION and REPRESENTATION_STATEMENT
+ * one under the other, which said the same thing twice and read as a wall of
+ * text on a phone. This blends them: full-service, who we represent, lease and
+ * sale, Texas with local depth, and the not-tenant-only correction — in two
+ * sentences.
+ *
+ * It does NOT replace them. Both long statements remain the canonical answers
+ * and still render server-side in the FAQ, the organization schema, the
+ * representation pages and the llms feeds, where machines read them.
+ */
+export const HERO_POSITIONING =
+  'A full-service Texas commercial brokerage — not a tenant-only firm. CRECO represents tenants, landlords, owners and investors on both leasing and sales, statewide, with deep coverage of San Antonio and the Hill Country.';
+
 /** One-line DBA / license disclosure. */
 export const DBA_STATEMENT = `${BRAND_NAME} is a d/b/a of ${BRAND_LEGAL_NAME}, a licensed Texas real estate brokerage (TREC license #${BRAND_TREC_LICENSE}).`;
 

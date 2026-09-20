@@ -7,7 +7,8 @@ export const revalidate = 1800;
 import type { Metadata } from 'next';
 import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { jsonLd } from '@/lib/jsonLd';
-import { CANONICAL_DESCRIPTION, REPRESENTATION_STATEMENT, listingSummary } from '@/lib/schema';
+import { CANONICAL_DESCRIPTION, listingSummary } from '@/lib/schema';
+import { HERO_POSITIONING } from '@/lib/brand';
 
 export const metadata: Metadata = {
   title: 'Texas Commercial Real Estate Brokerage | CRECO',
@@ -131,7 +132,7 @@ const FAQS = [
 
 const DEFAULT_SETTINGS = {
   hero_headline: 'Full-Service Commercial Real Estate',
-  hero_subheadline: CANONICAL_DESCRIPTION,
+  hero_subheadline: HERO_POSITIONING,
   hero_image_url: '/images/sa-hero.jpg' as string | null,
   about_headline: 'A trailblazing approach to Texas commercial real estate.',
   about_text: 'CRECO is built on innovation, expertise, and a relentless commitment to client outcomes. We blend deep Texas market knowledge with the analytical rigor you would expect from a national firm — and we keep our roster small enough that every client works directly with a principal. From single-asset tenants to multi-property portfolio owners, we treat your assignment like our name is on the building.',
@@ -239,9 +240,10 @@ export default async function HomePage() {
   // homepage to error.tsx. Fall back to the defaults instead.
   // Hero H1 + intro are code-controlled positioning, NOT the site_settings CMS
   // row: AI assistants were describing CRECO as tenant-only, so the first
-  // heading and paragraph on the site must state full-service representation
-  // verbatim (CANONICAL_DESCRIPTION). The CMS hero fields are intentionally
-  // ignored here.
+  // heading and paragraph must state full-service representation. The hero now
+  // carries the short blend (HERO_POSITIONING); the verbatim long statements
+  // still render server-side in the FAQ below, the organization schema, the
+  // representation pages and the llms feeds. The CMS hero fields are ignored.
   const heroHeadline = DEFAULT_SETTINGS.hero_headline;
   const heroSubheadline = DEFAULT_SETTINGS.hero_subheadline;
 
@@ -308,11 +310,8 @@ export default async function HomePage() {
               : <><span className="text-gradient-gold">{heroHeadline}</span></>
             }
           </h1>
-          <p className="mx-auto mb-4 max-w-3xl animate-fade-in text-body-lg text-white/85 delay-200 fill-both">
+          <p className="mx-auto mb-10 max-w-2xl animate-fade-in text-body-lg leading-relaxed text-white/85 delay-200 fill-both">
             {heroSubheadline}
-          </p>
-          <p className="mx-auto mb-10 max-w-3xl animate-fade-in text-body-sm text-white/70 delay-200 fill-both">
-            {REPRESENTATION_STATEMENT}
           </p>
 
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center animate-fade-in delay-300 fill-both">
