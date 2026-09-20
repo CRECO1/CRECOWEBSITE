@@ -191,10 +191,10 @@ export async function CityAssetPage({ config }: { config: CityAssetConfig }) {
                 <MapPin className="h-3.5 w-3.5" /> {config.heroEyebrow}
               </p>
               <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-5 leading-tight">
-                {config.city} {config.asset} space for lease — what to expect, where to look, and how CRECO works the market.
+                {config.city} {config.asset} space for lease.
               </h1>
-              <p className="text-body-lg text-white/80 leading-relaxed max-w-3xl">
-                {config.quickAnswer}
+              <p className="text-body-lg text-white/80 leading-relaxed max-w-2xl">
+                What&apos;s available, what it costs, and how CRECO works the market.
               </p>
               <div className="mt-7 flex flex-wrap gap-4">
                 <Link
@@ -211,6 +211,18 @@ export async function CityAssetPage({ config }: { config: CityAssetConfig }) {
                 </a>
               </div>
             </div>
+          </Container>
+        </section>
+
+        {/* The full quick answer, verbatim. Moved out of the hero, not
+            rewritten: it carries this market's specifics and every geographic
+            reference exactly as written, and it still feeds the page schema
+            and the rent-benchmark FAQ. */}
+        <section className="border-b border-border bg-background-cream py-8">
+          <Container>
+            <p className="max-w-4xl text-body leading-relaxed text-foreground-muted">
+              <span className="font-semibold text-primary">In short:</span> {config.quickAnswer}
+            </p>
           </Container>
         </section>
 

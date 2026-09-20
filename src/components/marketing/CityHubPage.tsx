@@ -257,8 +257,8 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
               <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-5 leading-tight">
                 {config.heroTitle}
               </h1>
-              <p className="text-body-lg text-white/70 leading-relaxed mb-8">
-                {config.heroSubhead}
+              <p className="max-w-2xl text-body-lg text-white/70 leading-relaxed mb-8">
+                How CRECO works this market — and what that means for your next lease or sale.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link
@@ -298,6 +298,15 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
             </Container>
           </section>
         )}
+
+        {/* The hero's full subhead, verbatim. Relocated rather than rewritten:
+            it carries this market's submarkets and coverage wording exactly as
+            written, and still backs the page description. */}
+        <section className="border-b border-border bg-background-cream py-8">
+          <Container>
+            <p className="max-w-4xl text-body leading-relaxed text-foreground-muted">{config.heroSubhead}</p>
+          </Container>
+        </section>
 
         {/* Answer-first summary — the concise snippet AI + featured results lift */}
         {config.quickAnswer && (
