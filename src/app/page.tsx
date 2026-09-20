@@ -529,9 +529,12 @@ export default async function HomePage() {
                 Hold/sell analysis. Repositioning strategy. 1031 exchange identification. Tenant mix optimization. Property management with institutional-quality reporting at boutique-firm responsiveness. CRECO is your Texas commercial real estate operating partner.
               </p>
             </div>
-            <div className="text-center lg:text-right">
+            <div className="flex flex-col items-center gap-3 sm:flex-row lg:justify-end">
               <Button size="lg" className="bg-gold text-primary hover:bg-gold-light" asChild>
-                <Link href="/owner-services">Owner Services <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                <Link href="/list-your-space?from=home-owner">List your space <ArrowRight className="ml-2 h-5 w-5" /></Link>
+              </Button>
+              <Button size="lg" variant="outline" className="border-white/40 text-white hover:bg-white/10" asChild>
+                <Link href="/owner-services">Owner Services</Link>
               </Button>
             </div>
           </div>

@@ -4,6 +4,7 @@ import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { ValuationCta } from '@/components/marketing/ValuationCta';
+import { ListingCta } from '@/components/marketing/ListingCta';
 import { FaqSection } from '@/components/marketing/FaqSection';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { BUSINESS, CANONICAL_DESCRIPTION, DBA_STATEMENT, SITE_URL, breadcrumbList, businessRef, webPage } from '@/lib/schema';
@@ -123,6 +124,7 @@ export function RepresentationPage({ content }: { content: RepresentationPageCon
 
         <FaqSection faqs={content.faqs} path={content.path} heading={`${content.label} — FAQ`} className="section-luxury bg-background-cream" />
 
+        {content.showListingCta && <ListingCta surface={content.path.replace(/^\//, '')} />}
         {content.showValuationCta && <ValuationCta surface={content.path.replace(/^\//, '')} />}
       </main>
       <Footer />

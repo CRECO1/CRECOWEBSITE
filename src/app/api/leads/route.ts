@@ -177,6 +177,10 @@ export async function POST(req: NextRequest) {
     const message = clampString(rawMessage, MAX_LEN.message);
     const property_interest = clampString(rawPropertyInterest, MAX_LEN.shortField);
     const source = clampString(rawSource, MAX_LEN.shortField) || 'contact';
+    // A listing inquiry is an owner offering CRECO the mandate on their space —
+    // the lead this business most wants to win. Kept separate from a valuation
+    // request, which only asks what a property is worth.
+    const isListing = source === 'listing-inquiry';
 
     // Clamp every attribution field to a safe length. These are user-
     // controllable (anyone can hand-craft utm_*), so we treat them as
@@ -228,9 +232,15 @@ export async function POST(req: NextRequest) {
         name, email, phone, company, message,
         source: isValuation
           ? 'Valuation request — crecotx.com/property-valuation'
-          : `website — crecotx.com (${source})`,
-        type: isValuation || source === 'sell' ? 'Seller' : 'Tenant',
-        tags: isValuation ? ['Valuation', 'Owner'] : undefined,
+          : isListing
+            ? 'Listing inquiry — crecotx.com/list-your-space'
+            : `website — crecotx.com (${source})`,
+        type: isListing ? 'Landlord/Investor' : (isValuation || source === 'sell' ? 'Seller' : 'Tenant'),
+        tags: isValuation
+          ? ['Valuation', 'Owner']
+          : isListing
+            ? ['Listing Lead', 'Landlord', 'CRECO']
+            : undefined,
       });
 
       if (error) {
@@ -284,7 +294,11 @@ export async function POST(req: NextRequest) {
         </div>`;
 
       // Inbox-scannable subject. Hot leads with a phone shout "call now".
-      const subjectBase = `${tierSubjectLabel(lead.tier, lead.isRecruiting)}: ${name} — ${source}`;
+      // A listing inquiry is the pitch opportunity — make it unmistakable in
+      // the inbox rather than one more line of triage.
+      const subjectBase = isListing
+        ? `🏢 LISTING OPPORTUNITY: ${name} wants CRECO to lease their space`
+        : `${tierSubjectLabel(lead.tier, lead.isRecruiting)}: ${name} — ${source}`;
       const subject = lead.tier === 'hot' && telHref ? `${subjectBase} · call now` : subjectBase;
 
       // All interpolated values escaped — even though our broker is the only
