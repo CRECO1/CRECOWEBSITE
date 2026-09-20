@@ -3,6 +3,7 @@ import { getListings } from '@/lib/supabase';
 import { ListingsClient } from './ListingsClient';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { FaqSection } from '@/components/marketing/FaqSection';
+import { ValuationCta } from '@/components/marketing/ValuationCta';
 import { withSyntheticListings } from '@/lib/featured-properties';
 import { filterListings } from '@/lib/public-listings';
 import { BUSINESS, breadcrumbList, listingItemList, listingSummary, webPage } from '@/lib/schema';
@@ -85,6 +86,7 @@ export default async function ListingsPage() {
       />
       <ListingsClient initialListings={listings}>
         <FaqSection faqs={faqs} path="/listings" heading="Available commercial space — quick answers" />
+        <ValuationCta surface="listings" />
       </ListingsClient>
     </>
   );

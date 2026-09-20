@@ -24,6 +24,8 @@ export type RepresentationPageContent = {
   serviceType: string[];
   sections: { heading: string; intro?: string; items: { title: string; body: string }[] }[];
   faqs: Faq[];
+  /** Show the valuation CTA — only for pages whose audience owns property. */
+  showValuationCta?: boolean;
 };
 
 const PROPERTY_TYPES_SENTENCE =
@@ -37,6 +39,7 @@ const TENANT_ONLY_ANSWER =
 
 export const LANDLORD_PAGE: RepresentationPageContent = {
   path: '/landlord-representation',
+  showValuationCta: true,
   label: 'Landlord & Owner Representation',
   metaTitle: 'Landlord & Owner Representation in Texas | CRECO',
   metaDescription:

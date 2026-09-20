@@ -7,6 +7,7 @@ import {
   CheckCircle, Phone, Sparkles, Calculator,
 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
+import { ValuationCta } from '@/components/marketing/ValuationCta';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
@@ -238,7 +239,7 @@ export default async function OwnerServicesPage() {
               </div>
               <div className="text-center lg:text-right">
                 <Button size="lg" className="bg-gold text-primary hover:bg-gold-light" asChild>
-                  <Link href="/property-valuation">Try the valuation tool <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                  <Link href="/property-valuation">Value my property <ArrowRight className="ml-2 h-5 w-5" /></Link>
                 </Button>
               </div>
             </div>
@@ -340,6 +341,7 @@ export default async function OwnerServicesPage() {
           </Container>
         </section>
       </main>
+      <ValuationCta surface="owner-services" />
       <Footer />
     </>
   );

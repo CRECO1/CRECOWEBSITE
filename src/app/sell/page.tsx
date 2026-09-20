@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { TrendingUp, Building2, FileText, Users, CheckCircle, ArrowRight, Phone, Calculator } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
+import { ValuationCta } from '@/components/marketing/ValuationCta';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
@@ -124,7 +125,7 @@ export default function SellPage() {
               </div>
               <div className="text-center lg:text-right">
                 <Button size="lg" variant="outline" asChild>
-                  <Link href="/property-valuation">Use the valuation tool <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                  <Link href="/property-valuation">Value my property <ArrowRight className="ml-2 h-5 w-5" /></Link>
                 </Button>
               </div>
             </div>
@@ -202,6 +203,7 @@ export default function SellPage() {
         />
         <FaqSection faqs={SELL_FAQS} path="/sell" heading="Selling or leasing your property — FAQ" className="section-luxury bg-white" />
       </main>
+      <ValuationCta surface="sell" />
       <Footer />
     </>
   );

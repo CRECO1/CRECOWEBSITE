@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ArrowRight, Phone, ShieldCheck, TrendingUp, Calculator, Building2 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
+import { CapRateTable } from '@/components/marketing/CapRateTable';
 import { PropertyValuationForm } from '@/components/forms/PropertyValuationForm';
 import { TrustStrip } from '@/components/marketing/TrustStrip';
 import { Testimonials } from '@/components/marketing/Testimonials';
@@ -77,7 +78,7 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: 'What cap rates is Texas commercial real estate trading at in 2026?',
-    a: "As a rough 2026 guide for stabilized Texas assets: industrial and multi-tenant retail generally trade around 6.5–8.5%, single-tenant net-lease depends heavily on tenant credit and remaining term, and Class B office is wider at roughly 8–10%+. Value-add, distressed, or special-use properties trade outside these bands. Our tool applies current ranges by property type and submarket tier — the right cap rate for your specific asset still depends on lease structure and condition.",
+    a: "These are CRECO estimates, not figures from a third-party data service. As a rough 2026 guide for stabilized Texas assets we work with: industrial and multi-tenant retail generally around 6.5–8.5%, single-tenant net-lease depending heavily on tenant credit and remaining term, and Class B office wider at roughly 8–10.5%. Value-add, distressed, or special-use properties trade outside these bands. The tool applies these ranges by property type and submarket tier — the right cap rate for your specific asset still depends on lease structure and condition.",
   },
   {
     q: 'How accurate is an instant online valuation versus a broker appraisal?',
@@ -127,10 +128,10 @@ export default function PropertyValuationPage() {
                 What's your Texas commercial property worth?
               </h1>
               <p className="text-body-lg text-white/70 leading-relaxed mb-4 max-w-2xl">
-                Get an instant preliminary valuation range based on current Texas cap rates by property type and submarket. Free, no obligation, no contact-info-required-to-see-the-number.
+                Get an instant, cap-rate-based value range for your property in about 60 seconds. The number is free and nothing is gated — no email, no phone, no account.
               </p>
               <p className="text-body text-white/60 leading-relaxed max-w-2xl">
-                Plus the option to have a senior CRECO broker deliver a full valuation if you want to dig deeper.
+                Then, if you want the real analysis, request a Broker Opinion of Value — prepared personally by Zachary A. Stovall, CRECO&apos;s broker/owner.
               </p>
             </div>
           </Container>
@@ -210,6 +211,8 @@ export default function PropertyValuationPage() {
 
         {/* FAQ — answer-first content mirroring the FAQPage schema (indexable +
             AI-citable), targeting commercial-property-valuation search intent. */}
+        <CapRateTable />
+
         <section className="section-luxury bg-background-cream" id="faq" aria-labelledby="val-faq-heading">
           <Container>
             <div className="max-w-3xl mx-auto">

@@ -233,15 +233,6 @@ export default async function HomePage() {
   // years figure contradicted the site's own data, and there is no survey
   // behind a satisfaction percentage. Counts and commitments only — no
   // track-record metrics until there are real closed deals to total up.
-  const STATS = [
-    // The same number TrustStrip counts live (listings table, active + pending), so the
-    // page can't show two different counts. allListings also holds leased rows and
-    // the hard-coded pages for CRECO's own properties, which made this read 10 vs 6.
-    { value: String((dbListings as any[]).filter((l: any) => l.status === 'active' || l.status === 'pending').length), label: 'Active Texas listings', icon: Building2 },
-    { value: 'Full-service', label: 'Tenants · owners · investors', icon: Award },
-    { value: 'Same day', label: 'Response, business days', icon: Star },
-  ];
-
   // Guard the nullable CMS hero fields. hero_headline in particular has
   // .includes()/.split() called on it below — if an editor ever blanks that
   // field, calling a string method on null would throw and drop the ENTIRE
@@ -333,14 +324,6 @@ export default async function HomePage() {
             </Button>
           </div>
 
-          <div className="mt-16 grid grid-cols-3 gap-4 sm:gap-6 animate-fade-in delay-500 fill-both">
-            {STATS.map(({ value, label }) => (
-              <div key={label} className="text-center">
-                <div className="mb-1 font-heading text-3xl font-bold text-gold">{value}</div>
-                <div className="text-caption uppercase tracking-widest text-white/60">{label}</div>
-              </div>
-            ))}
-          </div>
         </Container>
 
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
@@ -511,7 +494,7 @@ export default async function HomePage() {
               <p className="overline mb-3">What We Do</p>
               <h2 className="font-heading text-display font-bold text-primary gold-line gold-line-center inline-block pb-4">Texas Commercial Real Estate Services</h2>
               <p className="mx-auto mt-6 max-w-2xl text-body text-foreground-muted">
-                A full-service Texas commercial real estate firm. Whether you&apos;re a tenant leasing your first office, an owner repositioning a portfolio, or an investor underwriting your tenth deal — we cover the full lifecycle.
+                Whether you&apos;re leasing your first office, repositioning a portfolio, or underwriting your tenth deal, the work below is handled by the same broker start to finish.
               </p>
             </div>
           </RevealOnScroll>
@@ -556,41 +539,22 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* ── Free Tools: Valuation + Market Reports ────────────────────── */}
+      {/* ── Free Tools: Market Reports ───────────────────────────────── */}
       <section className="section-luxury bg-background-cream">
         <Container>
           <RevealOnScroll>
             <div className="mb-12 text-center">
               <p className="overline mb-3">Free for Texas Commercial Owners & Investors</p>
               <h2 className="font-heading text-display-sm font-bold text-primary gold-line gold-line-center inline-block pb-3">
-                Tools and data, no obligation.
+                Texas market data, no obligation.
               </h2>
               <p className="mx-auto mt-6 max-w-2xl text-body text-foreground-muted">
-                We publish what we know about Texas commercial real estate — quarterly market reports, strategy playbooks, and an instant cap-rate-based valuation tool. Use them whether you ever talk to a CRECO broker or not.
+                We publish what we know about Texas commercial real estate — quarterly market reports and strategy playbooks. Use them whether you ever talk to a CRECO broker or not.
               </p>
             </div>
           </RevealOnScroll>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+          <div className="mx-auto max-w-2xl">
             <RevealOnScroll>
-              <Link
-                href="/property-valuation"
-                className="group h-full block rounded-2xl bg-white p-8 shadow-card hover:shadow-card-hover transition-all border border-border/40"
-              >
-                <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gold/10 text-gold">
-                  <Calculator className="h-6 w-6" />
-                </div>
-                <h3 className="mb-3 font-heading text-heading-lg font-bold text-primary group-hover:text-gold transition-colors">
-                  What's my property worth?
-                </h3>
-                <p className="mb-5 text-body-sm text-foreground-muted leading-relaxed">
-                  Instant preliminary value range using current Texas cap rates by property type and submarket. 60 seconds. No contact info required to see the number.
-                </p>
-                <span className="inline-flex items-center gap-2 text-body-sm font-semibold text-gold-dark group-hover:text-gold transition-colors">
-                  Try the valuation tool <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </span>
-              </Link>
-            </RevealOnScroll>
-            <RevealOnScroll delay={80}>
               <Link
                 href="/guides"
                 className="group h-full block rounded-2xl bg-white p-8 shadow-card hover:shadow-card-hover transition-all border border-border/40"
@@ -616,8 +580,8 @@ export default async function HomePage() {
       {/* ── Why Us ───────────────────────────────────────────────────── */}
       <section className="section-luxury bg-white">
         <Container>
-          <div className="grid grid-cols-1 gap-16 lg:grid-cols-2 lg:items-center">
-            <RevealOnScroll direction="left">
+          <div className="mx-auto max-w-3xl">
+            <RevealOnScroll>
               <p className="overline mb-4 text-gold">Why CRECO</p>
               <h2 className="mb-6 font-heading text-display-sm font-bold text-primary">
                 {s.about_headline}
@@ -627,7 +591,7 @@ export default async function HomePage() {
                 {[
                   'Statewide Texas market knowledge with deep San Antonio roots',
                   'Principal-level service on every engagement — never handed off',
-                  'Represents tenants, landlords, owners, and investors — leasing and sales across retail, office, industrial, flex, and land',
+                  'One broker on your file from first tour to closing — the same person who signs off on it',
                   'Portfolio-level reporting and strategy for multi-property owners',
                 ].map(item => (
                   <li key={item} className="flex items-start gap-3 text-body text-foreground-muted">
@@ -643,17 +607,7 @@ export default async function HomePage() {
                 </Button>
               </div>
             </RevealOnScroll>
-            <RevealOnScroll direction="right">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-                {STATS.map(({ value, label, icon: Icon }) => (
-                  <div key={label} className="rounded-xl border border-border bg-background-cream p-6 text-center">
-                    <Icon className="mx-auto mb-3 h-8 w-8 text-gold" />
-                    <div className="font-heading text-display-sm font-bold text-primary">{value}</div>
-                    <div className="mt-1 text-caption uppercase tracking-wider text-foreground-muted">{label}</div>
-                  </div>
-                ))}
-              </div>
-            </RevealOnScroll>
+
           </div>
         </Container>
       </section>

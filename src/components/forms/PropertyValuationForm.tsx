@@ -17,6 +17,7 @@
  */
 
 import { useState } from 'react';
+import { VALUATION_DISCLAIMER } from '@/lib/valuation-copy';
 import { ArrowRight, Calculator, CheckCircle, Loader2, TrendingUp } from 'lucide-react';
 import { getRecaptchaToken } from './Recaptcha';
 import { Honeypot } from './Honeypot';
@@ -316,7 +317,7 @@ export function PropertyValuationForm() {
 
           <div className="rounded-lg bg-primary/5 border border-primary/10 p-4">
             <p className="text-caption text-foreground-muted">
-              ⚠️ This is a preliminary range, not an appraisal. The actual value depends on lease structure, tenant credit, condition, deferred capex, comparable transactions, and market timing — all of which need a broker walkthrough. Use this number to ground the conversation, not to set a list price.
+              ⚠️ {VALUATION_DISCLAIMER} Use it to ground the conversation, not to set a list price.
             </p>
           </div>
 
@@ -326,10 +327,10 @@ export function PropertyValuationForm() {
           {!showLeadForm && !leadSubmitted && (
             <div className="rounded-lg bg-primary/5 border border-gold/30 p-4 sm:p-5">
               <p className="text-body-sm font-semibold text-primary mb-1">
-                This is a market-average estimate — your real number can sit 10–20% either side.
+                This is a market-average estimate — your real number can sit meaningfully either side of it.
               </p>
               <p className="text-caption text-foreground-muted mb-4">
-                A senior broker adjusts it for your lease terms, tenant credit, condition, and recent comps from active CRECO deals, then sends you the full breakdown. Free, within one business day, no obligation.
+                Zachary A. Stovall, CRECO&apos;s broker/owner, reviews it against your lease terms, tenant credit, condition and recent Texas comps, then sends you the full write-up himself. No charge, no obligation.
               </p>
               <button
                 type="button"
@@ -339,7 +340,7 @@ export function PropertyValuationForm() {
                 }}
                 className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-gold px-6 py-3.5 text-body-sm font-semibold text-primary hover:bg-gold-light"
               >
-                Send me the full broker valuation <ArrowRight className="h-4 w-4" />
+                Request my Broker Opinion of Value <ArrowRight className="h-4 w-4" />
               </button>
             </div>
           )}
@@ -349,7 +350,7 @@ export function PropertyValuationForm() {
               <Honeypot />
               <p className="text-body-sm text-primary font-semibold">Where should we send it?</p>
               <p className="text-caption text-foreground-muted -mt-2">
-                Just your name and email — a senior CRECO broker reviews your inputs, pulls comps, and follows up within one business day. No charge, no obligation.
+                Name, email and where the property is. Zack reviews your inputs, pulls comps and follows up personally — no charge, no obligation.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <input type="text" required value={leadName} onChange={e => setLeadName(e.target.value)} placeholder="Your name" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold" />
@@ -369,7 +370,7 @@ export function PropertyValuationForm() {
               <CheckCircle className="mx-auto h-10 w-10 text-green-700 mb-2" />
               <p className="font-heading text-heading-sm font-bold text-green-900 mb-1">Request received.</p>
               <p className="text-body-sm text-green-800">
-                A CRECO broker will follow up within one business day. Check your inbox for confirmation.
+                Zack has your request and will follow up personally. A confirmation is on its way to your inbox.
               </p>
             </div>
           )}

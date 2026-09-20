@@ -36,8 +36,8 @@ function valuationConfirmationHtml(name: string): string {
         </a>
       </div>
       <h2 style="margin:0 0 16px;color:#1A1A1A;font-size:20px">Got it, ${safeName}.</h2>
-      <p style="line-height:1.6">Thanks for using the CRECO valuation tool. A senior broker will follow up within one business day with a more thorough read on your property.</p>
-      <p style="line-height:1.6;margin-top:16px"><strong>What the full broker valuation will cover that the preliminary range can't:</strong></p>
+      <p style="line-height:1.6">Thanks for using the CRECO valuation tool. Zachary A. Stovall, CRECO&#39;s broker/owner, will follow up personally with a more thorough read on your property.</p>
+      <p style="line-height:1.6;margin-top:16px"><strong>What the Broker Opinion of Value covers that the instant range can&#39;t:</strong></p>
       <ul style="line-height:1.7;color:#3B3B3B;padding-left:20px">
         <li>Comparable Texas commercial transactions from the last 12 months in your submarket</li>
         <li>Lease analysis — WALT, tenant credit, escalators, expense recovery structure</li>
@@ -46,7 +46,7 @@ function valuationConfirmationHtml(name: string): string {
         <li>Net-to-seller math at multiple price points if you're considering disposition</li>
       </ul>
       <p style="line-height:1.6;margin-top:20px">If anything changes about your timeline or what you need, reply to this email or call <a href="tel:+12108173443" style="color:#C9A962">(210) 817-3443</a>.</p>
-      <p style="color:#525252;margin:24px 0 0">— The CRECO Team</p>
+      <p style="color:#525252;margin:24px 0 0">— Zachary A. Stovall, Broker<br/>CRECO, Commercial Real Estate Company</p>
       <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367 · 8000 Fair Oaks Pkwy, Suite 100, Fair Oaks Ranch, TX 78015</p>
     </div>
   `;
@@ -220,10 +220,17 @@ export async function POST(req: NextRequest) {
       }]).select('id').single();
 
       // Also create the contact in the CRM (owner: the broker). Non-blocking.
+      // A valuation request is an OWNER telling us what they hold and hinting
+      // they may sell — the highest-intent lead this site produces. Tagging it
+      // that way keeps it findable instead of sitting in the general pile.
+      const isValuation = source === 'valuation-request';
       await sendLeadToCrm({
         name, email, phone, company, message,
-        source: `website — crecotx.com (${source})`,
-        type: source === 'valuation-request' || source === 'sell' ? 'Seller' : 'Tenant',
+        source: isValuation
+          ? 'Valuation request — crecotx.com/property-valuation'
+          : `website — crecotx.com (${source})`,
+        type: isValuation || source === 'sell' ? 'Seller' : 'Tenant',
+        tags: isValuation ? ['Valuation', 'Owner'] : undefined,
       });
 
       if (error) {
