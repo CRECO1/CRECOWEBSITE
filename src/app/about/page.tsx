@@ -10,6 +10,7 @@ import { TeamSection, type Agent } from '@/components/team/TeamSection';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { FaqSection } from '@/components/marketing/FaqSection';
 import { supabase } from '@/lib/supabase';
+import { HERO_POSITIONING } from '@/lib/brand';
 import { ASSET_CLASSES, BUSINESS, CANONICAL_DESCRIPTION, CAPABILITIES, DIRECTOR_OF_LEASING, FOUNDER_ID, REPRESENTATION_STATEMENT, SITE_URL, breadcrumbList, businessRef, webPage } from '@/lib/schema';
 
 // 30-min ISR — the team grid is fetched on the server so it's in the HTML.
@@ -138,8 +139,8 @@ export default async function AboutPage() {
               <h1 className="font-heading text-display font-bold">
                 Where your real estate ventures find the support they deserve.
               </h1>
-              <p className="mt-6 text-body-lg text-white/80">
-                {CANONICAL_DESCRIPTION}
+              <p className="mt-6 max-w-2xl text-body-lg text-white/80">
+                {HERO_POSITIONING}
               </p>
             </div>
           </Container>

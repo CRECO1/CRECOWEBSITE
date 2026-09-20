@@ -573,7 +573,7 @@ export default function ServicesPage() {
                 Full-service Texas commercial real estate.
               </h1>
               <p className="mt-6 text-body-lg text-white/80">
-                Whether you&apos;re leasing your first office, repositioning a portfolio, or breaking ground on a new development — CRECO covers the full lifecycle of Texas commercial real estate. Principal-level attention on every engagement, statewide.
+                Leasing, owner services, investment sales and development — with principal-level attention on every engagement.
               </p>
             </div>
           </Container>

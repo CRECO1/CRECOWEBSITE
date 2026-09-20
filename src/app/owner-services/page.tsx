@@ -110,7 +110,7 @@ const FAQS = [
 const DEFAULTS = {
   eyebrow: 'Texas Commercial Real Estate · Owner Services',
   h1: 'Built for Texas commercial property owners with portfolios.',
-  subhead: 'Hold/sell analysis. Repositioning strategy. 1031 exchange identification. Tenant mix optimization. Property management with institutional-quality reporting at boutique-firm responsiveness. CRECO is the operating partner Texas commercial property owners trust to grow NOI across portfolios of 5 to 100+ properties.',
+  subhead: 'Hold/sell analysis, repositioning, 1031 identification and tenant mix optimization — with property management built for portfolios of 5 to 100+ properties.',
   intro_paragraphs: [
     'When you owned one or two properties, a basic management firm was enough. But once you cross 5 — and certainly by 10 — properties, you start needing strategy, not just operations. Which assets are dragging your portfolio? When should you sell vs reposition? Where can you push rents? Are your tenants the right ones? When does a 1031 make sense?',
     "These are not questions a property manager answers. They are questions a principal-level commercial real estate firm answers — and that's what CRECO is built to be.",

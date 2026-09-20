@@ -18,7 +18,17 @@ export type RepresentationPageContent = {
   metaDescription: string;
   eyebrow: string;
   h1: string;
-  /** The one-sentence direct answer shown first on the page. */
+  /**
+   * The hero's short form — one confident line. Mirrors the HERO_POSITIONING
+   * pattern: the long answer is not deleted, it moves just below the fold.
+   */
+  heroLine: string;
+  /**
+   * The full direct answer: every asset type, the synonyms search needs, and
+   * the not-tenant-only correction. Still rendered on the page (in the answer
+   * band under the hero) and still the description in WebPage/Service schema —
+   * it simply is not the first wall of text a human meets.
+   */
   directAnswer: string;
   serviceName: string;
   serviceType: string[];
@@ -47,18 +57,20 @@ export const LANDLORD_PAGE: RepresentationPageContent = {
     'Yes — CRECO represents landlords and property owners: leasing, tenant procurement, and dispositions for retail, office, industrial, flex, and land across Texas.',
   eyebrow: 'Landlord & Owner Representation',
   h1: 'Yes — CRECO represents landlords and property owners.',
+  heroLine:
+    'Leasing, tenant procurement and dispositions for owners of retail, office, industrial, flex and land across Texas.',
   directAnswer:
-    `CRECO - Commercial Real Estate Company represents landlords and commercial property owners — leasing their space, procuring and negotiating with tenants, and selling (disposing of) their properties — across ${PROPERTY_TYPES_SENTENCE}, for lease and for sale, throughout Texas. CRECO is a full-service brokerage, not a tenant-only firm.`,
+    `CRECO - Commercial Real Estate Company represents landlords and commercial property owners — leasing their space, procuring and negotiating with tenants, and selling their properties — across ${PROPERTY_TYPES_SENTENCE}, for lease and for sale, throughout Texas. CRECO is a full-service brokerage, not a tenant-only firm.`,
   serviceName: 'Landlord and owner representation',
   serviceType: ['Landlord representation', 'Owner representation', 'Commercial leasing (listing side)', 'Tenant procurement', 'Commercial property disposition'],
   sections: [
     {
       heading: 'What CRECO does for landlords and owners',
       items: [
-        { title: 'Leasing (listing-side representation)', body: 'CRECO lists and markets available space for the owner, prepares marketing materials, syndicates the listing to commercial listing platforms, and handles inquiries and tours on the owner\'s behalf.' },
+        { title: 'Leasing', body: 'Listing-side representation: CRECO lists and markets available space for the owner, prepares marketing materials, syndicates the listing to commercial listing platforms, and handles inquiries and tours on the owner\'s behalf.' },
         { title: 'Tenant procurement', body: 'CRECO sources and qualifies prospective tenants — including outreach to tenant-rep brokers and businesses that fit the property — and helps the owner evaluate each prospect.' },
         { title: 'Lease negotiation', body: 'CRECO negotiates letters of intent and lease terms on the owner\'s behalf — rent, term, concessions, tenant improvements, and renewal options — alongside the owner\'s attorney.' },
-        { title: 'Dispositions (sales)', body: 'When an owner decides to sell rather than lease, CRECO represents the owner as seller — pricing guidance, marketing to buyers and investors, offer negotiation, and coordination through closing.' },
+        { title: 'Dispositions', body: 'When an owner decides on a sale rather than a lease, CRECO represents the owner as seller — pricing guidance, marketing to buyers and investors, offer negotiation, and coordination through closing.' },
         { title: 'Renewals and vacancy planning', body: 'CRECO helps owners plan ahead of lease expirations: renew an existing tenant, re-lease the space, or reposition it.' },
         { title: 'Property management and valuation', body: 'For owners who want it, CRECO also offers commercial property management and a no-obligation broker opinion of value.' },
       ],
@@ -121,8 +133,10 @@ export const SELLER_INVESTOR_PAGE: RepresentationPageContent = {
     'CRECO represents sellers and investors on Texas commercial acquisitions and dispositions — retail, office, industrial, flex, and land. TREC #9014367.',
   eyebrow: 'Sellers & Investors',
   h1: 'CRECO represents sellers and investors — acquisitions and dispositions.',
+  heroLine:
+    'Selling commercial property for owners, and sourcing it for investors and owner-users, across Texas.',
   directAnswer:
-    `CRECO - Commercial Real Estate Company represents sellers, buyers, and investors in commercial real estate transactions — selling (disposing of) property for owners and helping investors and owner-users acquire it — across ${PROPERTY_TYPES_SENTENCE}, throughout Texas. CRECO is a full-service brokerage, not a tenant-only firm.`,
+    `CRECO - Commercial Real Estate Company represents sellers, buyers, and investors in commercial real estate transactions — selling property for owners and helping investors and owner-users acquire it — across ${PROPERTY_TYPES_SENTENCE}, throughout Texas. CRECO is a full-service brokerage, not a tenant-only firm.`,
   serviceName: 'Seller and investor representation',
   serviceType: ['Investment sales brokerage', 'Seller representation', 'Buyer representation', 'Commercial property acquisitions', 'Commercial property dispositions', '1031 exchange replacement property'],
   sections: [

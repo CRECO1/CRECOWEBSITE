@@ -82,7 +82,7 @@ export default function SellPage() {
                   <span className="text-gradient-gold">Your Commercial Asset</span>
                 </h1>
                 <p className="mb-8 max-w-lg text-body-lg text-white/70">
-                  Whether you&apos;re disposing of a stabilized asset, leasing up vacant space, or testing the market — CRECO brings institutional-quality marketing and the relationships to close.
+                  A stabilized asset, vacant space, or just testing the market — CRECO brings the marketing and the relationships to close.
                 </p>
                 <div className="flex flex-wrap gap-4">
                   <Button size="lg" asChild>

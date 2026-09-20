@@ -46,13 +46,13 @@ export function RepresentationPage({ content }: { content: RepresentationPageCon
           </Container>
         </div>
 
-        {/* Direct answer first */}
+        {/* Hero: one confident line. The full answer sits in the band below. */}
         <section className="bg-primary py-16 sm:py-20 text-white">
           <Container>
             <div className="max-w-4xl">
               <p className="overline mb-3 text-gold">{content.eyebrow}</p>
               <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-5 leading-tight">{content.h1}</h1>
-              <p className="text-body-lg text-white/85 leading-relaxed max-w-3xl">{content.directAnswer}</p>
+              <p className="text-body-lg text-white/85 leading-relaxed max-w-2xl">{content.heroLine}</p>
               <div className="mt-7 flex flex-wrap gap-4">
                 <Link href="/get-started" className="inline-flex items-center gap-2 rounded-lg bg-gold px-7 py-3 text-body-sm font-semibold text-primary hover:bg-gold-light">
                   Talk to CRECO <ArrowRight className="h-4 w-4" />
@@ -62,6 +62,16 @@ export function RepresentationPage({ content }: { content: RepresentationPageCon
                 </a>
               </div>
             </div>
+          </Container>
+        </section>
+
+        {/* The full direct answer — every asset type, the synonyms search needs,
+            and the not-tenant-only correction. Relocated out of the hero rather
+            than removed: it is still visible, still crawled, and still the
+            description behind this page's WebPage and Service schema. */}
+        <section className="border-b border-border bg-background-cream py-8">
+          <Container>
+            <p className="max-w-4xl text-body leading-relaxed text-foreground-muted">{content.directAnswer}</p>
           </Container>
         </section>
 
