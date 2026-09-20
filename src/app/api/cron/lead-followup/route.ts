@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { escapeHtml } from '@/lib/sanitize';
+import { automatedFollowupEnabled, followupDisabledBody } from '@/lib/automated-followup';
 
 /**
  * GET /api/cron/lead-followup
@@ -190,6 +191,13 @@ export async function GET(req: NextRequest) {
   }
   if (providedAuth !== expectedAuth) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // 1b. Automated follow-up email is off unless the broker switches it on.
+  //     Checked before any read or write, so a disabled run cannot mark a
+  //     lead as followed-up and swallow it.
+  if (!automatedFollowupEnabled()) {
+    return NextResponse.json(followupDisabledBody('lead-followup'));
   }
 
   // 2. Env sanity

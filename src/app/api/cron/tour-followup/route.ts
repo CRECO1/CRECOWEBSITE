@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { escapeHtml } from '@/lib/sanitize';
+import { automatedFollowupEnabled, followupDisabledBody } from '@/lib/automated-followup';
 
 /**
  * GET /api/cron/tour-followup
@@ -139,6 +140,11 @@ export async function GET(req: NextRequest) {
   }
   if (req.headers.get('authorization') !== expected) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  // Automated follow-up email is off unless the broker switches it on. Checked
+  // before any read or write, so a disabled run cannot advance follow_up_stage.
+  if (!automatedFollowupEnabled()) {
+    return NextResponse.json(followupDisabledBody('tour-followup'));
   }
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {
     return NextResponse.json({ error: 'Supabase env missing' }, { status: 503 });
