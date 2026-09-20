@@ -1,22 +1,23 @@
 /**
  * CRECO recruiting copy — what we tell commercial agents.
  *
- * Every claim here is one the broker has confirmed. Economics (splits, caps,
- * desk fees, bonuses, benefits) are NOT stated as fact, because none of it has
- * been set: those render as visible [confirm] placeholders so an unfinished
- * number is obvious on the page instead of quietly becoming a promise. Replace
- * a placeholder only with a figure Zack has actually given you.
+ * Every claim here is one the broker has confirmed. Economics are the
+ * exception: the terms ARE settled, but Zack does not want them public, so no
+ * split percentage, cap, fee figure or contractor classification may appear in
+ * this file or anything it feeds. See PRIVATE_TERMS below.
  *
  * The residential mirror of this lives in the Fair Oaks repo at
  * src/lib/recruiting.ts. Keep the two in step — an agent may well read both.
  */
 
-export const CONFIRM = {
-  split: '[commission split — confirm]',
-  capPlan: '[cap / post-cap structure — confirm]',
-  fees: '[desk / monthly fees — confirm]',
-  benefits: '[benefits & perks — confirm]',
-} as const;
+/**
+ * How economics are described in PUBLIC copy. The real terms live off the web
+ * surface entirely, in
+ * /Users/creco/Documents/CRECO/Marketing/recruiting/INTERNAL-recruiting-terms.md.
+ * Do not put a number in this string — anything here renders on a public page.
+ */
+export const PRIVATE_TERMS =
+  'Competitive commission structure and terms discussed directly with qualified candidates.';
 
 export interface ValueProp {
   icon: 'UserCheck' | 'Laptop' | 'Megaphone' | 'Search' | 'Network' | 'DollarSign';
@@ -59,6 +60,6 @@ export const CRECO_VALUE_PROPS: ValueProp[] = [
     icon: 'DollarSign',
     title: 'Economics worth a conversation',
     body:
-      `Split ${CONFIRM.split}, ${CONFIRM.capPlan}, ${CONFIRM.fees}. Zack sets these directly with you — no committee and no sliding scale to decode.`,
+      `${PRIVATE_TERMS} Zack sets them directly with you — no committee and no sliding scale to decode.`,
   },
 ];

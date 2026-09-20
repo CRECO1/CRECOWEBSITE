@@ -71,11 +71,11 @@ const FAQS = [
   },
   {
     q: 'Where do CRECO agents work from?',
-    a: "Our headquarters is at 8000 Fair Oaks Pkwy in Fair Oaks Ranch — a mixed-use commercial center we own and operate. [Desk / office space for agents — confirm]. Most of our team works hybrid: in-office for client meetings and team time, in the field for tours, and from anywhere for desk work.",
+    a: "Our headquarters is at 8000 Fair Oaks Pkwy in Fair Oaks Ranch — a mixed-use commercial center we own and operate. Most of our team works hybrid: in-office for client meetings and team time, in the field for tours, and from anywhere for desk work.",
   },
   {
     q: 'What does the comp look like?',
-    a: "Commission split [commission split — confirm], [cap / post-cap structure — confirm], [desk / monthly fees — confirm]. Zack goes through the exact numbers with you on the first call rather than publishing a headline figure here. What is settled: the platform — the CRM with e-signature, the listing system and the marketing behind it — comes with the seat.",
+    a: "Competitive commission structure and terms, reviewed directly with qualified candidates. Zack goes through the full picture with you on the first call rather than publishing a headline figure here. What we will say publicly: the platform — the CRM with e-signature, the listing system and the marketing behind it — comes with the seat.",
   },
   {
     q: "Is the application confidential?",
