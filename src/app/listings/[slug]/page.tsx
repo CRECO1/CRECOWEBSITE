@@ -137,7 +137,7 @@ export default async function ListingDetailPage({ params }: Props) {
     },
     {
       q: `How do I tour ${listing!.title}?`,
-      a: `Request a tour with the form on this page or call ${BUSINESS.phoneDisplay}. CRECO responds within one business day and can arrange in-person or virtual tours.`,
+      a: `Request a tour with the form on this page or call ${BUSINESS.phoneDisplay}. CRECO responds personally and can arrange in-person or virtual tours.`,
     },
   ];
 

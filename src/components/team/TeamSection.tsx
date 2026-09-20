@@ -314,7 +314,7 @@ export function TeamSection({
                   <CheckCircle className="mx-auto h-8 w-8 text-green-700 mb-1.5" />
                   <p className="text-body-sm font-semibold text-green-900">Message sent.</p>
                   <p className="text-caption text-green-800">
-                    {selected.name.split(' ')[0]} will follow up shortly — usually the same day.
+                    {selected.name.split(' ')[0]} will follow up with you personally.
                   </p>
                 </div>
               ) : (

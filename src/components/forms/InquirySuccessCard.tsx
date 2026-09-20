@@ -7,7 +7,7 @@
  *
  * Why a shared component? Three reasons:
  *   1. The previous per-form success states all said roughly the same
- *      thing ("Thanks, we'll be in touch within one business day") but
+ *      thing ("Thanks, we'll be in touch") but
  *      with different copy, alignments, and trust signals. Visitors
  *      who submit on Plaza then later on Elkhorn shouldn't get two
  *      visually-different confirmations.
@@ -178,7 +178,7 @@ export function InquirySuccessCard({
             </span>
             <div className="flex-1">
               <p className="font-heading text-body-sm font-bold text-primary mb-0.5 flex items-center gap-2">
-                <Clock className="h-4 w-4 text-gold" /> {firstName} replies personally — within one business day
+                <Clock className="h-4 w-4 text-gold" /> {firstName} replies personally — not an auto-responder
               </p>
               <p className="text-body-sm text-foreground-muted leading-relaxed">
                 By phone if you left a number, by email otherwise. Not a router, not a form-response — the actual broker.

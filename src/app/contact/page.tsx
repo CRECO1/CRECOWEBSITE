@@ -175,7 +175,7 @@ export default function ContactPage() {
                       </div>
                       <h2 className="mb-2 font-heading text-heading-xl font-bold text-primary">Message Sent</h2>
                       <p className="text-body text-foreground-muted max-w-md mx-auto">
-                        Thank you for reaching out. A CRECO broker will contact you within one business day.
+                        Thank you for reaching out. A CRECO broker will contact you personally.
                       </p>
                     </div>
                   ) : (

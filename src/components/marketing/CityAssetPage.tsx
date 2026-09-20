@@ -113,7 +113,7 @@ function cityAssetFaqs(config: CityAssetConfig, listings: Listing[]): Faq[] {
     },
     {
       q: `How do I contact CRECO about ${asset} space in ${city}?`,
-      a: `Call ${BUSINESS.phoneDisplay}, email ${BUSINESS.email}, or use the Get Started form at crecotx.com/get-started. CRECO is headquartered at ${BUSINESS.fullAddress} and works ${city} and statewide Texas; a broker responds within one business day.`,
+      a: `Call ${BUSINESS.phoneDisplay}, email ${BUSINESS.email}, or use the Get Started form at crecotx.com/get-started. CRECO is headquartered at ${BUSINESS.fullAddress} and works ${city} and statewide Texas; a broker responds personally.`,
     },
   ];
 }

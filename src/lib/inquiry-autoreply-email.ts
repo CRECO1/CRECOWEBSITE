@@ -79,7 +79,7 @@ export function buildInquiryAutoreplyEmail({ name, pathLabel }: InquiryAutoreply
             <td style="padding:30px 28px 0">
               <h1 style="margin:0;color:${INK};font-size:22px;line-height:1.3;font-weight:700">Thanks, ${firstName} — we got your inquiry.</h1>
               <p style="margin:14px 0 0;color:${MUTED};font-size:15px;line-height:1.65">
-                Your request came through to our team${pathLabel ? ` (<strong style="color:${INK}">${escapeHtml(pathLabel)}</strong>)` : ''}, and <strong style="color:${INK}">a CRECO team member will reach out within one business day</strong>.
+                Your request came through to our team${pathLabel ? ` (<strong style="color:${INK}">${escapeHtml(pathLabel)}</strong>)` : ''}, and <strong style="color:${INK}">a CRECO team member will reach out to you personally</strong>.
               </p>
               <p style="margin:12px 0 0;color:${MUTED};font-size:15px;line-height:1.65">
                 We are a full-service brokerage, so the same team can help whether you are leasing, buying, selling, or weighing options — and there is no obligation in any of it.

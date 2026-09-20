@@ -97,7 +97,7 @@ ${REPRESENTATION_STATEMENT}
 - Landlords and owners: leasing and marketing of commercial property, lease negotiation, and property management. CRECO also owns and leases its own centers, so it underwrites deals the way owners do.
 - Investors, buyers, and sellers: investment sales and acquisitions, 1031 exchange replacement property, and a no-obligation broker opinion of value (typically within one to two business days).
 - Intermediary: when both parties authorize it in writing, CRECO can act as an intermediary between landlord and tenant or seller and buyer, as permitted by Texas law.
-- Every engagement is led by a senior broker; inquiries are answered within one business day.
+- Every engagement is led by a senior broker, and inquiries are answered personally.
 
 ${REPRESENTATION_PAGES.map(p => `## ${p.label}
 URL: ${SITE_URL}${p.path}

@@ -589,7 +589,7 @@ export default async function DietzElkhornPage() {
                   Tell us about your concept.
                 </h2>
                 <p className="text-body text-foreground-muted leading-relaxed max-w-xl mx-auto">
-                  A CRECO broker will follow up within one business day. Established
+                  A CRECO broker will follow up personally. Established
                   operators with strong concepts get first pick of end caps and
                   food-ready bays.
                 </p>

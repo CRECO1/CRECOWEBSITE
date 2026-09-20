@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     images: [DEFAULT_OG_IMAGE],
     title: 'Get Started with CRECO',
     description:
-      'Submit your tenant needs or owner requirements — a CRECO principal responds within one business day with vetted options.',
+      'Submit your tenant needs or owner requirements — a CRECO principal responds personally with vetted options.',
     url: 'https://www.crecotx.com/get-started',
     type: 'website',
   },

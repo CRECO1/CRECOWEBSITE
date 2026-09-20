@@ -49,7 +49,7 @@ const ABOUT_FAQS = [
   },
   {
     q: 'How do I contact CRECO?',
-    a: `Call ${BUSINESS.phoneDisplay}, email ${BUSINESS.email}, or visit ${BUSINESS.fullAddress} (${BUSINESS.hours}). A broker responds within one business day.`,
+    a: `Call ${BUSINESS.phoneDisplay}, email ${BUSINESS.email}, or visit ${BUSINESS.fullAddress} (${BUSINESS.hours}). A broker responds personally.`,
   },
 ];
 

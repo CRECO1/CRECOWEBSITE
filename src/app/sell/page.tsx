@@ -49,7 +49,7 @@ const STATS = [
   { icon: Building2, value: 'Full-service', label: 'Leasing & investment sales' },
   { icon: FileText, value: `TREC #${BUSINESS.trecLicense}`, label: 'Licensed Texas brokerage' },
   { icon: TrendingUp, value: 'No-obligation', label: 'Broker opinion of value' },
-  { icon: Users, value: 'Same day', label: 'Response, business days' },
+  { icon: Users, value: 'Principal-led', label: 'You deal with a broker directly' },
 ];
 export default function SellPage() {
   return (

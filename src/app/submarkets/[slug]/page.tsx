@@ -432,7 +432,7 @@ export default async function SubmarketDetailPage({ params }: Props) {
             <div className="text-center max-w-2xl mx-auto">
               <h2 className="font-heading text-display-sm font-bold mb-4">Looking for space in {submarket.name}?</h2>
               <p className="text-body text-white/70 mb-8">
-                Tell us what you need — size, budget, must-haves — and a CRECO broker will respond within one business day with vetted options across the {submarket.name} submarket.
+                Tell us what you need — size, budget, must-haves — and a CRECO broker will respond personally with vetted options across the {submarket.name} submarket.
               </p>
               <Button size="lg" asChild>
                 <Link href="/get-started">Get Started</Link>

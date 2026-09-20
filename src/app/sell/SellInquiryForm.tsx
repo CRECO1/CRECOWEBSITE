@@ -58,7 +58,7 @@ export function SellInquiryForm() {
           <CheckCircle className="mx-auto mb-4 h-14 w-14 text-gold" />
           <h3 className="font-heading text-heading-xl font-bold text-primary mb-2">Request Received</h3>
           <p className="text-body text-foreground-muted">
-            A CRECO broker will reach out within one business day to discuss your property and next steps.
+            A CRECO broker will reach out personally to discuss your property and next steps.
           </p>
         </div>
       ) : (

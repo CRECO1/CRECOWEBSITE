@@ -121,7 +121,7 @@ const FAQS = [
   },
   {
     q: 'How do I contact CRECO?',
-    a: 'Call or text (210) 817-3443, email info@crecotx.com, or visit the office at 8000 Fair Oaks Pkwy, Suite 100, Fair Oaks Ranch, TX 78015 (Monday–Friday, 9 AM–6 PM). A senior broker responds within one business day.',
+    a: 'Call or text (210) 817-3443, email info@crecotx.com, or visit the office at 8000 Fair Oaks Pkwy, Suite 100, Fair Oaks Ranch, TX 78015 (Monday–Friday, 9 AM–6 PM). A CRECO broker responds personally.',
   },
   {
     q: 'What makes CRECO different from CBRE, JLL, or Cushman & Wakefield?',
@@ -136,7 +136,7 @@ const DEFAULT_SETTINGS = {
   about_headline: 'A trailblazing approach to Texas commercial real estate.',
   about_text: 'CRECO is built on innovation, expertise, and a relentless commitment to client outcomes. We blend deep Texas market knowledge with the analytical rigor you would expect from a national firm — and we keep our roster small enough that every client works directly with a principal. From single-asset tenants to multi-property portfolio owners, we treat your assignment like our name is on the building.',
   cta_headline: 'Need space — or have space to fill?',
-  cta_subheadline: 'Submit your tenant requirements or list your property in 2 minutes. A CRECO principal responds within one business day with vetted options or a no-obligation property opinion.',
+  cta_subheadline: 'Submit your tenant requirements or list your property in 2 minutes. A CRECO principal responds personally with vetted options or a no-obligation property opinion.',
   phone: '(210) 817-3443',
   email: 'info@crecotx.com',
   address: '8000 Fair Oaks Pkwy, Suite 100\nFair Oaks Ranch, TX 78015',

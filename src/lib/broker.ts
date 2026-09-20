@@ -8,7 +8,7 @@
  * Why specific > generic:
  *   Real estate is a trust business. "A CRECO principal will follow
  *   up" reads like a call center. "Zachary Stovall, Broker — reply in
- *   your inbox within one business day" reads like a real person.
+ *   your inbox" reads like a real person.
  *   Every conversion research study we've seen puts a named,
  *   photographed broker adjacent to a form as one of the top-3 lifts.
  *

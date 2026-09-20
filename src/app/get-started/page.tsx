@@ -52,7 +52,7 @@ const PATHS: Record<Path, PathConfig> = {
     description: 'Lease office, warehouse, retail, flex, or land',
     icon: Building2,
     ctaCopy: 'Send My Requirements',
-    successCopy: 'A CRECO broker will email you 3-5 vetted properties that match your size, budget, and submarket within one business day.',
+    successCopy: 'A CRECO broker will email you vetted properties that match your size, budget and submarket.',
     steps: [
       {
         id: 'space_type',
@@ -141,7 +141,7 @@ const PATHS: Record<Path, PathConfig> = {
     description: 'Acquire commercial property — single asset, portfolio, or 1031 exchange',
     icon: ShoppingBag,
     ctaCopy: 'Send My Acquisition Profile',
-    successCopy: 'A CRECO investment principal will reach out within one business day with deal flow that matches your thesis — including off-market opportunities our network sees first.',
+    successCopy: 'A CRECO investment principal will reach out personally with deal flow that matches your thesis — including off-market opportunities our network sees first.',
     steps: [
       {
         id: 'acquisition_type',
@@ -425,7 +425,7 @@ const PATHS: Record<Path, PathConfig> = {
     description: 'Not sure yet — want to learn more about CRECO',
     icon: Compass,
     ctaCopy: 'Connect Me With CRECO',
-    successCopy: 'A CRECO principal will reach out within one business day to learn more about your situation and recommend an approach.',
+    successCopy: 'A CRECO principal will reach out personally to learn more about your situation and recommend an approach.',
     steps: [
       {
         id: 'interest',
@@ -635,7 +635,7 @@ export default function GetStartedPage() {
                   Where should we send your matches?
                 </h2>
                 <p className="text-body text-foreground-muted">
-                  A CRECO broker responds within one business day.
+                  A CRECO broker responds personally.
                 </p>
               </div>
               <form onSubmit={handleContact} className="space-y-4 bg-white rounded-2xl shadow-card p-8">

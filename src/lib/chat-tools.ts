@@ -62,7 +62,7 @@ export const SEARCH_LISTINGS_TOOL = {
 export const CAPTURE_LEAD_TOOL = {
   name: 'capture_lead',
   description:
-    'Record a lead in the CRECO CRM so a broker follows up personally. Use this only when the visitor has explicitly agreed to be contacted and has shared their name AND email. If they only share a first name or only an email, ask for the missing piece before calling. Do not call this speculatively — capturing a lead without consent is a bad experience. After a successful call, tell the visitor a CRECO principal will follow up within one business day.',
+    'Record a lead in the CRECO CRM so a broker follows up personally. Use this only when the visitor has explicitly agreed to be contacted and has shared their name AND email. If they only share a first name or only an email, ask for the missing piece before calling. Do not call this speculatively — capturing a lead without consent is a bad experience. After a successful call, tell the visitor a CRECO principal will follow up personally. Never promise a specific response time.',
   input_schema: {
     type: 'object' as const,
     properties: {
@@ -242,7 +242,7 @@ export async function executeCaptureLead(input: CaptureLeadInput) {
   return {
     success: true,
     lead_id: data?.id,
-    message: 'Lead recorded. A CRECO principal will follow up within one business day by phone or email. Confirm this to the visitor.',
+    message: 'Lead recorded. A CRECO principal will follow up personally by phone or email. Confirm this to the visitor without promising a specific response time.',
   };
 }
 

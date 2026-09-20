@@ -23,8 +23,8 @@ export const metadata: Metadata = {
 const VALUE_PROPS = [
   {
     icon: BellRing,
-    title: 'New listings the same day',
-    body: 'We email you within 24 hours of a matching Texas commercial property going live on the CRECO inventory — often before it hits LoopNet or Crexi.',
+    title: 'New listings as they go live',
+    body: 'We email you when a matching Texas commercial property goes live on the CRECO inventory — often before it hits LoopNet or Crexi.',
   },
   {
     icon: Filter,

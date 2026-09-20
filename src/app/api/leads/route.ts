@@ -99,8 +99,8 @@ function genericConfirmationHtml(name: string, propertyInterest: string | null):
             <div style="width:26px;height:26px;background:#C9A962;color:#1A1A1A;border-radius:50%;text-align:center;line-height:26px;font-weight:700;font-size:13px">2</div>
           </td>
           <td style="padding:8px 0 8px 6px;vertical-align:top;line-height:1.5">
-            <strong style="color:#1A1A1A">Personal reply &mdash; within one business day.</strong><br/>
-            <span style="color:#525252;font-size:14px">By phone if you left a number, by email otherwise. Weekend submits get Monday-morning replies.</span>
+            <strong style="color:#1A1A1A">A personal reply &mdash; from a broker, not an auto-responder.</strong><br/>
+            <span style="color:#525252;font-size:14px">By phone if you left a number, by email otherwise.</span>
           </td>
         </tr>
         <tr>

@@ -501,7 +501,7 @@ export default function LytleMainStPage() {
                     Tell us about your concept.
                   </h2>
                   <p className="text-body text-foreground-muted leading-relaxed">
-                    Drop your details and CRECO &mdash; the owner &mdash; will follow up within one business day
+                    Drop your details and CRECO &mdash; the owner &mdash; will follow up personally
                     with current availability, suite sizes, lease terms, and timing. Owner-operator
                     conversation; no third-party handoff.
                   </p>

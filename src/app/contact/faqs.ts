@@ -7,7 +7,7 @@ export const CONTACT_FAQS = [
   },
   {
     q: 'What are CRECO\'s office hours?',
-    a: `${BUSINESS.hours}. Tours and meetings outside those hours are available by appointment, and web inquiries are answered within one business day.`,
+    a: `${BUSINESS.hours}. Tours and meetings outside those hours are available by appointment, and web inquiries are answered personally.`,
   },
   {
     q: 'Does it cost anything to talk to CRECO?',

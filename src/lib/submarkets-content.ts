@@ -103,7 +103,7 @@ export const SUBMARKETS: SubmarketEntry[] = [
       ],
       servicesIntro: [
         'CRECO\'s Round Rock practice covers the spectrum — tenant rep for businesses scouting Williamson County space, owner-side leasing for landlords, investment advisory for buyers and sellers, and 1031 coordination for Texas portfolio owners adding Round Rock exposure.',
-        'We\'re particularly active in the I-35 small-bay industrial segment, where the supply tightness creates both leasing leverage for landlords and acquisition opportunity for owner-users. We track every available 5K–30K SF industrial block in Williamson County and can usually surface off-market options through our broker network within 48 hours of a tenant requirement coming in.',
+        'We\'re particularly active in the I-35 small-bay industrial segment, where the supply tightness creates both leasing leverage for landlords and acquisition opportunity for owner-users. We track every available 5K–30K SF industrial block in Williamson County and can usually surface off-market options through our broker network once a tenant requirement comes in.',
         'For Round Rock office tenants — particularly in Class B suburban — we use the current concession environment aggressively. Free rent and TI are at multi-year highs, and tenants who structure deals well in 2026 lock in below-market economics for the rest of the cycle.',
       ],
       submarkets: [

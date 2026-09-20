@@ -29,7 +29,7 @@ const SERVICES_FAQS = [
   },
   {
     q: 'How do I start working with CRECO?',
-    a: `Call ${BUSINESS.phoneDisplay}, email ${BUSINESS.email}, or submit the Get Started form. A senior broker responds within one business day. CRECO is licensed by the Texas Real Estate Commission, ${BUSINESS.trecLicenseDisplay}.`,
+    a: `Call ${BUSINESS.phoneDisplay}, email ${BUSINESS.email}, or submit the Get Started form. A senior broker responds personally. CRECO is licensed by the Texas Real Estate Commission, ${BUSINESS.trecLicenseDisplay}.`,
   },
 ];
 

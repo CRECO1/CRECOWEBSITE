@@ -338,7 +338,7 @@ export function RetailLeasingInquiryForm() {
       </button>
 
       <p className="text-caption text-foreground-muted text-center leading-relaxed">
-        Tours are walked weekly. A CRECO broker will follow up within one business day
+        Tours are walked weekly. A CRECO broker will follow up personally
         with your suite recommendation and proposed times.
       </p>
     </form>
