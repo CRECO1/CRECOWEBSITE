@@ -9,8 +9,8 @@
 
 import { useEffect, useState } from 'react';
 import { ArrowRight, CheckCircle, Lock } from 'lucide-react';
-import { getRecaptchaToken } from './Recaptcha';
 import { Honeypot } from './Honeypot';
+import { useCaptureSubmit } from '@/lib/use-capture-submit';
 
 const STORAGE_KEY_PREFIX = 'creco-guide-unlocked-';
 
@@ -26,8 +26,6 @@ export function LeadMagnetForm({
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   // Auto-unlock on mount if user has previously unlocked this guide
   useEffect(() => {
@@ -38,40 +36,26 @@ export function LeadMagnetForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assetSlug]);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setError(null);
-    setSubmitting(true);
-    try {
-      const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
-      const recaptchaToken = await getRecaptchaToken('subscribe_lead_magnet');
-      const res = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          name,
-          subscription_type: 'lead-magnet',
-          source: `guide:${assetSlug}`,
-          asset_slug: assetSlug,
-          filters: company ? { company } : null,
-          recaptchaToken,
-          website: honeypot,
-        }),
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || 'Could not unlock guide');
-      }
-      try {
-        localStorage.setItem(STORAGE_KEY_PREFIX + assetSlug, '1');
-      } catch { /* ignore quota errors */ }
+  const { submitting, error, submit } = useCaptureSubmit({
+    endpoint: '/api/subscribe',
+    recaptchaAction: 'subscribe_lead_magnet',
+    buildPayload: ({ recaptchaToken, website }) => ({
+      email,
+      name,
+      subscription_type: 'lead-magnet',
+      source: `guide:${assetSlug}`,
+      asset_slug: assetSlug,
+      filters: company ? { company } : null,
+      recaptchaToken,
+      website,
+    }),
+    errorFallback: undefined,   // keep the API's own message, e.g. "Could not unlock guide"
+    onSuccess: () => {
+      // Remember the unlock so a refresh doesn't ask for the email again.
+      try { localStorage.setItem(STORAGE_KEY_PREFIX + assetSlug, '1'); } catch { /* ignore quota errors */ }
       onUnlock();
-    } catch (err) {
-      setError((err as Error).message);
-      setSubmitting(false);
-    }
-  }
+    },
+  });
 
   return (
     <div className="form-success-box bg-gradient-to-br from-gold/5 to-transparent p-7 sm:p-10 my-8">
@@ -99,7 +83,7 @@ export function LeadMagnetForm({
         </ul>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={submit} className="space-y-4">
         <Honeypot />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <input

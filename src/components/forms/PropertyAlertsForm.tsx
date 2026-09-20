@@ -11,8 +11,8 @@
 
 import { useState, useEffect } from 'react';
 import { ArrowRight, CheckCircle, BellRing } from 'lucide-react';
-import { getRecaptchaToken } from './Recaptcha';
 import { Honeypot } from './Honeypot';
+import { useCaptureSubmit } from '@/lib/use-capture-submit';
 
 const PROPERTY_TYPES = [
   { value: 'office', label: 'Office' },
@@ -46,9 +46,6 @@ export function PropertyAlertsForm() {
   const [submarkets, setSubmarkets] = useState<string[]>([]);
   const [sizeIdx, setSizeIdx] = useState(0);
   const [notes, setNotes] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   // Tracks whether a prefill attempt actually applied. If we got URL params
   // but none of them matched our known values, we render a subtle notice
   // so a visitor following a stale/broken bookmark knows they're seeing a
@@ -110,40 +107,31 @@ export function PropertyAlertsForm() {
     setSubmarkets(p => p.includes(value) ? p.filter(x => x !== value) : [...p, value]);
   }
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setError(null);
-    setSubmitting(true);
-    try {
-      const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
-      const recaptchaToken = await getRecaptchaToken('subscribe_property_alerts');
+  const { submitting, submitted, error, submit } = useCaptureSubmit({
+    endpoint: '/api/subscribe',
+    recaptchaAction: 'subscribe_property_alerts',
+    buildPayload: ({ recaptchaToken, website }) => {
       const range = SIZE_RANGES[sizeIdx];
-      const filters = {
-        property_types: propertyTypes,
-        transaction_type: transactionType,
-        submarkets,
-        size_min: range.min,
-        size_max: range.max,
-        notes: notes.trim() || null,
+      return {
+        email,
+        name,
+        subscription_type: 'property-alerts',
+        source: 'property-alerts-page',
+        filters: {
+          property_types: propertyTypes,
+          transaction_type: transactionType,
+          submarkets,
+          size_min: range.min,
+          size_max: range.max,
+          notes: notes.trim() || null,
+        },
+        recaptchaToken,
+        website,
       };
-      const res = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          name,
-          subscription_type: 'property-alerts',
-          source: 'property-alerts-page',
-          filters,
-          recaptchaToken,
-          website: honeypot,
-        }),
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || 'Could not subscribe');
-      }
-      setSubmitted(true);
+    },
+    // This surface reports richer analytics than the shared track option
+    // carries — the filter counts are only knowable at submit time.
+    onSuccess: async () => {
       const { trackEvent, readUtmsFromCookie } = await import('@/lib/analytics');
       const attribution = readUtmsFromCookie();
       trackEvent('property_alerts_subscribed', {
@@ -152,12 +140,8 @@ export function PropertyAlertsForm() {
         transaction_type: transactionType,
         attribution_source: attribution.utm_source ?? 'direct',
       });
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setSubmitting(false);
-    }
-  }
+    },
+  });
 
   if (submitted) {
     return (
@@ -175,7 +159,7 @@ export function PropertyAlertsForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={submit} className="space-y-8">
       <Honeypot />
 
       {prefillNotice && (

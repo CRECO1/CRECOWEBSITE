@@ -3,49 +3,31 @@
 /**
  * Footer newsletter signup. Single email input + button, inline success state.
  * POSTs to /api/subscribe with subscription_type='newsletter'.
+ *
+ * Layout is its own — it has to sit in a dark footer column — but the submit
+ * path is the shared one, so honeypot, reCAPTCHA and error handling behave the
+ * same here as in every other capture.
  */
 
 import { useState } from 'react';
 import { ArrowRight, CheckCircle, Mail } from 'lucide-react';
-import { getRecaptchaToken } from './Recaptcha';
 import { Honeypot } from './Honeypot';
+import { useCaptureSubmit } from '@/lib/use-capture-submit';
 
 export function NewsletterSignup() {
   const [email, setEmail] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setError(null);
-    setSubmitting(true);
-    try {
-      const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
-      const recaptchaToken = await getRecaptchaToken('subscribe_newsletter');
-      const res = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          subscription_type: 'newsletter',
-          source: 'footer',
-          recaptchaToken,
-          website: honeypot,
-        }),
-      });
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || 'Could not subscribe');
-      }
-      setSubmitted(true);
-      setEmail('');
-    } catch (err) {
-      setError((err as Error).message);
-    } finally {
-      setSubmitting(false);
-    }
-  }
+  const { submitting, submitted, error, submit } = useCaptureSubmit({
+    endpoint: '/api/subscribe',
+    recaptchaAction: 'subscribe_newsletter',
+    buildPayload: ({ recaptchaToken, website }) => ({
+      email,
+      subscription_type: 'newsletter',
+      source: 'footer',
+      recaptchaToken,
+      website,
+    }),
+    onSuccess: () => setEmail(''),
+  });
 
   if (submitted) {
     return (
@@ -57,7 +39,7 @@ export function NewsletterSignup() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-2">
+    <form onSubmit={submit} className="space-y-2">
       <Honeypot />
       <div className="flex flex-col sm:flex-row gap-2">
         <div className="relative flex-1">
