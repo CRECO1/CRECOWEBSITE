@@ -25,10 +25,20 @@ import { Building2, ShieldCheck, Clock, MapPin } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { supabase } from '@/lib/supabase';
 import { BUSINESS } from '@/lib/schema';
+import { SYNTHETIC_LISTINGS } from '@/lib/featured-properties';
 
 interface TrustData {
   activeListings: number;
 }
+
+// CRECO's own bespoke-page properties (8000 Fair Oaks Plaza, Elkhorn Point,
+// 15033 Main St Lytle) live in code as synthetic listings, not DB rows — see
+// featured-properties.ts. They already appear in the /listings grid and the
+// homepage Featured section, so the count has to include them; otherwise the
+// strip under-reports real inventory (it showed 6 when 9 are on the market).
+const SYNTHETIC_ACTIVE = SYNTHETIC_LISTINGS.filter(
+  l => l.status === 'active' || l.status === 'pending',
+).length;
 
 async function loadTrustData(): Promise<TrustData> {
   // Only one number is displayed now, and it is counted live rather than
@@ -40,7 +50,9 @@ async function loadTrustData(): Promise<TrustData> {
     .select('id', { count: 'exact', head: true })
     .in('status', ['active', 'pending']);
 
-  return { activeListings: count ?? 0 };
+  // DB rows + the code-defined synthetic listings, so the number matches
+  // exactly what a visitor counts in the /listings grid.
+  return { activeListings: (count ?? 0) + SYNTHETIC_ACTIVE };
 }
 
 export async function TrustStrip() {
@@ -48,10 +60,10 @@ export async function TrustStrip() {
   try {
     data = await loadTrustData();
   } catch {
-    // If the DB is unreachable at render time, fall back to brand-safe
-    // defaults rather than crashing the page. Trust strip must never
-    // break the homepage.
-    data = { activeListings: 0 };
+    // If the DB is unreachable at render time, fall back to the synthetic
+    // count (those listings are always present in code) rather than 0 or a
+    // crash. Trust strip must never break the homepage.
+    data = { activeListings: SYNTHETIC_ACTIVE };
   }
 
   return (
