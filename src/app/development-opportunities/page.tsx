@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Phone, Handshake, Search, MessageSquare, FileSignature } from 'lucide-react';
+import { Phone, Handshake, Search, MessageSquare, FileSignature, Calculator } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { JsonLd } from '@/components/seo/JsonLd';
@@ -17,15 +17,16 @@ const PATH = '/development-opportunities';
  * (/list-your-space) and dispositions (/sell).
  *
  * Scope is exactly what the broker confirmed on 2026-09-20 — "represent
- * source advise negotiations terms" — and the page says so out loud: CRECO
- * represents, sources, advises and negotiates. No feasibility studies, no
- * capital or financing partners, no JV structuring, no entitlements, no
- * construction, no development track record. Do not widen without his word.
+ * source advise negotiations terms", plus "we do help with feasibility with
+ * buyers and sellers." The page says so out loud: CRECO represents, sources,
+ * runs feasibility, advises and negotiates. No capital or financing partners,
+ * no JV structuring, no entitlements, no construction, no development track
+ * record. Do not widen without his word.
  */
 export const metadata: Metadata = {
   title: 'Development Sites & Opportunities | CRECO',
   description:
-    'Own land or an underused site, or looking for one to build on? CRECO represents owners and developers in Texas development transactions — sourcing opportunities, advising on the deal, and negotiating the terms.',
+    'Own land or an underused site, or looking for one to build on? CRECO represents owners and developers in Texas development transactions — sourcing opportunities, running feasibility, advising on the deal, and negotiating the terms.',
   keywords: [
     'commercial land san antonio',
     'development site san antonio',
@@ -43,23 +44,23 @@ export const metadata: Metadata = {
     images: [DEFAULT_OG_IMAGE],
     title: 'Development Sites & Opportunities | CRECO',
     description:
-      'Bring CRECO a site or an opportunity. We represent, source, advise and negotiate — on your side of the deal.',
+      'Bring CRECO a site or an opportunity. We represent, source, run the feasibility, advise and negotiate — on your side of the deal.',
     url: `${SITE_URL}${PATH}`,
     type: 'website',
   },
 };
 
-// represent · source · advise · negotiate
-const ICONS = [Handshake, Search, MessageSquare, FileSignature];
+// represent · source · advise · negotiate · feasibility
+const ICONS = [Handshake, Search, MessageSquare, FileSignature, Calculator];
 
 const FAQS = [
   {
     q: 'What does CRECO actually do on a development opportunity?',
-    a: 'Four things: represents you in the transaction as your broker, sources sites and opportunities through its Texas relationships, advises on the deal in front of you, and negotiates the terms. CRECO acts as broker and advisor on these engagements. It is not the developer — no feasibility studies, no capital or financing partners, no joint-venture structuring, no entitlement work and no construction.',
+    a: 'Five things: represents you in the transaction as your broker, sources sites and opportunities through its Texas relationships, runs the feasibility — whether the deal pencils and what the site\u2019s highest and best use realistically is — advises on the deal in front of you, and negotiates the terms. CRECO acts as broker and advisor on these engagements. It is not the developer — no capital or financing partners, no joint-venture structuring, no entitlement work and no construction.',
   },
   {
     q: 'I own land I am not using. Where do I start?',
-    a: 'Send the address and roughly what you have. CRECO will tell you how a site like yours is likely to be received by the buyers who build, and what it would take to bring it to them. If you decide to move, CRECO represents you and negotiates the terms. There is no cost to that conversation.',
+    a: 'Send the address and roughly what you have. CRECO will look at whether a deal on it pencils, what its highest and best use realistically is, and how a site like yours is likely to be received by the buyers who build. If you decide to move, CRECO represents you and negotiates the terms.',
   },
   {
     q: 'I am a developer looking for sites. Can CRECO help?',
@@ -93,6 +94,7 @@ export default function DevelopmentOpportunitiesPage() {
               'Development site disposition',
               'Development site acquisition',
               'Development transaction negotiation',
+              'Real estate feasibility analysis',
             ],
             provider: { '@id': `${SITE_URL}/#organization` },
             description: metadata.description as string,
@@ -121,7 +123,8 @@ export default function DevelopmentOpportunitiesPage() {
                 </h1>
                 <p className="mt-5 max-w-xl text-body-lg leading-relaxed text-white/80">
                   Land, an underused site, or a deal already in motion — CRECO represents you,
-                  sources the opportunity, advises on the deal and negotiates the terms.
+                  sources the opportunity, runs the feasibility, advises on the deal and
+                  negotiates the terms.
                 </p>
                 <div className="mt-7">
                   <a
@@ -153,8 +156,8 @@ export default function DevelopmentOpportunitiesPage() {
                   Broker and advisor — not the developer
                 </h2>
                 <p className="mt-4 text-body leading-relaxed text-foreground-muted">
-                  Said plainly so nobody is misled: CRECO represents, sources, advises and
-                  negotiates. No feasibility studies, no capital or financing partners, no joint
+                  Said plainly so nobody is misled: CRECO represents, sources, runs the
+                  feasibility, advises and negotiates. No capital or financing partners, no joint
                   ventures, no entitlement work and no construction — those stay with your team.
                 </p>
               </div>

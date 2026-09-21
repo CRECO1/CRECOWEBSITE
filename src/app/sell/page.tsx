@@ -31,7 +31,7 @@ const SELL_FAQS = [
 ];
 
 const STEPS = [
-  { number: '01', title: 'Property Evaluation', description: 'We tour the asset, review rent rolls and operating history, and benchmark against comparable transactions to establish a defensible value range.' },
+  { number: '01', title: 'Evaluation & Feasibility', description: 'We tour the asset, review rent rolls and operating history, and benchmark against comparable transactions — establishing a defensible value range and, where it matters, whether the deal pencils and what the property\u2019s highest and best use realistically is.' },
   { number: '02', title: 'Positioning Strategy', description: 'We craft the marketing narrative — broker book, property website, drone & professional photography, and a tenant/buyer profile.' },
   { number: '03', title: 'Targeted Marketing', description: 'CoStar, LoopNet, our principal-broker network, and direct outreach to qualified principals — your asset gets in front of the right eyes.' },
   { number: '04', title: 'Offer Negotiation', description: 'We tee up multiple LOIs when possible, walk you through tradeoffs (price vs. terms vs. certainty), and negotiate aggressively.' },
@@ -82,7 +82,7 @@ export default function SellPage() {
                   <span className="text-gradient-gold">Commercial Property</span>
                 </h1>
                 <p className="mb-8 max-w-lg text-body-lg text-white/70">
-                  Priced to real comps, marketed to CRECO&apos;s buyer and investor network, and negotiated through to close.
+                  Feasibility run, priced to real comps, marketed to CRECO&apos;s buyer and investor network, and negotiated through to close.
                 </p>
                 <div className="flex flex-wrap gap-4">
                   <Button size="lg" asChild>
