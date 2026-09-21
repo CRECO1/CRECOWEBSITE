@@ -71,10 +71,17 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
         <nav className="flex h-20 items-center justify-between">
           {/* Logo — different file per header variant so the colors read
               against the background (transparent black BG over dark hero,
-              transparent white BG on solid white headers). No more pill. */}
+              transparent white BG on solid white headers). No more pill.
+
+              The dark-ground file is creco-logo-mark-dark.png, not
+              creco-logo-dark.png: the original is a 4268x3000 canvas whose
+              artwork occupies only 2397x912 in the middle, so h-14 on the
+              canvas rendered a ~17px mark with an illegible tagline. The
+              -mark- file is that artwork cropped to its own edges, which
+              brings it to the same visual weight as the light one. */}
           <Link href="/" className="flex items-center" aria-label="CRECO - Commercial Real Estate Company home">
             <Image
-              src={isTransparent ? '/images/creco-logo-dark.png' : '/images/creco-logo-light.png'}
+              src={isTransparent ? '/images/creco-logo-mark-dark.png' : '/images/creco-logo-light.png'}
               alt="CRECO - Commercial Real Estate Company"
               width={240}
               height={64}
