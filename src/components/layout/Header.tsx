@@ -4,7 +4,7 @@ import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Building2 } from 'lucide-react';
+import { Menu, X, Building2, Phone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
@@ -157,6 +157,25 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
                 surface="header"
               />
             </div>
+
+            {/* Below 640px the inline number above is hidden — it does not fit
+                beside the logo and the menu button. Most pages still carry the
+                MobileStickyCTA, but the pages it deliberately skips (notably
+                /get-started, which also runs the minimal header) were left with
+                no call affordance above the footer. This icon covers them: one
+                tap, 44px target, every page and every width. */}
+            <a
+              href={`tel:+1${phone.replace(/\D/g, '')}`}
+              aria-label={`Call CRECO at ${phone}`}
+              className={cn(
+                'inline-flex h-11 w-11 items-center justify-center rounded-full transition-colors sm:hidden',
+                isTransparent
+                  ? 'text-white hover:bg-white/15'
+                  : 'bg-gold/10 text-gold-dark hover:bg-gold hover:text-primary'
+              )}
+            >
+              <Phone className="h-5 w-5" />
+            </a>
 
             {/* "Get Started" already sits in the nav links above (isHighlight=true),
                 so we don't repeat it here. The Schedule button used to live in this

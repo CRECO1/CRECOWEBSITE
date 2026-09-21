@@ -7,6 +7,7 @@
  */
 
 import Link from 'next/link';
+import React from 'react';
 import { findGuide } from '@/lib/guides';
 import { SourcesMethodology, asOfMonth } from '@/components/marketing/SourcesMethodology';
 import {
@@ -18,6 +19,39 @@ import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { jsonLd } from '@/lib/jsonLd';
 import { AvailableListingsTable } from '@/components/marketing/AvailableListingsTable';
+
+/**
+ * Turn any phone number or email inside a proof-row string into a real link.
+ *
+ * The "Headquarters" row prints the office phone and email as part of a longer
+ * sentence, so they rendered as dead text — a visitor on a phone could read the
+ * number but not tap it. Rather than splitting the row into fields, this walks
+ * the string and links what it finds, leaving everything else untouched.
+ */
+const CONTACT_RX = /(\(\d{3}\)\s?\d{3}-\d{4}|\d{3}-\d{3}-\d{4}|[\w.+-]+@[\w-]+\.[\w.]+)/g;
+
+function linkifyContact(value: string): React.ReactNode {
+  const parts = value.split(CONTACT_RX);
+  if (parts.length === 1) return value;
+  return parts.map((part, i) => {
+    if (!part) return null;
+    if (part.includes('@')) {
+      return (
+        <a key={i} href={`mailto:${part}`} className="font-semibold text-gold-dark hover:underline">
+          {part}
+        </a>
+      );
+    }
+    if (/^\(?\d{3}\)?[\s-]?\d{3}-\d{4}$/.test(part)) {
+      return (
+        <a key={i} href={`tel:+1${part.replace(/\D/g, '')}`} className="font-semibold text-gold-dark hover:underline">
+          {part}
+        </a>
+      );
+    }
+    return <React.Fragment key={i}>{part}</React.Fragment>;
+  });
+}
 import { RepresentationBand } from '@/components/marketing/RepresentationBand';
 import { filterListings, getAvailableListings } from '@/lib/public-listings';
 import { BUSINESS, BUSINESS_ID, businessRef, listingSummary } from '@/lib/schema';
@@ -347,7 +381,7 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
                   {config.authority.proof.map(p => (
                     <div key={p.label} className="grid grid-cols-1 gap-1 px-5 py-4 sm:grid-cols-3 sm:gap-4">
                       <dt className="text-body-sm font-semibold text-primary">{p.label}</dt>
-                      <dd className="text-body-sm text-foreground-muted sm:col-span-2">{p.value}</dd>
+                      <dd className="text-body-sm text-foreground-muted sm:col-span-2">{linkifyContact(p.value)}</dd>
                     </div>
                   ))}
                 </dl>
