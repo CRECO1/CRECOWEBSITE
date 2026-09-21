@@ -38,6 +38,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/dallas-office-space`,                  lastModified: new Date(), changeFrequency: 'weekly', priority: 0.92 },
     { url: `${BASE_URL}/houston-office-space`,                 lastModified: new Date(), changeFrequency: 'weekly', priority: 0.92 },
     { url: `${BASE_URL}/austin-industrial-space`,             lastModified: new Date(), changeFrequency: 'weekly', priority: 0.92 },
+    { url: `${BASE_URL}/houston-retail-space`,                lastModified: new Date(), changeFrequency: 'weekly', priority: 0.92 },
+    { url: `${BASE_URL}/dallas-retail-space`,                 lastModified: new Date(), changeFrequency: 'weekly', priority: 0.92 },
+    { url: `${BASE_URL}/austin-retail-space`,                 lastModified: new Date(), changeFrequency: 'weekly', priority: 0.92 },
     // CRECO development — 8000 Fair Oaks Pkwy
     { url: `${BASE_URL}/8000-fair-oaks-pkwy`,                  lastModified: new Date(), changeFrequency: 'weekly', priority: 0.95 },
     // CRECO development — 8979 Dietz Elkhorn (Fair Oaks Ranch retail, pre-leasing)
