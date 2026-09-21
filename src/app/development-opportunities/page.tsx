@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Phone, MapPin, Search, LineChart, Users } from 'lucide-react';
+import { Phone, Handshake, Search, MessageSquare, FileSignature } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { JsonLd } from '@/components/seo/JsonLd';
@@ -16,15 +16,16 @@ const PATH = '/development-opportunities';
  * Development opportunities — the third owner-side path, after leasing
  * (/list-your-space) and dispositions (/sell).
  *
- * Scope is deliberately narrow and says so on the page: CRECO sells sites,
- * sources sites, reads the market and makes introductions. It does not claim
- * entitlement work, construction management, or a development track record,
- * because none of that has been confirmed. Widen only on the broker's say-so.
+ * Scope is exactly what the broker confirmed on 2026-09-20 — "represent
+ * source advise negotiations terms" — and the page says so out loud: CRECO
+ * represents, sources, advises and negotiates. No feasibility studies, no
+ * capital or financing partners, no JV structuring, no entitlements, no
+ * construction, no development track record. Do not widen without his word.
  */
 export const metadata: Metadata = {
   title: 'Development Sites & Opportunities | CRECO',
   description:
-    'Own land or an underused site, or looking for one to build on? CRECO represents site dispositions, sources development sites for builders, and makes investor introductions across Texas.',
+    'Own land or an underused site, or looking for one to build on? CRECO represents owners and developers in Texas development transactions — sourcing opportunities, advising on the deal, and negotiating the terms.',
   keywords: [
     'commercial land san antonio',
     'development site san antonio',
@@ -42,22 +43,23 @@ export const metadata: Metadata = {
     images: [DEFAULT_OG_IMAGE],
     title: 'Development Sites & Opportunities | CRECO',
     description:
-      'Bring CRECO a site or an opportunity — market read, disposition strategy, or an introduction to investors looking for exactly that.',
+      'Bring CRECO a site or an opportunity. We represent, source, advise and negotiate — on your side of the deal.',
     url: `${SITE_URL}${PATH}`,
     type: 'website',
   },
 };
 
-const ICONS = [MapPin, Search, LineChart, Users];
+// represent · source · advise · negotiate
+const ICONS = [Handshake, Search, MessageSquare, FileSignature];
 
 const FAQS = [
   {
     q: 'What does CRECO actually do on a development opportunity?',
-    a: 'Four things: represents owners selling land or an underused site, sources sites for developers working to a specific thesis, gives a market read on what a submarket supports today, and introduces deals to investors and owner-users in its network. CRECO acts as broker and advisor on these engagements — it is not the developer, and it does not handle entitlement or construction.',
+    a: 'Four things: represents you in the transaction as your broker, sources sites and opportunities through its Texas relationships, advises on the deal in front of you, and negotiates the terms. CRECO acts as broker and advisor on these engagements. It is not the developer — no feasibility studies, no capital or financing partners, no joint-venture structuring, no entitlement work and no construction.',
   },
   {
     q: 'I own land I am not using. Where do I start?',
-    a: 'Send the address and roughly what you have. CRECO will tell you what the site looks like to the buyers who build — which uses it realistically supports, what comparable land has traded for, and whether selling now or holding is the better call. There is no cost to that conversation.',
+    a: 'Send the address and roughly what you have. CRECO will tell you how a site like yours is likely to be received by the buyers who build, and what it would take to bring it to them. If you decide to move, CRECO represents you and negotiates the terms. There is no cost to that conversation.',
   },
   {
     q: 'I am a developer looking for sites. Can CRECO help?',
@@ -90,7 +92,7 @@ export default function DevelopmentOpportunitiesPage() {
               'Commercial land brokerage',
               'Development site disposition',
               'Development site acquisition',
-              'Investment advisory',
+              'Development transaction negotiation',
             ],
             provider: { '@id': `${SITE_URL}/#organization` },
             description: metadata.description as string,
@@ -118,9 +120,8 @@ export default function DevelopmentOpportunitiesPage() {
                   Bring us the site.
                 </h1>
                 <p className="mt-5 max-w-xl text-body-lg leading-relaxed text-white/80">
-                  Land, an underused site, or a deal that needs the right capital behind it — CRECO
-                  gives you the market read, takes it to the buyers who build, or introduces it to
-                  investors looking for exactly that.
+                  Land, an underused site, or a deal already in motion — CRECO represents you,
+                  sources the opportunity, advises on the deal and negotiates the terms.
                 </p>
                 <div className="mt-7">
                   <a
@@ -152,13 +153,14 @@ export default function DevelopmentOpportunitiesPage() {
                   Broker and advisor — not the developer
                 </h2>
                 <p className="mt-4 text-body leading-relaxed text-foreground-muted">
-                  Said plainly so nobody is misled: CRECO sells sites, finds sites, reads the market
-                  and makes introductions. Entitlement and construction stay with your team.
+                  Said plainly so nobody is misled: CRECO represents, sources, advises and
+                  negotiates. No feasibility studies, no capital or financing partners, no joint
+                  ventures, no entitlement work and no construction — those stay with your team.
                 </p>
               </div>
               <div className="grid grid-cols-1 gap-x-10 gap-y-8 sm:grid-cols-2">
                 {DEVELOPMENT_POINTS.map((p, i) => {
-                  const Icon = ICONS[i] ?? MapPin;
+                  const Icon = ICONS[i] ?? Handshake;
                   return (
                     <div key={p.title} className="flex gap-4">
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gold/15">

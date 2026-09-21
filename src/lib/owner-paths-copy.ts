@@ -25,7 +25,7 @@ export const SALE_CTA = {
 export const DEVELOPMENT_CTA = {
   heading: 'Have a site or a development opportunity?',
   body:
-    'Land, an underused site, or a deal that needs the right capital behind it — bring it to CRECO for a market read, a disposition strategy, or an introduction to investors looking for exactly that.',
+    'Bring it to CRECO. We represent owners and developers in development transactions — sourcing the opportunity, advising on the deal, and negotiating the terms.',
   action: 'Bring us the opportunity',
   reassurance: 'Owners and developers · Confidential review',
   href: '/development-opportunities',
@@ -40,19 +40,21 @@ export const SALE_POINTS = [
 ] as const;
 
 /**
- * Development offering. Deliberately narrow.
+ * Development offering — exactly four things, confirmed by the broker on
+ * 2026-09-20: "represent source advise negotiations terms."
  *
- * CRECO is a brokerage: it can sell a site, find a site, read a market and
- * make introductions. It has NOT told us it entitles land, manages
- * construction, or carries a development track record — so none of that is
- * claimed here. Widen this only on the broker's explicit confirmation of what
- * he actually wants to offer.
+ * That is the whole scope and this list must not grow past it. CRECO does NOT
+ * do feasibility studies, does not provide capital or financing partners, does
+ * not structure JVs, does not handle entitlements or construction, and claims
+ * no development track record. An earlier draft promised a market read and
+ * investor introductions; both were removed because neither is in scope.
+ * Anything added here needs the broker to say it first.
  */
 export const DEVELOPMENT_POINTS = [
-  { title: 'Sites brought to market', body: 'Representation on the sale of land and underused sites — positioning, pricing and the buyer pool that actually builds.' },
-  { title: 'Sites sourced', body: 'For developers with a thesis: CRECO works its Texas broker and owner relationships to find sites that fit it, including off-market conversations.' },
-  { title: 'A market read', body: 'What the submarket supports today — demand, comparable projects and what buyers and tenants are actually paying — before money goes into a deal.' },
-  { title: 'Capital introductions', body: 'Introductions to investors and owner-users in CRECO’s network when a deal needs the right partner. Advisory and brokerage — CRECO is not the developer.' },
+  { title: 'We represent you', body: 'Owner or developer, CRECO acts as your broker in the transaction \u2014 your side of the table, with the duty that comes with it.' },
+  { title: 'We source the opportunity', body: 'Sites and deals found through CRECO\u2019s Texas broker and owner relationships, including conversations that never reach a listing platform.' },
+  { title: 'We advise on the deal', body: 'A broker\u2019s read on what is actually in front of you \u2014 how the deal is put together, what the terms mean, and where the exposure sits.' },
+  { title: 'We negotiate the terms', body: 'Price, conditions, timing and contingencies negotiated on your behalf, alongside your attorney, through to a signed contract.' },
 ] as const;
 
 export const DEVELOPMENT_PROPERTY_TYPES = [
