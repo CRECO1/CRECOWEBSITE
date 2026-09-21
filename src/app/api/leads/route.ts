@@ -181,6 +181,10 @@ export async function POST(req: NextRequest) {
     // the lead this business most wants to win. Kept separate from a valuation
     // request, which only asks what a property is worth.
     const isListing = source === 'listing-inquiry';
+    // Two more owner intents, each kept separate so the broker can tell at a
+    // glance whether someone wants to lease, sell, or talk about a site.
+    const isDisposition = source === 'disposition-inquiry';
+    const isDevelopment = source === 'development-inquiry';
 
     // Clamp every attribution field to a safe length. These are user-
     // controllable (anyone can hand-craft utm_*), so we treat them as
@@ -234,13 +238,23 @@ export async function POST(req: NextRequest) {
           ? 'Valuation request — crecotx.com/property-valuation'
           : isListing
             ? 'Listing inquiry — crecotx.com/list-your-space'
-            : `website — crecotx.com (${source})`,
-        type: isListing ? 'Landlord/Investor' : (isValuation || source === 'sell' ? 'Seller' : 'Tenant'),
+            : isDisposition
+              ? 'Disposition inquiry — crecotx.com/sell'
+              : isDevelopment
+                ? 'Development opportunity — crecotx.com/development-opportunities'
+                : `website — crecotx.com (${source})`,
+        type: isListing ? 'Landlord/Investor'
+          : isDevelopment ? 'Landlord/Investor'
+          : (isValuation || isDisposition || source === 'sell' ? 'Seller' : 'Tenant'),
         tags: isValuation
           ? ['Valuation', 'Owner']
           : isListing
             ? ['Listing Lead', 'Landlord', 'CRECO']
-            : undefined,
+            : isDisposition
+              ? ['Sale', 'Disposition', 'CRECO']
+              : isDevelopment
+                ? ['Development', 'CRECO']
+                : undefined,
       });
 
       if (error) {
@@ -298,7 +312,11 @@ export async function POST(req: NextRequest) {
       // the inbox rather than one more line of triage.
       const subjectBase = isListing
         ? `🏢 LISTING OPPORTUNITY: ${name} wants CRECO to lease their space`
-        : `${tierSubjectLabel(lead.tier, lead.isRecruiting)}: ${name} — ${source}`;
+        : isDisposition
+          ? `💰 DISPOSITION: ${name} wants to sell`
+          : isDevelopment
+            ? `🏗️ DEVELOPMENT SITE: ${name} has an opportunity`
+            : `${tierSubjectLabel(lead.tier, lead.isRecruiting)}: ${name} — ${source}`;
       const subject = lead.tier === 'hot' && telHref ? `${subjectBase} · call now` : subjectBase;
 
       // All interpolated values escaped — even though our broker is the only

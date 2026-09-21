@@ -35,7 +35,7 @@ export function SellInquiryForm() {
         email: data.get('email'),
         phone: data.get('phone'),
         message: `Property Address: ${data.get('address')}\nProperty Type: ${data.get('property_type')}\nGoal: ${data.get('goal')}\nTimeline: ${data.get('timeline')}\nNotes: ${data.get('notes')}`,
-        source: 'owner-inquiry',
+        source: 'disposition-inquiry',
         recaptchaToken,
         website: data.get('website'),  // honeypot
         ...attribution,
@@ -93,8 +93,7 @@ export function SellInquiryForm() {
               <select name="goal" required className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold">
                 <option value="">My goal…</option>
                 <option>Sell</option>
-                <option>Lease</option>
-                <option>Either</option>
+                <option>Either sell or lease</option>
                 <option>Just want a valuation</option>
               </select>
             </div>

@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { TrendingUp, Building2, FileText, Users, CheckCircle, ArrowRight, Phone, Calculator } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
-import { ValuationCta } from '@/components/marketing/ValuationCta';
+import { OwnerPathsBand } from '@/components/marketing/OwnerPathsBand';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
@@ -76,13 +76,13 @@ export default function SellPage() {
           <Container>
             <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-center">
               <div>
-                <p className="overline mb-4 text-gold">List Your Property</p>
+                <p className="overline mb-4 text-gold">Dispositions</p>
                 <h1 className="mb-6 font-heading text-display font-bold text-white">
-                  Sell or Lease<br />
-                  <span className="text-gradient-gold">Your Commercial Asset</span>
+                  Sell Your<br />
+                  <span className="text-gradient-gold">Commercial Property</span>
                 </h1>
                 <p className="mb-8 max-w-lg text-body-lg text-white/70">
-                  A stabilized asset, vacant space, or just testing the market — CRECO brings the marketing and the relationships to close.
+                  Priced to real comps, marketed to CRECO&apos;s buyer and investor network, and negotiated through to close.
                 </p>
                 <div className="flex flex-wrap gap-4">
                   <Button size="lg" asChild>
@@ -203,7 +203,7 @@ export default function SellPage() {
         />
         <FaqSection faqs={SELL_FAQS} path="/sell" heading="Selling or leasing your property — FAQ" className="section-luxury bg-white" />
       </main>
-      <ValuationCta surface="sell" />
+      <OwnerPathsBand surface="sell" exclude={['/sell']} />
       <Footer />
     </>
   );

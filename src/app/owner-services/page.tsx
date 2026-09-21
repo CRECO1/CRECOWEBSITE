@@ -7,8 +7,7 @@ import {
   CheckCircle, Phone, Sparkles, Calculator,
 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
-import { ValuationCta } from '@/components/marketing/ValuationCta';
-import { ListingCta } from '@/components/marketing/ListingCta';
+import { OwnerPathsBand } from '@/components/marketing/OwnerPathsBand';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
@@ -342,8 +341,7 @@ export default async function OwnerServicesPage() {
           </Container>
         </section>
       </main>
-      <ListingCta surface="owner-services" />
-      <ValuationCta surface="owner-services" />
+      <OwnerPathsBand surface="owner-services" />
       <Footer />
     </>
   );
