@@ -57,9 +57,11 @@ import { getLandingPage } from '@/lib/supabase';
 // Site plan asset — the cropped PNG, which is the property only (no
 // engineering letterhead / KFM branding). The original engineered PDF
 // lives outside the public folder so it can't be downloaded by URL.
-// NOTE (2026-09-22): this art still shows the OLD ten-suite scheme and
-// is awaiting replacement renderings for the two-building program.
-const SITE_PLAN_PNG = '/site-plans/8979-dietz-elkhorn-site-plan.png';
+// Replaced 2026-09-22 with the schematic plan from the PUD26-01 submission,
+// cropped to the drawing only so the architect's title block (practice
+// branding, project/sheet numbers and the superseded address line) is not
+// published on a leasing page.
+const SITE_PLAN_PNG = '/site-plans/8923-dietz-elkhorn-site-plan.png';
 const PHONE_DISPLAY = '(210) 817-3443';
 const PHONE_HREF = 'tel:+12108173443';
 

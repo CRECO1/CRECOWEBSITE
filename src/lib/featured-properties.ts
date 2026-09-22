@@ -89,9 +89,10 @@ export const FAIR_OAKS_PLAZA_LISTING: Listing = {
  * should land. Card opens in a new tab so visitors don't lose context
  * of crecotx.com behind them.
  *
- * Thumbnail: the cropped site plan PNG. It's not a building photo
- * (the center hasn't been built yet — it's pre-leasing) but it's the
- * single most representative visual we have until photography exists.
+ * Thumbnail: the schematic site plan from the PUD26-01 submission, cropped
+ * to the drawing only. It's not a building photo (the center hasn't been
+ * built yet — it's pre-leasing) but it's the single most representative
+ * visual we have until photography exists.
  */
 export const DIETZ_ELKHORN_LISTING: Listing = {
   id: 'synth-8923-dietz-elkhorn',
@@ -122,7 +123,7 @@ export const DIETZ_ELKHORN_LISTING: Listing = {
     'End-cap F&B positions with patio',
     'Pre-leasing local-first',
   ],
-  images: ['/site-plans/8979-dietz-elkhorn-site-plan.png'],
+  images: ['/site-plans/8923-dietz-elkhorn-site-plan.png'],
   brochure_url: null,
   virtual_tour_url: null,
   status: 'active',
