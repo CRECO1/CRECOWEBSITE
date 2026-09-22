@@ -5,7 +5,6 @@
 export const revalidate = 1800;
 
 import type { Metadata } from 'next';
-import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { metaDescription } from '@/lib/seo-meta';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { FaqSection } from '@/components/marketing/FaqSection';
@@ -74,12 +73,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     description,
     alternates: { canonical: `https://www.crecotx.com/listings/${listing.slug}` },
     openGraph: {
-      images: [DEFAULT_OG_IMAGE],
       title,
       description,
       url: `https://www.crecotx.com/listings/${listing.slug}`,
       type: 'website',
-      // og:image comes from the colocated ./opengraph-image.tsx (branded card).
+      // og:image comes from the colocated ./opengraph-image.tsx (branded card with the
+      // listing photo, price and badge). Setting `images` here would override it with the
+      // generic site card, which is what social/AI previews were showing.
     },
     twitter: { card: 'summary_large_image', title, description },
   };

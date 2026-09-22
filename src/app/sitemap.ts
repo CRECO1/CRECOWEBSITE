@@ -4,6 +4,11 @@ import { SUBMARKETS } from '@/lib/submarkets-content';
 
 const BASE_URL = 'https://www.crecotx.com';
 
+// Rebuilt every 30 minutes (same cadence as /listings). Without this the sitemap was
+// frozen at deploy time, so a listing added between deploys was invisible to crawlers
+// until the next release.
+export const revalidate = 1800;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
     { url: BASE_URL,                                  lastModified: new Date(), changeFrequency: 'daily',   priority: 1.0  },

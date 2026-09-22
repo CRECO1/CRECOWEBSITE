@@ -176,6 +176,7 @@ export default async function HomePage() {
   // 6 even if some slugs are absent (e.g. a synthetic gets removed
   // or a DB listing isn't active).
   const FEATURED_SLUG_ORDER = [
+    '1353-w-french-pl',                     // Beacon Hill warehouse lease (DB) — owner wants it leased first
     '8000-fair-oaks-pkwy',                  // Plaza (synthetic)
     '2250-chipley-circle',                   // Chipley (DB)
     // Louis Pasteur's DB slug is `move-in-ready-medical-building`,
