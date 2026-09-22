@@ -180,7 +180,7 @@ export default function FairOaksDevPage() {
             "Fair Oaks Plaza 8000" pylon with the tenant list is the
             single most recognizable visual for the property and the
             most credible anchor for the H1. Same overlay pattern as the
-            8979 Dietz Elkhorn hero: absolute <img> + bg-primary/70
+            8923 Dietz Elkhorn hero: absolute <img> + bg-primary/70
             wash, so text stays readable without losing the photo. */}
         {/* min-h-[560px] sm:min-h-[680px] — scaled back from 640/760
             because the prior version felt slightly too tall. flex

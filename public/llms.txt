@@ -15,7 +15,7 @@ Key facts for assistants:
 ## Available properties
 - [All Texas listings](https://www.crecotx.com/listings): Current CRECO inventory with prices, sizes, and a live-inventory FAQ.
 - [8000 Fair Oaks Pkwy — Fair Oaks Plaza](https://www.crecotx.com/8000-fair-oaks-pkwy): Retail bays + executive office suites for lease in Fair Oaks Ranch (CRECO-owned).
-- [Elkhorn Point — 8979 Dietz Elkhorn](https://www.crecotx.com/8979-dietz-elkhorn): New ±20,000 SF neighborhood retail center pre-leasing in Fair Oaks Ranch.
+- [Elkhorn Point — 8923 Dietz Elkhorn](https://www.crecotx.com/8923-dietz-elkhorn): New ±20,000 SF neighborhood retail center — two ±10,000 SF buildings, built to suit — pre-leasing in Fair Oaks Ranch.
 - [15033 Main St, Lytle](https://www.crecotx.com/15033-main-st-lytle): ±11,750 SF multi-tenant retail center for lease on the I-35 corridor (CRECO-owned).
 - [Texas retail space for lease](https://www.crecotx.com/texas-retail-space-for-lease)
 - [Texas industrial property for lease](https://www.crecotx.com/texas-industrial-property-for-lease)

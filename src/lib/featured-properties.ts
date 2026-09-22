@@ -75,14 +75,16 @@ export const FAIR_OAKS_PLAZA_LISTING: Listing = {
 };
 
 /**
- * 8979 Dietz Elkhorn — "Elkhorn Point" — new ±20,000 SF neighborhood
- * retail center pre-leasing in Fair Oaks Ranch.
+ * 8923 Dietz Elkhorn — "Elkhorn Point" — new ±20,000 SF neighborhood
+ * retail center pre-leasing in Fair Oaks Ranch: TWO ±10,000 SF retail
+ * buildings, ground-up build-to-suit (nothing is built yet).
  *
- * The property has BOTH an internal landing page at /8979-dietz-elkhorn
+ * The property has BOTH an internal landing page at /8923-dietz-elkhorn
  * AND a dedicated standalone site at elkhornpoint.com (built and managed
- * separately). The listing card here points to the standalone site
+ * separately — NOTE: that site is outside this repo and must be updated
+ * for the 8923 address / two-building program separately). The listing card here points to the standalone site
  * because it's the canonical presentation for this property — the
- * internal /8979-dietz-elkhorn page is kept around for SEO and direct
+ * internal /8923-dietz-elkhorn page is kept around for SEO and direct
  * referrals but the standalone domain is where prospective tenants
  * should land. Card opens in a new tab so visitors don't lose context
  * of crecotx.com behind them.
@@ -92,10 +94,10 @@ export const FAIR_OAKS_PLAZA_LISTING: Listing = {
  * single most representative visual we have until photography exists.
  */
 export const DIETZ_ELKHORN_LISTING: Listing = {
-  id: 'synth-8979-dietz-elkhorn',
-  title: 'Elkhorn Point — 8979 Dietz Elkhorn',
-  slug: '8979-dietz-elkhorn',
-  address: '8979 Dietz Elkhorn Rd',
+  id: 'synth-8923-dietz-elkhorn',
+  title: 'Elkhorn Point — 8923 Dietz Elkhorn',
+  slug: '8923-dietz-elkhorn',
+  address: '8923 Dietz Elkhorn Rd',
   city: 'Fair Oaks Ranch',
   state: 'TX',
   zip: '78015',
@@ -104,7 +106,7 @@ export const DIETZ_ELKHORN_LISTING: Listing = {
   sale_price: null,
   lease_rate: null,                          // "Call for pricing" — no public quote
   lease_rate_basis: null,
-  sqft: 20000,                               // ±20K total GLA across ~10 demisable suites
+  sqft: 20000,                               // ±20K total GLA across two ±10,000 SF buildings
   available_sqft: 20000,
   lot_size: null,
   zoning: null,
@@ -112,12 +114,12 @@ export const DIETZ_ELKHORN_LISTING: Listing = {
   clear_height: null,
   dock_doors: null,
   grade_doors: null,
-  headline: 'New ±20,000 SF neighborhood retail center — pre-leasing, demisable suites with F&B end caps',
+  headline: 'New ±20,000 SF neighborhood retail center — two ±10,000 SF buildings, built to suit, with F&B end caps',
   description: null,
   features: [
-    '±10 demisable suites at ±1,500 SF',
-    'Two F&B end caps with patio envelopes',
-    '2-3 food-ready bays',
+    'Two ±10,000 SF retail buildings',
+    '±20,000 SF divisible — built to suit',
+    'End-cap F&B positions with patio',
     'Pre-leasing local-first',
   ],
   images: ['/site-plans/8979-dietz-elkhorn-site-plan.png'],

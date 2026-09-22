@@ -52,7 +52,7 @@ interface InquirySuccessCardProps {
   broker?: Broker;
   /**
    * Property or surface name shown in the confirmation copy, e.g.
-   * "8979 Dietz Elkhorn" or "your retail bay inquiry". Optional —
+   * "8923 Dietz Elkhorn" or "your retail bay inquiry". Optional —
    * cards on general /contact or /get-started don't need it.
    */
   propertyName?: string;

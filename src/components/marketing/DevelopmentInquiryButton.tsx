@@ -4,7 +4,7 @@
  * DevelopmentInquiryButton — the popup-modal CTA used on
  * /8000-fair-oaks-pkwy in place of the in-page "#inquiry" anchor jumps.
  *
- * The 8979 Dietz Elkhorn page already uses this pattern via
+ * The 8923 Dietz Elkhorn page already uses this pattern via
  * ClaimSuiteButton (a single dedicated component). 8000 Fair Oaks Pkwy
  * has TWO action CTAs (one for retail bays, one for executive office
  * suites) that should each open the same inquiry form preselected to

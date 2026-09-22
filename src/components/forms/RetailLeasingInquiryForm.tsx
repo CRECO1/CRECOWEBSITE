@@ -1,13 +1,13 @@
 'use client';
 
 /**
- * Inquiry form for 8979 Dietz Elkhorn (Fair Oaks Ranch retail center)
+ * Inquiry form for 8923 Dietz Elkhorn (Fair Oaks Ranch retail center)
  * pre-leasing landing page. Pre-qualifies local operators per the
  * CRECO leasing strategy — concept, SF, target open date, financing
  * status — so the broker can triage hot/warm/aspirational on the
  * first read.
  *
- * POSTs to /api/leads with source='8979-dietz-elkhorn-{category}' and
+ * POSTs to /api/leads with source='8923-dietz-elkhorn-{category}' and
  * a structured message body. Mirrors the DevelopmentInterestForm flow
  * (Honeypot + reCAPTCHA + UTM attribution) so leads land in the same
  * pipeline as 8000 Fair Oaks Pkwy.
@@ -15,8 +15,8 @@
  * Field rationale (from the leasing strategy):
  *   - Concept category drives the suite recommendation (end caps for
  *     F&B, food-ready bays, etc.) so we capture it up front.
- *   - SF needed maps to single-suite (~1,500 SF) vs. combine-two
- *     (~3,000 SF) vs. anchor (~4,500 SF).
+ *   - SF needed is captured as a band, since the two ±10,000 SF
+ *     buildings are demised to suit rather than pre-cut into suites.
  *   - Target open date qualifies urgency.
  *   - Existing locations + financing status are the Hot/Warm/
  *     Aspirational signal — established operator with SBA pre-approval
@@ -59,9 +59,10 @@ const CATEGORIES: { value: ConceptCategory; label: string; icon: typeof Utensils
 ];
 
 const SF_OPTIONS = [
-  '1,500 SF (single suite)',
-  '3,000 SF (two combined)',
-  '4,500 SF (three combined)',
+  'Under 2,000 SF',
+  '2,000 – 4,000 SF',
+  '4,000 – 7,500 SF',
+  '7,500 SF or more',
   'End cap with patio',
   'Not sure yet',
 ];
@@ -113,12 +114,12 @@ export function RetailLeasingInquiryForm() {
     setSubmitting(true);
     try {
       const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
-      const recaptchaToken = await getRecaptchaToken('submit_8979_dietz_elkhorn');
+      const recaptchaToken = await getRecaptchaToken('submit_8923_dietz_elkhorn');
 
       // Pack structured pre-qualification into the message body so the
       // broker sees the Hot/Warm/Aspirational signal at a glance.
       const message = [
-        `8979 Dietz Elkhorn — ${categoryLabel} inquiry`,
+        `8923 Dietz Elkhorn — ${categoryLabel} inquiry`,
         '',
         `Category: ${categoryLabel}`,
         `Concept: ${concept}`,
@@ -140,8 +141,8 @@ export function RetailLeasingInquiryForm() {
           phone,
           company,
           message,
-          property_interest: `8979 Dietz Elkhorn — ${categoryLabel}`,
-          source: `8979-dietz-elkhorn-${category}`,
+          property_interest: `8923 Dietz Elkhorn — ${categoryLabel}`,
+          source: `8923-dietz-elkhorn-${category}`,
           recaptchaToken,
           website: honeypot,
           ...attribution,
@@ -166,8 +167,8 @@ export function RetailLeasingInquiryForm() {
   if (submitted) {
     return (
       <InquirySuccessCard
-        propertyName="8979 Dietz Elkhorn"
-        customMessage="A CRECO principal will follow up about 8979 Dietz Elkhorn with current suite availability, your suite recommendation, and a proposed tour time. If you're a great fit for an end cap or food-ready bay, we'll flag that right away."
+        propertyName="8923 Dietz Elkhorn"
+        customMessage="A CRECO principal will follow up about 8923 Dietz Elkhorn with current availability, a recommended footprint, and a proposed tour time. If you're a great fit for an end-cap position, we'll flag that right away."
       />
     );
   }

@@ -205,6 +205,15 @@ const nextConfig = {
         destination: 'https://www.crecotx.com/:path*',
         permanent: true,
       },
+      // The Elkhorn Point landing page moved from 8979 → 8923 Dietz Elkhorn
+      // (2026-09-22) once the correct street number was confirmed. The old
+      // slug is indexed and printed on collateral, so it 308s to the new one
+      // rather than 404ing and dropping the accumulated ranking signal.
+      {
+        source: '/8979-dietz-elkhorn',
+        destination: '/8923-dietz-elkhorn',
+        permanent: true,
+      },
     ];
   },
 

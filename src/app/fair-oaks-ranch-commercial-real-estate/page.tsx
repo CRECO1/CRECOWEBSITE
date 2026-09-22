@@ -124,7 +124,7 @@ export default function FairOaksRanchPage() {
           proof: [
             { label: 'Headquarters', value: '8000 Fair Oaks Pkwy, Suite 100, Fair Oaks Ranch, TX 78015 — (210) 817-3443 · info@crecotx.com' },
             { label: 'Owns & operates locally', value: '8000 Fair Oaks Plaza: a 4-bay retail building plus two two-story executive office suite buildings on Fair Oaks Pkwy. Tenants include Spotted Deer Coffee, Parker\'s Ice Creams, Fair Oaks Salon, Blume Haus, and Fair Oaks Realty Group.' },
-            { label: 'Developing locally', value: 'Elkhorn Point, 8979 Dietz Elkhorn Rd: a new ±20,000 SF neighborhood retail center with about ten ±1,500 SF suites, two F&B end caps with patios, and 2–3 food-ready bays — pre-leasing now.' },
+            { label: 'Developing locally', value: 'Elkhorn Point, 8923 Dietz Elkhorn Rd: a new ±20,000 SF neighborhood retail center — two ±10,000 SF buildings, divisible and built to suit, with end-cap F&B positions — pre-leasing now.' },
             { label: 'Also owns in the metro', value: '15033 Main St, Lytle — a ±11,750 SF multi-tenant retail center on the I-35 corridor.' },
             { label: 'Broker & founder', value: 'Zachary A. Stovall (TREC #691174), an eighth-generation Texan raised in San Antonio; over eight years he has closed more than $130 million in acquisitions and dispositions and $95 million in leases.' },
             { label: 'Director of Leasing', value: 'Brian Blanco, a San Antonio native who spent four-plus years at Amazon as part of its delivery-station site-selection process.' },

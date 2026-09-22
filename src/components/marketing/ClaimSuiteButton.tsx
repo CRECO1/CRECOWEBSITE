@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * ClaimSuiteButton — the gold hero CTA on /8979-dietz-elkhorn that opens
+ * ClaimSuiteButton — the gold hero CTA on /8923-dietz-elkhorn that opens
  * the inquiry form in a modal instead of scroll-jumping to the inline
  * form below the fold.
  *
@@ -64,7 +64,7 @@ export function ClaimSuiteButton() {
           // analytics fire even if the modal mount errors for some
           // reason. params are kept minimal — property + surface so
           // GA can attribute the open to the right page.
-          trackEvent('inquiry_modal_opened', { property: '8979-dietz-elkhorn', surface: 'hero_cta' });
+          trackEvent('inquiry_modal_opened', { property: '8923-dietz-elkhorn', surface: 'hero_cta' });
           setOpen(true);
         }}
         className="inline-flex items-center gap-2 rounded-lg bg-gold px-5 py-3 sm:px-8 sm:py-4 text-body-sm font-bold text-primary hover:bg-gold-light shadow-lg text-balance"

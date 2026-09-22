@@ -191,7 +191,7 @@ export default async function HomePage() {
     // Elkhorn from the prior visible order. Elkhorn was previously
     // position 3 (incorrectly, due to the Louis slug mismatch
     // above); now it's position 6 as intended.
-    '8979-dietz-elkhorn',                    // Elkhorn (synthetic)
+    '8923-dietz-elkhorn',                    // Elkhorn (synthetic)
   ];
 
   const allListings = withSyntheticListings(dbListings as any);

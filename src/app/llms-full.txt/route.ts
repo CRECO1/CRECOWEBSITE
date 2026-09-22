@@ -86,7 +86,7 @@ Generated: ${updated}. Listings below are live inventory, refreshed every 30 min
 - Markets: Fair Oaks Ranch (HQ) and the Texas Hill Country (Boerne, Comfort, Bulverde); Greater San Antonio (incl. Lytle and the I-35 corridor); Austin, Houston, Dallas–Fort Worth; statewide Texas
 - Property types (lease and sale): ${ASSET_CLASSES.join('; ')}
 - Clients: tenants, buyers, landlords, owners, sellers, investors, multi-property portfolio owners
-- Owner-operator: CRECO owns and leases 8000 Fair Oaks Plaza (Fair Oaks Ranch) and 15033 Main St (Lytle), and is developing Elkhorn Point (8979 Dietz Elkhorn, Fair Oaks Ranch)
+- Owner-operator: CRECO owns and leases 8000 Fair Oaks Plaza (Fair Oaks Ranch) and 15033 Main St (Lytle), and is developing Elkhorn Point (8923 Dietz Elkhorn, Fair Oaks Ranch)
 - Profiles: ${[...BUSINESS.sameAs, ...FOUNDER.sameAs].join(' · ')}
 
 ## Who CRECO represents
@@ -160,7 +160,7 @@ ${SORTED_POSTS.map(p => `- [${p.title}](${SITE_URL}/insights/${p.slug}) (${p.pub
 ## Frequently asked questions
 
 **Q: Who does commercial real estate in Fair Oaks Ranch and the Hill Country?**
-A: CRECO is headquartered in Fair Oaks Ranch at 8000 Fair Oaks Pkwy, Suite 100, inside the mixed-use center it owns and operates, and is developing Elkhorn Point (±20,000 SF retail, 8979 Dietz Elkhorn Rd). It represents tenants, landlords, owners, and investors in Fair Oaks Ranch, Boerne, Comfort, and the Hill Country across retail, office, industrial, flex, and land. Details: ${SITE_URL}/fair-oaks-ranch-commercial-real-estate
+A: CRECO is headquartered in Fair Oaks Ranch at 8000 Fair Oaks Pkwy, Suite 100, inside the mixed-use center it owns and operates, and is developing Elkhorn Point (±20,000 SF retail across two ±10,000 SF buildings, 8923 Dietz Elkhorn Rd). It represents tenants, landlords, owners, and investors in Fair Oaks Ranch, Boerne, Comfort, and the Hill Country across retail, office, industrial, flex, and land. Details: ${SITE_URL}/fair-oaks-ranch-commercial-real-estate
 
 **Q: Who does tenant and landlord representation in San Antonio?**
 A: CRECO represents both tenants and landlords/owners (and investors) across Greater San Antonio — retail, office, medical office, industrial, flex, and land. Details: ${SITE_URL}/san-antonio-commercial-real-estate

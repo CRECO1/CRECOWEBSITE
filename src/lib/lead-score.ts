@@ -59,7 +59,7 @@ const HIGH_INTENT = new Set([
 const MID_HIGH_INTENT = new Set([
   'listing', 'brochure-request', 'tenant-needs', 'retail-leasing',
   'development-interest', 'claim-suite',
-  '8000-fair-oaks-pkwy', '8979-dietz-elkhorn', '15033-main-st-lytle',
+  '8000-fair-oaks-pkwy', '8923-dietz-elkhorn', '15033-main-st-lytle',
 ]);
 
 /** General engagement — real, but top-of-funnel. +15. */

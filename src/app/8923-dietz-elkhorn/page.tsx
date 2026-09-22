@@ -27,15 +27,16 @@ import { StickyPropertyCTABar } from '@/components/marketing/StickyPropertyCTABa
 import { getLandingPage } from '@/lib/supabase';
 
 /**
- * /8979-dietz-elkhorn — pre-leasing landing page for the upcoming
- * ±20,000 SF neighborhood retail center at 8979 Dietz Elkhorn,
- * Fair Oaks Ranch, TX.
+ * /8923-dietz-elkhorn — pre-leasing landing page for the upcoming
+ * ±20,000 SF neighborhood retail center at 8923 Dietz Elkhorn,
+ * Fair Oaks Ranch, TX: TWO ±10,000 SF retail buildings, ground-up
+ * build-to-suit (nothing is built yet).
  *
  * Audience: LOCAL BUSINESS OWNERS evaluating a Fair Oaks Ranch suite.
  * NOT residential, NOT investors, NOT national-credit reps. Copy and
  * structure follow the CRECO × Fair Oaks Realty Group leasing strategy
- * (local-first, ~10 demisable suites, end caps for F&B, food-ready
- * bays). The landing page is referenced from the on-site "Now Pre-Leasing"
+ * (local-first, divisible build-to-suit space, end-cap F&B). The
+ * landing page is referenced from the on-site "Now Pre-Leasing"
  * signage QR code per Section 5.B of the strategy.
  *
  * Distinct from /8000-fair-oaks-pkwy (which is a different CRECO
@@ -45,7 +46,7 @@ import { getLandingPage } from '@/lib/supabase';
  * ── Admin editability ──
  * The text-heavy fields (SEO meta, hero overline/headline/subhead, the
  * 4 "Why now" cards, and the FAQ list) are sourced from the
- * `landing_pages` table with slug='8979-dietz-elkhorn'. The admin edits
+ * `landing_pages` table with slug='8923-dietz-elkhorn'. The admin edits
  * them at /admin?tab=landing_pages. Structural sections (stats, asset
  * spec grid, tenant categories, lease terms, process, lead form) stay
  * in code — those rarely change and changing them visually needs code
@@ -56,6 +57,8 @@ import { getLandingPage } from '@/lib/supabase';
 // Site plan asset — the cropped PNG, which is the property only (no
 // engineering letterhead / KFM branding). The original engineered PDF
 // lives outside the public folder so it can't be downloaded by URL.
+// NOTE (2026-09-22): this art still shows the OLD ten-suite scheme and
+// is awaiting replacement renderings for the two-building program.
 const SITE_PLAN_PNG = '/site-plans/8979-dietz-elkhorn-site-plan.png';
 const PHONE_DISPLAY = '(210) 817-3443';
 const PHONE_HREF = 'tel:+12108173443';
@@ -66,13 +69,13 @@ const PHONE_HREF = 'tel:+12108173443';
 // the page still renders identically with this copy.
 
 const FALLBACK = {
-  meta_title: '8979 Dietz Elkhorn Retail Pre-Leasing | CRECO',
+  meta_title: '8923 Dietz Elkhorn Retail Pre-Leasing | CRECO',
   meta_description:
-    'A new ±20,000 SF neighborhood retail center in Fair Oaks Ranch, TX — ten ±1,500 SF demisable suites with end-cap F&B and food-ready bays. Pre-leasing now.',
+    'A new ±20,000 SF neighborhood retail center in Fair Oaks Ranch, TX — two ±10,000 SF buildings, divisible and built to suit, with end-cap F&B. Pre-leasing now.',
   eyebrow: 'Now Pre-Leasing',
-  h1: '8979 Dietz Elkhorn.',
+  h1: '8923 Dietz Elkhorn.',
   subhead:
-    'A new ±20,000 SF neighborhood retail center on Dietz Elkhorn in Fair Oaks Ranch.',
+    'Two ±10,000 SF retail buildings on Dietz Elkhorn, in the heart of Fair Oaks Ranch.',
   market_bullets: [
     {
       title: '$168K median household income',
@@ -93,12 +96,12 @@ const FALLBACK = {
   ],
   faqs: [
     {
-      q: 'How big are the suites and can I combine them?',
-      a: 'Standard bays are ±1,500 SF with demising walls designed to combine. Pair two for ±3,000 SF, three for ±4,500 SF — common asks from restaurants, fitness studios, and medical users. End caps and food-ready bays are limited; the earliest LOIs get first pick.',
+      q: 'How big are the spaces and how are they divided?',
+      a: 'Elkhorn Point is two ±10,000 SF retail buildings — ±20,000 SF of divisible space. Nothing is built yet, so demising is set to your plan rather than chosen from what is left: take a small bay or a large footprint. End-cap positions are finite and the earliest LOIs get first pick.',
     },
     {
       q: 'Can my food concept work here?',
-      a: 'Yes. We are pre-plumbing 2-3 suites with grease lines, venting, and 3-phase power so F&B operators do not have to retrofit. End caps include a patio envelope. Coffee, fast-casual, brunch, bakery, and wine bar concepts are all in scope.',
+      a: 'Yes. Because this is ground-up build-to-suit, grease lines, venting, and 3-phase power are designed into your space from the start at construction cost rather than retrofitted later. End-cap positions allow for a patio. Coffee, fast-casual, brunch, bakery, and wine bar concepts are all in scope.',
     },
     {
       q: 'What does NNN actually cost me?',
@@ -106,7 +109,7 @@ const FALLBACK = {
     },
     {
       q: 'When does the center open?',
-      a: 'Delivery is in active planning. We are pre-leasing now toward a target of 40-50% committed before delivery and 90% within 12 months of opening. The fastest path to picking your suite is to start the conversation now.',
+      a: 'Delivery is in active planning and we are pre-leasing now. Because nothing is built yet, the earliest tenants have the most influence over their own space — the fastest path to picking your spot is to start the conversation now.',
     },
     {
       q: 'What kind of operators are you looking for?',
@@ -127,8 +130,8 @@ const WHY_NOW_ICONS = [TrendingUp, Users, Sparkles, Building2];
 // Structural sections (not in DB — change in code if they need updating)
 const ASSET_SPEC: { icon: typeof Building2; label: string; value: string; sub?: string }[] = [
   { icon: Building2, label: 'Total GLA',           value: '±20,000 SF' },
-  { icon: Sparkles,  label: 'Suites',              value: 'Built-to-suit' },
-  { icon: Zap,       label: 'Demisable',           value: 'Combine to 3,000 / 4,500 SF' },
+  { icon: Sparkles,  label: 'Buildings',           value: 'Two ±10,000 SF' },
+  { icon: Zap,       label: 'Divisible',           value: 'Built to suit' },
   { icon: Flame,     label: 'Food-ready bays',     value: '2-3 with grease + venting' },
   { icon: Sun,       label: 'End caps',            value: 'Two — F&B with patio envelope' },
   { icon: Car,       label: 'Parking',             value: 'Supports F&B + fitness peaks' },
@@ -179,7 +182,7 @@ const TERMS = [
 // redeploy. Falls back to the FALLBACK values if the row doesn't exist.
 
 const BASE_KEYWORDS = [
-  '8979 dietz elkhorn',
+  '8923 dietz elkhorn',
   'dietz elkhorn retail',
   'fair oaks ranch retail center',
   'fair oaks ranch retail space for lease',
@@ -195,19 +198,19 @@ const BASE_KEYWORDS = [
 ];
 
 export async function generateMetadata(): Promise<Metadata> {
-  const db = await getLandingPage('8979-dietz-elkhorn').catch(() => null);
+  const db = await getLandingPage('8923-dietz-elkhorn').catch(() => null);
   const title = db?.meta_title || FALLBACK.meta_title;
   const description = db?.meta_description || FALLBACK.meta_description;
   return {
     title,
     description,
     keywords: BASE_KEYWORDS,
-    alternates: { canonical: 'https://www.crecotx.com/8979-dietz-elkhorn' },
+    alternates: { canonical: 'https://www.crecotx.com/8923-dietz-elkhorn' },
     openGraph: {
       images: [DEFAULT_OG_IMAGE],
-      title: '8979 Dietz Elkhorn — Now Pre-Leasing | Fair Oaks Ranch',
+      title: '8923 Dietz Elkhorn — Now Pre-Leasing | Fair Oaks Ranch',
       description: description,
-      url: 'https://www.crecotx.com/8979-dietz-elkhorn',
+      url: 'https://www.crecotx.com/8923-dietz-elkhorn',
       type: 'website',
     },
     robots: 'index,follow',
@@ -220,7 +223,7 @@ export default async function DietzElkhornPage() {
   // Read editable content. If the row doesn't exist or the DB call
   // fails for any reason, fall back to FALLBACK so the page always
   // renders.
-  const db = await getLandingPage('8979-dietz-elkhorn').catch(() => null);
+  const db = await getLandingPage('8923-dietz-elkhorn').catch(() => null);
 
   const eyebrow = db?.eyebrow || FALLBACK.eyebrow;
   const h1 = db?.h1 || FALLBACK.h1;
@@ -236,13 +239,13 @@ export default async function DietzElkhornPage() {
   // schema stays in sync with displayed copy.
   const SCHEMAS = [
     listingSchema(DIETZ_ELKHORN_LISTING, {
-      url: '/8979-dietz-elkhorn',
+      url: '/8923-dietz-elkhorn',
       description:
-        'Elkhorn Point: new ±20,000 SF neighborhood retail center pre-leasing at 8979 Dietz Elkhorn Rd, Fair Oaks Ranch, TX 78015. About ten demisable suites of ±1,500 SF, two F&B end caps with patio envelopes, and 2–3 food-ready bays. Developed and leased by CRECO; call for pricing.',
+        'Elkhorn Point: new ±20,000 SF neighborhood retail center pre-leasing at 8923 Dietz Elkhorn Rd, Fair Oaks Ranch, TX 78015. Two ±10,000 SF retail buildings, divisible and built to suit, with end-cap F&B positions. Developed and leased by CRECO; call for pricing.',
     }),
     breadcrumbList([
       { name: 'Listings', path: '/listings' },
-      { name: 'Elkhorn Point — 8979 Dietz Elkhorn', path: '/8979-dietz-elkhorn' },
+      { name: 'Elkhorn Point — 8923 Dietz Elkhorn', path: '/8923-dietz-elkhorn' },
     ]),
   ];
   const FAQ_SCHEMA = {
@@ -324,7 +327,7 @@ export default async function DietzElkhornPage() {
                   lines. The em-dash version wraps naturally — clean
                   whatever the width. */}
               <p className="text-body text-gold font-bold mb-7 max-w-xl mx-auto leading-snug">
-                Suites are limited — local operators get first pick of end caps and food-ready bays.
+                Space is finite — local operators get first pick of end-cap positions and layout.
               </p>
               <div className="flex flex-wrap gap-4 justify-center">
                 <ClaimSuiteButton />
@@ -411,7 +414,7 @@ export default async function DietzElkhornPage() {
         <section className="bg-background-cream py-12 sm:py-20 border-y border-border">
           <Container>
             {/* gap-8 on mobile (when the two columns stack vertically) keeps
-                the "Ten suites" intro tight against the spec grid below it
+                the "Two buildings" intro tight against the spec grid below it
                 — gap-12 on mobile was creating a hard visual break. lg:gap-12
                 preserves the desktop spacing where the two columns sit
                 side-by-side and need the larger gutter to feel intentional. */}
@@ -419,12 +422,13 @@ export default async function DietzElkhornPage() {
               <div className="lg:col-span-2">
                 <p className="overline mb-3 text-gold">The center</p>
                 <h2 className="font-heading text-heading-xl sm:text-display-sm font-bold text-primary leading-tight mb-5">
-                  Ten suites, designed to combine.
+                  Two buildings, divided to suit.
                 </h2>
                 <p className="text-body text-foreground-muted leading-relaxed mb-4">
-                  The shell is engineered so suites can stand alone at ±1,500 SF or combine
-                  into 3,000 / 4,500 SF for restaurants, fitness studios, and medical users.
-                  End caps get patio envelopes; food-ready bays come pre-plumbed for grease,
+                  Two ±10,000 SF buildings give ±20,000 SF of divisible retail. Nothing is
+                  built yet, so demising follows your plan — a small bay or a large footprint
+                  for restaurants, fitness studios, and medical users. End-cap positions allow
+                  for a patio, and F&B space is designed for grease,
                   venting, and 3-phase power so you don&apos;t retrofit later.
                 </p>
                 <p className="text-body-sm text-foreground-muted leading-relaxed">
@@ -490,7 +494,7 @@ export default async function DietzElkhornPage() {
                   by w-full + h-auto via className. */}
               <Image
                 src={SITE_PLAN_PNG}
-                alt="8979 Dietz Elkhorn site plan"
+                alt="8923 Dietz Elkhorn site plan"
                 width={1687}
                 height={1133}
                 sizes="(min-width: 1024px) 56rem, 100vw"
@@ -590,8 +594,8 @@ export default async function DietzElkhornPage() {
                 </h2>
                 <p className="text-body text-foreground-muted leading-relaxed max-w-xl mx-auto">
                   A CRECO broker will follow up personally. Established
-                  operators with strong concepts get first pick of end caps and
-                  food-ready bays.
+                  operators with strong concepts get first pick of end-cap
+                  positions and layout.
                 </p>
               </div>
 
@@ -642,8 +646,8 @@ export default async function DietzElkhornPage() {
         <section className="bg-white py-12 sm:py-16">
           <Container>
             <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <MarketReportCapture variant="light" surface="8979-dietz-elkhorn-bottom" />
-              <PropertyAlertsInline variant="light" surface="8979-dietz-elkhorn-bottom" />
+              <MarketReportCapture variant="light" surface="8923-dietz-elkhorn-bottom" />
+              <PropertyAlertsInline variant="light" surface="8923-dietz-elkhorn-bottom" />
             </div>
           </Container>
         </section>
@@ -673,7 +677,7 @@ export default async function DietzElkhornPage() {
           CTA. Anchored to the bottom of the viewport after the visitor
           scrolls past the hero; auto-hides once the inline #inquire
           form enters view so we don't compete with ourselves. */}
-      <StickyPropertyCTABar property="8979-dietz-elkhorn" hideWhenVisible="#inquire">
+      <StickyPropertyCTABar property="8923-dietz-elkhorn" hideWhenVisible="#inquire">
         <ClaimSuiteButton />
       </StickyPropertyCTABar>
       <Footer />
