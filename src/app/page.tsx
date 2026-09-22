@@ -177,21 +177,16 @@ export default async function HomePage() {
   // or a DB listing isn't active).
   const FEATURED_SLUG_ORDER = [
     '1353-w-french-pl',                     // Beacon Hill warehouse lease (DB) — owner wants it leased first
-    '8000-fair-oaks-pkwy',                  // Plaza (synthetic)
-    '2250-chipley-circle',                   // Chipley (DB)
-    // Louis Pasteur's DB slug is `move-in-ready-medical-building`,
-    // not `7830-louis-pasteur` — the slug is keyed to the headline
-    // not the street address. Previous order used the wrong slug,
-    // which is why Louis was getting pushed to the end of the
-    // curated list (no match in the bySlug map) and Elkhorn was
-    // floating into position 3 to fill its slot.
+    '8000-fair-oaks-pkwy',                  // Plaza (synthetic) — owner wants more action here
+    '2250-chipley-circle',                  // Chipley (DB)
+    '1222-chulie-dr',                       // Chulie (DB)
+    // Louis Pasteur's DB slug is `move-in-ready-medical-building`, not the street
+    // address — the slug is keyed to the original headline.
     'move-in-ready-medical-building',        // Louis Pasteur (DB)
     '523-seventh-st',                        // Seventh St (DB)
+    // Lytle and Elkhorn fall past the 6-slot grid; both keep their own landing
+    // pages and stay on /listings.
     '15033-main-st-lytle',                   // Lytle (synthetic)
-    // Elkhorn moves to the end per owner request — swap Louis ↔
-    // Elkhorn from the prior visible order. Elkhorn was previously
-    // position 3 (incorrectly, due to the Louis slug mismatch
-    // above); now it's position 6 as intended.
     '8923-dietz-elkhorn',                    // Elkhorn (synthetic)
   ];
 
