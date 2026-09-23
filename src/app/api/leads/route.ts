@@ -4,6 +4,8 @@ import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { verifyRecaptcha } from '@/lib/recaptcha';
 import { escapeHtml, clampString, isValidEmail, safePhone, MAX_LEN } from '@/lib/sanitize';
+import { checkFormTiming } from '@/lib/form-timing';
+import { checkEmailQuality } from '@/lib/email-quality';
 import { pushToCrm } from '@/lib/crm';
 import { enforceRateLimit } from '@/lib/rate-limit';
 import { scoreLead, tierSubjectLabel, tierColor } from '@/lib/lead-score';
@@ -160,6 +162,28 @@ export async function POST(req: NextRequest) {
     }
 
     // Strict email validation — also rejects header-injection-style strings.
+    // Timing — a post faster than a person can fill the form. Answered like
+    // the honeypot above: success to the caller, nothing recorded.
+    const timing = checkFormTiming((body as Record<string, unknown>).form_rendered_at);
+    if (!timing.ok) {
+      console.warn('[leads] rejected on timing', { reason: timing.reason, elapsedMs: timing.elapsedMs });
+      return NextResponse.json({ success: true });
+    }
+
+    // Disposable domains and addresses whose domain cannot receive mail. This
+    // one answers honestly — a real person who mistyped needs to know.
+    const quality = await checkEmailQuality(rawEmail, { checkMx: true });
+    if (!quality.ok) {
+      console.warn('[leads] rejected on email quality', { reason: quality.reason, domain: quality.domain });
+      return NextResponse.json({
+        error: quality.reason === 'disposable'
+          ? 'Please use a permanent email address.'
+          : quality.reason === 'no-mx'
+            ? "That email domain can't receive mail — check the spelling?"
+            : 'Valid email is required',
+      }, { status: 400 });
+    }
+
     if (!isValidEmail(rawEmail)) {
       return NextResponse.json({ error: 'Valid email is required' }, { status: 400 });
     }

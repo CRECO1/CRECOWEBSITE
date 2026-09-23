@@ -94,7 +94,11 @@ export function useCaptureSubmit(opts: CaptureSubmitOptions): CaptureSubmitState
     setSubmitting(true);
     try {
       // The honeypot input lives inside the form; an empty value is a human.
-      const website = (new FormData(e.currentTarget).get('website') as string) ?? '';
+      const formData = new FormData(e.currentTarget);
+      const website = (formData.get('website') as string) ?? '';
+      // Stamped by <Honeypot> when the form mounted; the server rejects posts
+      // that arrive faster than a person could have filled this in.
+      const formRenderedAt = Number(formData.get('form_rendered_at')) || undefined;
       const recaptchaToken = await getRecaptchaToken(opts.recaptchaAction);
 
       // Where the visitor actually was when they submitted. Every capture
@@ -105,7 +109,7 @@ export function useCaptureSubmit(opts: CaptureSubmitOptions): CaptureSubmitState
       const res = await fetch(opts.endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...capturePageContext(), ...opts.buildPayload({ recaptchaToken, website }) }),
+        body: JSON.stringify({ form_rendered_at: formRenderedAt, ...capturePageContext(), ...opts.buildPayload({ recaptchaToken, website }) }),
       });
 
       if (!res.ok) {

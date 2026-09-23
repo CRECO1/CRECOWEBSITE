@@ -46,6 +46,7 @@ export default function ContactPage() {
         source: 'contact',
         recaptchaToken,
         website: data.get('website'),  // honeypot field
+        form_rendered_at: Number(data.get('form_rendered_at')) || undefined,
         ...attribution,
       }),
     }).catch(() => {});

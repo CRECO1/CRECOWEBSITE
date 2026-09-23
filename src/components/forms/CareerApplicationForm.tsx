@@ -79,7 +79,9 @@ export function CareerApplicationForm() {
     setError(null);
     setSubmitting(true);
     try {
-      const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
+      const capturedForm = new FormData(e.currentTarget);
+      const honeypot = (capturedForm.get('website') as string) ?? '';
+      const formRenderedAt = Number(capturedForm.get('form_rendered_at')) || undefined;
       const recaptchaToken = await getRecaptchaToken('submit_agent_application');
       const res = await fetch('/api/inquiry', {
         method: 'POST',
@@ -102,6 +104,7 @@ export function CareerApplicationForm() {
           },
           recaptchaToken,
           website: honeypot,
+          form_rendered_at: formRenderedAt,
         }),
       });
       if (!res.ok) {

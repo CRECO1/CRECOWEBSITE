@@ -56,7 +56,9 @@ export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress }:
     setError(null);
     setSubmitting(true);
     try {
-      const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
+      const capturedForm = new FormData(e.currentTarget);
+      const honeypot = (capturedForm.get('website') as string) ?? '';
+      const formRenderedAt = Number(capturedForm.get('form_rendered_at')) || undefined;
       const recaptchaToken = await getRecaptchaToken('schedule_tour');
       const attribution = readUtmsFromCookie();
       const res = await fetch('/api/tour-request', {
@@ -75,6 +77,7 @@ export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress }:
           notes,
           recaptchaToken,
           website: honeypot,
+          form_rendered_at: formRenderedAt,
           ...attribution,
         }),
       });

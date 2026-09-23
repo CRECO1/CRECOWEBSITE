@@ -114,7 +114,9 @@ export function TeamSection({
     setMsgError(null);
     setMsgSubmitting(true);
     try {
-      const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
+      const capturedForm = new FormData(e.currentTarget);
+      const honeypot = (capturedForm.get('website') as string) ?? '';
+      const formRenderedAt = Number(capturedForm.get('form_rendered_at')) || undefined;
       if (honeypot) { setMsgSubmitted(true); setMsgSubmitting(false); return; }
       const attribution = readUtmsFromCookie();
       const res = await fetch('/api/leads', {
@@ -127,6 +129,7 @@ export function TeamSection({
           property_interest: `Broker: ${selected.name}`,
           source: 'broker-profile',
           website: honeypot,
+          form_rendered_at: formRenderedAt,
           ...attribution,
         }),
       });

@@ -9,6 +9,10 @@ import { renderGuideEmailHtml } from '@/lib/guide-email';
 import { enforceRateLimit } from '@/lib/rate-limit';
 import { buildSignupContext } from '@/lib/signup-context';
 import { renderSubscriberNotification } from '@/lib/subscriber-notification-email';
+import { renderConfirmEmail } from '@/lib/subscriber-confirm-email';
+import { checkFormTiming } from '@/lib/form-timing';
+import { checkEmailQuality, isOutOfMarket } from '@/lib/email-quality';
+import { randomBytes } from 'node:crypto';
 
 /**
  * Unified subscribe endpoint — handles all 3 subscription types:
@@ -48,9 +52,12 @@ export async function POST(req: NextRequest) {
   // one-shot from a single user; 10/min handles legit edge cases
   // (a user signing up for multiple alert types from the same page)
   // while throttling scripted email-list-stuffing.
+  // Tightened from 10/min. A person signs up once; the only caller who needs
+  // several in a window is a script. 4 leaves room for a genuine retry after a
+  // typo or a failed captcha without leaving the door open to list-stuffing.
   const limited = enforceRateLimit(req, {
     namespace: 'subscribe',
-    max: 10,
+    max: 4,
     windowMs: 60_000,
   });
   if (limited) return limited;
@@ -73,10 +80,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true });
     }
 
-    // Strict email validation — also rejects newline/whitespace that could
-    // become a header-injection vector if forwarded to a raw SMTP header.
-    if (!isValidEmail(rawEmail)) {
-      return NextResponse.json({ error: 'Valid email is required' }, { status: 400 });
+    // Timing — a submission faster than a person can read the field. Answered
+    // like the honeypot: success to the caller, nothing stored, so a bot gets
+    // no signal about which layer caught it.
+    const timing = checkFormTiming((body as Record<string, unknown>).form_rendered_at);
+    if (!timing.ok) {
+      console.warn('[subscribe] rejected on timing', { reason: timing.reason, elapsedMs: timing.elapsedMs });
+      return NextResponse.json({ success: true });
+    }
+
+    // Email quality: shape, disposable domains, role addresses, and whether the
+    // domain can receive mail at all. Unlike the silent gates above this one
+    // answers honestly — a real person who typed "gmial.com" needs to be told.
+    const quality = await checkEmailQuality(rawEmail, { checkMx: true });
+    if (!quality.ok) {
+      console.warn('[subscribe] rejected on email quality', { reason: quality.reason, domain: quality.domain });
+      const message = quality.reason === 'disposable'
+        ? 'Please use a permanent email address.'
+        : quality.reason === 'no-mx'
+          ? "That email domain can't receive mail — check the spelling?"
+          : 'Valid email is required';
+      return NextResponse.json({ error: message }, { status: 400 });
     }
     const email = rawEmail.trim().toLowerCase();
 
@@ -111,6 +135,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Spam check failed' }, { status: 400 });
     }
 
+    // Newsletter and alerts require a click; a requested download does not.
+    const needsConfirmation = subscription_type === 'property-alerts' || subscription_type === 'newsletter';
+    const confirmToken = needsConfirmation ? randomBytes(32).toString('hex') : null;
+    const outOfMarket = isOutOfMarket(
+      req.headers.get('x-vercel-ip-country-region'),
+      req.headers.get('x-vercel-ip-country'),
+    );
+
     // Save to DB
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
     // Server-side write: use the service-role key. The publishable key is the
@@ -128,6 +160,13 @@ export async function POST(req: NextRequest) {
         filters: filters ?? null,
         source: source || null,
         asset_slug: asset_slug || null,
+        // Alerts and newsletter land unconfirmed and go nowhere until the link
+        // in their inbox is clicked. Lead-magnet confirms itself: the guide is
+        // emailed to that address, so delivery already proves reachability and
+        // gating a requested download behind a second click is pure friction.
+        confirmed_at: needsConfirmation ? null : new Date().toISOString(),
+        confirm_token: needsConfirmation ? confirmToken : null,
+        confirm_sent_at: needsConfirmation ? new Date().toISOString() : null,
         context: {
           page_path: ctx.pagePath,
           page_url: ctx.pageUrl,
@@ -136,6 +175,9 @@ export async function POST(req: NextRequest) {
           geo: ctx.geo,
           device: ctx.device,
           surface: clampString((body as Record<string, unknown>).surface, MAX_LEN.shortField) || null,
+          // Tagged, never blocked. An out-of-state investor or a relocating
+          // tenant is a real lead; this only lets triage sort them.
+          out_of_market: outOfMarket || null,
           ...ctx.utm,
         },
       }]);
@@ -145,9 +187,11 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Mirror to CRM under "Prospects" — even newsletter subscribers count,
-    // they're top-of-funnel and the broker may want to see them.
-    await pushToCrm({
+    // Mirror to CRM under "Prospects" — but only once the address is proven.
+    // An unconfirmed signup is a claim, not a contact; pushing it would put
+    // exactly the junk this endpoint is meant to filter into the CRM. The
+    // confirm route does this push when they click.
+    if (!needsConfirmation) await pushToCrm({
       event: 'subscriber.created',
       source: source || subscription_type,
       name: name || null,
@@ -189,35 +233,22 @@ export async function POST(req: NextRequest) {
             `,
           });
         }
-      } else {
-        const subjects = {
-          'newsletter': 'Welcome to CRECO Insights',
-          'property-alerts': "We'll send you matching Texas properties",
-        };
-        const bodies = {
-          'newsletter': `<p>Thanks for subscribing to CRECO Insights. You'll receive market analysis, deal commentary, and Texas commercial real estate strategy roughly once a month — no spam, no fluff.</p>`,
-          'property-alerts': `<p>You're set up to receive property alerts. As soon as a Texas commercial property matching your filters hits the CRECO listings, we'll send it your way.</p><p>Filters you set:</p><pre style="background:#FAFAF8;padding:12px;border-radius:4px">${escapeHtml(JSON.stringify(filters ?? {}, null, 2))}</pre>`,
-        };
-        const safeName = name || 'there';
-        await resend.emails.send({
-          from: getFromEmail(),
-          to: email,
-          subject: subjects[subscription_type as keyof typeof subjects],
-          html: `
-            <div style="font-family:sans-serif;max-width:600px">
-              <h2 style="color:#1A1A1A">Hi ${escapeHtml(safeName)},</h2>
-              ${bodies[subscription_type as keyof typeof bodies]}
-              <br/>
-              <p>— The CRECO Team<br/>8000 Fair Oaks Pkwy, Suite 100, Fair Oaks Ranch, TX 78015 · <a href="tel:+12108173443" style="color:#C9A962">(210) 817-3443</a></p>
-            </div>
-          `,
+      } else if (needsConfirmation && confirmToken) {
+        // The opt-in email. Until this is clicked nothing else happens — no
+        // CRM contact, no team notification, no alerts.
+        const origin = process.env.NEXT_PUBLIC_SERVER_URL?.replace(/\/$/, '') || 'https://www.crecotx.com';
+        const { subject, html } = renderConfirmEmail({
+          subscriptionType: subscription_type,
+          name,
+          confirmUrl: `${origin}/api/subscribe/confirm?token=${confirmToken}`,
         });
+        await resend.emails.send({ from: getFromEmail(), to: email, subject, html });
       }
 
-      // Notify the team for property-alerts and lead-magnet (not for
-      // newsletter — too noisy). The CRM mirror above handles per-lead
-      // tracking; this email is just the at-a-glance heads up.
-      if (subscription_type !== 'newsletter') {
+      // Notify the team — but only for signups that are real on arrival.
+      // Alerts and newsletter notify from the confirm route instead, so the
+      // inbox only ever sees addresses somebody actually proved they own.
+      if (subscription_type !== 'newsletter' && !needsConfirmation) {
         const { subject, html } = renderSubscriberNotification({
           subscriptionType: subscription_type,
           email,

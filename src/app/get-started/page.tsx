@@ -539,7 +539,9 @@ export default function GetStartedPage() {
     e.preventDefault();
     // Read the honeypot synchronously — e.currentTarget is only valid during
     // the event dispatch and can be null after the awaits below.
-    const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
+    const capturedForm = new FormData(e.currentTarget);
+      const honeypot = (capturedForm.get('website') as string) ?? '';
+      const formRenderedAt = Number(capturedForm.get('form_rendered_at')) || undefined;
     setLoading(true);
     setSubmitError(null);
     try {
@@ -547,7 +549,7 @@ export default function GetStartedPage() {
       const res = await fetch('/api/inquiry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path, name, company, email, phone, answers, recaptchaToken, website: honeypot }),
+        body: JSON.stringify({ path, name, company, email, phone, answers, recaptchaToken, website: honeypot, form_rendered_at: formRenderedAt }),
       });
       // Only show the success screen if the lead actually landed. Previously
       // every outcome (400/500/network error) fell through to setDone(true),

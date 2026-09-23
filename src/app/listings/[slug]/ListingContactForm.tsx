@@ -50,6 +50,7 @@ export function ListingContactForm({
           source: 'listing',
           recaptchaToken,
           website: data.get('website'),  // honeypot
+          form_rendered_at: Number(data.get('form_rendered_at')) || undefined,
           ...attribution,
         }),
       });

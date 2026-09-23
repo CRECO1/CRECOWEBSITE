@@ -113,7 +113,9 @@ export function RetailLeasingInquiryForm() {
 
     setSubmitting(true);
     try {
-      const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
+      const capturedForm = new FormData(e.currentTarget);
+      const honeypot = (capturedForm.get('website') as string) ?? '';
+      const formRenderedAt = Number(capturedForm.get('form_rendered_at')) || undefined;
       const recaptchaToken = await getRecaptchaToken('submit_8923_dietz_elkhorn');
 
       // Pack structured pre-qualification into the message body so the
@@ -145,6 +147,7 @@ export function RetailLeasingInquiryForm() {
           source: `8923-dietz-elkhorn-${category}`,
           recaptchaToken,
           website: honeypot,
+          form_rendered_at: formRenderedAt,
           ...attribution,
         }),
       });

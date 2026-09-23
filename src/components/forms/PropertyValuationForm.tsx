@@ -124,7 +124,9 @@ export function PropertyValuationForm() {
     setLeadError(null);
     setSubmittingLead(true);
     try {
-      const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
+      const capturedForm = new FormData(e.currentTarget);
+      const honeypot = (capturedForm.get('website') as string) ?? '';
+      const formRenderedAt = Number(capturedForm.get('form_rendered_at')) || undefined;
       const recaptchaToken = await getRecaptchaToken('property_valuation');
 
       const summaryParts = [
@@ -157,6 +159,7 @@ export function PropertyValuationForm() {
           source: 'valuation-request',
           recaptchaToken,
           website: honeypot,
+          form_rendered_at: formRenderedAt,
           ...attribution,
         }),
       });

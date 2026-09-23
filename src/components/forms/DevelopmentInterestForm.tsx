@@ -116,7 +116,9 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
     setError(null);
     setSubmitting(true);
     try {
-      const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
+      const capturedForm = new FormData(e.currentTarget);
+      const honeypot = (capturedForm.get('website') as string) ?? '';
+      const formRenderedAt = Number(capturedForm.get('form_rendered_at')) || undefined;
       const recaptchaToken = await getRecaptchaToken('submit_8000_fair_oaks_pkwy');
 
       // Pack the structured fields into the message body so the broker gets
@@ -147,6 +149,7 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
           source: `8000-fair-oaks-pkwy-${interest}`,
           recaptchaToken,
           website: honeypot,
+          form_rendered_at: formRenderedAt,
           ...attribution,
         }),
       });
