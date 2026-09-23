@@ -29,8 +29,11 @@ export async function verifyRecaptcha(token: string | undefined | null): Promise
   // No secret configured → reCAPTCHA disabled, allow through
   if (!secret) return { ok: true, reason: 'recaptcha-disabled' };
 
-  // Secret IS configured but no token sent → block
-  if (!token) return { ok: false, reason: 'missing-token' };
+  // Secret IS configured but no token arrived — the usual cause is a real visitor whose
+  // ad-blocker / privacy extension / network blocked the reCAPTCHA script, not a bot. Fail
+  // OPEN rather than 403 a genuine lead: the honeypot + rate limit still guard this path, and
+  // the score is only enforced below when a token IS present.
+  if (!token) return { ok: true, reason: 'missing-token-allowed' };
 
   try {
     const params = new URLSearchParams({ secret, response: token });
