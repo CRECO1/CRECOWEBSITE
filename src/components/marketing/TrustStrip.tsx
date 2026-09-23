@@ -129,7 +129,7 @@ function TrustCell({
         <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-white/5">
           {icon}
         </span>
-        <span className="font-heading text-heading-sm font-bold text-white whitespace-nowrap">
+        <span className="font-heading text-base md:text-heading-sm font-bold text-white whitespace-nowrap">
           {value}
         </span>
       </div>
