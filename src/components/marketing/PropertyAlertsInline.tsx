@@ -17,6 +17,7 @@
 import { useState } from 'react';
 import { BellRing } from 'lucide-react';
 import { EmailCaptureCard } from '@/components/forms/EmailCaptureCard';
+import { AssetTypePills } from '@/components/forms/AssetTypePills';
 import { readUtmsFromCookie } from '@/lib/analytics';
 
 interface PropertyAlertsInlineProps {
@@ -29,6 +30,9 @@ export function PropertyAlertsInline({
   surface = 'unknown',
 }: PropertyAlertsInlineProps) {
   const [email, setEmail] = useState('');
+  // Empty means "all types" — the default, and a real answer rather than a
+  // blank. Nothing here is required; the card still submits on one tap.
+  const [assetTypes, setAssetTypes] = useState<string[]>([]);
 
   return (
     <EmailCaptureCard
@@ -46,6 +50,7 @@ export function PropertyAlertsInline({
       }}
       email={email}
       onEmailChange={setEmail}
+      extra={<AssetTypePills selected={assetTypes} onChange={setAssetTypes} tone={variant} />}
       submit={{
         endpoint: '/api/subscribe',
         recaptchaAction: 'subscribe_property_alerts',
@@ -53,7 +58,7 @@ export function PropertyAlertsInline({
         track: {
           success: 'property_alerts_inline_subscribed',
           failure: 'property_alerts_inline_failed',
-          props: { surface },
+          props: { surface, asset_types: assetTypes.join(',') || 'all' },
         },
         buildPayload: ({ recaptchaToken }) => ({
           // The subscribers table wants a name; derive one from the address
@@ -62,6 +67,9 @@ export function PropertyAlertsInline({
           email,
           subscription_type: 'property-alerts',
           source: 'property-alerts-inline',
+          // Same shape the full /property-alerts form stores, so one
+          // subscriber record means the same thing wherever it came from.
+          filters: { property_types: assetTypes },
           // Which placement of the card this was — it already went to GA as a
           // tracking prop; the notification email needs it too, because
           // "property-alerts-inline" alone cannot distinguish the listings

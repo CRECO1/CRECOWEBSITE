@@ -8,6 +8,7 @@
  */
 import { escapeHtml } from './sanitize';
 import type { SignupContext } from './signup-context';
+import { assetTypesSummary } from './asset-types';
 
 export interface SubscriberNotificationInput {
   subscriptionType: string;
@@ -96,7 +97,9 @@ function renderFilters(
     'size_min', 'size_max', 'price_min', 'price_max', 'notes', 'note',
   ]);
 
-  const types = plainValue(f.property_types ?? f.property_type);
+  // Labels, not stored values — the brief should say "Industrial", not the
+  // 'warehouse' the listings table happens to key on.
+  const types = assetTypesSummary(f.property_types ?? f.property_type) ?? plainValue(f.property_types ?? f.property_type);
   const transaction = typeof f.transaction_type === 'string'
     ? (TRANSACTION_TEXT[f.transaction_type.toLowerCase()] ?? humanizeKey(f.transaction_type))
     : null;
@@ -133,6 +136,13 @@ export function renderSubscriberNotification(
   const row = (label: string, value: string | null) => value
     ? `<tr><td style="padding:6px 14px 6px 0;color:#6B6B6B;white-space:nowrap;vertical-align:top">${escapeHtml(label)}</td><td style="padding:6px 0;color:#1A1A1A">${value}</td></tr>`
     : '';
+  const filterRecord = (filters && typeof filters === 'object' && !Array.isArray(filters))
+    ? (filters as Record<string, unknown>)
+    : null;
+  const interestedIn = filterRecord
+    ? (assetTypesSummary(filterRecord.property_types ?? filterRecord.property_type) ?? 'All types')
+    : null;
+
   const utmRows = Object.entries(ctx.utm)
     .map(([k, v]) => row(k.replace('utm_', 'Campaign ') + ':', escapeHtml(v)))
     .join('');
@@ -149,6 +159,11 @@ export function renderSubscriberNotification(
               <table style="border-collapse:collapse;font-size:14px;width:100%">
                 ${row('Email:', `<a href="mailto:${escapeHtml(email)}" style="color:#C9A962">${escapeHtml(email)}</a>`)}
                 ${row('Name:', name ? escapeHtml(name) : null)}
+                ${/* The asset type belongs at the top, not buried in the brief
+                      below — it is the first thing worth knowing about an
+                      alert signup. 'All types' is shown explicitly so a broad
+                      subscriber reads as an answer, not a missing field. */ ''}
+                ${row('Interested in:', interestedIn ? `<strong>${escapeHtml(interestedIn)}</strong>` : null)}
                 ${row('Signed up on:', ctx.pageUrl ? `<a href="${escapeHtml(ctx.pageUrl)}" style="color:#C9A962">${escapeHtml(ctx.pageTitle || ctx.pagePath || ctx.pageUrl)}</a>` : null)}
                 ${row('Page:', ctx.pagePath && ctx.pageTitle ? escapeHtml(ctx.pagePath) : null)}
                 ${row('Came from:', ctx.referrerLabel ? escapeHtml(ctx.referrerLabel) : null)}
@@ -160,7 +175,7 @@ export function renderSubscriberNotification(
               </table>
 
               ${renderFilters(filters, row)
-                || `<p style="margin:18px 0 0;color:#6B6B6B;font-size:13px">No search criteria — this card asks only for an email. Reply to ask what they&rsquo;re looking for.</p>`}
+                || `<p style="margin:18px 0 0;color:#6B6B6B;font-size:13px">No size, budget or submarket set — the inline card asks for asset type and nothing else. Reply to ask what else they need.</p>`}
             </div>
           `,
   };

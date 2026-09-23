@@ -42,6 +42,13 @@ export interface EmailCaptureCardProps {
   /** Receives the typed email so the caller can build its payload. */
   onEmailChange: (email: string) => void;
   email: string;
+  /**
+   * Optional control rendered between the body copy and the email row — the
+   * alerts card uses it for asset-type pills. Kept as a slot so this component
+   * stays a card with an email in it, rather than growing a form's worth of
+   * props for one caller.
+   */
+  extra?: React.ReactNode;
 }
 
 export function EmailCaptureCard({
@@ -59,6 +66,7 @@ export function EmailCaptureCard({
   submit,
   email,
   onEmailChange,
+  extra,
 }: EmailCaptureCardProps) {
   const state = useCaptureSubmit(submit);
 
@@ -92,8 +100,12 @@ export function EmailCaptureCard({
         <h3 className={`font-heading text-body-lg font-bold ${headingClasses}`}>{heading}</h3>
       </div>
       <p className={`mb-4 text-body-sm leading-relaxed ${bodyClasses}`}>{body}</p>
-      <form onSubmit={state.submit} className="flex flex-col gap-2 sm:flex-row">
+      <form onSubmit={state.submit}>
         <Honeypot />
+        {/* The pills sit inside the form, above the email row, so they share
+            the honeypot's timing stamp and submit with the same event. */}
+        {extra}
+        <div className="flex flex-col gap-2 sm:flex-row">
         <input
           type="email"
           name="email"
@@ -114,6 +126,7 @@ export function EmailCaptureCard({
           {state.submitting ? submittingLabel : submitLabel}
           {!state.submitting && <ArrowRight className="h-4 w-4 shrink-0" />}
         </button>
+        </div>
       </form>
       {state.error && <p className={`mt-2 text-caption ${errorClassName}`}>{state.error}</p>}
     </div>

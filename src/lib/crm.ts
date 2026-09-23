@@ -29,6 +29,7 @@
  */
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { assetTypeTags } from './asset-types';
 
 type CrmLeadType = 'Buyer' | 'Seller' | 'Tenant' | 'Landlord/Investor' | 'Agent' | 'Broker' | 'Other';
 
@@ -228,7 +229,13 @@ function buildTags(p: CrmPayload): string[] {
     else if (p.subscription_type === 'property-alerts') tags.push('Property Alerts');
     else if (p.subscription_type === 'newsletter')   tags.push('Newsletter');
   }
-  return tags;
+  // The asset types they asked for, as tags, so the CRM can segment on
+  // "everyone watching industrial" without reading the filters JSON.
+  const f = (p.filters && typeof p.filters === 'object' && !Array.isArray(p.filters))
+    ? (p.filters as Record<string, unknown>)
+    : null;
+  if (f) tags.push(...assetTypeTags(f.property_types ?? f.property_type));
+  return Array.from(new Set(tags));
 }
 
 /** Synthetic gmail_message_id — required (NOT NULL + UNIQUE) on
@@ -326,7 +333,11 @@ export async function pushToCrm(p: CrmPayload): Promise<boolean> {
           email:      p.email,
           phone:      phone || '',
           // Was dropped entirely, so captured company names vanished.
-          business_name: company || null,
+          // '' not null — business_name is NOT NULL on crm_clients, so a
+          // null here failed the insert (23502) for every submission from a
+          // form without a company field. That was every property-alerts
+          // signup, which is why subscribers never became CRM contacts.
+          business_name: company || '',
           type,
           notes:      message,
           agent_id:   agentId,

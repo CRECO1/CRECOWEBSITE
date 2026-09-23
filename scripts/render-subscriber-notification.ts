@@ -70,6 +70,9 @@ const inline = renderSubscriberNotification({
   subscriptionType: 'property-alerts',
   email: 'swagner@wickerproperties.com',
   name: 'swagner',
+  // The inline card now asks one question — which asset types — so even the
+  // email-only surface carries an interest. Empty would read "All types".
+  filters: { property_types: ['warehouse', 'land'] },
   ctx: inlineCtx,
 });
 
