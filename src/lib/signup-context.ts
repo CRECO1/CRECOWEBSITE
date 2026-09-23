@@ -32,6 +32,9 @@ export interface SignupContext {
 const SOURCE_LABELS: Record<string, string> = {
   'property-alerts-inline': 'Property alerts — inline card',
   'property-alerts': 'Property alerts — full form (/property-alerts)',
+  // The id the /property-alerts form actually sends. Without this it fell
+  // through to the raw string and the email read "property-alerts-page".
+  'property-alerts-page': 'Property alerts — full form (/property-alerts)',
   'newsletter': 'Newsletter signup',
   'newsletter-footer': 'Newsletter — site footer',
   'lead-magnet': 'Guide download (gated)',

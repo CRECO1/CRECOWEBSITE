@@ -82,7 +82,7 @@ const filteredCtx = buildSignupContext(
     'user-agent': DESKTOP_MAC_UA,
   }),
   {
-    source: 'property-alerts',
+    source: 'property-alerts-page',
     page_path: '/property-alerts',
     page_url: 'https://www.crecotx.com/property-alerts',
     page_title: 'Texas Commercial Property Alerts | CRECO',
