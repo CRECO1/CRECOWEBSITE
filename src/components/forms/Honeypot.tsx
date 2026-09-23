@@ -22,14 +22,20 @@ export function Honeypot({ name = 'website' }: Props) {
   return (
     <div
       aria-hidden="true"
+      // sr-only clip pattern — zero layout footprint, no off-screen positioning.
+      // left:-9999px isn't reliably clipped by body{overflow-x:hidden} on iOS
+      // Safari, which makes pages pannable / "not scaling" on iPhones. This stays
+      // in the DOM so bots still fill it.
       style={{
         position: 'absolute',
-        left: '-9999px',
         width: '1px',
         height: '1px',
+        padding: 0,
+        margin: '-1px',
         overflow: 'hidden',
-        opacity: 0,
-        pointerEvents: 'none',
+        clip: 'rect(0, 0, 0, 0)',
+        whiteSpace: 'nowrap',
+        border: 0,
       }}
     >
       <label htmlFor={`hp-${name}`}>
