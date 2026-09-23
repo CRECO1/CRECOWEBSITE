@@ -174,6 +174,12 @@ export default function FairOaksRanchPage() {
           { label: 'Retail space for lease', href: '/texas-retail-space-for-lease', description: 'Retail in Fair Oaks Ranch and across Texas — strip centers, end-caps with drive-thru, restaurants, and pad sites.' },
           { label: 'Office space for lease', href: '/texas-office-space-for-lease', description: 'Professional services office in Fair Oaks Ranch and the broader I-10 corridor.' },
           { label: '8000 Fair Oaks Pkwy', href: '/8000-fair-oaks-pkwy', description: "CRECO's mixed-use center at 8000 Fair Oaks Pkwy — 4 retail bays + two executive suite buildings, now leasing." },
+          // Elkhorn Point is the only entry here that leaves crecotx.com: the
+          // property has its own site and that is where a prospective tenant
+          // should land. Apex host deliberately (never www) — www.elkhornpoint.com
+          // sits behind Vercel's automatic mitigations and intermittently 403s
+          // cold clients. UTM-tagged so GA4 attributes the referral.
+          { label: 'Elkhorn Point — 8923 Dietz Elkhorn', href: 'https://elkhornpoint.com/?utm_source=crecotx&utm_medium=referral&utm_campaign=cross-site&utm_content=fair-oaks-ranch-hub', description: 'CRECO\'s own development on Dietz Elkhorn Rd — two ±10,000 SF buildings, ±20,000 SF divisible and built to suit, pre-leasing now inside the Fair Oaks Ranch city limits.' },
           { label: 'Boerne commercial real estate', href: '/boerne-commercial-real-estate', description: 'The neighboring Boerne market — Hill Country gateway, strong I-10 commercial corridor, growing demographics.' },
         ],
       }}

@@ -439,15 +439,31 @@ export default async function DietzElkhornPage() {
                   office next door — with no two direct competitors fighting for the
                   same dollar.
                 </p>
-                <a
-                  href={SITE_PLAN_PNG}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  download
-                  className="mt-6 inline-flex items-center gap-2 rounded-lg border border-primary px-5 py-2.5 text-body-sm font-semibold text-primary hover:bg-primary hover:text-white transition-colors"
-                >
-                  <FileText className="h-4 w-4" /> Download site plan <ExternalLink className="h-3 w-3" />
-                </a>
+                <div className="mt-6 flex flex-wrap items-center gap-3">
+                  <a
+                    href={SITE_PLAN_PNG}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    download
+                    className="inline-flex items-center gap-2 rounded-lg border border-primary px-5 py-2.5 text-body-sm font-semibold text-primary hover:bg-primary hover:text-white transition-colors"
+                  >
+                    <FileText className="h-4 w-4" /> Download site plan <ExternalLink className="h-3 w-3" />
+                  </a>
+                  {/* The property has its own site, which is where a prospective
+                      tenant should end up — this page exists for search and direct
+                      referrals. Apex host deliberately (never www): www.elkhornpoint.com
+                      sits behind Vercel's automatic mitigations and intermittently
+                      403s cold clients. UTM-tagged so the referral is attributable
+                      in GA4 rather than landing in "direct". */}
+                  <a
+                    href="https://elkhornpoint.com/?utm_source=crecotx&utm_medium=referral&utm_campaign=cross-site&utm_content=8923-page"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="inline-flex items-center gap-2 rounded-lg bg-gold px-5 py-2.5 text-body-sm font-semibold text-primary hover:opacity-90 transition-opacity"
+                  >
+                    Visit elkhornpoint.com <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
               </div>
 
               <div className="lg:col-span-3">
