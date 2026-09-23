@@ -46,6 +46,43 @@ export interface CaptureSubmitState {
   reset: () => void;
 }
 
+/**
+ * Page context gathered at submit time, sent with every capture.
+ *
+ * page_path/page_url answer "which page were they on", referrer answers "how
+ * did they get to the site". Both are already visible to the server for the
+ * POST itself, but the POST comes from /api/subscribe — the *page* is only
+ * knowable client-side, so it has to ride in the body.
+ *
+ * Nothing here is personal: a path on our own site, an external referrer
+ * origin, and a viewport width. No IP (the server derives coarse geo from
+ * its own request headers instead) and no full referrer query string.
+ */
+function capturePageContext(): Record<string, unknown> {
+  if (typeof window === 'undefined') return {};
+  try {
+    // Referrer trimmed to origin + path — a referring URL's query string can
+    // carry the visitor's search terms or a session id, neither of which we
+    // need to answer "where did this come from".
+    let referrer = '';
+    if (document.referrer) {
+      try {
+        const r = new URL(document.referrer);
+        referrer = r.origin === window.location.origin ? `(on-site) ${r.pathname}` : `${r.origin}${r.pathname}`;
+      } catch { referrer = ''; }
+    }
+    return {
+      page_path: `${window.location.pathname}${window.location.search}`,
+      page_url: `${window.location.origin}${window.location.pathname}${window.location.search}`,
+      page_title: document.title || '',
+      referrer,
+      viewport_width: window.innerWidth,
+    };
+  } catch {
+    return {};
+  }
+}
+
 export function useCaptureSubmit(opts: CaptureSubmitOptions): CaptureSubmitState {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -60,10 +97,15 @@ export function useCaptureSubmit(opts: CaptureSubmitOptions): CaptureSubmitState
       const website = (new FormData(e.currentTarget).get('website') as string) ?? '';
       const recaptchaToken = await getRecaptchaToken(opts.recaptchaAction);
 
+      // Where the visitor actually was when they submitted. Every capture
+      // surface goes through this hook, so collecting it here means no form
+      // has to remember to — and the notification email stops saying only
+      // "property-alerts-inline" when the real question is "from what page?".
+      // The surface's own payload wins on any key it already sets.
       const res = await fetch(opts.endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(opts.buildPayload({ recaptchaToken, website })),
+        body: JSON.stringify({ ...capturePageContext(), ...opts.buildPayload({ recaptchaToken, website }) }),
       });
 
       if (!res.ok) {

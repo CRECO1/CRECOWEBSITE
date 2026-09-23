@@ -62,6 +62,11 @@ export function PropertyAlertsInline({
           email,
           subscription_type: 'property-alerts',
           source: 'property-alerts-inline',
+          // Which placement of the card this was — it already went to GA as a
+          // tracking prop; the notification email needs it too, because
+          // "property-alerts-inline" alone cannot distinguish the listings
+          // index from a property landing page.
+          surface,
           recaptchaToken,
           ...readUtmsFromCookie(),
         }),
