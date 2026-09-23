@@ -5,6 +5,7 @@ import { pushToCrm } from '@/lib/crm';
 import { renderSubscriberNotification } from '@/lib/subscriber-notification-email';
 import { labelForSource, type SignupContext } from '@/lib/signup-context';
 import { enforceRateLimit } from '@/lib/rate-limit';
+import { SITE_URL } from '@/lib/schema';
 
 /**
  * GET /api/subscribe/confirm?token=…
@@ -33,8 +34,10 @@ function getFromEmail(): string {
   return 'onboarding@resend.dev';
 }
 
-const origin = () =>
-  process.env.NEXT_PUBLIC_SERVER_URL?.replace(/\/$/, '') || 'https://www.crecotx.com';
+// SITE_URL, not NEXT_PUBLIC_SERVER_URL: that env var holds the *.vercel.app
+// deployment URL in production, and a confirmation link on a vercel.app host
+// reads as phishing to the person being asked to click it.
+const origin = () => SITE_URL;
 
 const landing = (status: 'confirmed' | 'already' | 'invalid') =>
   NextResponse.redirect(`${origin()}/subscribe/confirmed?status=${status}`, { status: 303 });
@@ -68,13 +71,15 @@ export async function GET(req: NextRequest) {
   if (!row) return landing('invalid');
   if (row.confirmed_at) return landing('already');
 
-  // Claim the row. Matching on confirm_token again means two simultaneous
-  // clicks cannot both win and send two notifications.
+  // Claimed by matching confirmed_at IS NULL, so two simultaneous clicks
+  // cannot both win and double-notify. The token stays on the row: a second
+  // click then finds it, sees confirmed_at, and gets the friendly
+  // "already confirmed" page instead of a dead link.
   const { data: claimed, error: claimError } = await supabase
     .from('subscribers')
-    .update({ confirmed_at: new Date().toISOString(), confirm_token: null, updated_at: new Date().toISOString() })
+    .update({ confirmed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
     .eq('id', row.id)
-    .eq('confirm_token', token)
+    .is('confirmed_at', null)
     .select('id')
     .maybeSingle();
 

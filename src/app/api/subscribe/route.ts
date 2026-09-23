@@ -11,6 +11,7 @@ import { buildSignupContext } from '@/lib/signup-context';
 import { renderSubscriberNotification } from '@/lib/subscriber-notification-email';
 import { renderConfirmEmail } from '@/lib/subscriber-confirm-email';
 import { checkFormTiming } from '@/lib/form-timing';
+import { SITE_URL } from '@/lib/schema';
 import { checkEmailQuality, isOutOfMarket } from '@/lib/email-quality';
 import { randomBytes } from 'node:crypto';
 
@@ -236,7 +237,9 @@ export async function POST(req: NextRequest) {
       } else if (needsConfirmation && confirmToken) {
         // The opt-in email. Until this is clicked nothing else happens — no
         // CRM contact, no team notification, no alerts.
-        const origin = process.env.NEXT_PUBLIC_SERVER_URL?.replace(/\/$/, '') || 'https://www.crecotx.com';
+        // Canonical host — NEXT_PUBLIC_SERVER_URL is the *.vercel.app
+        // deployment URL in production and must never reach a subscriber.
+        const origin = SITE_URL;
         const { subject, html } = renderConfirmEmail({
           subscriptionType: subscription_type,
           name,
