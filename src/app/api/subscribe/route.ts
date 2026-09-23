@@ -8,6 +8,7 @@ import { findGuide } from '@/lib/guides';
 import { renderGuideEmailHtml } from '@/lib/guide-email';
 import { enforceRateLimit } from '@/lib/rate-limit';
 import { buildSignupContext } from '@/lib/signup-context';
+import { renderSubscriberNotification } from '@/lib/subscriber-notification-email';
 
 /**
  * Unified subscribe endpoint — handles all 3 subscription types:
@@ -217,44 +218,15 @@ export async function POST(req: NextRequest) {
       // newsletter — too noisy). The CRM mirror above handles per-lead
       // tracking; this email is just the at-a-glance heads up.
       if (subscription_type !== 'newsletter') {
-        const row = (label: string, value: string | null) => value
-          ? `<tr><td style="padding:6px 14px 6px 0;color:#6B6B6B;white-space:nowrap;vertical-align:top">${escapeHtml(label)}</td><td style="padding:6px 0;color:#1A1A1A">${value}</td></tr>`
-          : '';
-        const utmRows = Object.entries(ctx.utm)
-          .map(([k, v]) => row(k.replace('utm_', 'Campaign ') + ':', escapeHtml(v)))
-          .join('');
-
-        await resend.emails.send({
-          from: getFromEmail(),
-          to: NOTIFICATION_EMAIL,
-          // The page beats the form id in the subject line — it is the thing
-          // Zack actually wants to know at a glance in the inbox list.
-          subject: `New ${subscription_type} subscriber: ${email}${ctx.pagePath ? ` (from ${ctx.pagePath})` : ''}`,
-          html: `
-            <div style="font-family:sans-serif;max-width:640px;color:#1A1A1A">
-              <h2 style="margin:0 0 4px">New subscriber — ${escapeHtml(subscription_type)}</h2>
-              <p style="margin:0 0 18px;color:#6B6B6B">${escapeHtml(ctx.sourceLabel)} · ${escapeHtml(ctx.submittedAtLocal)}</p>
-
-              <table style="border-collapse:collapse;font-size:14px;width:100%">
-                ${row('Email:', `<a href="mailto:${escapeHtml(email)}" style="color:#C9A962">${escapeHtml(email)}</a>`)}
-                ${row('Name:', name ? escapeHtml(name) : null)}
-                ${row('Signed up on:', ctx.pageUrl ? `<a href="${escapeHtml(ctx.pageUrl)}" style="color:#C9A962">${escapeHtml(ctx.pageTitle || ctx.pagePath || ctx.pageUrl)}</a>` : null)}
-                ${row('Page:', ctx.pagePath && ctx.pageTitle ? escapeHtml(ctx.pagePath) : null)}
-                ${row('Came from:', ctx.referrerLabel ? escapeHtml(ctx.referrerLabel) : null)}
-                ${row('Location:', ctx.geo ? escapeHtml(ctx.geo) : null)}
-                ${row('Device:', ctx.device ? escapeHtml(ctx.device) : null)}
-                ${row('Asset:', asset_slug ? escapeHtml(asset_slug) : null)}
-                ${utmRows}
-                ${row('Form id:', ctx.rawSource ? escapeHtml(ctx.rawSource) : null)}
-              </table>
-
-              ${filters
-                ? `<p style="margin:18px 0 6px;font-weight:600">What they're looking for</p>
-                   <pre style="background:#FAFAF8;padding:12px;border-radius:4px;font-size:13px;white-space:pre-wrap">${escapeHtml(JSON.stringify(filters, null, 2))}</pre>`
-                : `<p style="margin:18px 0 0;color:#6B6B6B;font-size:13px">No search criteria — this card asks only for an email. Reply to ask what they're looking for.</p>`}
-            </div>
-          `,
+        const { subject, html } = renderSubscriberNotification({
+          subscriptionType: subscription_type,
+          email,
+          name,
+          assetSlug: asset_slug,
+          filters,
+          ctx,
         });
+        await resend.emails.send({ from: getFromEmail(), to: NOTIFICATION_EMAIL, subject, html });
       }
     }
 
