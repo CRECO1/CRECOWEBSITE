@@ -38,6 +38,30 @@ export interface UtmAttribution {
 const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'] as const;
 
 /**
+ * Lead-generating form submits. When any of these fires, trackEvent ALSO emits
+ * GA4's standard `generate_lead` event. Reason: GA4's "Generate leads" reports
+ * (New leads, lead source, conversion rate) only recognize the recommended
+ * `generate_lead` name — our descriptive custom names (contact_form_submitted,
+ * owner_inquiry_submitted, …) are marked as key events but never populate the
+ * lead-lifecycle metrics, so that whole reporting section read zero. The custom
+ * event stays for per-surface analysis; generate_lead carries the custom name
+ * as `lead_source` so leads can still be segmented by which form produced them.
+ * Mark `generate_lead` as a key event in GA4 for it to count as a conversion.
+ */
+const LEAD_EVENTS = new Set<string>([
+  'contact_form_submitted',
+  'owner_inquiry_submitted',
+  'listing_inquiry_submitted',
+  'valuation_lead_submitted',
+  'tour_request_submitted',
+  'broker_message_submitted',
+  'development_inquiry_submitted',
+  'retail_leasing_inquiry_submitted',
+  'get_started_submitted',
+  'property_alerts_subscribed',
+]);
+
+/**
  * Fire a GA4 event. Safe in SSR (no-ops). Names should be snake_case.
  * Params can be any serializable shape; GA4 truncates to its limits
  * server-side so don't sweat exact compliance here.
@@ -51,8 +75,16 @@ export function trackEvent(name: string, params: Record<string, unknown> = {}) {
   try {
     if (typeof w.gtag === 'function') {
       w.gtag('event', name, params);
+      // Mirror lead submits to GA4's standard generate_lead so the
+      // "Generate leads" reports populate (they key off this exact name).
+      if (LEAD_EVENTS.has(name)) {
+        w.gtag('event', 'generate_lead', { lead_source: name, ...params });
+      }
     } else if (Array.isArray(w.dataLayer)) {
       w.dataLayer.push({ event: name, ...params });
+      if (LEAD_EVENTS.has(name)) {
+        w.dataLayer.push({ event: 'generate_lead', lead_source: name, ...params });
+      }
     }
     // No-op if no analytics is wired. We still log to console in dev
     // so you can see fired events locally without GTM running.
