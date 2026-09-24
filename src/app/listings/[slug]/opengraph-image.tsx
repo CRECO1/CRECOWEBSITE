@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { getListingBySlug } from '@/lib/supabase';
+import { SYNTHETIC_LISTINGS } from '@/lib/featured-properties';
 import { formatPrice, formatSqft, formatLeaseRate, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 
 // Branded social-share card for each listing (Slack/LinkedIn/iMessage/X + AI
@@ -15,7 +16,9 @@ const INK = '#1A1A1A';
 
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const listing = await getListingBySlug(slug).catch(() => null);
+  const listing = (await getListingBySlug(slug).catch(() => null))
+    ?? SYNTHETIC_LISTINGS.find((l) => l.slug === slug && !l.landing_url)
+    ?? null;
 
   const title = listing?.title ?? 'Commercial Real Estate';
   // Raw Supabase URL (guaranteed JPEG/PNG — satori doesn't reliably decode the

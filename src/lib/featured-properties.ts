@@ -212,11 +212,79 @@ export const LYTLE_MAIN_ST_LISTING: Listing = {
   landing_url: '/15033-main-st-lytle',
 };
 
+/**
+ * Elkhorn Point — the back ±2-acre development pad, FOR SALE (build-to-suit).
+ * This is the raw pad behind CRECO's Elkhorn Point retail development (same
+ * ~4-acre site at 8923 Dietz Elkhorn); the front is the two ±10,000 SF retail
+ * buildings (DIETZ_ELKHORN_LISTING above), and this is the separate single-user
+ * pad sold to an owner-user who builds in parallel.
+ *
+ * Unlike the other synthetic listings, this one has NO landing_url — the retail
+ * center's elkhornpoint.com is a leasing site and a poor fit for a land buyer,
+ * so this renders as a normal /listings/elkhorn-point-pad detail page (with the
+ * standard inquiry form). The /listings/[slug] route + its opengraph-image
+ * resolve synthetic listings that lack a landing_url; see that route.
+ *
+ * transaction_type='sale' with sale_price=null → the card/detail shows "Call
+ * for offers" (the pad is sold to offers, no public quote). lot_size is in
+ * ACRES (formatAcres renders it). Details come from the CRECO back-lot buyer
+ * brief (Marketing/Elkhorn/Back-Lot/, 2026-09-23).
+ */
+export const ELKHORN_POINT_PAD_LISTING: Listing = {
+  id: 'synth-elkhorn-point-pad',
+  title: 'Elkhorn Point — ±2-Acre Development Pad',
+  slug: 'elkhorn-point-pad',
+  address: '8923 Dietz Elkhorn Rd',
+  city: 'Fair Oaks Ranch',
+  state: 'TX',
+  zip: '78015',
+  property_type: 'land',
+  transaction_type: 'sale',
+  sale_price: null,                          // "Call for offers" — sold to offers
+  lease_rate: null,
+  lease_rate_basis: null,
+  sqft: null,                                // land — no building
+  available_sqft: null,
+  lot_size: 2,                               // acres (formatAcres)
+  zoning: null,
+  year_built: null,
+  clear_height: null,
+  dock_doors: null,
+  grade_doors: null,
+  headline: 'Raw ±2-acre development pad behind Elkhorn Point — utilities being brought to the site, sold build-to-suit. A fit for a freestanding ER, childcare/daycare, medical, or fitness owner-user. Call for offers.',
+  description:
+    "A raw ±2-acre development pad at the rear of Elkhorn Point, CRECO's new neighborhood retail development at 8923 Dietz Elkhorn Rd in Fair Oaks Ranch. Utilities are being brought to the site, and the pad is offered for sale as a build-to-suit opportunity — the buyer develops a single-tenant building in parallel with CRECO's front-retail construction. It sits in one of the fastest-growing stretches of the Boerne / northwest San Antonio Hill Country corridor, an affluent trade area (~$168K median household income) with heavy rooftop and retail growth arriving nearby: Baptist Health's new Boerne acute-care hospital at I-10 & Hwy 46, Valcor's 118-acre H-E-B-anchored Lemon Creek Ranch, and Embrey's 214-unit build-to-rent on SH-46. The ±2-acre footprint fits the site criteria of freestanding-ER, childcare/daycare (suburban prototypes run ~2 acres), medical and urgent-care, and large-format fitness owner-users — uses actively expanding in this corridor with no Fair Oaks Ranch / Boerne location yet. Call for offers.",
+  features: [
+    '±2 acres — single-user development pad',
+    'Sold build-to-suit / owner-user — call for offers',
+    'Utilities being brought to the site',
+    "Behind CRECO's Elkhorn Point retail — develop in parallel",
+    'Fair Oaks Ranch / Boerne — Hill Country growth corridor',
+    'Affluent trade area (~$168K median household income)',
+    'Fits daycare, freestanding ER, medical, or fitness prototypes',
+  ],
+  images: ['/site-plans/8923-dietz-elkhorn-site-plan.png'],
+  brochure_url: null,
+  virtual_tour_url: null,
+  status: 'active',
+  listing_date: null,
+  closed_date: null,
+  submarket: 'Fair Oaks Ranch',
+  featured: true,
+  latitude: 29.73119,                        // shares the Elkhorn Point site geocode
+  longitude: -98.662645,
+  geocoded_at: null,
+  created_at: '',
+  updated_at: '',
+  // No landing_url — renders as a full /listings/elkhorn-point-pad detail page.
+};
+
 /** Add more bespoke landing-page listings to this array as they come up. */
 export const SYNTHETIC_LISTINGS: Listing[] = [
   FAIR_OAKS_PLAZA_LISTING,
   DIETZ_ELKHORN_LISTING,
   LYTLE_MAIN_ST_LISTING,
+  ELKHORN_POINT_PAD_LISTING,
 ];
 
 /**

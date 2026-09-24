@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next';
 import { supabase } from '@/lib/supabase';
+import { SYNTHETIC_LISTINGS } from '@/lib/featured-properties';
 import { SUBMARKETS } from '@/lib/submarkets-content';
 
 const BASE_URL = 'https://www.crecotx.com';
@@ -138,6 +139,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }));
     }
   } catch {}
+
+  // Synthetic listings that own a real detail page here (no landing_url) — e.g.
+  // the Elkhorn Point ±2-acre pad. Not in the DB, so enumerate them explicitly.
+  for (const l of SYNTHETIC_LISTINGS) {
+    if (!l.landing_url) {
+      listingPages.push({
+        url: `${BASE_URL}/listings/${l.slug}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
+      });
+    }
+  }
 
   // Dynamic submarket pages
   let submarketPages: MetadataRoute.Sitemap = [];

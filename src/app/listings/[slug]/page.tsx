@@ -16,6 +16,7 @@ import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { getListingBySlug, getListings } from '@/lib/supabase';
+import { SYNTHETIC_LISTINGS } from '@/lib/featured-properties';
 import { cache } from 'react';
 import { formatPrice, formatSqft, formatAcres, formatLeaseRate, transactionLabel, propertyTypeLabel, googleMapsUrl } from '@/lib/utils';
 import { ListingInquiryTabs } from './ListingInquiryTabs';
@@ -33,16 +34,30 @@ import { Bell } from 'lucide-react';
 // the listing, and without this each fires the same Supabase query. cache()
 // lives here (a server-only module) rather than in the client-shared
 // supabase.ts, so it never executes in a client bundle.
-const getListing = cache((slug: string) => getListingBySlug(slug));
+const getListing = cache(async (slug: string) => {
+  const db = await getListingBySlug(slug).catch(() => null);
+  if (db) return db;
+  // Synthetic listings (CRECO-owned, code-defined in featured-properties.ts)
+  // that do NOT carry a landing_url render here as a normal detail page — e.g.
+  // the Elkhorn Point ±2-acre pad. Ones WITH a landing_url live at their own
+  // page (elkhornpoint.com, bespoke routes), so they stay 404 here to avoid a
+  // duplicate of that page.
+  return SYNTHETIC_LISTINGS.find((l) => l.slug === slug && !l.landing_url) ?? null;
+});
 
 // Pre-render every current listing's detail page at build time (ISR above keeps
 // them fresh). Falls back to fully on-demand if the DB is unreachable at build.
 export async function generateStaticParams() {
+  // Synthetic listings without a landing_url own a real detail page here — always
+  // pre-render them even if the DB is unreachable at build.
+  const synthParams = SYNTHETIC_LISTINGS
+    .filter((l) => !l.landing_url)
+    .map((l) => ({ slug: l.slug }));
   try {
     const listings = await getListings('all');
-    return listings.map((l) => ({ slug: l.slug }));
+    return [...listings.map((l) => ({ slug: l.slug })), ...synthParams];
   } catch {
-    return [];
+    return synthParams;
   }
 }
 
