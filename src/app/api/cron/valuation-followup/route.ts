@@ -35,7 +35,7 @@ export const maxDuration = 60;
 interface FollowupRow {
   id: string;
   name: string;
-  email: string;
+  email: string | null;   // nullable since 2026-09-23: phone-only captures
   phone: string | null;
   property_interest: string | null;
   message: string | null;
@@ -162,6 +162,15 @@ export async function GET(req: NextRequest) {
   const NOTIFICATION_EMAIL = process.env.LEAD_NOTIFICATION_EMAIL ?? 'info@crecotx.com';
 
   for (const lead of (leads as FollowupRow[] | null) ?? []) {
+    // A lead may legitimately have no email: the elkhornpoint.com one-field
+    // capture accepts "email or phone", and `leads.email` is nullable as of
+    // 2026-09-23. There is nothing to send such a row here, so skip and log
+    // rather than handing Resend an empty recipient. Mirrors the guard that
+    // tour-followup has always had.
+    if (!lead.email || !lead.email.trim()) {
+      result.errors.push({ lead_id: lead.id, error: 'NO_EMAIL_PHONE_ONLY_LEAD' });
+      continue;
+    }
     // 4. Reserve the follow-up slot atomically — only one row should
     //    flip from null to a timestamp, so a re-run never double-sends.
     const reservedAt = new Date().toISOString();
