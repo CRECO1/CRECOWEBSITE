@@ -21,6 +21,7 @@
  */
 
 import { useState } from 'react';
+import { readUtmsFromCookie } from '@/lib/analytics';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, AlertTriangle, ArrowRight, Eye, EyeOff } from 'lucide-react';
@@ -69,6 +70,10 @@ export function SignupForm() {
           admin_email: email.trim().toLowerCase(),
           admin_password: password,
           website, // honeypot
+          // A signup is an inbound lead too — carry the same attribution a
+          // /api/leads submission does so the channel that produced it is
+          // knowable later.
+          ...readUtmsFromCookie(),
         }),
       });
       const data = await res.json();

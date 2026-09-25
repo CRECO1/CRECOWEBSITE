@@ -5,6 +5,7 @@ import { Resend } from 'resend';
 import { verifyRecaptcha } from '@/lib/recaptcha';
 import { escapeHtml, clampString, isValidEmail, safePhone, MAX_LEN } from '@/lib/sanitize';
 import { checkFormTiming } from '@/lib/form-timing';
+import { buildSignupContext } from '@/lib/signup-context';
 import { checkEmailQuality } from '@/lib/email-quality';
 import { pushToCrm } from '@/lib/crm';
 import { enforceRateLimit } from '@/lib/rate-limit';
@@ -128,9 +129,14 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
+    const ctx = buildSignupContext(req, body);
     const {
       path, name: rawName, company: rawCompany, email: rawEmail,
       phone: rawPhone, answers, recaptchaToken, website,
+          utm_source: rawUtmSource, utm_medium: rawUtmMedium,
+      utm_campaign: rawUtmCampaign, utm_term: rawUtmTerm,
+      utm_content: rawUtmContent, referrer: rawReferrer,
+      landing_page: rawLandingPage,
     } = body;
 
     // Honeypot — silent accept on bot
@@ -198,6 +204,18 @@ export async function POST(req: NextRequest) {
     // row-level-security error and silently drop the submission.
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
     if (!supabaseKey) console.error('[inquiry] SUPABASE_SERVICE_ROLE_KEY is not set — the submission cannot be stored.');
+    // Attribution. Visitor-controllable (anyone can hand-craft a utm_*), so
+    // clamped like every other untrusted string — same treatment /api/leads
+    // gives them. This route wrote to `leads` without ever reading these,
+    // which is why get-started and career applications had no source.
+    const utm_source   = clampString(rawUtmSource,   MAX_LEN.shortField) || null;
+    const utm_medium   = clampString(rawUtmMedium,   MAX_LEN.shortField) || null;
+    const utm_campaign = clampString(rawUtmCampaign, MAX_LEN.shortField) || null;
+    const utm_term     = clampString(rawUtmTerm,     MAX_LEN.shortField) || null;
+    const utm_content  = clampString(rawUtmContent,  MAX_LEN.shortField) || null;
+    const referrer     = clampString(rawReferrer,    MAX_LEN.shortField) || null;
+    const landing_page = clampString(rawLandingPage, MAX_LEN.shortField) || null;
+
     if (supabaseUrl && supabaseKey) {
       const supabase = createClient(supabaseUrl, supabaseKey);
       const { data, error } = await supabase.from('leads').insert([{
@@ -209,6 +227,19 @@ export async function POST(req: NextRequest) {
         status: 'new',
         intake_data: { path, ...answers },
         message: `${meta.humanLabel}\n\n${answerSummary}`,
+        utm_source, utm_medium, utm_campaign, utm_term, utm_content,
+        referrer, landing_page,
+        // The same page/geo/device capture a subscriber gets — buildSignupContext
+        // reads it off this request and the body, so a lead is no poorer than
+        // a newsletter signup.
+        context: {
+          page_path: ctx.pagePath,
+          page_url: ctx.pageUrl,
+          page_title: ctx.pageTitle,
+          referrer: ctx.referrer,
+          geo: ctx.geo,
+          device: ctx.device,
+        },
       }]).select('id').single();
 
       // Also create the contact in the CRM (owner: the broker). Non-blocking.

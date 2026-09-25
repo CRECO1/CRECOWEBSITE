@@ -42,6 +42,14 @@ interface OnboardBody {
   admin_password?: string;
   /** Honeypot — bots fill it, humans don't (CSS-hidden). Silent accept. */
   website?: string;
+  /** First-touch attribution from the creco_attr cookie (see UtmCapture). */
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  utm_term?: string;
+  utm_content?: string;
+  referrer?: string;
+  landing_page?: string;
 }
 
 const PASSWORD_MIN = 10;
@@ -105,6 +113,17 @@ export async function POST(req: NextRequest) {
 
   // Validate inputs. We're explicit about each failure so the UI can
   // highlight the offending field rather than show a generic "try again".
+  // Attribution — clamped like every other visitor-supplied string, matching
+  // the treatment in /api/leads. A signup is an inbound lead; without this the
+  // channel that produced a workspace was unknowable.
+  const utm_source   = clampString(body.utm_source,   MAX_LEN.shortField) || null;
+  const utm_medium   = clampString(body.utm_medium,   MAX_LEN.shortField) || null;
+  const utm_campaign = clampString(body.utm_campaign, MAX_LEN.shortField) || null;
+  const utm_term     = clampString(body.utm_term,     MAX_LEN.shortField) || null;
+  const utm_content  = clampString(body.utm_content,  MAX_LEN.shortField) || null;
+  const referrer     = clampString(body.referrer,     MAX_LEN.shortField) || null;
+  const landing_page = clampString(body.landing_page, MAX_LEN.shortField) || null;
+
   const brokerageName = clampString(body.brokerage_name, MAX_LEN.company);
   if (!brokerageName || brokerageName.length < 2) {
     return NextResponse.json({ error: 'Brokerage name is required (2+ characters)' }, { status: 400 });
@@ -193,6 +212,8 @@ export async function POST(req: NextRequest) {
       owner_email: adminEmail,
       subscription_status: 'trial',
       trial_ends_at: trialEndsAt.toISOString(),
+      utm_source, utm_medium, utm_campaign, utm_term, utm_content,
+      referrer, landing_page,
     }])
     .select('id, slug')
     .single();

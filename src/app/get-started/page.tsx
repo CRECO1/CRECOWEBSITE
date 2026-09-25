@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { Honeypot } from '@/components/forms/Honeypot';
-import { trackEvent } from '@/lib/analytics';
+import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
 
 /**
  * Multi-path inquiry quiz — replaces the old /tenant-needs single-path form.
@@ -549,7 +549,7 @@ export default function GetStartedPage() {
       const res = await fetch('/api/inquiry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ path, name, company, email, phone, answers, recaptchaToken, website: honeypot, form_rendered_at: formRenderedAt }),
+        body: JSON.stringify({ path, name, company, email, phone, answers, recaptchaToken, website: honeypot, form_rendered_at: formRenderedAt, ...readUtmsFromCookie() }),
       });
       // Only show the success screen if the lead actually landed. Previously
       // every outcome (400/500/network error) fell through to setDone(true),
