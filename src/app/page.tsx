@@ -61,6 +61,7 @@ import { getListings, getTestimonials, supabase } from '@/lib/supabase';
 import { withSyntheticListings, listingLinkProps } from '@/lib/featured-properties';
 import { TrustStrip } from '@/components/marketing/TrustStrip';
 import { LeadMagnetBand } from '@/components/marketing/LeadMagnetBand';
+import { GoogleReviews } from '@/components/marketing/GoogleReviews';
 
 
 // SERVICES — ordered by what brings owners and tenants in the door
@@ -613,7 +614,15 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* ── Testimonials ─────────────────────────────────────────────── */}
+      {/* ── Google Reviews ───────────────────────────────────────────── */}
+      <GoogleReviews />
+
+      {/* ── Testimonials (CMS) ───────────────────────────────────────────
+          Renders only if a real testimonial is ever marked featured. The
+          table currently holds the seeded demo personas, all featured =
+          false, so nothing shows — the Google reviews above are the social
+          proof. If one is ever featured, check this doesn't read as a second
+          testimonials section stacked on the first. */}
       {featuredTestimonials.length > 0 && (
       <section className="section-luxury bg-background-cream">
         <Container>
