@@ -52,6 +52,8 @@ function linkifyContact(value: string): React.ReactNode {
     return <React.Fragment key={i}>{part}</React.Fragment>;
   });
 }
+import { InlineLeadForm } from '@/components/forms/InlineLeadForm';
+import { GoogleReviews } from '@/components/marketing/GoogleReviews';
 import { RepresentationBand } from '@/components/marketing/RepresentationBand';
 import { filterListings, getAvailableListings } from '@/lib/public-listings';
 import { BUSINESS, BUSINESS_ID, businessRef, listingSummary } from '@/lib/schema';
@@ -646,6 +648,27 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
             </div>
           </Container>
         </section>
+        {/* Cold organic traffic lands on these pages and previously had only the
+            footer newsletter to act on. Real reviews, then a short ask. */}
+        <GoogleReviews className="section-luxury bg-background-cream" />
+
+        <section className="section-luxury bg-white" aria-label="Contact CRECO">
+          <Container>
+            <div className="mx-auto max-w-3xl">
+              <InlineLeadForm
+                eyebrow={config.cityShort}
+                heading={`Looking for space in ${config.city}?`}
+                body={`Tell us what you need and a CRECO broker will send ${config.cityShort} options that match — including space that is not publicly listed.`}
+                contextLabel="What are you looking for?"
+                contextPlaceholder={`Type, size and timing — e.g. 5,000 SF retail in ${config.cityShort}, Q1`}
+                source="tenant-needs"
+                submitLabel="Send me options"
+                surface={`${(config.canonicalPath || config.city).replace(/^\//, '')}-inline`}
+              />
+            </div>
+          </Container>
+        </section>
+
         {config.sourcesAsOf && <SourcesMethodology asOf={config.sourcesAsOf} />}
       </main>
       <Footer />

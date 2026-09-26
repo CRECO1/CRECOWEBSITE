@@ -16,6 +16,20 @@ export type RepresentationPageContent = {
   label: string;
   metaTitle: string;
   metaDescription: string;
+  /**
+   * Copy for the inline capture blocks. Optional: a page without it simply
+   * renders no form, so a future representation page opts in rather than
+   * inheriting a form whose wording does not fit it.
+   */
+  inlineForm?: {
+    heading: string;
+    body: string;
+    contextLabel: string;
+    contextPlaceholder: string;
+    /** Must be a source /api/leads already types for the CRM. */
+    source: 'listing-inquiry' | 'disposition-inquiry';
+    submitLabel: string;
+  };
   eyebrow: string;
   h1: string;
   /**
@@ -58,6 +72,14 @@ export const LANDLORD_PAGE: RepresentationPageContent = {
   metaDescription:
     // Kept under ~160 characters so search results show it whole.
     'Yes — CRECO represents landlords and owners: leasing, tenant procurement, and dispositions for retail, office, industrial, flex, and land across Texas.',
+  inlineForm: {
+    heading: 'Have space to lease?',
+    body: 'Tell us what you own and a CRECO broker will come back with how we would market it, who we would target, and what it should command.',
+    contextLabel: 'What do you own?',
+    contextPlaceholder: 'Property address, type and approximate size — e.g. 12,000 SF retail strip on Bandera Rd',
+    source: 'listing-inquiry',
+    submitLabel: 'Get a leasing plan',
+  },
   eyebrow: 'Landlord & Owner Representation',
   h1: 'Yes — CRECO represents landlords and property owners.',
   heroLine:
@@ -134,6 +156,14 @@ export const SELLER_INVESTOR_PAGE: RepresentationPageContent = {
   metaTitle: 'Seller & Investor Representation in Texas | CRECO',
   metaDescription:
     'CRECO represents sellers and investors on Texas commercial acquisitions and dispositions — retail, office, industrial, flex, and land. TREC #9014367.',
+  inlineForm: {
+    heading: 'Thinking about selling?',
+    body: 'Tell us what you hold and a CRECO broker will come back with a no-obligation opinion of value and how we would take it to market.',
+    contextLabel: 'What are you looking to sell or acquire?',
+    contextPlaceholder: 'Property address and type, or what you are looking to buy — e.g. NNN retail, $2\u20134M, San Antonio',
+    source: 'disposition-inquiry',
+    submitLabel: 'Request a valuation',
+  },
   eyebrow: 'Sellers & Investors',
   h1: 'CRECO represents sellers and investors — acquisitions and dispositions.',
   heroLine:

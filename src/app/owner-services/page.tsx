@@ -14,6 +14,8 @@ import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import { getLandingPage } from '@/lib/supabase';
 
 import { JsonLd } from '@/components/seo/JsonLd';
+import { InlineLeadForm } from '@/components/forms/InlineLeadForm';
+import { GoogleReviews } from '@/components/marketing/GoogleReviews';
 import { breadcrumbList, webPage } from '@/lib/schema';
 // Hourly ISR — landing-page CMS content changes rarely (operator
 // edits maybe once a week); hourly revalidation is plenty fresh.
@@ -350,6 +352,27 @@ export default async function OwnerServicesPage() {
               <Button size="xl" className="shrink-0 bg-primary text-white hover:bg-primary/90 shadow-lg font-bold" asChild>
                 <Link href="/contact">Schedule Portfolio Review <ArrowRight className="ml-2 h-5 w-5" /></Link>
               </Button>
+            </div>
+          </Container>
+        </section>
+        {/* Reviews at the decision point, then a short ask. This page is
+            bespoke rather than built on RepresentationPage, which is why it
+            had neither. */}
+        <GoogleReviews className="section-luxury bg-white" />
+
+        <section className="section-luxury bg-background-cream" aria-label="Contact CRECO">
+          <Container>
+            <div className="mx-auto max-w-3xl">
+              <InlineLeadForm
+                eyebrow="Owner Services"
+                heading="Have a portfolio to hand over?"
+                body="Tell us what you hold and a CRECO broker will come back with where the upside is and how we would run it."
+                contextLabel="What do you own?"
+                contextPlaceholder="How many properties, types and roughly where — e.g. 6 retail strips across San Antonio and Boerne"
+                source="listing-inquiry"
+                submitLabel="Talk to a broker"
+                surface="owner-services-inline"
+              />
             </div>
           </Container>
         </section>

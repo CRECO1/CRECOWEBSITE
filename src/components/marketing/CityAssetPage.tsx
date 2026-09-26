@@ -5,6 +5,8 @@ import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { jsonLd } from '@/lib/jsonLd';
+import { InlineLeadForm } from '@/components/forms/InlineLeadForm';
+import { GoogleReviews } from '@/components/marketing/GoogleReviews';
 import { FaqSection } from '@/components/marketing/FaqSection';
 import { AvailableListingsTable } from '@/components/marketing/AvailableListingsTable';
 import { RepresentationBand } from '@/components/marketing/RepresentationBand';
@@ -362,6 +364,27 @@ export async function CityAssetPage({ config }: { config: CityAssetConfig }) {
             emptyText={`No public CRECO ${config.asset} listing in ${config.city} right now — CRECO searches the full market (including off-market space) for tenant-rep clients. Call ${BUSINESS.phoneDisplay}.`}
           />
         )}
+
+        {/* Reviews then a short ask — cold search traffic lands here and had
+            only the footer newsletter to act on. */}
+        <GoogleReviews className="section-luxury bg-background-cream border-t border-border" />
+
+        <section className="section-luxury bg-white" aria-label="Contact CRECO">
+          <Container>
+            <div className="mx-auto max-w-3xl">
+              <InlineLeadForm
+                eyebrow={`${config.city} ${config.asset}`}
+                heading={`Looking for ${config.asset} space in ${config.city}?`}
+                body={`Tell us your size and timing and a CRECO broker will send matching ${config.city} ${config.asset} options — including space that is not publicly listed.`}
+                contextLabel="What are you looking for?"
+                contextPlaceholder={`Size, submarket and timing — e.g. 8,000 SF ${config.asset} near the airport, Q2`}
+                source="tenant-needs"
+                submitLabel="Send me options"
+                surface={`${(config.canonicalPath || `${config.city}-${config.asset}`).replace(/^\//, '')}-inline`}
+              />
+            </div>
+          </Container>
+        </section>
 
         <FaqSection
           faqs={faqs}

@@ -4,6 +4,8 @@ import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { OwnerPathsBand } from '@/components/marketing/OwnerPathsBand';
+import { InlineLeadForm } from '@/components/forms/InlineLeadForm';
+import { GoogleReviews } from '@/components/marketing/GoogleReviews';
 import { FaqSection } from '@/components/marketing/FaqSection';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { BUSINESS, CANONICAL_DESCRIPTION, DBA_STATEMENT, SITE_URL, breadcrumbList, businessRef, webPage } from '@/lib/schema';
@@ -16,6 +18,9 @@ import { FULL_SERVICE_SIDES, type RepresentationPageContent } from '@/lib/repres
  * HTML so non-JS AI fetchers can quote it.
  */
 export function RepresentationPage({ content }: { content: RepresentationPageContent }) {
+  // '/landlord-representation' -> 'landlord-representation', used to tell the
+  // two placements apart in CRM reporting.
+  const slug = content.path.replace(/^\//, '');
   const url = `${SITE_URL}${content.path}`;
   return (
     <>
@@ -99,6 +104,25 @@ export function RepresentationPage({ content }: { content: RepresentationPageCon
           </section>
         ))}
 
+        {content.inlineForm && (
+          <section className="section-luxury bg-white" aria-label="Contact CRECO">
+            <Container>
+              <div className="mx-auto max-w-3xl">
+                <InlineLeadForm
+                  eyebrow={content.label}
+                  heading={content.inlineForm.heading}
+                  body={content.inlineForm.body}
+                  contextLabel={content.inlineForm.contextLabel}
+                  contextPlaceholder={content.inlineForm.contextPlaceholder}
+                  source={content.inlineForm.source}
+                  submitLabel={content.inlineForm.submitLabel}
+                  surface={`${slug}-inline-top`}
+                />
+              </div>
+            </Container>
+          </section>
+        )}
+
         {/* Full-service reinforcement */}
         <section className="section-luxury bg-primary text-white" aria-labelledby="full-service-heading">
           <Container>
@@ -121,7 +145,29 @@ export function RepresentationPage({ content }: { content: RepresentationPageCon
           </Container>
         </section>
 
-        <FaqSection faqs={content.faqs} path={content.path} heading={`${content.label} — FAQ`} className="section-luxury bg-background-cream" />
+        {/* Real reviews at the decision point, not only on the homepage. */}
+        <GoogleReviews className="section-luxury bg-background-cream" />
+
+        <FaqSection faqs={content.faqs} path={content.path} heading={`${content.label} — FAQ`} className="section-luxury bg-white" />
+
+        {content.inlineForm && (
+          <section className="section-luxury bg-white" aria-label="Contact CRECO">
+            <Container>
+              <div className="mx-auto max-w-3xl">
+                <InlineLeadForm
+                  eyebrow={content.label}
+                  heading={content.inlineForm.heading}
+                  body={content.inlineForm.body}
+                  contextLabel={content.inlineForm.contextLabel}
+                  contextPlaceholder={content.inlineForm.contextPlaceholder}
+                  source={content.inlineForm.source}
+                  submitLabel={content.inlineForm.submitLabel}
+                  surface={`${slug}-inline-bottom`}
+                />
+              </div>
+            </Container>
+          </section>
+        )}
 
         {(content.showListingCta || content.showValuationCta) && (
           <OwnerPathsBand surface={content.path.replace(/^\//, '')} />
