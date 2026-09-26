@@ -277,6 +277,10 @@ export async function POST(req: NextRequest) {
         utm_source, utm_medium, utm_campaign, utm_term, utm_content,
         referrer, landing_page,
         page_path: ctx.pagePath,
+        // Placement id, where the form reports one. Most lead forms are the
+        // only capture on their page and send nothing; the value exists for
+        // the surfaces that repeat (the alerts card sits in six places).
+        surface: clampString((body as Record<string, unknown>).surface, MAX_LEN.shortField) || null,
         geo: ctx.geo,
         device: ctx.device,
 
