@@ -31,3 +31,6 @@ tsconfig.tsbuildinfo
 
 # FUSE mount artifacts (transient copies left by editors on network/FUSE mounts)
 .fuse_hidden*
+
+# Claude Code local machine settings — per-developer, never shared
+.claude/settings.local.json

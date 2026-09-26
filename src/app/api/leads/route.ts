@@ -6,6 +6,7 @@ import { verifyRecaptcha } from '@/lib/recaptcha';
 import { escapeHtml, clampString, isValidEmail, safePhone, MAX_LEN } from '@/lib/sanitize';
 import { checkFormTiming } from '@/lib/form-timing';
 import { buildSignupContext } from '@/lib/signup-context';
+import { leadSourceLabel } from '@/lib/lead-source-label';
 import { checkEmailQuality } from '@/lib/email-quality';
 import { pushToCrm } from '@/lib/crm';
 import { enforceRateLimit } from '@/lib/rate-limit';
@@ -260,15 +261,34 @@ export async function POST(req: NextRequest) {
       const isValuation = source === 'valuation-request';
       await sendLeadToCrm({
         name, email, phone, company, message,
-        source: isValuation
-          ? 'Valuation request — crecotx.com/property-valuation'
-          : isListing
-            ? 'Listing inquiry — crecotx.com/list-your-space'
-            : isDisposition
-              ? 'Disposition inquiry — crecotx.com/sell'
-              : isDevelopment
-                ? 'Development opportunity — crecotx.com/development-opportunities'
-                : `website — crecotx.com (${source})`,
+        // The slug decides what KIND of lead this is; the page the form was
+        // actually on decides WHERE it came from. Before this, an inline
+        // landlord form on /landlord-representation reported itself as
+        // /list-your-space, because the whole label was a per-slug constant.
+        source: leadSourceLabel({
+          kind: isValuation
+            ? 'Valuation request'
+            : isListing
+              ? 'Listing inquiry'
+              : isDisposition
+                ? 'Disposition inquiry'
+                : isDevelopment
+                  ? 'Development opportunity'
+                  : 'website',
+          defaultPath: isValuation
+            ? '/property-valuation'
+            : isListing
+              ? '/list-your-space'
+              : isDisposition
+                ? '/sell'
+                : isDevelopment
+                  ? '/development-opportunities'
+                  : '',
+          pagePath: ctx.pagePath,
+          landingPage: landing_page,
+          // Unclassified leads keep the raw slug visible, as they always have.
+          note: isValuation || isListing || isDisposition || isDevelopment ? null : source,
+        }),
         type: isListing ? 'Landlord/Investor'
           : isDevelopment ? 'Landlord/Investor'
           : (isValuation || isDisposition || source === 'sell' ? 'Seller' : 'Tenant'),

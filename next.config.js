@@ -53,6 +53,9 @@ const cspDirectives = {
     'https://*.google-analytics.com',
     'https://*.analytics.google.com',
     'https://*.clarity.ms',              // Clarity collect
+    'https://www.google.com',            // reCAPTCHA's api2/clr beacon — script-src
+                                         // and frame-src already allow this host;
+                                         // without it every form page logs a CSP error
     'https://www.googletagmanager.com',
     'https://api.resend.com',            // outbound from server-side, harmless to allow
     'https://va.vercel-scripts.com',
