@@ -6,6 +6,7 @@ import { Resend } from 'resend';
 import { verifyRecaptcha } from '@/lib/recaptcha';
 import { escapeHtml, clampString, isValidEmail, safePhone, MAX_LEN } from '@/lib/sanitize';
 import { checkFormTiming } from '@/lib/form-timing';
+import { buildSignupContext } from '@/lib/signup-context';
 import { checkEmailQuality } from '@/lib/email-quality';
 import { buildIcs } from '@/lib/ics';
 import { pushToCrm } from '@/lib/crm';
@@ -88,6 +89,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
+    const ctx = buildSignupContext(req, body);
     const {
       name: rawName, email: rawEmail, phone: rawPhone,
       listingSlug: rawSlug, listingTitle: rawTitle, listingAddress: rawAddress,
@@ -224,6 +226,14 @@ export async function POST(req: NextRequest) {
         source: `website — crecotx.com (tour request${listingSlug ? `: ${listingSlug}` : ''})`,
         type: 'Tenant',
         tags: ['Tour Request'],
+        // Attribution — captured above and written to our own `leads` row;
+        // these are the fields the CRM webhook reads to derive channel.
+        utm_source, utm_medium, utm_campaign, utm_term, utm_content,
+        referrer, landing_page,
+        page_path: ctx.pagePath,
+        geo: ctx.geo,
+        device: ctx.device,
+
       });
       if (error) console.error('[tour-request] DB insert failed:', error.message);
       else leadId = data?.id ?? null;

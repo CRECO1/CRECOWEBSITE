@@ -253,6 +253,14 @@ export async function POST(req: NextRequest) {
           ? 'Agent application — crecotx.com/careers'
           : `website — crecotx.com (${typeof path === 'string' ? path : 'inquiry'})`,
         type: isAgentApplication ? 'Agent' : 'Tenant',
+        // Attribution — captured above and written to our own `leads` row;
+        // these are the fields the CRM webhook reads to derive channel.
+        utm_source, utm_medium, utm_campaign, utm_term, utm_content,
+        referrer, landing_page,
+        page_path: ctx.pagePath,
+        geo: ctx.geo,
+        device: ctx.device,
+
         // The webhook already tags commercial contacts CRECO — don't duplicate it.
         tags: isAgentApplication ? ['Recruiting', 'Recruiting: Prospect'] : undefined,
       });

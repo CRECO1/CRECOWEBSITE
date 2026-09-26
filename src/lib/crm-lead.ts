@@ -23,6 +23,30 @@ export interface CrmLeadPayload {
   /** CRM contact type; the webhook falls back to Buyer for anything else. */
   type?: 'Buyer' | 'Seller' | 'Tenant' | 'Landlord/Investor' | 'Agent' | 'Broker';
   tags?: string[];
+
+  /**
+   * Attribution. The CRM webhook reads every one of these as a top-level field
+   * and derives `channel` from them — but this interface never declared them,
+   * so the call sites had nothing to pass and every crecotx lead arrived with
+   * no source while Fair Oaks and Elkhorn arrived complete. The values were
+   * being captured into this site's own `leads` table the whole time; they
+   * just never crossed. All optional: a path that genuinely has no attribution
+   * (a direct visit with no referrer) sends nothing rather than empty strings.
+   */
+  utm_source?: string | null;
+  utm_medium?: string | null;
+  utm_campaign?: string | null;
+  utm_term?: string | null;
+  utm_content?: string | null;
+  referrer?: string | null;
+  landing_page?: string | null;
+  /** Path of the page the form was submitted from. */
+  page_path?: string | null;
+  /** Placement id within that page, where the form reports one. */
+  surface?: string | null;
+  /** Coarse city/region from the edge. Never an IP. */
+  geo?: string | null;
+  device?: string | null;
 }
 
 export async function sendLeadToCrm(lead: CrmLeadPayload): Promise<{ ok: boolean; skipped?: boolean }> {
@@ -37,6 +61,10 @@ export async function sendLeadToCrm(lead: CrmLeadPayload): Promise<{ ok: boolean
       body: JSON.stringify({
         ...lead,
         business_unit: 'commercial',
+        // Set here rather than at each call site: it is constant for this site,
+        // and a caller cannot forget it. The CRM uses it to separate crecotx
+        // leads from the Fair Oaks and Elkhorn feeds.
+        lead_site: 'crecotx.com',
         // The forms already email the team; one lead should not alert twice.
         notify: false,
         tags: ['Website', ...(lead.tags ?? [])],

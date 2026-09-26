@@ -5,6 +5,7 @@ import { Resend } from 'resend';
 import { verifyRecaptcha } from '@/lib/recaptcha';
 import { escapeHtml, clampString, isValidEmail, safePhone, MAX_LEN } from '@/lib/sanitize';
 import { checkFormTiming } from '@/lib/form-timing';
+import { buildSignupContext } from '@/lib/signup-context';
 import { checkEmailQuality } from '@/lib/email-quality';
 import { pushToCrm } from '@/lib/crm';
 import { enforceRateLimit } from '@/lib/rate-limit';
@@ -141,6 +142,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
+    const ctx = buildSignupContext(req, body);
     const {
       name: rawName, company: rawCompany, email: rawEmail, phone: rawPhone,
       message: rawMessage, property_interest: rawPropertyInterest,
@@ -270,6 +272,14 @@ export async function POST(req: NextRequest) {
         type: isListing ? 'Landlord/Investor'
           : isDevelopment ? 'Landlord/Investor'
           : (isValuation || isDisposition || source === 'sell' ? 'Seller' : 'Tenant'),
+        // Attribution — captured above and written to our own `leads` row;
+        // these are the fields the CRM webhook reads to derive channel.
+        utm_source, utm_medium, utm_campaign, utm_term, utm_content,
+        referrer, landing_page,
+        page_path: ctx.pagePath,
+        geo: ctx.geo,
+        device: ctx.device,
+
         tags: isValuation
           ? ['Valuation', 'Owner']
           : isListing
