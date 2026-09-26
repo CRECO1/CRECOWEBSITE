@@ -63,3 +63,19 @@ export const GOOGLE_REVIEW_COUNT = 6;
  * name search, which can resolve to the wrong listing.
  */
 export const GOOGLE_PROFILE_URL = 'https://www.google.com/maps?cid=112850793807045067';
+
+/**
+ * Google's canonical Place ID for CRECO, derived from the profile's feature id
+ * (0x299b8d310999edf5:0x190ed32f57d61cb — its low word is the cid above) and
+ * confirmed by resolving https://www.google.com/maps/place/?q=place_id:<id>
+ * back to "CRECO - Commercial Real Estate Company".
+ */
+export const GOOGLE_PLACE_ID = 'ChIJ9e2ZCTGNmykRy2F99TLtkAE';
+
+/**
+ * Opens Google's "write a review" dialog straight to the star rating. Google
+ * requires the reviewer to be signed in, so an anonymous visitor is sent to a
+ * sign-in prompt first and lands on the dialog afterwards — expected, and the
+ * same for every business's review link.
+ */
+export const GOOGLE_WRITE_REVIEW_URL = `https://search.google.com/local/writereview?placeid=${GOOGLE_PLACE_ID}`;

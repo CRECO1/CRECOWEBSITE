@@ -21,6 +21,7 @@ import { Star, ExternalLink } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import { REVIEWS, GOOGLE_RATING, GOOGLE_REVIEW_COUNT, GOOGLE_PROFILE_URL, type Review } from '@/lib/reviews';
+import { ReviewCta } from '@/components/marketing/ReviewCta';
 
 function Stars({ rating, className = 'h-4 w-4' }: { rating: number; className?: string }) {
   return (
@@ -134,6 +135,9 @@ export function GoogleReviews({ className = 'section-luxury bg-background-cream'
             </div>
           </RevealOnScroll>
         )}
+
+        {/* One line to remove or relocate. */}
+        <ReviewCta />
       </Container>
     </section>
   );
