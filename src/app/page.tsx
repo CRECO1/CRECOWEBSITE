@@ -13,7 +13,7 @@ import { HERO_POSITIONING } from '@/lib/brand';
 export const metadata: Metadata = {
   title: 'Texas Commercial Real Estate Brokerage | CRECO',
   // The full CANONICAL_DESCRIPTION runs ~300 characters; this is the search-result length.
-  description: 'Full-service Texas commercial real estate brokerage for tenants, landlords, owners, and investors — retail, office, industrial, flex, and land, lease and sale.',
+  description: 'Full-service Texas commercial real estate brokerage for tenants, landlords, owners, and investors — retail, office, industrial, flex, and land.',
   keywords: [
     'Texas commercial real estate',
     'commercial real estate Texas',
@@ -57,7 +57,7 @@ import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
-import { getListings, getTestimonials, supabase } from '@/lib/supabase';
+import { getListings, supabase } from '@/lib/supabase';
 import { withSyntheticListings, listingLinkProps } from '@/lib/featured-properties';
 import { TrustStrip } from '@/components/marketing/TrustStrip';
 import { LeadMagnetBand } from '@/components/marketing/LeadMagnetBand';
@@ -145,9 +145,12 @@ const DEFAULT_SETTINGS = {
 };
 
 export default async function HomePage() {
-  const [listingsResult, testimonialsResult, settingsResult] = await Promise.allSettled([
+  // Testimonials are no longer fetched here: the CMS-backed section below was
+  // removed in favour of the real Google reviews, and the query was costing a
+  // Supabase round-trip on every homepage render to populate a section that
+  // could never display (every row in the table is featured = false).
+  const [listingsResult, settingsResult] = await Promise.allSettled([
     getListings('active'),
-    getTestimonials(true),
     supabase.from('site_settings').select('*').eq('id', 1).single(),
   ]);
 
@@ -214,11 +217,6 @@ export default async function HomePage() {
     },
     ...FAQS,
   ];
-
-  // No demo fallback: with no real featured testimonials the section renders
-  // nothing rather than invented client quotes.
-  const featuredTestimonials = testimonialsResult.status === 'fulfilled'
-    ? testimonialsResult.value.slice(0, 3) : [];
 
   const s = (settingsResult.status === 'fulfilled' && settingsResult.value.data)
     ? settingsResult.value.data
@@ -616,43 +614,6 @@ export default async function HomePage() {
 
       {/* ── Google Reviews ───────────────────────────────────────────── */}
       <GoogleReviews />
-
-      {/* ── Testimonials (CMS) ───────────────────────────────────────────
-          Renders only if a real testimonial is ever marked featured. The
-          table currently holds the seeded demo personas, all featured =
-          false, so nothing shows — the Google reviews above are the social
-          proof. If one is ever featured, check this doesn't read as a second
-          testimonials section stacked on the first. */}
-      {featuredTestimonials.length > 0 && (
-      <section className="section-luxury bg-background-cream">
-        <Container>
-          <RevealOnScroll>
-            <div className="mb-14 text-center">
-              <p className="overline mb-3">Client Stories</p>
-              <h2 className="font-heading text-display font-bold text-primary gold-line gold-line-center inline-block pb-4">What Our Clients Say</h2>
-            </div>
-          </RevealOnScroll>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-            {featuredTestimonials.map((t: any, i: number) => (
-              <RevealOnScroll key={t.id} delay={i * 100}>
-                <div className="rounded-xl bg-white p-8 shadow-card h-full flex flex-col">
-                  <div className="flex gap-1 mb-5">
-                    {Array.from({ length: t.rating ?? 5 }).map((_, j) => (
-                      <Star key={j} className="h-5 w-5 fill-gold text-gold" />
-                    ))}
-                  </div>
-                  <p className="quote-luxury flex-1 text-foreground-muted">{t.quote}</p>
-                  <div className="mt-6 pt-6 border-t border-border">
-                    <p className="font-semibold text-primary">{t.client_name}</p>
-                    {t.client_location && <p className="text-caption text-foreground-muted">{t.client_location}</p>}
-                  </div>
-                </div>
-              </RevealOnScroll>
-            ))}
-          </div>
-        </Container>
-      </section>
-      )}
 
       {/* ── FAQ ──────────────────────────────────────────────────────── */}
       <section className="section-luxury bg-white">

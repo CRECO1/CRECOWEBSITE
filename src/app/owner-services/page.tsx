@@ -14,15 +14,19 @@ import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import { getLandingPage } from '@/lib/supabase';
 
 import { JsonLd } from '@/components/seo/JsonLd';
-import { breadcrumbList } from '@/lib/schema';
+import { breadcrumbList, webPage } from '@/lib/schema';
 // Hourly ISR — landing-page CMS content changes rarely (operator
 // edits maybe once a week); hourly revalidation is plenty fresh.
 export const revalidate = 3600;
 
+/** Shared by the page metadata and the WebPage node so the two cannot drift. */
+const META_TITLE = 'Texas Commercial Property Owner Services | CRECO';
+const META_DESCRIPTION =
+  'Owner services for Texas commercial property investors: hold/sell analysis, repositioning, 1031 exchange, tenant mix, and property and asset management.';
+
 export const metadata: Metadata = {
-  title: 'Texas Commercial Property Owner Services | CRECO',
-  description:
-    'Owner services for Texas commercial property investors: hold/sell analysis, repositioning, 1031 exchange, tenant mix, and property and asset management.',
+  title: META_TITLE,
+  description: META_DESCRIPTION,
   keywords: [
     'commercial property owner services texas',
     'texas commercial property management',
@@ -156,7 +160,16 @@ export default async function OwnerServicesPage() {
         }}
       />
 
-      <JsonLd data={breadcrumbList([{ name: 'Owner Services', path: '/owner-services' }])} />
+      {/* WebPage node — the other two representation pages get this from the
+          shared RepresentationPage component; this page is bespoke and was
+          missing it, so it was the only one of the three with no WebPage in
+          its graph. */}
+      <JsonLd
+        data={[
+          webPage('WebPage', '/owner-services', META_TITLE, META_DESCRIPTION),
+          breadcrumbList([{ name: 'Owner Services', path: '/owner-services' }]),
+        ]}
+      />
 
       <Header />
       <main className="min-h-screen pt-20">

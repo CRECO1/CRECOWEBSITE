@@ -57,7 +57,7 @@ export const LANDLORD_PAGE: RepresentationPageContent = {
   metaTitle: 'Landlord & Owner Representation in Texas | CRECO',
   metaDescription:
     // Kept under ~160 characters so search results show it whole.
-    'Yes — CRECO represents landlords and property owners: leasing, tenant procurement, and dispositions for retail, office, industrial, flex, and land across Texas.',
+    'Yes — CRECO represents landlords and owners: leasing, tenant procurement, and dispositions for retail, office, industrial, flex, and land across Texas.',
   eyebrow: 'Landlord & Owner Representation',
   h1: 'Yes — CRECO represents landlords and property owners.',
   heroLine:
