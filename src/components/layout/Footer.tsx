@@ -97,6 +97,13 @@ export function Footer() {
               </div>
             </div>
 
+      {/* prefetch={false} on the link columns below.
+          Next prefetches every <Link> that scrolls into view, and this footer
+          is on every page: landing anywhere pulled ~49 route payloads, about
+          620 KB, before the visitor clicked anything. A footer is a directory,
+          not a prediction of where someone is going — these fetch on click
+          instead. The nav and in-page CTAs keep prefetching, because those
+          genuinely are the likely next step. */}
             {/* Mobile tap targets: every footer link below is at least 44px
                 tall on a phone (WCAG 2.5.8 / the iOS + Android guideline) via
                 min-h + flex centring, which is exact regardless of font size.
@@ -107,7 +114,7 @@ export function Footer() {
               <ul className="space-y-0 md:space-y-3">
                 {footerLinks.properties.map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} className="flex min-h-[44px] items-center text-body-sm text-white/60 transition-colors hover:text-gold md:inline md:min-h-0">
+                    <Link href={link.href} prefetch={false} className="flex min-h-[44px] items-center text-body-sm text-white/60 transition-colors hover:text-gold md:inline md:min-h-0">
                       {link.label}
                     </Link>
                   </li>
@@ -121,7 +128,7 @@ export function Footer() {
               <ul className="space-y-0 md:space-y-3">
                 {footerLinks.services.map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} className="flex min-h-[44px] items-center text-body-sm text-white/60 transition-colors hover:text-gold md:inline md:min-h-0">
+                    <Link href={link.href} prefetch={false} className="flex min-h-[44px] items-center text-body-sm text-white/60 transition-colors hover:text-gold md:inline md:min-h-0">
                       {link.label}
                     </Link>
                   </li>
@@ -200,7 +207,7 @@ export function Footer() {
         <Container>
           <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
             <p className="text-caption uppercase tracking-widest text-gold text-center md:text-left">Texas Markets We Serve</p>
-            <Link href="/markets" className="inline-flex min-h-[44px] items-center text-caption text-gold/80 hover:text-gold font-semibold md:min-h-0">
+            <Link href="/markets" prefetch={false} className="inline-flex min-h-[44px] items-center text-caption text-gold/80 hover:text-gold font-semibold md:min-h-0">
               See all submarkets →
             </Link>
           </div>
@@ -222,6 +229,7 @@ export function Footer() {
               <Link
                 key={m.href}
                 href={m.href}
+                prefetch={false}
                 className={`inline-flex min-h-[44px] items-center text-body-sm transition-colors md:min-h-0 ${
                   m.highlight ? 'text-gold font-semibold hover:text-gold-light' : 'text-white/60 hover:text-gold'
                 }`}
@@ -273,10 +281,10 @@ export function Footer() {
               >
                 Consumer Protection
               </a>
-              <Link href="/privacy" className="inline-flex min-h-[44px] items-center text-caption text-white/50 transition-colors hover:text-gold md:min-h-0">
+              <Link href="/privacy" prefetch={false} className="inline-flex min-h-[44px] items-center text-caption text-white/50 transition-colors hover:text-gold md:min-h-0">
                 Privacy
               </Link>
-              <Link href="/terms" className="inline-flex min-h-[44px] items-center text-caption text-white/50 transition-colors hover:text-gold md:min-h-0">
+              <Link href="/terms" prefetch={false} className="inline-flex min-h-[44px] items-center text-caption text-white/50 transition-colors hover:text-gold md:min-h-0">
                 Terms
               </Link>
             </div>
