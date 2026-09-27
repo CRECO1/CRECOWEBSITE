@@ -230,12 +230,21 @@ export function ListingGallery({ images, altPrefix }: Props) {
             className="relative w-full max-h-[88vh] flex items-center justify-center px-4 sm:px-20"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            {/* width/height are the size we ask the optimizer for, not the
+                rendered size: w-auto/h-auto means the browser lays the photo
+                out at its true intrinsic ratio once loaded, exactly as the
+                raw <img> did, while AVIF/WebP conversion saves several MB on
+                a full-resolution listing photo. */}
+            <Image
+              key={images[lightboxIdx]}
               src={images[lightboxIdx]}
               alt={`${altPrefix} (photo ${lightboxIdx + 1})`}
+              width={1600}
+              height={1200}
+              sizes="(max-width: 640px) 100vw, 90vw"
               className="max-h-[88vh] max-w-full w-auto h-auto object-contain rounded-lg select-none"
               draggable={false}
+              priority
             />
           </div>
 
@@ -289,8 +298,10 @@ export function ListingGallery({ images, altPrefix }: Props) {
                     aria-label={`Show photo ${i + 1}`}
                     aria-current={i === lightboxIdx}
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                    {/* Every photo in the listing renders here the moment the
+                        lightbox opens. As a raw <img> that was N full-size
+                        downloads for N 80x56 boxes. */}
+                    <Image src={src} alt="" fill sizes="80px" className="object-cover" />
                   </button>
                 ))}
               </div>
