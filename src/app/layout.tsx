@@ -71,10 +71,14 @@ export const metadata: Metadata = {
   creator: 'CRECO - Commercial Real Estate Company',
   publisher: 'CRECO - Commercial Real Estate Company',
   formatDetection: { telephone: true, address: true, email: true },
-  // The CRECO building mark on the brand ink tile. /favicon.ico is listed
-  // first and also exists at the conventional path — plenty of clients
-  // (feed readers, link unfurlers, older browsers) request /favicon.ico
-  // directly and ignore these tags entirely; it used to 404.
+  // The round CRECO badge (public/creco-logo-round.png, from the Google
+  // Business Profile). /favicon.ico is listed first and also exists at the
+  // conventional path — plenty of clients (feed readers, link unfurlers,
+  // older browsers) request /favicon.ico directly and ignore these tags.
+  //
+  // The tab icons keep the badge's transparent corners so it reads as a
+  // circle; apple-touch-icon is flattened because iOS composites onto black
+  // wherever an icon is transparent.
   //
   // No mask-icon: Safari's pinned-tab mask needs a single-colour vector
   // silhouette, and pointing it at an icon it can't mask is worse than
