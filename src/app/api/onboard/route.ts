@@ -31,6 +31,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { clampString, isValidEmail, MAX_LEN } from '@/lib/sanitize';
 import { enforceRateLimit } from '@/lib/rate-limit';
+import { verifyRecaptcha } from '@/lib/recaptcha';
 import { FALLBACK_TEMPLATE } from '@/lib/invoice-email';
 
 export const runtime = 'nodejs';
@@ -42,6 +43,8 @@ interface OnboardBody {
   admin_password?: string;
   /** Honeypot — bots fill it, humans don't (CSS-hidden). Silent accept. */
   website?: string;
+  /** reCAPTCHA v3 token from the browser. Required — see the check below. */
+  recaptchaToken?: string;
   /** First-touch attribution from the creco_attr cookie (see UtmCapture). */
   utm_source?: string;
   utm_medium?: string;
@@ -109,6 +112,32 @@ export async function POST(req: NextRequest) {
   // Honeypot — silent accept so the bot thinks it succeeded.
   if (typeof body.website === 'string' && body.website.length > 0) {
     return NextResponse.json({ ok: true, brokerage_slug: 'spam-honeypot' });
+  }
+
+  // reCAPTCHA v3. Every other public endpoint here verifies the same way with
+  // the same secret, and this one — which creates a real Supabase auth user
+  // and a workspace using the service-role key — was the only one without it.
+  //
+  // One deliberate difference from /api/leads: there, a MISSING token is
+  // allowed through, because an ad-blocker costing us a genuine lead is worse
+  // than letting spam into a table a human reads. Here the same trade runs the
+  // other way — a script that mass-creates auth users is worse than one
+  // blocked signup — so a missing token is refused whenever reCAPTCHA is
+  // actually configured. If no secret is set the helper reports
+  // 'recaptcha-disabled' and we do not invent a requirement the deployment
+  // cannot satisfy.
+  const captcha = await verifyRecaptcha(body.recaptchaToken);
+  const recaptchaConfigured = captcha.reason !== 'recaptcha-disabled';
+  if (!captcha.ok) {
+    return NextResponse.json({ error: 'Spam check failed. Please try again.' }, { status: 400 });
+  }
+  if (recaptchaConfigured && captcha.reason === 'missing-token-allowed') {
+    // Actionable rather than generic: the usual cause is a privacy extension
+    // blocking Google, and the person can fix that.
+    return NextResponse.json(
+      { error: 'Could not complete the spam check. Disable any ad/script blocker for this page and try again, or email info@crecotx.com and we will set you up.' },
+      { status: 400 },
+    );
   }
 
   // Validate inputs. We're explicit about each failure so the UI can

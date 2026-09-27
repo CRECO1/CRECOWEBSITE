@@ -22,6 +22,7 @@
 
 import { useState } from 'react';
 import { readUtmsFromCookie } from '@/lib/analytics';
+import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, AlertTriangle, ArrowRight, Eye, EyeOff } from 'lucide-react';
@@ -62,6 +63,11 @@ export function SignupForm() {
 
     setSubmitting(true);
     try {
+      // Same v3 token the other public forms send. This endpoint creates a
+      // real auth user with the service-role key, so unlike /api/leads it
+      // REQUIRES the token rather than failing open — see the route.
+      const recaptchaToken = await getRecaptchaToken('signup');
+
       const res = await fetch('/api/onboard', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -70,6 +76,7 @@ export function SignupForm() {
           admin_email: email.trim().toLowerCase(),
           admin_password: password,
           website, // honeypot
+          recaptchaToken,
           // A signup is an inbound lead too — carry the same attribution a
           // /api/leads submission does so the channel that produced it is
           // knowable later.
