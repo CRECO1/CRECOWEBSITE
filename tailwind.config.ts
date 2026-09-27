@@ -23,7 +23,11 @@ const config: Config = {
           DEFAULT: '#C9A962',
           light: '#E8DCC4',
           lighter: '#F5F0E6',
-          dark: '#A68B4B',
+          // Gold for TEXT on a light ground. #A68B4B only reached 3.3:1 on
+          // white, so every gold link and eyebrow on the site failed WCAG AA
+          // for normal-size text. This clears 4.5:1 on white, cream, warm,
+          // muted and gold-lighter — every light surface we paint.
+          dark: '#856A2E',
           muted: '#D4C49A',
         },
         // Hill Country inspired accent colors

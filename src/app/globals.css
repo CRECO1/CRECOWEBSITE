@@ -9,7 +9,9 @@
 :root {
   --gold-primary: #C9A962;
   --gold-light: #E8DCC4;
-  --gold-dark: #A68B4B;
+  /* Kept in step with the Tailwind gold.dark token: this is the gold that
+     clears 4.5:1 for text on every light surface we paint. */
+  --gold-dark: #856A2E;
   --primary-dark: #1A1A1A;
   --cream: #FAF8F5;
 
@@ -239,8 +241,20 @@
   }
 
   /* Overline Text Style */
+  /* The eyebrow label. Gold-dark on light ground (4.5:1+); the rule below
+     puts the bright mark back on the dark brand sections, where it reads at
+     7.7:1. Any explicit text-* utility still wins over both, because
+     utilities come after this layer. */
   .overline {
-    @apply text-overline uppercase tracking-widest text-gold font-semibold;
+    @apply text-overline uppercase tracking-widest text-gold-dark font-semibold;
+  }
+
+  /* Dark brand grounds keep the bright gold. :where() contributes no
+     specificity, so this overrides the base by order alone and still loses to
+     an explicit utility class. */
+  :where([class~="bg-primary"], [class~="bg-primary/70"], [class~="bg-primary/80"],
+         [class~="bg-primary/90"], [class~="bg-ink"]) .overline {
+    @apply text-gold;
   }
 
   /* Luxury Button Styles */

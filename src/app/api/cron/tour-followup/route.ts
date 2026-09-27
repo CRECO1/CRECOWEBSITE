@@ -113,8 +113,8 @@ function followupHtml(stage: Stage, name: string, propertyInterest: string | nul
       body = `
         <h2 style="margin:0 0 16px;color:#1A1A1A;font-size:20px">One last check, ${safeName}.</h2>
         <p style="line-height:1.6">Haven't heard back on your tour request${propertyLine}, so this is the last nudge from me — promise.</p>
-        <p style="line-height:1.6">If you're still in the market, even passively, the easiest move is to <a href="https://www.crecotx.com/property-alerts" style="color:#A68B4B;font-weight:600">set up property alerts</a> so similar properties land in your inbox automatically. No more "did I miss it" — we'll just send what fits.</p>
-        <p style="line-height:1.6">Or if you'd rather just talk, reply to this email or call <a href="tel:+12108173443" style="color:#A68B4B;font-weight:600">(210) 817-3443</a>.</p>
+        <p style="line-height:1.6">If you're still in the market, even passively, the easiest move is to <a href="https://www.crecotx.com/property-alerts" style="color:#856A2E;font-weight:600">set up property alerts</a> so similar properties land in your inbox automatically. No more "did I miss it" — we'll just send what fits.</p>
+        <p style="line-height:1.6">Or if you'd rather just talk, reply to this email or call <a href="tel:+12108173443" style="color:#856A2E;font-weight:600">(210) 817-3443</a>.</p>
       `;
       break;
   }
