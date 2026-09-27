@@ -152,7 +152,7 @@ export function CareerApplicationForm() {
             required
             value={name}
             onChange={e => setName(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
             placeholder="Your name"
           />
         </div>
@@ -163,7 +163,7 @@ export function CareerApplicationForm() {
             required
             value={email}
             onChange={e => setEmail(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
             placeholder="you@email.com"
           />
         </div>
@@ -174,7 +174,7 @@ export function CareerApplicationForm() {
             required
             value={phone}
             onChange={e => setPhone(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
             placeholder="(210) 555-0100"
           />
         </div>
@@ -184,7 +184,7 @@ export function CareerApplicationForm() {
             type="url"
             value={linkedin}
             onChange={e => setLinkedin(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
             placeholder="linkedin.com/in/your-profile"
           />
         </div>
@@ -208,7 +208,7 @@ export function CareerApplicationForm() {
                 checked={licenseStatus === status}
                 onChange={() => setLicenseStatus(status)}
                 required
-                className="text-gold focus:ring-gold"
+                className="text-gold focus:ring-gold-dark"
               />
               <span className="text-body-sm text-primary">{status}</span>
             </label>
@@ -224,7 +224,7 @@ export function CareerApplicationForm() {
             type="text"
             value={licenseNumber}
             onChange={e => setLicenseNumber(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
             placeholder="e.g. 7654321"
           />
         </div>
@@ -233,7 +233,7 @@ export function CareerApplicationForm() {
           <select id="career-6"
             value={yearsExperience}
             onChange={e => setYearsExperience(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
           >
             <option value="">Select…</option>
             {EXPERIENCE_RANGES.map(r => <option key={r} value={r}>{r}</option>)}
@@ -245,7 +245,7 @@ export function CareerApplicationForm() {
             type="text"
             value={currentBrokerage}
             onChange={e => setCurrentBrokerage(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
             placeholder="Where you hang your license today"
           />
         </div>
@@ -281,7 +281,7 @@ export function CareerApplicationForm() {
         <select id="career-8"
           value={primaryMarket}
           onChange={e => setPrimaryMarket(e.target.value)}
-          className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+          className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
         >
           <option value="">Select…</option>
           {PRIMARY_MARKETS.map(m => <option key={m} value={m}>{m}</option>)}
@@ -295,12 +295,12 @@ export function CareerApplicationForm() {
           value={whyCreco}
           onChange={e => setWhyCreco(e.target.value)}
           rows={4}
-          className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+          className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
           placeholder="Tell us what's drawing you to CRECO and what you'd want out of the next chapter of your career. The more specific, the better."
         />
       </div>
 
-      {error && <p className="text-body-sm text-destructive">{error}</p>}
+      {error && <p role="alert" className="text-body-sm text-destructive">{error}</p>}
 
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:justify-between pt-2 border-t border-border">
         <p className="text-caption text-foreground-muted max-w-md flex items-center gap-1.5">

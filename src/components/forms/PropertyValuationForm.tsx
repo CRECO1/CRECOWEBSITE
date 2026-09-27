@@ -190,7 +190,7 @@ export function PropertyValuationForm() {
             <select
               value={propertyType}
               onChange={e => setPropertyType(e.target.value as PropertyType)}
-              className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+              className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
             >
               {PROPERTY_TYPES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
             </select>
@@ -200,7 +200,7 @@ export function PropertyValuationForm() {
             <select
               value={submarketTier}
               onChange={e => setSubmarketTier(e.target.value as SubmarketTier)}
-              className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+              className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
             >
               {SUBMARKETS_BY_TIER.map(t => (
                 <option key={t.tier} value={t.tier}>{t.label} — {t.markets.slice(0, 3).join(', ')}…</option>
@@ -215,14 +215,14 @@ export function PropertyValuationForm() {
                 value={address}
                 onChange={e => setAddress(e.target.value)}
                 placeholder="123 Main St"
-                className="col-span-2 w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+                className="col-span-2 w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
               />
               <input
                 type="text"
                 value={city}
                 onChange={e => setCity(e.target.value)}
                 placeholder="City"
-                className="col-span-1 w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+                className="col-span-1 w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
               />
             </div>
           </label>
@@ -237,14 +237,14 @@ export function PropertyValuationForm() {
               <span className="block text-caption text-foreground-muted mb-1">Annual NOI</span>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground-muted">$</span>
-                <input type="number" min="0" step="1" value={noi} onChange={e => setNoi(e.target.value)} placeholder="e.g. 240000" className="w-full rounded-lg border border-border bg-white pl-7 pr-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold" />
+                <input type="number" min="0" step="1" value={noi} onChange={e => setNoi(e.target.value)} placeholder="e.g. 240000" className="w-full rounded-lg border border-border bg-white pl-7 pr-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark" />
               </div>
             </label>
             <label className="block">
               <span className="block text-caption text-foreground-muted mb-1">Or annual gross income</span>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground-muted">$</span>
-                <input type="number" min="0" step="1" value={grossIncome} onChange={e => setGrossIncome(e.target.value)} placeholder="e.g. 360000" className="w-full rounded-lg border border-border bg-white pl-7 pr-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold" />
+                <input type="number" min="0" step="1" value={grossIncome} onChange={e => setGrossIncome(e.target.value)} placeholder="e.g. 360000" className="w-full rounded-lg border border-border bg-white pl-7 pr-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark" />
               </div>
             </label>
           </div>
@@ -258,22 +258,22 @@ export function PropertyValuationForm() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <label className="block">
               <span className="block text-caption text-foreground-muted mb-1">Total SF</span>
-              <input type="number" min="0" step="1" value={totalSf} onChange={e => setTotalSf(e.target.value)} placeholder="e.g. 12000" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold" />
+              <input type="number" min="0" step="1" value={totalSf} onChange={e => setTotalSf(e.target.value)} placeholder="e.g. 12000" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark" />
             </label>
             <label className="block">
               <span className="block text-caption text-foreground-muted mb-1">Rent $/SF/yr</span>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground-muted">$</span>
-                <input type="number" min="0" step="0.01" value={rentPerSf} onChange={e => setRentPerSf(e.target.value)} placeholder="e.g. 18" className="w-full rounded-lg border border-border bg-white pl-7 pr-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold" />
+                <input type="number" min="0" step="0.01" value={rentPerSf} onChange={e => setRentPerSf(e.target.value)} placeholder="e.g. 18" className="w-full rounded-lg border border-border bg-white pl-7 pr-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark" />
               </div>
             </label>
             <label className="block">
               <span className="block text-caption text-foreground-muted mb-1">Occupancy %</span>
-              <input type="number" min="0" max="100" step="1" value={occupancy} onChange={e => setOccupancy(e.target.value)} placeholder="95" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold" />
+              <input type="number" min="0" max="100" step="1" value={occupancy} onChange={e => setOccupancy(e.target.value)} placeholder="95" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark" />
             </label>
             <label className="block">
               <span className="block text-caption text-foreground-muted mb-1">Year built</span>
-              <input type="number" min="1900" max="2030" step="1" value={yearBuilt} onChange={e => setYearBuilt(e.target.value)} placeholder="—" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold" />
+              <input type="number" min="1900" max="2030" step="1" value={yearBuilt} onChange={e => setYearBuilt(e.target.value)} placeholder="—" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark" />
             </label>
           </div>
         </div>
@@ -356,11 +356,11 @@ export function PropertyValuationForm() {
                 Name, email and where the property is. Zack reviews your inputs, pulls comps and follows up personally — no charge, no obligation.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <input type="text" required value={leadName} onChange={e => setLeadName(e.target.value)} placeholder="Your name" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold" />
-                <input type="email" required value={leadEmail} onChange={e => setLeadEmail(e.target.value)} placeholder="you@email.com" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold" />
+                <input type="text" required value={leadName} onChange={e => setLeadName(e.target.value)} placeholder="Your name" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark" />
+                <input type="email" required value={leadEmail} onChange={e => setLeadEmail(e.target.value)} placeholder="you@email.com" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark" />
               </div>
-              <input type="tel" value={leadPhone} onChange={e => setLeadPhone(e.target.value)} placeholder="Phone (optional — if you'd rather we call)" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold" />
-              <textarea value={leadNotes} onChange={e => setLeadNotes(e.target.value)} rows={3} placeholder="Anything else we should know? Timeline, tenant situation, what you're weighing — optional" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold" />
+              <input type="tel" value={leadPhone} onChange={e => setLeadPhone(e.target.value)} placeholder="Phone (optional — if you'd rather we call)" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark" />
+              <textarea value={leadNotes} onChange={e => setLeadNotes(e.target.value)} rows={3} placeholder="Anything else we should know? Timeline, tenant situation, what you're weighing — optional" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark" />
               {leadError && <p className="text-body-sm text-destructive">{leadError}</p>}
               <button type="submit" disabled={submittingLead} className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-body-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-60">
                 {submittingLead ? <><Loader2 className="h-4 w-4 animate-spin" /> Sending…</> : <>Send my full valuation <ArrowRight className="h-4 w-4" /></>}

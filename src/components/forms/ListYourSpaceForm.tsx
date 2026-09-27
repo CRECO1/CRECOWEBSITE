@@ -53,7 +53,7 @@ export function ListYourSpaceForm({ surface = 'list-your-space' }: { surface?: s
     }),
   });
 
-  const field = 'w-full rounded-lg border border-border bg-white px-4 py-3 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/25';
+  const field = 'w-full rounded-lg border border-border bg-white px-4 py-3 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:border-gold-dark focus:outline-none focus:ring-2 focus:ring-gold/25';
 
   if (submitted) {
     return (
@@ -97,7 +97,7 @@ export function ListYourSpaceForm({ surface = 'list-your-space' }: { surface?: s
         className={field}
       />
 
-      {error && <p className="text-body-sm text-destructive">{error}</p>}
+      {error && <p role="alert" className="text-body-sm text-destructive">{error}</p>}
 
       <button
         type="submit"

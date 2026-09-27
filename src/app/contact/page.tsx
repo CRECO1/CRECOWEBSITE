@@ -186,34 +186,34 @@ export default function ContactPage() {
                         <Honeypot />
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                           <div>
-                            <label className="label-readable">Full Name *</label>
-                            <input name="name" required placeholder="Jane Smith" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold" />
+                            <label className="label-readable" htmlFor="contact-name">Full Name *</label>
+                            <input id="contact-name" name="name" required placeholder="Jane Smith" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
                           </div>
                           <div>
-                            <label className="label-readable">Company</label>
-                            <input name="company" placeholder="Acme Logistics LLC" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold" />
+                            <label className="label-readable" htmlFor="contact-company">Company</label>
+                            <input id="contact-company" name="company" placeholder="Acme Logistics LLC" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
                           </div>
                         </div>
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                           <div>
-                            <label className="label-readable">Email *</label>
-                            <input name="email" type="email" required placeholder="you@company.com" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold" />
+                            <label className="label-readable" htmlFor="contact-email">Email *</label>
+                            <input id="contact-email" name="email" type="email" required placeholder="you@company.com" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
                           </div>
                           <div>
-                            <label className="label-readable">Phone *</label>
-                            <input name="phone" type="tel" required placeholder="(210) 555-0000" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold" />
+                            <label className="label-readable" htmlFor="contact-phone">Phone *</label>
+                            <input id="contact-phone" name="phone" type="tel" required placeholder="(210) 555-0000" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
                           </div>
                         </div>
                         <div>
-                          <label className="label-readable">How can we help?</label>
-                          <select name="reason" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold">
+                          <label className="label-readable" htmlFor="contact-reason">How can we help?</label>
+                          <select id="contact-reason" name="reason" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark">
                             <option value="">Select a reason…</option>
                             {CONTACT_REASONS.map(r => <option key={r}>{r}</option>)}
                           </select>
                         </div>
                         <div>
-                          <label className="label-readable">Message</label>
-                          <textarea name="message" rows={5} placeholder="Tell us more about what you're looking for…" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold resize-none" />
+                          <label className="label-readable" htmlFor="contact-message">Message</label>
+                          <textarea id="contact-message" name="message" rows={5} placeholder="Tell us more about what you're looking for…" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark resize-none" />
                         </div>
                         <p className="text-caption text-foreground-muted">
                           By submitting, you agree to be contacted by CRECO regarding your inquiry.

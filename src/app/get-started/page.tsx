@@ -645,19 +645,19 @@ export default function GetStartedPage() {
                 <Honeypot />
                 <div>
                   <label className="label-readable">Your Name *</label>
-                  <input required value={name} onChange={e => setName(e.target.value)} placeholder="First & Last Name" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold" />
+                  <input required value={name} onChange={e => setName(e.target.value)} placeholder="First & Last Name" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
                 </div>
                 <div>
                   <label className="label-readable">Company</label>
-                  <input value={company} onChange={e => setCompany(e.target.value)} placeholder="Acme Logistics LLC" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold" />
+                  <input value={company} onChange={e => setCompany(e.target.value)} placeholder="Acme Logistics LLC" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
                 </div>
                 <div>
                   <label className="label-readable">Email Address *</label>
-                  <input required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@company.com" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold" />
+                  <input required type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@company.com" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
                 </div>
                 <div>
                   <label className="label-readable">Phone *</label>
-                  <input required type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="(210) 555-0000" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold" />
+                  <input required type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="(210) 555-0000" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
                 </div>
                 <p className="text-caption text-foreground-muted">
                   By submitting, you agree to be contacted by CRECO. We never share your information.
@@ -755,7 +755,7 @@ export default function GetStartedPage() {
                   onChange={e => setAnswers(a => ({ ...a, [current.id]: e.target.value }))}
                   placeholder={current.placeholder}
                   rows={4}
-                  className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold"
+                  className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark"
                 />
               )}
 

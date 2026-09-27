@@ -85,9 +85,12 @@
     max-width: 70ch;
   }
 
-  /* Improved focus states for accessibility - larger ring */
+  /* Focus ring. WCAG 1.4.11 wants a non-text indicator at 3:1 against what
+     sits next to it; the ring is drawn against the white offset band, where
+     the bright gold managed only 2.25:1. gold-dark is 5.1:1 there and still
+     3.4:1 against the dark brand ground. */
   :focus-visible {
-    @apply outline-none ring-2 ring-gold ring-offset-4 ring-offset-white;
+    @apply outline-none ring-2 ring-gold-dark ring-offset-4 ring-offset-white;
   }
 
   /* Premium selection color */
@@ -526,4 +529,33 @@
 .stagger-children.revealed > * {
   opacity: 1;
   transform: translateY(0);
+}
+
+
+/* ---------------------------------------------------------------------------
+   Reduced motion (WCAG 2.3.3).
+
+   Nothing on the site honoured this. The scroll-reveal wrappers start at
+   `opacity: 0` and animate in, so simply switching transitions off would have
+   left that content permanently invisible — the content has to be forced to
+   its revealed state, not just un-animated.
+--------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .reveal,
+  .reveal-down,
+  .reveal-left,
+  .reveal-right,
+  .reveal-scale {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }

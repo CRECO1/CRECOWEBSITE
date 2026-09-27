@@ -47,11 +47,16 @@ export function NewsletterSignup() {
           <input
             type="email"
             required
+            // Placeholder-only: a screen reader announced this as just
+            // "edit text". The visible design has no room for a label, so
+            // the name is carried here.
+            aria-label="Email address for CRECO market insights"
+            name="newsletter_email"
             value={email}
             onChange={e => setEmail(e.target.value)}
             placeholder="you@company.com"
             disabled={submitting}
-            className="w-full rounded-lg border border-white/15 bg-white/5 pl-9 pr-3 py-2.5 text-body-sm text-white placeholder:text-white/40 focus:outline-none focus:border-gold focus:bg-white/10 disabled:opacity-60"
+            className="w-full rounded-lg border border-white/15 bg-white/5 pl-9 pr-3 py-2.5 text-body-sm text-white placeholder:text-white/40 focus:outline-none focus:border-gold-dark focus:bg-white/10 disabled:opacity-60"
           />
         </div>
         <button
@@ -62,7 +67,7 @@ export function NewsletterSignup() {
           {submitting ? 'Subscribing…' : <>Subscribe <ArrowRight className="h-4 w-4" /></>}
         </button>
       </div>
-      {error && <p className="text-caption text-destructive">{error}</p>}
+      {error && <p role="alert" className="text-caption text-destructive">{error}</p>}
       <p className="text-caption text-white/70">
         Texas commercial market analysis, ~once a month. Unsubscribe anytime.
       </p>

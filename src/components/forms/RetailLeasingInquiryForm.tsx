@@ -177,7 +177,7 @@ export function RetailLeasingInquiryForm() {
   }
 
   const inputCls =
-    'w-full rounded-lg border border-border bg-white px-4 py-3 text-body-sm text-primary focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20';
+    'w-full rounded-lg border border-border bg-white px-4 py-3 text-body-sm text-primary focus:outline-none focus:border-gold-dark focus:ring-2 focus:ring-gold/20';
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -328,7 +328,7 @@ export function RetailLeasingInquiryForm() {
       </div>
 
       {error && (
-        <div className="rounded-lg border border-red-300 bg-red-50 p-3 text-body-sm text-red-800">
+        <div role="alert" className="rounded-lg border border-red-300 bg-red-50 p-3 text-body-sm text-red-800">
           {error}
         </div>
       )}

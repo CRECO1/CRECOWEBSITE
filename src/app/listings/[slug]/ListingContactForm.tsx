@@ -98,34 +98,34 @@ export function ListingContactForm({
         name="name"
         required
         placeholder="Your Name"
-        className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold"
+        className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark"
       />
       <input
         name="company"
         placeholder="Company (optional)"
-        className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold"
+        className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark"
       />
       <input
         name="email"
         type="email"
         required
         placeholder="Email Address"
-        className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold"
+        className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark"
       />
       <input
         name="phone"
         type="tel"
         placeholder="Phone (optional)"
-        className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold"
+        className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark"
       />
       <textarea
         name="message"
         rows={3}
         placeholder={`I'd like more info on ${listingTitle}`}
-        className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold resize-none"
+        className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark resize-none"
       />
       {error && (
-        <p className="text-caption text-destructive">{error}</p>
+        <p role="alert" className="text-caption text-destructive">{error}</p>
       )}
       <Button type="submit" size="lg" fullWidth loading={submitting}>
         {submitting ? 'Sending…' : 'Request Info'}

@@ -287,7 +287,7 @@ export default function InvoiceSettingsPage() {
                 <p className="text-caption text-foreground-muted mb-3">Appears in the recipient's inbox preview.</p>
                 <input
                   ref={subjectRef}
-                  className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold font-mono"
+                  className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark font-mono"
                   value={subject}
                   onChange={e => setSubject(e.target.value)}
                   onFocus={() => setActiveField('subject')}
@@ -302,7 +302,7 @@ export default function InvoiceSettingsPage() {
                 </p>
                 <textarea
                   ref={messageRef}
-                  className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold font-mono"
+                  className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark font-mono"
                   rows={10}
                   value={message}
                   onChange={e => setMessage(e.target.value)}
@@ -490,7 +490,7 @@ export default function InvoiceSettingsPage() {
                   type="checkbox"
                   checked={lateFee.late_fee_enabled}
                   onChange={e => setLateFee(s => ({ ...s, late_fee_enabled: e.target.checked }))}
-                  className="mt-0.5 h-4 w-4 rounded text-gold focus:ring-gold"
+                  className="mt-0.5 h-4 w-4 rounded text-gold focus:ring-gold-dark"
                 />
                 <div>
                   <div className="text-body-sm font-semibold text-primary">Enable automatic late fees</div>
@@ -507,7 +507,7 @@ export default function InvoiceSettingsPage() {
                     <select
                       value={lateFee.late_fee_type}
                       onChange={e => setLateFee(s => ({ ...s, late_fee_type: e.target.value as 'percent' | 'flat' }))}
-                      className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+                      className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
                     >
                       <option value="percent">Percent of invoice subtotal</option>
                       <option value="flat">Flat dollar amount</option>
@@ -528,7 +528,7 @@ export default function InvoiceSettingsPage() {
                         max={lateFee.late_fee_type === 'percent' ? '1' : undefined}
                         value={lateFee.late_fee_amount}
                         onChange={e => setLateFee(s => ({ ...s, late_fee_amount: Number(e.target.value) }))}
-                        className="w-full rounded-lg border border-border bg-white pl-7 pr-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+                        className="w-full rounded-lg border border-border bg-white pl-7 pr-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
                       />
                     </div>
                     {lateFee.late_fee_type === 'percent' && (
@@ -545,7 +545,7 @@ export default function InvoiceSettingsPage() {
                       max="365"
                       value={lateFee.late_fee_days}
                       onChange={e => setLateFee(s => ({ ...s, late_fee_days: Number(e.target.value) }))}
-                      className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+                      className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
                     />
                   </label>
                   <label className="flex items-center gap-3 rounded-lg border border-border p-3 cursor-pointer hover:border-gold/50 self-end">
@@ -553,7 +553,7 @@ export default function InvoiceSettingsPage() {
                       type="checkbox"
                       checked={lateFee.late_fee_recurring}
                       onChange={e => setLateFee(s => ({ ...s, late_fee_recurring: e.target.checked }))}
-                      className="h-4 w-4 rounded text-gold focus:ring-gold"
+                      className="h-4 w-4 rounded text-gold focus:ring-gold-dark"
                     />
                     <div>
                       <div className="text-body-sm font-semibold text-primary">Recurring</div>

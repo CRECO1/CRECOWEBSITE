@@ -551,7 +551,7 @@ export default function InvoicesListPage() {
                 type="date"
                 value={filters.dateFrom}
                 onChange={e => setFilters(f => ({ ...f, dateFrom: e.target.value }))}
-                className="w-full rounded-lg border border-border bg-white px-3 py-2 text-body-sm text-primary focus:outline-none focus:border-gold"
+                className="w-full rounded-lg border border-border bg-white px-3 py-2 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
               />
             </div>
             <div>
@@ -560,7 +560,7 @@ export default function InvoicesListPage() {
                 type="date"
                 value={filters.dateTo}
                 onChange={e => setFilters(f => ({ ...f, dateTo: e.target.value }))}
-                className="w-full rounded-lg border border-border bg-white px-3 py-2 text-body-sm text-primary focus:outline-none focus:border-gold"
+                className="w-full rounded-lg border border-border bg-white px-3 py-2 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
               />
             </div>
             <div>
@@ -570,7 +570,7 @@ export default function InvoicesListPage() {
                 value={filters.clientQuery}
                 onChange={e => setFilters(f => ({ ...f, clientQuery: e.target.value }))}
                 placeholder="name, company, or email"
-                className="w-full rounded-lg border border-border bg-white px-3 py-2 text-body-sm text-primary focus:outline-none focus:border-gold"
+                className="w-full rounded-lg border border-border bg-white px-3 py-2 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
               />
             </div>
             <div>
@@ -583,7 +583,7 @@ export default function InvoicesListPage() {
                   step="0.01"
                   value={filters.amountMin}
                   onChange={e => setFilters(f => ({ ...f, amountMin: e.target.value }))}
-                  className="w-full rounded-lg border border-border bg-white pl-7 pr-3 py-2 text-body-sm text-primary focus:outline-none focus:border-gold"
+                  className="w-full rounded-lg border border-border bg-white pl-7 pr-3 py-2 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
                 />
               </div>
             </div>
@@ -597,7 +597,7 @@ export default function InvoicesListPage() {
                   step="0.01"
                   value={filters.amountMax}
                   onChange={e => setFilters(f => ({ ...f, amountMax: e.target.value }))}
-                  className="w-full rounded-lg border border-border bg-white pl-7 pr-3 py-2 text-body-sm text-primary focus:outline-none focus:border-gold"
+                  className="w-full rounded-lg border border-border bg-white pl-7 pr-3 py-2 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
                 />
               </div>
             </div>
@@ -608,7 +608,7 @@ export default function InvoicesListPage() {
                 value={filters.propertyQuery}
                 onChange={e => setFilters(f => ({ ...f, propertyQuery: e.target.value }))}
                 placeholder="property reference"
-                className="w-full rounded-lg border border-border bg-white px-3 py-2 text-body-sm text-primary focus:outline-none focus:border-gold"
+                className="w-full rounded-lg border border-border bg-white px-3 py-2 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
               />
             </div>
           </section>
@@ -920,7 +920,7 @@ export default function InvoicesListPage() {
                   type="date"
                   value={bulkDate}
                   onChange={e => setBulkDate(e.target.value)}
-                  className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+                  className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
                 />
               </label>
 
@@ -1017,7 +1017,7 @@ export default function InvoicesListPage() {
               placeholder='e.g. "Overdue this month" or "Acme invoices"'
               autoFocus
               onKeyDown={e => { if (e.key === 'Enter') saveCurrentView(); }}
-              className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+              className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
             />
           </label>
         </div>

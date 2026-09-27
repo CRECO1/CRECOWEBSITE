@@ -126,7 +126,7 @@ export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress }:
             required
             value={name}
             onChange={e => setName(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
             placeholder="Your name"
           />
         </label>
@@ -137,7 +137,7 @@ export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress }:
             required
             value={phone}
             onChange={e => setPhone(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
             placeholder="(210) 555-0100"
           />
         </label>
@@ -150,7 +150,7 @@ export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress }:
           required
           value={email}
           onChange={e => setEmail(e.target.value)}
-          className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+          className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
           placeholder="you@company.com"
         />
       </label>
@@ -164,7 +164,7 @@ export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress }:
             min={defaultDate()}
             value={preferredDate}
             onChange={e => setPreferredDate(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
           />
         </label>
         <label className="block">
@@ -174,7 +174,7 @@ export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress }:
             required
             value={preferredTime}
             onChange={e => setPreferredTime(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
           />
         </label>
       </div>
@@ -211,12 +211,12 @@ export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress }:
           value={notes}
           onChange={e => setNotes(e.target.value)}
           rows={3}
-          className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+          className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
           placeholder="Anything we should know — alternate dates, specific questions, etc."
         />
       </label>
 
-      {error && <p className="text-body-sm text-destructive">{error}</p>}
+      {error && <p role="alert" className="text-body-sm text-destructive">{error}</p>}
 
       <button
         type="submit"

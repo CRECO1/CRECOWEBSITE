@@ -285,7 +285,7 @@ function PropertyDetailPageInner() {
                 type="date"
                 value={customFrom}
                 onChange={e => setCustomFrom(e.target.value)}
-                className="rounded-lg border border-border bg-white px-2 py-1 text-caption text-primary focus:outline-none focus:border-gold"
+                className="rounded-lg border border-border bg-white px-2 py-1 text-caption text-primary focus:outline-none focus:border-gold-dark"
                 aria-label="From"
               />
               <span className="text-caption text-foreground-muted">→</span>
@@ -293,7 +293,7 @@ function PropertyDetailPageInner() {
                 type="date"
                 value={customTo}
                 onChange={e => setCustomTo(e.target.value)}
-                className="rounded-lg border border-border bg-white px-2 py-1 text-caption text-primary focus:outline-none focus:border-gold"
+                className="rounded-lg border border-border bg-white px-2 py-1 text-caption text-primary focus:outline-none focus:border-gold-dark"
                 aria-label="To"
               />
             </div>

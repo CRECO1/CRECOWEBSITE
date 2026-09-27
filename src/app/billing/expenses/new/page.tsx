@@ -238,7 +238,7 @@ export default function NewExpensePage() {
               type="checkbox"
               checked={reimbursable}
               onChange={e => setReimbursable(e.target.checked)}
-              className="mt-0.5 h-4 w-4 rounded text-gold focus:ring-gold"
+              className="mt-0.5 h-4 w-4 rounded text-gold focus:ring-gold-dark"
             />
             <div>
               <div className="text-body-sm font-semibold text-primary">Reimbursable</div>
@@ -253,7 +253,7 @@ export default function NewExpensePage() {
                 type="checkbox"
                 checked={is1099Eligible}
                 onChange={e => setIs1099Eligible(e.target.checked)}
-                className="mt-0.5 h-4 w-4 rounded text-gold focus:ring-gold"
+                className="mt-0.5 h-4 w-4 rounded text-gold focus:ring-gold-dark"
               />
               <div className="flex-1">
                 <div className="text-body-sm font-semibold text-primary flex items-center gap-1.5">

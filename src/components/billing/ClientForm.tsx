@@ -380,7 +380,7 @@ function PortalLinkRow({ token, clientId }: { token: string; clientId: string })
           value={url}
           readOnly
           onFocus={e => e.currentTarget.select()}
-          className="flex-1 rounded-md border border-border bg-background-cream/40 px-3 py-2 text-caption font-mono text-primary focus:outline-none focus:border-gold"
+          className="flex-1 rounded-md border border-border bg-background-cream/40 px-3 py-2 text-caption font-mono text-primary focus:outline-none focus:border-gold-dark"
         />
         <button
           type="button"

@@ -92,7 +92,7 @@ export function LeadMagnetForm({
             value={name}
             onChange={e => setName(e.target.value)}
             placeholder="Your name"
-            className="rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:outline-none focus:border-gold"
+            className="rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:outline-none focus:border-gold-dark"
           />
           <input
             type="email"
@@ -100,7 +100,7 @@ export function LeadMagnetForm({
             value={email}
             onChange={e => setEmail(e.target.value)}
             placeholder="you@company.com"
-            className="rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:outline-none focus:border-gold"
+            className="rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:outline-none focus:border-gold-dark"
           />
         </div>
         <input
@@ -108,9 +108,9 @@ export function LeadMagnetForm({
           value={company}
           onChange={e => setCompany(e.target.value)}
           placeholder="Company (optional)"
-          className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:outline-none focus:border-gold"
+          className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:outline-none focus:border-gold-dark"
         />
-        {error && <p className="text-body-sm text-destructive">{error}</p>}
+        {error && <p role="alert" className="text-body-sm text-destructive">{error}</p>}
         <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:justify-between">
           <p className="text-caption text-foreground-muted max-w-md">
             We'll never share your email. By unlocking, you agree to receive occasional CRECO insights — unsubscribe anytime.

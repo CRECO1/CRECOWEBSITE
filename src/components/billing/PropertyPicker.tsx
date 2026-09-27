@@ -112,7 +112,7 @@ export function PropertyPicker({ selectedId, onPick, onClear, label }: Props) {
               placeholder={properties.length === 0
                 ? 'No properties yet — create one in /billing/properties'
                 : 'Type to find a property, or leave blank for general overhead'}
-              className="w-full rounded-lg border border-border bg-white pl-9 pr-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+              className="w-full rounded-lg border border-border bg-white pl-9 pr-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
             />
           </div>
           {open && filtered.length > 0 && (

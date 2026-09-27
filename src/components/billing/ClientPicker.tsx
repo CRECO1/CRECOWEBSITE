@@ -108,7 +108,7 @@ export function ClientPicker({
                 onChange={e => { setQuery(e.target.value); setOpen(true); }}
                 onFocus={() => setOpen(true)}
                 placeholder="Type to find a saved client, or fill the fields below for a new one"
-                className="w-full rounded-lg border border-border bg-white pl-9 pr-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+                className="w-full rounded-lg border border-border bg-white pl-9 pr-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
               />
             </div>
             {open && filtered.length > 0 && (

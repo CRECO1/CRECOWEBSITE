@@ -988,7 +988,7 @@ export default function InvoiceDetailPage() {
                       checked={invoice.reminders_enabled !== false}
                       onChange={e => toggleReminders(e.target.checked)}
                       disabled={busy === 'reminders' || editing}
-                      className="mt-0.5 h-4 w-4 rounded text-gold focus:ring-gold"
+                      className="mt-0.5 h-4 w-4 rounded text-gold focus:ring-gold-dark"
                     />
                     <div>
                       <div className="text-body-sm font-semibold text-primary">Auto-send reminders</div>

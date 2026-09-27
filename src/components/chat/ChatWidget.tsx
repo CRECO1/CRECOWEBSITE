@@ -306,7 +306,7 @@ export function ChatWidget() {
             placeholder="Ask about Texas commercial real estate…"
             rows={1}
             disabled={streaming}
-            className="flex-1 resize-none rounded-lg border border-border bg-white px-3 py-2 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:outline-none focus:border-gold disabled:opacity-60 max-h-32"
+            className="flex-1 resize-none rounded-lg border border-border bg-white px-3 py-2 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:outline-none focus:border-gold-dark disabled:opacity-60 max-h-32"
           />
           <button
             type="submit"

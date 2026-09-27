@@ -221,7 +221,7 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
             required
             value={name}
             onChange={e => setName(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
             placeholder="Your name"
           />
         </div>
@@ -232,7 +232,7 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
             required
             value={email}
             onChange={e => setEmail(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
             placeholder="you@company.com"
           />
         </div>
@@ -247,7 +247,7 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
             type="tel"
             value={phone}
             onChange={e => setPhone(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
             placeholder="(210) 555-0100 (optional)"
           />
         </div>
@@ -257,7 +257,7 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
             type="text"
             value={company}
             onChange={e => setCompany(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
             placeholder="Your business or concept"
           />
         </div>
@@ -296,7 +296,7 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
             type="text"
             value={sfNeeded}
             onChange={e => setSfNeeded(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
             placeholder={interest === 'suite' ? 'e.g. 1 office for solo, or 600 SF' : 'e.g. 1,500 SF'}
           />
         </div>
@@ -305,7 +305,7 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
           <select id="dev-6"
             value={timeline}
             onChange={e => setTimeline(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
           >
             <option value="">Select…</option>
             {TIMELINES.map(t => <option key={t} value={t}>{t}</option>)}
@@ -320,7 +320,7 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
           value={notes}
           onChange={e => setNotes(e.target.value)}
           rows={3}
-          className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+          className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
           placeholder={
             interest === 'suite'
               ? 'Conference room needs, parking, after-hours access, etc.'
@@ -331,7 +331,7 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
         />
       </div>
 
-      {error && <p className="text-body-sm text-destructive">{error}</p>}
+      {error && <p role="alert" className="text-body-sm text-destructive">{error}</p>}
 
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:justify-between">
         <a

@@ -285,7 +285,7 @@ function ExpenseDetailPageInner() {
                 disabled={!editing}
                 checked={view.reimbursable}
                 onChange={e => setDraft(d => d && ({ ...d, reimbursable: e.target.checked }))}
-                className="mt-0.5 h-4 w-4 rounded text-gold focus:ring-gold"
+                className="mt-0.5 h-4 w-4 rounded text-gold focus:ring-gold-dark"
               />
               <div>
                 <div className="text-body-sm font-semibold text-primary">Reimbursable</div>
@@ -301,7 +301,7 @@ function ExpenseDetailPageInner() {
                   disabled={!editing}
                   checked={!!view.is_1099_eligible}
                   onChange={e => setDraft(d => d && ({ ...d, is_1099_eligible: e.target.checked }))}
-                  className="mt-0.5 h-4 w-4 rounded text-gold focus:ring-gold"
+                  className="mt-0.5 h-4 w-4 rounded text-gold focus:ring-gold-dark"
                 />
                 <div className="flex-1">
                   <div className="text-body-sm font-semibold text-primary flex items-center gap-1.5">

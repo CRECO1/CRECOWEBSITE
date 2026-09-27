@@ -39,7 +39,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             // Better placeholder contrast (using light instead of muted)
             'placeholder:text-foreground-light',
             // Stronger focus state for visibility
-            'focus:border-gold focus:outline-none focus:ring-4 focus:ring-gold/20',
+            'focus:border-gold-dark focus:outline-none focus:ring-4 focus:ring-gold/20',
             'disabled:cursor-not-allowed disabled:opacity-50',
             // Heights normalized to match Button: md = 52px (matches Button md),
             // lg = 60px (matches Button lg). Previously diverged at 56/64px,

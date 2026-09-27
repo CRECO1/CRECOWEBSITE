@@ -675,7 +675,7 @@ function NewInvoicePageInner() {
                       type="checkbox"
                       checked={recurringAutoSend}
                       onChange={e => setRecurringAutoSend(e.target.checked)}
-                      className="mt-0.5 h-4 w-4 rounded text-gold focus:ring-gold"
+                      className="mt-0.5 h-4 w-4 rounded text-gold focus:ring-gold-dark"
                     />
                     <div>
                       <div className="text-body-sm font-semibold text-primary">Auto-send future invoices</div>

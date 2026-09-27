@@ -2,7 +2,7 @@
  * Shared Tailwind class strings for form-field styling. Before this file
  * existed, every billing/admin form re-declared `const inputCls = "..."`
  * at the bottom of its module — 7 copies in two slightly different
- * variants (one used `focus:border-gold`, another `focus:border-primary`;
+ * variants (one used `focus:border-gold-dark`, another `focus:border-primary`;
  * one used `rounded-lg`, another `rounded-md`). Visual drift inevitable.
  *
  * The `<Input />` component in src/components/ui is the right call when
@@ -21,5 +21,5 @@
  * surface treatment of `<Input />` for visual consistency.
  */
 export const formInputCls =
-  'w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20';
+  'w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark focus:ring-2 focus:ring-gold/20';
 

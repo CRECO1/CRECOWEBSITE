@@ -531,7 +531,7 @@ function ExpensesListPageInner() {
           <div>
             <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-2">New category</span>
             <select
-              className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+              className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
               value={bulkCategory}
               onChange={ev => setBulkCategory(ev.target.value)}
             >

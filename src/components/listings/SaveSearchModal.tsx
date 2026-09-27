@@ -201,7 +201,7 @@ export function SaveSearchModal({ open, onClose, filters }: Props) {
                 onChange={e => setEmail(e.target.value)}
                 placeholder="you@company.com"
                 autoFocus
-                className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary placeholder:text-foreground-muted focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/30"
+                className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary placeholder:text-foreground-muted focus:outline-none focus:border-gold-dark focus:ring-2 focus:ring-gold/30"
               />
               {error && (
                 <p

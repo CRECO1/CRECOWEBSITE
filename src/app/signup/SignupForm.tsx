@@ -38,7 +38,7 @@ export function SignupForm() {
   const [duplicateEmail, setDuplicateEmail] = useState<string | null>(null);
 
   const inputCls =
-    'w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold focus:ring-2 focus:ring-gold/20';
+    'w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark focus:ring-2 focus:ring-gold/20';
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -99,7 +99,7 @@ export function SignupForm() {
   return (
     <form onSubmit={handleSubmit} className="rounded-2xl border border-border bg-white p-6 sm:p-8 shadow-sm space-y-5">
       {error && (
-        <div className="flex items-start gap-3 rounded-lg border border-red-300 bg-red-50 p-3 text-body-sm text-red-800">
+        <div role="alert" className="flex items-start gap-3 rounded-lg border border-red-300 bg-red-50 p-3 text-body-sm text-red-800">
           <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
           <div className="flex-1">
             <p>{error}</p>

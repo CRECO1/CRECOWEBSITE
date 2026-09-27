@@ -177,7 +177,7 @@ export function PropertyAlertsForm() {
             required
             value={name}
             onChange={e => setName(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:outline-none focus:border-gold"
+            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:outline-none focus:border-gold-dark"
             placeholder="Your name"
           />
         </div>
@@ -188,7 +188,7 @@ export function PropertyAlertsForm() {
             required
             value={email}
             onChange={e => setEmail(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:outline-none focus:border-gold"
+            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:outline-none focus:border-gold-dark"
             placeholder="you@company.com"
           />
         </div>
@@ -271,7 +271,7 @@ export function PropertyAlertsForm() {
         <select id="pa-3"
           value={sizeIdx}
           onChange={e => setSizeIdx(Number(e.target.value))}
-          className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold"
+          className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
         >
           {SIZE_RANGES.map((r, i) => (
             <option key={i} value={i}>{r.label}</option>
@@ -286,12 +286,12 @@ export function PropertyAlertsForm() {
           value={notes}
           onChange={e => setNotes(e.target.value)}
           rows={3}
-          className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:outline-none focus:border-gold"
+          className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:outline-none focus:border-gold-dark"
           placeholder="Specific tenants we should know about, timeline, deal size, owner-user financing requirements, etc."
         />
       </div>
 
-      {error && <p className="text-body-sm text-destructive">{error}</p>}
+      {error && <p role="alert" className="text-body-sm text-destructive">{error}</p>}
 
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:justify-between">
         <p className="text-caption text-foreground-muted max-w-md">

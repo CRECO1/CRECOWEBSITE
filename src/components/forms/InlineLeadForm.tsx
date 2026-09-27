@@ -86,8 +86,8 @@ export function InlineLeadForm({
     ? 'bg-white/5 border border-white/10'
     : 'bg-white border border-border shadow-card';
   const field = dark
-    ? 'w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-body-sm text-white placeholder:text-white/50 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/25'
-    : 'w-full rounded-lg border border-border bg-white px-4 py-3 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/25';
+    ? 'w-full rounded-lg border border-white/20 bg-white/10 px-4 py-3 text-body-sm text-white placeholder:text-white/50 focus:border-gold-dark focus:outline-none focus:ring-2 focus:ring-gold/25'
+    : 'w-full rounded-lg border border-border bg-white px-4 py-3 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:border-gold-dark focus:outline-none focus:ring-2 focus:ring-gold/25';
 
   if (submitted) {
     return (
@@ -137,7 +137,7 @@ export function InlineLeadForm({
           className={field}
         />
 
-        {error && <p className={`text-body-sm ${dark ? 'text-red-300' : 'text-red-600'}`}>{error}</p>}
+        {error && <p role="alert" className={`text-body-sm ${dark ? 'text-red-300' : 'text-red-600'}`}>{error}</p>}
 
         <button
           type="submit"

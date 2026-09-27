@@ -168,7 +168,7 @@ export function TeamSection({
             <button
               key={agent.id}
               onClick={() => openProfile(agent)}
-              className="card-luxury group p-6 text-center w-full focus:outline-none focus:ring-2 focus:ring-gold rounded-2xl transition-all hover:-translate-y-1"
+              className="card-luxury group p-6 text-center w-full focus:outline-none focus:ring-2 focus:ring-gold-dark rounded-2xl transition-all hover:-translate-y-1"
             >
               <div className="mx-auto mb-5 h-28 w-28 rounded-full bg-background-warm overflow-hidden">
                 {agent.image_url ? (
@@ -339,17 +339,17 @@ export function TeamSection({
                       <input
                         type="text" required value={msgName} onChange={(e) => setMsgName(e.target.value)}
                         placeholder="Your name"
-                        className="w-full rounded-lg border border-border bg-white px-3 py-2 text-caption text-primary focus:outline-none focus:border-gold"
+                        className="w-full rounded-lg border border-border bg-white px-3 py-2 text-caption text-primary focus:outline-none focus:border-gold-dark"
                       />
                       <input
                         type="email" required value={msgEmail} onChange={(e) => setMsgEmail(e.target.value)}
                         placeholder="you@email.com"
-                        className="w-full rounded-lg border border-border bg-white px-3 py-2 text-caption text-primary focus:outline-none focus:border-gold"
+                        className="w-full rounded-lg border border-border bg-white px-3 py-2 text-caption text-primary focus:outline-none focus:border-gold-dark"
                       />
                       <textarea
                         rows={3} value={msgBody} onChange={(e) => setMsgBody(e.target.value)}
                         placeholder={`What can ${selected.name.split(' ')[0]} help with? (property, timeline, question)`}
-                        className="w-full rounded-lg border border-border bg-white px-3 py-2 text-caption text-primary focus:outline-none focus:border-gold"
+                        className="w-full rounded-lg border border-border bg-white px-3 py-2 text-caption text-primary focus:outline-none focus:border-gold-dark"
                       />
                       {msgError && <p className="text-caption text-red-500">{msgError}</p>}
                       <button
