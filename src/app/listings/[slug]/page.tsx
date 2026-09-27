@@ -24,6 +24,8 @@ import { MobileInquiryBar } from './MobileInquiryBar';
 import { BrokerCard } from '@/components/marketing/BrokerCard';
 import { getBrokerForListing } from '@/lib/broker';
 import { RelatedListings } from '@/components/marketing/RelatedListings';
+import { HubLinks } from '@/components/marketing/HubLinks';
+import { hubLinksForListing } from '@/lib/hub-links';
 import { ListingGallery } from '@/components/marketing/ListingGallery';
 import { CompareToggle } from '@/components/listings/CompareToggle';
 import { ListingDetailMap } from '@/components/listings/ListingDetailMap';
@@ -428,6 +430,14 @@ export default async function ListingDetailPage({ params }: Props) {
           path={`/listings/${listing!.slug}`}
           heading={`${listing!.title} — questions & answers`}
           className="section-luxury bg-background-cream border-t border-border"
+        />
+
+        {/* Back up to the city and asset hubs this property belongs to.
+            Listing pages previously linked to neither, so the hubs we most
+            want to rank collected nothing from the listings about them. */}
+        <HubLinks
+          links={hubLinksForListing(listing!)}
+          label="Browse more"
         />
 
         {/* More Available Properties — cross-sell */}

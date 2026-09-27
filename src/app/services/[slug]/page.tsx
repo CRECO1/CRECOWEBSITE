@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { breadcrumbList } from '@/lib/schema';
+import { HubLinks } from '@/components/marketing/HubLinks';
+import { SERVICE_MARKET_LINKS } from '@/lib/hub-links';
 import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { metaTitle, metaDescription } from '@/lib/seo-meta';
 import { jsonLd } from '@/lib/jsonLd';
@@ -272,6 +274,14 @@ export default async function ServiceDetailPage({ params }: Props) {
             </div>
           </Container>
         </section>
+
+        {/* Service pages linked to no market at all. A service is delivered
+            somewhere, and these are the somewheres. */}
+        <HubLinks
+          links={SERVICE_MARKET_LINKS}
+          label="Markets we serve"
+          className="border-t border-border bg-white py-6"
+        />
       </main>
       <Footer />
     </>
