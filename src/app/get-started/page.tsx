@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   ArrowRight, ArrowLeft, CheckCircle, Building2, Briefcase, Warehouse, Store, Layers,
@@ -450,6 +450,28 @@ export default function GetStartedPage() {
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // One event per question actually seen. With 29 questions across five
+  // paths, "people drop off in /get-started" is useless — "62% of tenants
+  // never get past `budget`" is something you can act on. step_index is
+  // 1-based so it reads like the progress bar. No answer values are sent,
+  // only which question was shown.
+  //
+  // This has to sit with the other hooks, above the `if (!path)` return:
+  // a hook after a conditional return changes hook order between renders
+  // and React throws, which takes the whole page down.
+  useEffect(() => {
+    if (!path || contactStep || done) return;
+    const steps = PATHS[path].steps;
+    const current = steps[step];
+    if (!current) return;
+    trackEvent('get_started_step_viewed', {
+      path,
+      step_id: current.id,
+      step_index: step + 1,
+      total_steps: steps.length,
+    });
+  }, [path, step, contactStep, done]);
   const [name, setName] = useState('');
   const [company, setCompany] = useState('');
   const [email, setEmail] = useState('');
@@ -479,7 +501,16 @@ export default function GetStartedPage() {
                   return (
                     <button
                       key={p}
-                      onClick={() => setPath(p)}
+                      onClick={() => {
+                        // Which of the five doors they walked through. Every
+                        // later step event carries this, so the funnel can be
+                        // read per path rather than as one blurred average.
+                        trackEvent('get_started_path_selected', {
+                          path: p,
+                          total_steps: PATHS[p].steps.length,
+                        });
+                        setPath(p);
+                      }}
                       className="group rounded-2xl border-2 border-border bg-white p-6 text-left transition-all hover:border-gold hover:shadow-card-hover"
                     >
                       <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gold/10 text-gold group-hover:bg-gold group-hover:text-primary transition-colors">
@@ -527,6 +558,8 @@ export default function GetStartedPage() {
     if (step < STEPS.length - 1) {
       setTimeout(() => setStep(s => s + 1), 200);
     } else {
+      // Finished every question — the last drop-off point before the submit.
+      trackEvent('get_started_contact_reached', { path, total_steps: STEPS.length });
       setTimeout(() => setContactStep(true), 200);
     }
   }
@@ -780,7 +813,7 @@ export default function GetStartedPage() {
                   <ArrowLeft className="h-4 w-4" /> Back
                 </button>
               ) : (
-                <button onClick={() => { setPath(null); setStep(0); setAnswers({}); }} className="flex items-center gap-2 text-body-sm text-foreground-muted hover:text-primary transition-colors">
+                <button onClick={() => { trackEvent('get_started_restarted', { path, step_index: step + 1 }); setPath(null); setStep(0); setAnswers({}); }} className="flex items-center gap-2 text-body-sm text-foreground-muted hover:text-primary transition-colors">
                   <ArrowLeft className="h-4 w-4" /> Change path
                 </button>
               )}

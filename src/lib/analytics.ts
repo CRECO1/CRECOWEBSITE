@@ -59,6 +59,9 @@ const LEAD_EVENTS = new Set<string>([
   'retail_leasing_inquiry_submitted',
   'get_started_submitted',
   'property_alerts_subscribed',
+  // The inline landing-page forms. These were firing their own event but
+  // never mirroring to generate_lead, so the GA4 lead reports undercounted.
+  'inline_lead_submitted',
 ]);
 
 /**
@@ -92,9 +95,54 @@ export function trackEvent(name: string, params: Record<string, unknown> = {}) {
       // eslint-disable-next-line no-console
       console.debug('[analytics]', name, params);
     }
+    // Mirror into Microsoft Clarity as a custom event. Clarity is already on
+    // the page for session replay; tagging the event means you can filter
+    // recordings down to "sessions where someone started a lead form and
+    // never submitted" and watch exactly what happened. Clarity's event API
+    // takes a name only, so the interesting dimensions go through set()
+    // as separate tags.
+    const c = (window as unknown as { clarity?: (...a: unknown[]) => void }).clarity;
+    if (typeof c === 'function') {
+      c('event', name);
+      for (const key of CLARITY_TAG_KEYS) {
+        const v = params[key];
+        if (typeof v === 'string' && v) c('set', key, v.slice(0, 100));
+      }
+    }
   } catch {
     // Analytics must never break the form
   }
+}
+
+/**
+ * Dimensions worth promoting to Clarity tags — these are the ones you filter
+ * replays by. Deliberately a fixed allowlist rather than "every param": it
+ * keeps anything accidental (or personal) from becoming a Clarity dimension.
+ */
+const CLARITY_TAG_KEYS = ['surface', 'source', 'path', 'step_id', 'cta', 'form'] as const;
+
+/**
+ * Events that must fire at most once per page load.
+ *
+ * A "form started" signal is only meaningful as a count of people, not of
+ * focus events — without this, tabbing between four fields would report four
+ * starts and the start→submit rate would be nonsense.
+ */
+const firedOnce = new Set<string>();
+
+export function trackOnce(dedupeKey: string, name: string, params: Record<string, unknown> = {}) {
+  if (typeof window === 'undefined') return;
+  if (firedOnce.has(dedupeKey)) return;
+  firedOnce.add(dedupeKey);
+  trackEvent(name, params);
+}
+
+/**
+ * First interaction with a lead form. Pair with the matching *_submitted
+ * event to get an abandonment rate per surface.
+ */
+export function trackFormStart(form: string, surface: string, extra: Record<string, unknown> = {}) {
+  trackOnce(`form_start:${form}:${surface}`, 'lead_form_started', { form, surface, ...extra });
 }
 
 /**

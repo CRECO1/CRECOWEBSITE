@@ -10,6 +10,7 @@ import { CompareBar } from '@/components/listings/CompareBar';
 import { ChatWidget } from '@/components/chat/ChatWidget';
 import { RecaptchaScript } from '@/components/forms/Recaptcha';
 import { UtmCapture } from '@/components/analytics/UtmCapture';
+import { InteractionTracking } from '@/components/analytics/InteractionTracking';
 import { GoogleAnalytics } from '@/components/analytics/GoogleAnalytics';
 // ExitIntentModal removed from the global layout per owner request (the
 // "Before you go — get our Q2 Texas market report" popup felt
@@ -164,6 +165,8 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <UtmCapture />
         </Suspense>
+        {/* Delegated CTA / tel / mailto / form-start tracking. Renders nothing. */}
+        <InteractionTracking />
         {/* id="main-content" is the target of the skip-to-content
             link above. Using a div wrapper (not <main>) so it doesn't
             conflict with the <main> element each page renders inside

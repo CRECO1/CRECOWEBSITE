@@ -77,7 +77,7 @@ export function PhoneCallText({
     // Two side-by-side pill buttons — Call primary, Text secondary.
     // Both min 44px tall for tap-target compliance.
     return (
-      <div className={`grid grid-cols-2 gap-2 ${className}`}>
+      <div className={`grid grid-cols-2 gap-2 ${className}`} data-no-auto-track>
         <a
           href={PRIMARY_BROKER.phone_href}
           onClick={() => fireClickEvent('phone_click', surface)}
@@ -105,7 +105,7 @@ export function PhoneCallText({
   const sepClass = tone === 'dark' ? 'text-white/40' : 'text-foreground-muted';
 
   return (
-    <span className={`inline-flex items-center gap-2 flex-wrap ${className}`}>
+    <span className={`inline-flex items-center gap-2 flex-wrap ${className}`} data-no-auto-track>
       <a
         href={PRIMARY_BROKER.phone_href}
         onClick={() => fireClickEvent('phone_click', surface)}

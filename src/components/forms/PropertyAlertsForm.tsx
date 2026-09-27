@@ -159,7 +159,7 @@ export function PropertyAlertsForm() {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-8">
+    <form onSubmit={submit} className="space-y-8" data-lead-form="property_alerts">
       <Honeypot />
 
       {prefillNotice && (

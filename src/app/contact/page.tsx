@@ -182,7 +182,7 @@ export default function ContactPage() {
                   ) : (
                     <>
                       <h2 className="mb-6 font-heading text-heading-xl font-bold text-primary">Send Us a Message</h2>
-                      <form onSubmit={handleSubmit} className="space-y-5">
+                      <form onSubmit={handleSubmit} className="space-y-5" data-lead-form="contact" data-surface="contact-page">
                         <Honeypot />
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                           <div>

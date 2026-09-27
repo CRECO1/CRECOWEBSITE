@@ -118,7 +118,7 @@ export function InlineLeadForm({
         </p>
       )}
 
-      <form onSubmit={submit} className="mt-5 space-y-3">
+      <form onSubmit={submit} className="mt-5 space-y-3" data-lead-form="inline_lead" data-surface={surface}>
         <Honeypot />
         {/* One column on a phone, two once there is room for them to read as a
             pair rather than a stack of identical boxes. */}

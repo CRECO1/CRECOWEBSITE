@@ -68,7 +68,7 @@ export function ListYourSpaceForm({ surface = 'list-your-space' }: { surface?: s
   }
 
   return (
-    <form onSubmit={submit} className="space-y-4">
+    <form onSubmit={submit} className="space-y-4" data-lead-form="list_your_space">
       <Honeypot />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <input required name="name" value={f.name} onChange={set('name')} placeholder="Your name" className={field} />

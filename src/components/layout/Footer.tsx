@@ -160,6 +160,7 @@ export function Footer() {
                       the page?" with phone, email, or form-submit. */}
                   <a
                     href={`mailto:${contact.email}`}
+                    data-no-auto-track
                     onClick={() => trackEvent('mailto_click', { surface: 'footer' })}
                     className="flex min-h-[44px] items-start gap-3 py-2.5 text-body-sm text-white/60 transition-colors hover:text-gold md:min-h-0 md:py-0"
                   >
