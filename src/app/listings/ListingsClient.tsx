@@ -404,9 +404,10 @@ export function ListingsClient({ initialListings, children }: { initialListings:
                           <MapPin className="mr-1 inline h-3 w-3" />
                           {listing.city}, TX{listing.submarket ? ` · ${listing.submarket}` : ''}
                         </p>
-                        <h3 className="mb-2 font-heading text-heading-sm font-semibold text-primary group-hover:text-gold transition-colors line-clamp-1">
+                        {/* h2, not h3: these cards are the first content under the page h1, so an h3 here skipped a level. Size comes from the Tailwind class, not the tag, so this renders identically. */}
+                        <h2 className="mb-2 font-heading text-heading-sm font-semibold text-primary group-hover:text-gold transition-colors line-clamp-1">
                           {listing.title}
-                        </h3>
+                        </h2>
                         <p className="mb-4 text-body-sm text-foreground-muted line-clamp-2">{listing.headline ?? ''}</p>
                         <div className="mb-4 price-tag text-2xl">
                           {listing.transaction_type === 'sale' && listing.sale_price

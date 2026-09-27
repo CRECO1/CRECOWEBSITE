@@ -9,7 +9,7 @@ import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 export const metadata: Metadata = {
   title: 'Houston Retail Space for Lease | CRECO',
   description:
-    'Houston retail space for lease — grocery-anchored and power centers along the Grand Parkway, master-planned Katy, The Woodlands and Sugar Land, and urban retail in the Heights, Montrose, and River Oaks. Rents, vacancy, and tenant + landlord rep from CRECO.',
+    'Houston retail space for lease — grocery-anchored and power centers on the Grand Parkway, Katy, The Woodlands, Sugar Land, plus Heights street retail.',
   keywords: [
     'houston retail space for lease',
     'retail space houston',

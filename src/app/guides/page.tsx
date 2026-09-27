@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { jsonLd } from '@/lib/jsonLd';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { breadcrumbList, webPage } from '@/lib/schema';
 import Link from 'next/link';
 import { ArrowRight, Clock, FileText, Lock, BarChart3, BookOpen } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
@@ -65,6 +67,12 @@ export default function GuidesIndex() {
 
   return (
     <>
+      <JsonLd
+        data={[
+          webPage('CollectionPage', '/guides', 'Texas Commercial Real Estate Guides & Reports | CRECO', 'Free Texas commercial real estate guides and quarterly market reports — lease negotiation, disposition strategy, and industrial, retail, office, and investment.'),
+          breadcrumbList([{ name: 'Guides & Reports', path: '/guides' }]),
+        ]}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLd(collectionSchema) }}

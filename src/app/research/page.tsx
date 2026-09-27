@@ -7,7 +7,7 @@ import { Container } from '@/components/ui/Container';
 import { MARKET_REPORTS_SORTED, type MarketReport } from '@/lib/market-reports';
 
 import { JsonLd } from '@/components/seo/JsonLd';
-import { breadcrumbList } from '@/lib/schema';
+import { breadcrumbList, webPage } from '@/lib/schema';
 /**
  * /research — index of quarterly market reports.
  *
@@ -47,7 +47,12 @@ function formatPubDate(iso: string): string {
 export default function ResearchIndexPage() {
   return (
     <>
-      <JsonLd data={breadcrumbList([{ name: 'Market Research', path: '/research' }])} />
+      <JsonLd
+        data={[
+          webPage('CollectionPage', '/research', 'Texas Commercial Real Estate Market Reports | CRECO Research', 'Quarterly Texas commercial real estate market reports — submarket vacancy, asking rents, absorption, and concessions for San Antonio, Austin, Houston, and DFW.'),
+          breadcrumbList([{ name: 'Market Research', path: '/research' }]),
+        ]}
+      />
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}

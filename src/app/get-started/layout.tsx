@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { breadcrumbList } from '@/lib/schema';
+import { breadcrumbList, webPage } from '@/lib/schema';
 import { DEFAULT_OG_IMAGE } from '@/lib/og';
 
 /**
@@ -43,7 +43,17 @@ export const metadata: Metadata = {
 export default function GetStartedLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <JsonLd data={breadcrumbList([{ name: 'Get Started', path: '/get-started' }])} />
+      <JsonLd
+        data={[
+          webPage(
+            'WebPage',
+            '/get-started',
+            'Get Started with CRECO | CRECO',
+            'Tell us what you need — tenant rep, owner services, investment advisory, or property leasing.',
+          ),
+          breadcrumbList([{ name: 'Get Started', path: '/get-started' }]),
+        ]}
+      />
       {children}
     </>
   );

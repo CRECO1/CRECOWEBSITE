@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { jsonLd } from '@/lib/jsonLd';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { breadcrumbList, webPage } from '@/lib/schema';
 import Link from 'next/link';
 import { Calendar, Clock, ArrowRight, BookOpen } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
@@ -61,6 +63,12 @@ export default function InsightsIndex() {
 
   return (
     <>
+      <JsonLd
+        data={[
+          webPage('CollectionPage', '/insights', 'Insights | Texas Commercial Real Estate Analysis | CRECO', 'Texas commercial real estate insights, market analysis, and strategic guidance from CRECO.'),
+          breadcrumbList([{ name: 'Insights', path: '/insights' }]),
+        ]}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLd(collectionSchema) }}

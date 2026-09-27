@@ -9,7 +9,7 @@ import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 export const metadata: Metadata = {
   title: 'Dallas–Fort Worth Retail Space for Lease | CRECO',
   description:
-    'Dallas–Fort Worth retail space for lease — mixed-use and power centers in Frisco, Plano, and the Collin County growth corridor, lifestyle retail in Southlake and Clearfork, and urban retail in Uptown and Bishop Arts. Rents, vacancy, and tenant + landlord rep from CRECO.',
+    'Dallas–Fort Worth retail space for lease — power and mixed-use centers in Frisco and Plano, lifestyle retail in Southlake, street retail in Bishop Arts.',
   keywords: [
     'dallas retail space for lease',
     'dfw retail space for lease',

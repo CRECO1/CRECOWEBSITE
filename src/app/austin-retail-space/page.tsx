@@ -9,7 +9,7 @@ import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 export const metadata: Metadata = {
   title: 'Austin Retail Space for Lease | CRECO',
   description:
-    'Austin retail space for lease — lifestyle and mixed-use at the Domain, iconic street retail on South Congress and South Lamar, power centers in Cedar Park and Round Rock, and Hill Country growth. Rents, vacancy, and tenant + landlord rep from CRECO.',
+    'Austin retail space for lease — the Domain, South Congress and South Lamar street retail, power centers in Cedar Park and Round Rock. Tenant + landlord rep.',
   keywords: [
     'austin retail space for lease',
     'retail space austin',

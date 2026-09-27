@@ -5,7 +5,7 @@ import { Container } from '@/components/ui/Container';
 import { PropertyAlertsForm } from '@/components/forms/PropertyAlertsForm';
 
 import { JsonLd } from '@/components/seo/JsonLd';
-import { breadcrumbList } from '@/lib/schema';
+import { breadcrumbList, webPage } from '@/lib/schema';
 export const metadata: Metadata = {
   title: 'Texas Commercial Property Alerts | CRECO',
   description:
@@ -46,7 +46,12 @@ const VALUE_PROPS = [
 export default function PropertyAlertsPage() {
   return (
     <>
-      <JsonLd data={breadcrumbList([{ name: 'Property Alerts', path: '/property-alerts' }])} />
+      <JsonLd
+        data={[
+          webPage('WebPage', '/property-alerts', 'Texas Commercial Property Alerts | CRECO', 'Get alerts when a Texas commercial property matching your filters is listed with CRECO — retail, industrial, office, flex, and land. Free, no obligation.'),
+          breadcrumbList([{ name: 'Property Alerts', path: '/property-alerts' }]),
+        ]}
+      />
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}

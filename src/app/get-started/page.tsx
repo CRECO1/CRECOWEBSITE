@@ -485,9 +485,10 @@ export default function GetStartedPage() {
                       <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gold/10 text-gold group-hover:bg-gold group-hover:text-primary transition-colors">
                         <Icon className="h-6 w-6" />
                       </div>
-                      <h3 className="mb-2 font-heading text-heading-sm font-bold text-primary group-hover:text-gold transition-colors">
+                      {/* h2, not h3: these cards are the first content under the page h1, so an h3 here skipped a level. Size comes from the Tailwind class, not the tag, so this renders identically. */}
+                      <h2 className="mb-2 font-heading text-heading-sm font-bold text-primary group-hover:text-gold transition-colors">
                         {cfg.label}
-                      </h3>
+                      </h2>
                       <p className="text-body-sm text-foreground-muted">{cfg.description}</p>
                     </button>
                   );

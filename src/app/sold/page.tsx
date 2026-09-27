@@ -38,7 +38,7 @@ import { getClosedDeals } from '@/lib/supabase';
 import { formatPrice, formatSqft, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 
 import { JsonLd } from '@/components/seo/JsonLd';
-import { breadcrumbList } from '@/lib/schema';
+import { breadcrumbList, webPage } from '@/lib/schema';
 export default async function SoldPage() {
   // No demo fallback: an empty result renders an empty state rather than
   // presenting invented transactions as CRECO's track record.
@@ -46,7 +46,12 @@ export default async function SoldPage() {
 
   return (
     <>
-      <JsonLd data={breadcrumbList([{ name: 'Closed Deals', path: '/sold' }])} />
+      <JsonLd
+        data={[
+          webPage('CollectionPage', '/sold', 'Recently Closed Deals | CRECO', 'Recent commercial real estate transactions closed by CRECO in San Antonio — leases and sales across office, warehouse, flex, retail, and land.'),
+          breadcrumbList([{ name: 'Closed Deals', path: '/sold' }]),
+        ]}
+      />
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}

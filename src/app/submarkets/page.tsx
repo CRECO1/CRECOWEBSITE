@@ -12,7 +12,7 @@ import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import { getSubmarkets } from '@/lib/supabase';
 
 import { JsonLd } from '@/components/seo/JsonLd';
-import { breadcrumbList } from '@/lib/schema';
+import { breadcrumbList, webPage } from '@/lib/schema';
 export const metadata: Metadata = {
   title: 'San Antonio Commercial Real Estate Submarkets | CRECO',
   description:
@@ -28,7 +28,12 @@ export default async function SubmarketsPage() {
 
   return (
     <>
-      <JsonLd data={breadcrumbList([{ name: 'San Antonio Submarkets', path: '/submarkets' }])} />
+      <JsonLd
+        data={[
+          webPage('CollectionPage', '/submarkets', 'San Antonio Commercial Real Estate Submarkets | CRECO', 'Profiles of San Antonio\'s commercial real estate submarkets — Northwest, North Central, Northeast, Downtown, South Side, and Far West — with available space.'),
+          breadcrumbList([{ name: 'San Antonio Submarkets', path: '/submarkets' }]),
+        ]}
+      />
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}
@@ -67,7 +72,8 @@ export default async function SubmarketsPage() {
                         <MapPin className="h-4 w-4 text-gold" />
                         <span className="text-caption uppercase tracking-widest text-gold">San Antonio</span>
                       </div>
-                      <h3 className="font-heading text-heading-lg font-bold">{s.name}</h3>
+                      {/* h2, not h3: these cards are the first content under the page h1, so an h3 here skipped a level. Size comes from the Tailwind class, not the tag, so this renders identically. */}
+                      <h2 className="font-heading text-heading-lg font-bold">{s.name}</h2>
                       {s.description && <p className="mt-2 text-body-sm text-white/80 line-clamp-2">{s.description}</p>}
                       {Array.isArray(s.highlights) && s.highlights.length > 0 && (
                         <div className="mt-3 flex flex-wrap gap-2">

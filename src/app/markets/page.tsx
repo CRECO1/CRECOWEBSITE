@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { jsonLd } from '@/lib/jsonLd';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { breadcrumbList, webPage } from '@/lib/schema';
 import Link from 'next/link';
 import { ArrowRight, MapPin, Building2 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
@@ -96,6 +98,12 @@ export default function MarketsHubPage() {
 
   return (
     <>
+      <JsonLd
+        data={[
+          webPage('CollectionPage', '/markets', 'Texas Commercial Real Estate Markets | CRECO', 'Submarket-level guide to Texas commercial real estate — Austin, Houston, Dallas–Fort Worth, San Antonio, and Hill Country.'),
+          breadcrumbList([{ name: 'Markets', path: '/markets' }]),
+        ]}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLd(itemListSchema) }}
