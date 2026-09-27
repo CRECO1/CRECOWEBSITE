@@ -71,13 +71,23 @@ export const metadata: Metadata = {
   creator: 'CRECO - Commercial Real Estate Company',
   publisher: 'CRECO - Commercial Real Estate Company',
   formatDetection: { telephone: true, address: true, email: true },
+  // The CRECO building mark on the brand ink tile. /favicon.ico is listed
+  // first and also exists at the conventional path — plenty of clients
+  // (feed readers, link unfurlers, older browsers) request /favicon.ico
+  // directly and ignore these tags entirely; it used to 404.
+  //
+  // No mask-icon: Safari's pinned-tab mask needs a single-colour vector
+  // silhouette, and pointing it at an icon it can't mask is worse than
+  // letting Safari fall back to the regular icon.
   icons: {
     icon: [
+      { url: '/favicon.ico', sizes: '16x16 32x32 48x48', type: 'image/x-icon' },
       { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
       { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/icon.svg', type: 'image/svg+xml' },
     ],
+    shortcut: [{ url: '/favicon.ico' }],
     apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
-    other: [{ rel: 'mask-icon', url: '/icon.svg', color: '#C9A962' }],
   },
   manifest: '/site.webmanifest',
   appleWebApp: { capable: true, statusBarStyle: 'default', title: 'CRECO' },
