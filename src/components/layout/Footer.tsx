@@ -76,11 +76,11 @@ export function Footer() {
               </p>
               <div className="flex gap-4">
                 <a href="https://facebook.com/crecotx" target="_blank" rel="noopener noreferrer" aria-label="Facebook"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white/60 transition-colors hover:border-gold hover:text-gold">
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-white/60 transition-colors hover:border-gold hover:text-gold md:h-10 md:w-10">
                   <Facebook className="h-4 w-4" />
                 </a>
                 <a href="https://instagram.com/crecotx" target="_blank" rel="noopener noreferrer" aria-label="Instagram"
-                  className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 text-white/60 transition-colors hover:border-gold hover:text-gold">
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-white/60 transition-colors hover:border-gold hover:text-gold md:h-10 md:w-10">
                   <Instagram className="h-4 w-4" />
                 </a>
                 {/* No LinkedIn company link: linkedin.com/company/crecotx is a 404 and no
@@ -97,13 +97,17 @@ export function Footer() {
               </div>
             </div>
 
+            {/* Mobile tap targets: every footer link below is at least 44px
+                tall on a phone (WCAG 2.5.8 / the iOS + Android guideline) via
+                min-h + flex centring, which is exact regardless of font size.
+                Each one resets at md:, so the desktop footer is unchanged. */}
             {/* Properties Links */}
             <div>
               <h3 className="mb-5 text-body-sm font-semibold uppercase tracking-widest text-gold">Properties</h3>
-              <ul className="space-y-3">
+              <ul className="space-y-0 md:space-y-3">
                 {footerLinks.properties.map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} className="text-body-sm text-white/60 transition-colors hover:text-gold">
+                    <Link href={link.href} className="flex min-h-[44px] items-center text-body-sm text-white/60 transition-colors hover:text-gold md:inline md:min-h-0">
                       {link.label}
                     </Link>
                   </li>
@@ -114,10 +118,10 @@ export function Footer() {
             {/* Services Links */}
             <div>
               <h3 className="mb-5 text-body-sm font-semibold uppercase tracking-widest text-gold">Services</h3>
-              <ul className="space-y-3">
+              <ul className="space-y-0 md:space-y-3">
                 {footerLinks.services.map((link) => (
                   <li key={link.href}>
-                    <Link href={link.href} className="text-body-sm text-white/60 transition-colors hover:text-gold">
+                    <Link href={link.href} className="flex min-h-[44px] items-center text-body-sm text-white/60 transition-colors hover:text-gold md:inline md:min-h-0">
                       {link.label}
                     </Link>
                   </li>
@@ -128,7 +132,7 @@ export function Footer() {
             {/* Contact Info */}
             <div>
               <h3 className="mb-5 text-body-sm font-semibold uppercase tracking-widest text-gold">Get in Touch</h3>
-              <ul className="space-y-4">
+              <ul className="space-y-1 md:space-y-4">
                 <li>
                   {/* Call + Text — visible SMS affordance next to the
                       number. Both actions fire distinct GA events with
@@ -150,7 +154,7 @@ export function Footer() {
                   <a
                     href={`mailto:${contact.email}`}
                     onClick={() => trackEvent('mailto_click', { surface: 'footer' })}
-                    className="flex items-start gap-3 text-body-sm text-white/60 transition-colors hover:text-gold"
+                    className="flex min-h-[44px] items-start gap-3 py-2.5 text-body-sm text-white/60 transition-colors hover:text-gold md:min-h-0 md:py-0"
                   >
                     <Mail className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
                     {contact.email}
@@ -162,7 +166,7 @@ export function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`Open ${contact.address} in Google Maps`}
-                    className="flex items-start gap-3 text-body-sm text-white/60 transition-colors hover:text-gold"
+                    className="flex min-h-[44px] items-start gap-3 py-2.5 text-body-sm text-white/60 transition-colors hover:text-gold md:min-h-0 md:py-0"
                   >
                     <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
                     <span>
@@ -196,11 +200,11 @@ export function Footer() {
         <Container>
           <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
             <p className="text-caption uppercase tracking-widest text-gold text-center md:text-left">Texas Markets We Serve</p>
-            <Link href="/markets" className="text-caption text-gold/80 hover:text-gold font-semibold">
+            <Link href="/markets" className="inline-flex min-h-[44px] items-center text-caption text-gold/80 hover:text-gold font-semibold md:min-h-0">
               See all submarkets →
             </Link>
           </div>
-          <div className="flex flex-wrap justify-center md:justify-start gap-x-5 gap-y-2">
+          <div className="flex flex-wrap justify-center md:justify-start gap-x-5 gap-y-0 md:gap-y-2">
             {[
               { href: '/fair-oaks-ranch-commercial-real-estate', label: 'Fair Oaks Ranch' },
               { href: '/boerne-commercial-real-estate', label: 'Boerne' },
@@ -218,7 +222,7 @@ export function Footer() {
               <Link
                 key={m.href}
                 href={m.href}
-                className={`text-body-sm transition-colors ${
+                className={`inline-flex min-h-[44px] items-center text-body-sm transition-colors md:min-h-0 ${
                   m.highlight ? 'text-gold font-semibold hover:text-gold-light' : 'text-white/60 hover:text-gold'
                 }`}
               >
@@ -235,7 +239,7 @@ export function Footer() {
             <a
               href="https://www.fairoaksrealtygroup.com"
               target="_blank" rel="noopener noreferrer"
-              className="text-caption font-semibold text-gold/90 transition-colors hover:text-gold-light">
+              className="inline-flex min-h-[44px] items-center text-caption font-semibold text-gold/90 transition-colors hover:text-gold-light md:min-h-0">
               Visit Fair Oaks Realty Group →
             </a>
           </div>
@@ -254,25 +258,25 @@ export function Footer() {
               © {currentYear} {BRAND_NAME} · d/b/a of {BRAND_LEGAL_NAME}, a Licensed Texas Real Estate Brokerage · TREC #{BRAND_TREC_LICENSE}
             </p>
             {/* Disclosure + policy links */}
-            <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-4 gap-y-1">
+            <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-4 gap-y-0 md:gap-y-1">
               <a
                 href="/legal/IABS-CRECO.pdf"
                 target="_blank" rel="noopener noreferrer"
-                className="text-caption text-white/50 transition-colors hover:text-gold"
+                className="inline-flex min-h-[44px] items-center text-caption text-white/50 transition-colors hover:text-gold md:min-h-0"
               >
                 Brokerage Services Notice
               </a>
               <a
                 href="https://www.trec.texas.gov/sites/default/files/pdf-forms/CN%201-5_0.pdf"
                 target="_blank" rel="noopener noreferrer"
-                className="text-caption text-white/50 transition-colors hover:text-gold"
+                className="inline-flex min-h-[44px] items-center text-caption text-white/50 transition-colors hover:text-gold md:min-h-0"
               >
                 Consumer Protection
               </a>
-              <Link href="/privacy" className="text-caption text-white/50 transition-colors hover:text-gold">
+              <Link href="/privacy" className="inline-flex min-h-[44px] items-center text-caption text-white/50 transition-colors hover:text-gold md:min-h-0">
                 Privacy
               </Link>
-              <Link href="/terms" className="text-caption text-white/50 transition-colors hover:text-gold">
+              <Link href="/terms" className="inline-flex min-h-[44px] items-center text-caption text-white/50 transition-colors hover:text-gold md:min-h-0">
                 Terms
               </Link>
             </div>

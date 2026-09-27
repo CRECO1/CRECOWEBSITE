@@ -109,7 +109,9 @@ export function PhoneCallText({
       <a
         href={PRIMARY_BROKER.phone_href}
         onClick={() => fireClickEvent('phone_click', surface)}
-        className={`inline-flex items-center gap-2 font-semibold transition-colors ${numberClass}`}
+        // Call and Text are the two most-tapped links on a phone; keep them
+        // at the 44px guideline there and exactly as they were from md: up.
+        className={`inline-flex min-h-[44px] items-center gap-2 font-semibold transition-colors md:min-h-0 ${numberClass}`}
         aria-label={`Call CRECO at ${PRIMARY_BROKER.phone_display}`}
       >
         <Phone className="h-4 w-4 shrink-0" />
@@ -119,7 +121,7 @@ export function PhoneCallText({
       <a
         href={PRIMARY_BROKER.sms_href}
         onClick={() => fireClickEvent('sms_click', surface)}
-        className={`inline-flex items-center gap-1 text-body-sm font-semibold transition-colors ${smsClass}`}
+        className={`inline-flex min-h-[44px] items-center gap-1 text-body-sm font-semibold transition-colors md:min-h-0 ${smsClass}`}
         aria-label={`Text CRECO at ${PRIMARY_BROKER.phone_display}`}
       >
         <MessageSquare className="h-3.5 w-3.5 shrink-0" />

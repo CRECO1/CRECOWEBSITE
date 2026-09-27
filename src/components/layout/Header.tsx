@@ -191,7 +191,8 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
             {variant !== 'minimal' && (
               <button
                 className={cn(
-                  'ml-2 p-2 xl:hidden',
+                  // p-2 around a 24px icon is a 40px target; p-2.5 makes it 44.
+                  'ml-2 p-2.5 xl:hidden',
                   isTransparent ? 'text-white' : 'text-primary'
                 )}
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
