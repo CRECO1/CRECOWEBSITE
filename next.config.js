@@ -98,8 +98,26 @@ const securityHeaders = [
     value: 'nosniff',
   },
   {
+    // 0, deliberately. The legacy XSS auditor this enables was removed from
+    // Chrome and Edge, and while it existed `1; mode=block` could itself be
+    // turned into an information-disclosure primitive. The modern answer is
+    // the CSP above; explicitly disabling the auditor is what OWASP and the
+    // browser vendors now recommend over leaving it on.
     key: 'X-XSS-Protection',
-    value: '1; mode=block',
+    value: '0',
+  },
+  {
+    // Severs window.opener between this origin and cross-origin pages, so a
+    // page we link to (or that links to us) can't reach back into this
+    // browsing context. allow-popups keeps OAuth-style popups working if we
+    // ever add one; reCAPTCHA and Maps use iframes, which are unaffected.
+    key: 'Cross-Origin-Opener-Policy',
+    value: 'same-origin-allow-popups',
+  },
+  {
+    // No Flash/Acrobat cross-domain policy files here; say so explicitly.
+    key: 'X-Permitted-Cross-Domain-Policies',
+    value: 'none',
   },
   {
     // strict-origin-when-cross-origin sends only the origin (no path/query)
@@ -189,6 +207,9 @@ const nextConfig = {
       },
     ],
   },
+  // Don't advertise the framework. x-powered-by told every scanner exactly
+  // what stack and to go looking for its CVEs; it buys us nothing.
+  poweredByHeader: false,
   reactStrictMode: true, // Enable for better security and debugging
   experimental: {
     reactCompiler: false,

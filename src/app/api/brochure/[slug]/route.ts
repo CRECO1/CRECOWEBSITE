@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getListingBySlug } from '@/lib/supabase';
+import { enforceRateLimit } from '@/lib/rate-limit';
 import { formatPrice, formatSqft, formatLeaseRate, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  // Public and unauthenticated by design — a brochure is a marketing asset.
+  // But every call renders a PDF server-side, so it is the most expensive
+  // anonymous endpoint we expose and it was the only public one with no
+  // ceiling. 15/min/IP is far above what a human browsing listings needs.
+  const limited = enforceRateLimit(req, { namespace: 'brochure', max: 15, windowMs: 60_000 });
+  if (limited) return limited;
+
   try {
     const { slug } = await params;
     const listing = await getListingBySlug(slug);
