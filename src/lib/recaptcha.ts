@@ -41,6 +41,8 @@ export async function verifyRecaptcha(token: string | undefined | null): Promise
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: params.toString(),
+      // Don't let a hung siteverify hang (and then drop) the lead submission.
+      signal: AbortSignal.timeout(8000),
     });
     const data = await res.json();
     if (!data.success) return { ok: false, reason: 'google-rejected' };
@@ -49,11 +51,14 @@ export async function verifyRecaptcha(token: string | undefined | null): Promise
     }
     return { ok: true, score: data.score };
   } catch (err) {
-    // Fail CLOSED on a verify error. Failing open let an attacker bypass the
-    // score check by inducing a timeout/error at Google's endpoint (or riding a
-    // transient outage) to fire unlimited bot submissions + the two Resend
-    // emails each triggers. A genuine user simply retries.
-    console.warn('reCAPTCHA verify failed; blocking:', (err as Error).message);
-    return { ok: false, reason: 'verify-error' };
+    // A verify EXCEPTION (timeout, network, Google 5xx) means the check was
+    // *unavailable* — not that this visitor is a bot. Fail OPEN here, exactly like
+    // the no-token path above: the honeypot + rate limit still guard this route, and
+    // the score is only enforced when Google returns a definitive answer. Failing
+    // closed here was inconsistent (a token-less bot already gets the open lane) and
+    // was the thing silently 400-ing real leads during a Google blip. Definitive
+    // negatives — google-rejected / low-score — still fail closed above.
+    console.warn('reCAPTCHA verify unavailable; allowing (honeypot + rate limit still apply):', (err as Error).message);
+    return { ok: true, reason: 'verify-error-allowed' };
   }
 }

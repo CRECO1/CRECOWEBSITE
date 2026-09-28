@@ -25,37 +25,48 @@ const CONTACT_REASONS = [
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
+    setError(null);
     const data = new FormData(e.currentTarget);
     const recaptchaToken = await getRecaptchaToken('submit_contact');
     const reason = String(data.get('reason') ?? '');
     const { trackEvent, readUtmsFromCookie } = await import('@/lib/analytics');
     const attribution = readUtmsFromCookie();
-    await fetch('/api/leads', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: data.get('name'),
-        company: data.get('company'),
-        email: data.get('email'),
-        phone: data.get('phone'),
-        message: `Reason: ${reason}\n\n${data.get('message')}`,
-        source: 'contact',
-        recaptchaToken,
-        website: data.get('website'),  // honeypot field
-        form_rendered_at: Number(data.get('form_rendered_at')) || undefined,
-        ...attribution,
-      }),
-    }).catch(() => {});
-    trackEvent('contact_form_submitted', {
-      reason,
-      attribution_source: attribution.utm_source ?? 'direct',
-    });
-    setLoading(false);
-    setSubmitted(true);
+    try {
+      const res = await fetch('/api/leads', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: data.get('name'),
+          company: data.get('company'),
+          email: data.get('email'),
+          phone: data.get('phone'),
+          message: `Reason: ${reason}\n\n${data.get('message')}`,
+          source: 'contact',
+          recaptchaToken,
+          website: data.get('website'),  // honeypot field
+          form_rendered_at: Number(data.get('form_rendered_at')) || undefined,
+          ...attribution,
+        }),
+      });
+      if (!res.ok) throw new Error(`lead POST ${res.status}`);
+      // Only a real 200 counts as a lead — firing the conversion (and showing
+      // "Message Sent") on a failed POST logged phantom conversions AND told the
+      // visitor we got their message when we didn't, so they never retried.
+      trackEvent('contact_form_submitted', {
+        reason,
+        attribution_source: attribution.utm_source ?? 'direct',
+      });
+      setSubmitted(true);
+    } catch {
+      setError('Something went wrong sending your message. Please try again, or reach us by phone or text using the number on the left.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -218,6 +229,9 @@ export default function ContactPage() {
                         <p className="text-caption text-foreground-muted">
                           By submitting, you agree to be contacted by CRECO regarding your inquiry.
                         </p>
+                        {error && (
+                          <p role="alert" className="text-body-sm text-red-600">{error}</p>
+                        )}
                         <Button type="submit" size="lg" fullWidth loading={loading}>
                           Send Message
                         </Button>
