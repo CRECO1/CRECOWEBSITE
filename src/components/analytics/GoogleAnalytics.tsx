@@ -30,9 +30,12 @@
  */
 
 import Script from 'next/script';
+import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 const PROD_HOSTS = new Set(['crecotx.com', 'www.crecotx.com']);
+// Authenticated portal — keep these sessions out of the marketing GA4 property.
+const EXCLUDED_PREFIXES = ['/admin', '/billing', '/manage'];
 
 /** Unambiguous automation / bot signals. Real browsers match none of these. */
 function isLikelyBot(): boolean {
@@ -48,13 +51,15 @@ function isLikelyBot(): boolean {
 }
 
 export function GoogleAnalytics({ gaId }: { gaId: string }) {
+  const pathname = usePathname();
+  const excludedPath = !pathname || EXCLUDED_PREFIXES.some((p) => pathname.startsWith(p));
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
     setEnabled(PROD_HOSTS.has(window.location.hostname) && !isLikelyBot());
   }, []);
 
-  if (!gaId || !enabled) return null;
+  if (!gaId || !enabled || excludedPath) return null;
 
   return (
     <>

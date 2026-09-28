@@ -62,6 +62,13 @@ const LEAD_EVENTS = new Set<string>([
   // The inline landing-page forms. These were firing their own event but
   // never mirroring to generate_lead, so the GA4 lead reports undercounted.
   'inline_lead_submitted',
+  // Email-capture / subscribe conversions that were firing their own event but
+  // never mirroring to generate_lead — so these leads were invisible to GA4's
+  // lead-lifecycle reports (same undercount bug, still open for these four).
+  'property_alerts_inline_subscribed',
+  'market_report_subscribed',
+  'save_search_submitted',
+  'brochure_requested',
 ]);
 
 /**
