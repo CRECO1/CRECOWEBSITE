@@ -20,6 +20,7 @@ import { SYNTHETIC_LISTINGS } from '@/lib/featured-properties';
 import { cache } from 'react';
 import { formatPrice, formatSqft, formatAcres, formatLeaseRate, transactionLabel, propertyTypeLabel, googleMapsUrl } from '@/lib/utils';
 import { ListingInquiryTabs } from './ListingInquiryTabs';
+import { ListingViewTracker } from './ListingViewTracker';
 import { MobileInquiryBar } from './MobileInquiryBar';
 import { BrokerCard } from '@/components/marketing/BrokerCard';
 import { getBrokerForListing } from '@/lib/broker';
@@ -160,6 +161,17 @@ export default async function ListingDetailPage({ params }: Props) {
         ]}
       />
       <Header variant="minimal" />
+      <ListingViewTracker
+        id={listing!.id}
+        name={listing!.title}
+        sale_price={listing!.sale_price}
+        lease_rate={listing!.lease_rate}
+        city={listing!.city}
+        submarket={listing!.submarket}
+        property_type={listing!.property_type}
+        transaction_type={listing!.transaction_type}
+        sqft={listing!.sqft}
+      />
       {/* pb-24 lg:pb-0 reserves space under the MobileInquiryBar so the
           last bit of content (related listings, footer) isn't obscured. */}
       <main className="min-h-screen pt-20 pb-24 lg:pb-0">

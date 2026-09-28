@@ -153,6 +153,80 @@ export function trackFormStart(form: string, surface: string, extra: Record<stri
 }
 
 /**
+ * Listing-engagement events (GA4 ecommerce shape).
+ *
+ * Enhanced Measurement already captures outbound clicks and URL-param site
+ * search — but the /listings page searches and filters entirely client-side
+ * and its cards are internal <Link>s, so none of that browsing reaches GA
+ * without these. Routed through trackEvent(), so each also lands in Clarity
+ * as a custom event (filter replays to "viewed a warehouse, never enquired").
+ *
+ * CRECO is commercial: item value is the sale price when set, else the lease
+ * rate ($/SF/yr) as a stand-in. transaction_type rides alongside so a report
+ * never conflates a $2M sale with a $28/SF lease.
+ */
+export function trackViewItem(p: {
+  id: string; name: string;
+  sale_price?: number | null; lease_rate?: number | null;
+  city?: string | null; submarket?: string | null;
+  property_type?: string | null; transaction_type?: string | null; sqft?: number | null;
+}) {
+  const value = p.sale_price ?? p.lease_rate ?? 0;
+  trackEvent('view_item', {
+    event_category: 'Listing',
+    currency: 'USD',
+    value,
+    items: [{
+      item_id: p.id,
+      item_name: p.name,
+      price: value,
+      item_category: p.property_type ?? '',
+      item_category2: p.transaction_type ?? '',
+      item_category3: p.submarket ?? p.city ?? '',
+      item_variant: p.sqft ? `${p.sqft} SF` : '',
+    }],
+  });
+}
+
+export function trackSelectItem(p: {
+  id: string; name: string; price?: number | null; list_name?: string; index?: number;
+}) {
+  trackEvent('select_item', {
+    event_category: 'Listing',
+    item_list_name: p.list_name ?? 'Listings',
+    items: [{ item_id: p.id, item_name: p.name, price: p.price ?? 0, index: p.index ?? 0 }],
+  });
+}
+
+export function trackViewItemList(p: {
+  list_name: string; results_count?: number;
+  property_type?: string; transaction_type?: string; submarket?: string;
+}) {
+  trackEvent('view_item_list', {
+    event_category: 'Listing',
+    item_list_name: p.list_name,
+    results_count: p.results_count ?? 0,
+    property_type: p.property_type ?? '',
+    transaction_type: p.transaction_type ?? '',
+    submarket: p.submarket ?? '',
+  });
+}
+
+export function trackListingSearch(p: {
+  term?: string; results_count?: number;
+  property_type?: string; transaction_type?: string; submarket?: string;
+}) {
+  trackEvent('search', {
+    event_category: 'Search',
+    search_term: p.term ?? '',
+    results_count: p.results_count ?? 0,
+    property_type: p.property_type ?? '',
+    transaction_type: p.transaction_type ?? '',
+    submarket: p.submarket ?? '',
+  });
+}
+
+/**
  * Read the current URL's utm_* + document.referrer and stash them in a
  * single cookie. Idempotent across same-session navigations — if the
  * cookie already exists and the new URL has no utm_*, the existing

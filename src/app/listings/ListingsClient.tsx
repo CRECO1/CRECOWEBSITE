@@ -28,6 +28,7 @@ import { SaveSearchModal } from '@/components/listings/SaveSearchModal';
 import { formatSqft, formatLeaseRate, formatPrice, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 import type { Listing } from '@/lib/supabase';
 import { withSyntheticListings, listingLinkProps } from '@/lib/featured-properties';
+import { trackViewItemList, trackListingSearch, trackSelectItem } from '@/lib/analytics';
 import { PropertyAlertsInline } from '@/components/marketing/PropertyAlertsInline';
 import { MarketReportCapture } from '@/components/marketing/MarketReportCapture';
 
@@ -191,6 +192,36 @@ export function ListingsClient({ initialListings, children }: { initialListings:
   }, [listings, search, propertyType, transactionType, submarket, sizeIdx]);
 
   const hasFilters = propertyType !== 'all' || transactionType !== 'all' || submarket !== 'all' || sizeIdx !== 0 || search !== '';
+
+  // GA4 listing-engagement impressions. The grid filters and searches entirely
+  // client-side, so Enhanced Measurement never sees any of it. Debounced 700ms
+  // so a burst of keystrokes or slider nudges collapses into ONE view_item_list
+  // (and one search) carrying the final result count — not one event per key.
+  // Gated on urlRead so the deep-linked-filter pass that runs just after mount
+  // doesn't fire a throwaway impression for the momentary pre-filter state.
+  const impressionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (!urlRead) return;
+    if (impressionTimer.current) clearTimeout(impressionTimer.current);
+    impressionTimer.current = setTimeout(() => {
+      const dims = {
+        property_type: propertyType !== 'all' ? propertyType : undefined,
+        transaction_type: transactionType !== 'all' ? transactionType : undefined,
+        submarket: submarket !== 'all' ? submarket : undefined,
+      };
+      trackViewItemList({
+        list_name: hasFilters ? 'Filtered Listings' : 'All Listings',
+        results_count: filtered.length,
+        ...dims,
+      });
+      const term = search.trim();
+      if (term) trackListingSearch({ term, results_count: filtered.length, ...dims });
+    }, 700);
+    return () => { if (impressionTimer.current) clearTimeout(impressionTimer.current); };
+    // filtered.length/hasFilters are functions of the filter primitives already
+    // listed — adding them to deps would just double-trigger the same fire.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlRead, propertyType, transactionType, submarket, sizeIdx, search]);
 
   return (
     <>
@@ -376,7 +407,14 @@ export function ListingsClient({ initialListings, children }: { initialListings:
                 <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
                   {filtered.map((listing, i) => (
                     <Fragment key={listing.id}>
-                    <Link {...listingLinkProps(listing)} className="card-luxury group block">
+                    <Link {...listingLinkProps(listing)} className="card-luxury group block"
+                      onClick={() => trackSelectItem({
+                        id: listing.id,
+                        name: listing.title,
+                        price: listing.sale_price ?? listing.lease_rate ?? undefined,
+                        list_name: hasFilters ? 'Filtered Listings' : 'All Listings',
+                        index: i,
+                      })}>
                       <div className="image-luxury aspect-property bg-background-warm relative">
                         {listing.images && (listing.images as string[])[0] ? (
                           <Image src={(listing.images as string[])[0]} alt={listing.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover" />
