@@ -11,7 +11,7 @@ import { DEFAULT_OG_IMAGE } from '@/lib/og';
 export const metadata: Metadata = {
   title: 'Sell Your Commercial Property in Texas | CRECO',
   description:
-    'Sell your Texas commercial property with CRECO — broker valuation, targeted marketing, offer negotiation, and 1031-exchange support for commercial assets.',
+    'Sell your Texas commercial property with a free, no-obligation broker valuation, targeted marketing, sharp negotiation, and 1031-exchange support from CRECO.',
   keywords: [
     'sell commercial property texas',
     'sell my commercial building texas',

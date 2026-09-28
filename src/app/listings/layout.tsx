@@ -4,7 +4,7 @@ import { DEFAULT_OG_IMAGE } from '@/lib/og';
 export const metadata: Metadata = {
   title: 'Texas Commercial Real Estate Listings | Lease & Sale | CRECO',
   description:
-    'Commercial real estate listings across Texas — office, warehouse, retail, flex, and land for lease and sale. Filter by property type, submarket, and size.',
+    'Live Texas commercial listings — office, warehouse, retail, flex & land, for lease or sale. Broker-direct, with off-market and tenant-rep access the portals miss.',
   keywords: [
     'texas commercial real estate listings',
     'commercial property for sale texas',

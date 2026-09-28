@@ -15,7 +15,7 @@ import { breadcrumbList } from '@/lib/schema';
 export const metadata: Metadata = {
   title: "What's My Commercial Property Worth? | CRECO",
   description:
-    "Get a free preliminary valuation range for your Texas commercial property — industrial, retail, office, flex, or mixed-use — with a CRECO broker follow-up.",
+    "Get an instant cap-rate value range for your Texas commercial property — free, no email, ~60 seconds. Then a CRECO broker sends the full opinion of value.",
   keywords: [
     'commercial property valuation texas',
     'what is my commercial property worth',

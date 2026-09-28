@@ -57,11 +57,9 @@ export function PropertyValuationForm() {
   const [calcError, setCalcError] = useState<string | null>(null);
 
   // Lead capture
-  const [showLeadForm, setShowLeadForm] = useState(false);
   const [leadName, setLeadName] = useState('');
   const [leadEmail, setLeadEmail] = useState('');
   const [leadPhone, setLeadPhone] = useState('');
-  const [leadNotes, setLeadNotes] = useState('');
   const [submittingLead, setSubmittingLead] = useState(false);
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [leadError, setLeadError] = useState<string | null>(null);
@@ -101,7 +99,6 @@ export function PropertyValuationForm() {
       return;
     }
     setResult(r);
-    setShowLeadForm(false);
     setLeadSubmitted(false);
     trackEvent('valuation_calculated', {
       property_type: propertyType,
@@ -142,7 +139,6 @@ export function PropertyValuationForm() {
         result ? `\nPreliminary valuation: ${currency.format(result.low)} – ${currency.format(result.high)} (midpoint ${currency.format(result.midpoint)})` : null,
         result ? `NOI used: ${currency.format(result.noiUsed)}` : null,
         result ? `Cap rate range: ${(result.capRateRange.low * 100).toFixed(2)}% – ${(result.capRateRange.high * 100).toFixed(2)}%` : null,
-        leadNotes ? `\nNotes from owner: ${leadNotes}` : null,
       ].filter(Boolean) as string[];
 
       const { readUtmsFromCookie } = await import('@/lib/analytics');
@@ -151,7 +147,9 @@ export function PropertyValuationForm() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: leadName,
+          // Email is the only required field now; derive a usable name when the
+          // owner skips it so the CRM record is never blank.
+          name: leadName.trim() || (leadEmail.includes('@') ? leadEmail.split('@')[0] : 'Property owner'),
           email: leadEmail,
           phone: leadPhone,
           message: summaryParts.join('\n'),
@@ -324,47 +322,39 @@ export function PropertyValuationForm() {
             </p>
           </div>
 
-          {/* CTA to capture as lead — lead with the concrete incremental value
-              so there's a reason to continue past the free number they already
-              have (the funnel showed ~all calc users leaving here). */}
-          {!showLeadForm && !leadSubmitted && (
-            <div className="rounded-lg bg-primary/5 border border-gold/30 p-4 sm:p-5">
-              <p className="text-body-sm font-semibold text-primary mb-1">
-                This is a market-average estimate — your real number can sit meaningfully either side of it.
-              </p>
-              <p className="text-caption text-foreground-muted mb-4">
-                Zachary A. Stovall, CRECO&apos;s broker/owner, reviews it against your lease terms, tenant credit, condition and recent Texas comps, then sends you the full write-up himself. No charge, no obligation.
-              </p>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowLeadForm(true);
-                  trackEvent('valuation_lead_form_opened', { property_type: propertyType });
-                }}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-gold px-6 py-3.5 text-body-sm font-semibold text-primary hover:bg-gold-light"
-              >
-                Request my Broker Opinion of Value <ArrowRight className="h-4 w-4" />
-              </button>
-            </div>
-          )}
-
-          {showLeadForm && !leadSubmitted && (
-            <form onSubmit={handleSubmitLead} className="space-y-4 rounded-lg bg-white border border-border p-5">
+          {/* Lead capture — shown immediately with the result (no extra click),
+              because the funnel showed nearly everyone leaving once they had the
+              free range. The ask is now one low-friction step (email is the only
+              requirement) and leads with the concrete MORE they don't have yet:
+              an address-specific Broker Opinion of Value with real comps, same
+              business day. The same-day promise also feeds the speed-to-lead
+              follow-up. */}
+          {!leadSubmitted && (
+            <form onSubmit={handleSubmitLead} className="rounded-lg bg-primary/5 border border-gold/40 p-4 sm:p-5 space-y-4">
               <Honeypot />
-              <p className="text-body-sm text-primary font-semibold">Where should we send it?</p>
-              <p className="text-caption text-foreground-muted -mt-2">
-                Name, email and where the property is. Zack reviews your inputs, pulls comps and follows up personally — no charge, no obligation.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <input type="text" required value={leadName} onChange={e => setLeadName(e.target.value)} placeholder="Your name" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark" />
-                <input type="email" required value={leadEmail} onChange={e => setLeadEmail(e.target.value)} placeholder="you@email.com" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark" />
+              <div>
+                <p className="text-body-sm font-semibold text-primary">
+                  Want the real number for {address.trim() ? address.trim() : 'your property'}?
+                </p>
+                <p className="text-caption text-foreground-muted mt-1">
+                  The range above uses market-average cap rates. Zachary A. Stovall — CRECO&apos;s
+                  broker/owner — pulls actual comparable Texas sales for your building and adjusts
+                  for your lease terms, tenant credit and condition, then sends you the full Broker
+                  Opinion of Value <span className="font-semibold text-primary">the same business day</span>. Free, no obligation.
+                </p>
               </div>
-              <input type="tel" value={leadPhone} onChange={e => setLeadPhone(e.target.value)} placeholder="Phone (optional — if you'd rather we call)" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark" />
-              <textarea value={leadNotes} onChange={e => setLeadNotes(e.target.value)} rows={3} placeholder="Anything else we should know? Timeline, tenant situation, what you're weighing — optional" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <input type="email" required value={leadEmail} onChange={e => setLeadEmail(e.target.value)} placeholder="Email — where to send it *" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark" />
+                <input type="tel" value={leadPhone} onChange={e => setLeadPhone(e.target.value)} placeholder="Phone — want a call today?" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark" />
+              </div>
+              <input type="text" value={leadName} onChange={e => setLeadName(e.target.value)} placeholder="Your name (optional)" className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark" />
               {leadError && <p className="text-body-sm text-destructive">{leadError}</p>}
-              <button type="submit" disabled={submittingLead} className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-body-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-60">
-                {submittingLead ? <><Loader2 className="h-4 w-4 animate-spin" /> Sending…</> : <>Send my full valuation <ArrowRight className="h-4 w-4" /></>}
+              <button type="submit" disabled={submittingLead} className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-gold px-6 py-3.5 text-body-sm font-semibold text-primary hover:bg-gold-light disabled:opacity-60">
+                {submittingLead ? <><Loader2 className="h-4 w-4 animate-spin" /> Sending…</> : <>Send my Broker Opinion of Value <ArrowRight className="h-4 w-4" /></>}
               </button>
+              <p className="text-caption text-foreground-muted text-center">
+                Typically answered the same business day · Your details stay private
+              </p>
             </form>
           )}
 
