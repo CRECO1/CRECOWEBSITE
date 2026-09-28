@@ -25,6 +25,7 @@ import { Container } from '@/components/ui/Container';
 import { Input } from '@/components/ui/Input';
 import { CompareToggle } from '@/components/listings/CompareToggle';
 import { SaveSearchModal } from '@/components/listings/SaveSearchModal';
+import { ListingsEmptyState } from '@/components/listings/ListingsEmptyState';
 import { formatSqft, formatLeaseRate, formatPrice, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 import type { Listing } from '@/lib/supabase';
 import { withSyntheticListings, listingLinkProps } from '@/lib/featured-properties';
@@ -193,6 +194,25 @@ export function ListingsClient({ initialListings, children }: { initialListings:
 
   const hasFilters = propertyType !== 'all' || transactionType !== 'all' || submarket !== 'all' || sizeIdx !== 0 || search !== '';
 
+  // One definition of "clear", shared by the Clear chip, the map's empty state
+  // and the grid's. The map's copy of this used to omit submarket, so clearing
+  // from there could still show nothing.
+  function clearAllFilters() {
+    setSearch('');
+    setPropertyType('all');
+    setTransactionType('all');
+    setSubmarket('all');
+    setSizeIdx(0);
+  }
+
+  /** Keeps the property type — the visitor's stated intent — and drops the rest. */
+  function clearOtherFilters() {
+    setSearch('');
+    setTransactionType('all');
+    setSubmarket('all');
+    setSizeIdx(0);
+  }
+
   // GA4 listing-engagement impressions. The grid filters and searches entirely
   // client-side, so Enhanced Measurement never sees any of it. Debounced 700ms
   // so a burst of keystrokes or slider nudges collapses into ONE view_item_list
@@ -292,7 +312,7 @@ export function ListingsClient({ initialListings, children }: { initialListings:
 
               {hasFilters && (
                 <button
-                  onClick={() => { setSearch(''); setPropertyType('all'); setTransactionType('all'); setSubmarket('all'); setSizeIdx(0); }}
+                  onClick={clearAllFilters}
                   className="flex items-center gap-1 text-caption text-foreground-muted hover:text-primary transition-colors"
                 >
                   <X className="h-3 w-3" /> Clear
@@ -375,11 +395,21 @@ export function ListingsClient({ initialListings, children }: { initialListings:
               </div>
             )}
             {filtered.length === 0 ? (
-              <div className="py-24 text-center">
-                <Building2 className="mx-auto mb-4 h-12 w-12 text-foreground-subtle" />
-                <h2 className="font-heading text-heading font-semibold text-primary">No properties found</h2>
-                <p className="mt-2 text-body text-foreground-muted">Try adjusting your filters — or <Link href="/get-started" className="text-gold hover:text-gold-dark">submit your tenant needs</Link> and we&apos;ll bring options to you.</p>
-              </div>
+              /* Was a bare "No properties found" + "try adjusting your filters".
+                 Someone who filtered to Flex told us what they want; the empty
+                 state now explains that property type, says we often know of
+                 unlisted space, and asks — see ListingsEmptyState. The property
+                 type drives the copy even when other filters are also set,
+                 because the type is the visitor's stated intent; a search term
+                 (an address they were hunting) is not a category, so it hands
+                 the component the generic variant instead. */
+              <ListingsEmptyState
+                propertyType={search.trim() ? null : propertyType}
+                otherFiltersActive={transactionType !== 'all' || submarket !== 'all' || sizeIdx !== 0 || search !== ''}
+                totalCount={listings.length}
+                onClearFilters={clearAllFilters}
+                onClearOtherFilters={clearOtherFilters}
+              />
             ) : view === 'map' ? (
               <>
                 <p className="mb-4 text-body-sm text-foreground-muted">
@@ -388,12 +418,7 @@ export function ListingsClient({ initialListings, children }: { initialListings:
                 <ListingsMap
                   listings={filtered}
                   hasFilters={hasFilters}
-                  onClearFilters={() => {
-                    setSearch('');
-                    setPropertyType('all');
-                    setTransactionType('all');
-                    setSizeIdx(0);
-                  }}
+                  onClearFilters={clearAllFilters}
                 />
                 <p className="mt-3 text-caption text-foreground-muted text-center">
                   Some properties may not appear on the map until their location has been geocoded. Switch to Grid view to see the full inventory.

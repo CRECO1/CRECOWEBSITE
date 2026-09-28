@@ -40,7 +40,7 @@ function valuationConfirmationHtml(name: string): string {
         </a>
       </div>
       <h2 style="margin:0 0 16px;color:#1A1A1A;font-size:20px">Got it, ${safeName}.</h2>
-      <p style="line-height:1.6">Thanks for using the CRECO valuation tool. Zachary A. Stovall, CRECO&#39;s broker/owner, will follow up personally with a more thorough read on your property.</p>
+      <p style="line-height:1.6">Thanks for using the CRECO valuation tool. <strong style="color:#1A1A1A">Zachary A. Stovall, CRECO&#39;s broker/owner, will get your full Broker Opinion of Value back to you the same business day</strong> &mdash; a personal read on your property, not an auto-reply.</p>
       <p style="line-height:1.6;margin-top:16px"><strong>What the Broker Opinion of Value covers that the instant range can&#39;t:</strong></p>
       <ul style="line-height:1.7;color:#3B3B3B;padding-left:20px">
         <li>Comparable Texas commercial transactions from the last 12 months in your submarket</li>
@@ -49,7 +49,12 @@ function valuationConfirmationHtml(name: string): string {
         <li>Market-timing read — whether the current cycle favours a hold, list, or 1031 strategy</li>
         <li>Net-to-seller math at multiple price points if you're considering disposition</li>
       </ul>
-      <p style="line-height:1.6;margin-top:20px">If anything changes about your timeline or what you need, reply to this email or call <a href="tel:+12108173443" style="color:#C9A962">(210) 817-3443</a>.</p>
+      <div style="margin:26px 0;padding:18px 20px;background:#1A1A1A;border-radius:10px;text-align:center">
+        <p style="margin:0 0 12px;color:#FFFFFF;font-size:14px">Don&#39;t want to wait? Reach Zack directly now.</p>
+        <a href="tel:+12108173443" style="display:inline-block;padding:11px 22px;margin:0 6px 8px 0;background:#C9A962;color:#1A1A1A;text-decoration:none;border-radius:6px;font-weight:700;font-size:14px">&#9742; Call (210) 817-3443</a>
+        <a href="sms:+12108173443" style="display:inline-block;padding:11px 22px;margin:0 0 8px;background:#C9A962;color:#1A1A1A;text-decoration:none;border-radius:6px;font-weight:700;font-size:14px">&#9993; Text (210) 817-3443</a>
+        <p style="margin:12px 0 0;color:#999;font-size:11px">Or just reply to this email &mdash; it goes straight to him.</p>
+      </div>
       <p style="color:#525252;margin:24px 0 0">— Zachary A. Stovall, Broker<br/>CRECO, Commercial Real Estate Company</p>
       <p style="color:#999;font-size:11px;margin:24px 0 0">TREC #9014367 · 8000 Fair Oaks Pkwy, Suite 100, Fair Oaks Ranch, TX 78015</p>
     </div>
@@ -103,7 +108,7 @@ function genericConfirmationHtml(name: string, propertyInterest: string | null):
             <div style="width:26px;height:26px;background:#C9A962;color:#1A1A1A;border-radius:50%;text-align:center;line-height:26px;font-weight:700;font-size:13px">2</div>
           </td>
           <td style="padding:8px 0 8px 6px;vertical-align:top;line-height:1.5">
-            <strong style="color:#1A1A1A">A personal reply &mdash; from a broker, not an auto-responder.</strong><br/>
+            <strong style="color:#1A1A1A">A personal reply, usually within one business day &mdash; from a broker, not an auto-responder.</strong><br/>
             <span style="color:#525252;font-size:14px">By phone if you left a number, by email otherwise.</span>
           </td>
         </tr>

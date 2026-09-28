@@ -40,6 +40,16 @@ export interface InlineLeadFormProps {
   source: 'listing-inquiry' | 'disposition-inquiry' | 'tenant-needs';
   /** Placement id — forwarded to the CRM so reporting can separate surfaces. */
   surface: string;
+  /**
+   * What they're after, in one short phrase — e.g. "Flex space".
+   *
+   * Lands in the lead's own `property_interest` column, the Property row of
+   * the notification email and the CRM's parsed_property, so a surface that
+   * already knows the answer (the listings empty state knows the visitor
+   * filtered to Flex) doesn't make Zack read it out of the message body. Left
+   * unset by surfaces where the page itself isn't about one property type.
+   */
+  propertyInterest?: string;
   submitLabel?: string;
   /** Dark rides on the primary ground; light on cream or white. */
   tone?: 'light' | 'dark';
@@ -54,6 +64,7 @@ export function InlineLeadForm({
   contextPlaceholder,
   source,
   surface,
+  propertyInterest,
   submitLabel = 'Request a call',
   tone = 'light',
   className = '',
@@ -67,13 +78,14 @@ export function InlineLeadForm({
     endpoint: '/api/leads',
     recaptchaAction: 'inline_lead',
     errorFallback: `Something went wrong. Please try again, or call ${BUSINESS.phoneDisplay}.`,
-    track: { success: 'inline_lead_submitted', failure: 'inline_lead_failed', props: { surface, source } },
+    track: { success: 'inline_lead_submitted', failure: 'inline_lead_failed', props: { surface, source, property_interest: propertyInterest } },
     buildPayload: ({ recaptchaToken, website }) => ({
       name: f.name,
       email: f.email,
       phone: f.phone,
       source,
       surface,
+      property_interest: propertyInterest ?? null,
       message: f.context ? `${contextLabel}\n${f.context}` : null,
       recaptchaToken,
       website,
