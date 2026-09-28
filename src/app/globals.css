@@ -573,3 +573,13 @@
     transform: none !important;
   }
 }
+
+/* ---- Leaflet (listing maps) ------------------------------------------------
+   Leaflet's panes/controls use z-index 400–1000. Each map wrapper is `isolate`
+   so those never climb above the site header; these rules just make the popup
+   and attribution match the site's type. */
+.leaflet-container { font-family: inherit; z-index: 0; }
+.leaflet-container .leaflet-control-attribution { font-size: 10px; background: rgba(255,255,255,.85); }
+.creco-popup .leaflet-popup-content-wrapper { border-radius: 12px; box-shadow: 0 8px 24px rgba(15,27,51,.18); }
+.creco-popup .leaflet-popup-content { margin: 12px 14px; line-height: 1.4; }
+.creco-pin { background: transparent; border: 0; }

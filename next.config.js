@@ -26,8 +26,6 @@ const cspDirectives = {
     'https://www.google.com',            // reCAPTCHA (when enabled)
     'https://www.gstatic.com',           // reCAPTCHA assets
     'https://va.vercel-scripts.com',     // Vercel Analytics
-    'https://maps.googleapis.com',       // Google Maps JavaScript API (listings map)
-    'https://maps.gstatic.com',          // Google Maps script assets
   ],
   'style-src': [
     "'self'",
@@ -38,7 +36,7 @@ const cspDirectives = {
     "'self'",
     'data:',                    // small inline data URIs (icons, etc.)
     'blob:',                    // for client-side cropped images before upload
-    'https:',                   // permissive — listing photos, hero images, etc. live on supabase + may be referenced from various sources
+    'https:',                   // permissive — listing photos, hero images, and the OSM/USGS map tiles (Leaflet) all load as plain <img>
   ],
   'font-src': [
     "'self'",
@@ -59,21 +57,25 @@ const cspDirectives = {
     'https://www.googletagmanager.com',
     'https://api.resend.com',            // outbound from server-side, harmless to allow
     'https://va.vercel-scripts.com',
-    'https://maps.googleapis.com',       // Google Maps tile/vector data + geocoding XHR
-    'https://maps.gstatic.com',
-    'https://*.googleapis.com',          // vector map tile fetches
   ],
   'frame-src': [
     "'self'",
     'https://www.google.com',            // reCAPTCHA challenge iframe (if interactive falls back)
   ],
   'object-src': ["'none'"],
-  'worker-src': ["'self'", 'blob:'],     // Google Maps vector rendering runs in blob web workers
+  'worker-src': ["'self'", 'blob:'],
   'base-uri': ["'self'"],
   'form-action': ["'self'"],
   'frame-ancestors': ["'self'"],
   'upgrade-insecure-requests': [],
 };
+
+// `next dev` compiles the client with eval-based source maps, so the policy
+// above blanks every page locally (hydration never runs). Allow eval in dev
+// only; the production header is unchanged.
+if (process.env.NODE_ENV !== 'production') {
+  cspDirectives['script-src'].push("'unsafe-eval'");
+}
 
 const cspHeader = Object.entries(cspDirectives)
   .map(([dir, vals]) => (vals.length > 0 ? `${dir} ${vals.join(' ')}` : dir))

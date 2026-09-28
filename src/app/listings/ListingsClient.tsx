@@ -32,7 +32,7 @@ import { trackViewItemList, trackListingSearch, trackSelectItem } from '@/lib/an
 import { PropertyAlertsInline } from '@/components/marketing/PropertyAlertsInline';
 import { MarketReportCapture } from '@/components/marketing/MarketReportCapture';
 
-// Map view is heavy (Google Maps JS API + @vis.gl bundle) — only loaded when
+// Map view is heavy (Leaflet + react-leaflet bundle) — only loaded when
 // the user opts in, so grid view keeps a tight first-load bundle for SEO.
 const ListingsMap = dynamic(
   () => import('@/components/listings/ListingsMap').then(m => m.ListingsMap),
