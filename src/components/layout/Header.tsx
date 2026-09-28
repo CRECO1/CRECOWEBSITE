@@ -152,7 +152,7 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
                 tapping only offered Call. Now the label maps to reality:
                 the phone-number span is the tel: link, "Text" is a
                 separate sms: link right after it. Both fire distinct GA
-                events (phone_click / sms_click) with surface='header'
+                events (phone_call / sms_click) with surface='header'
                 so we can attribute conversions per channel per surface. */}
             <div
               className="hidden sm:inline-flex"

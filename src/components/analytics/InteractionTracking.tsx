@@ -12,7 +12,7 @@
  *   cta_clicked        — a click on a link to one of the money destinations.
  *                        Matched by href, so a new "Get started" button
  *                        anywhere is counted the day it ships.
- *   phone_click /      — tel: and mailto: anywhere on the site. A handful of
+ *   phone_call /      — tel: and mailto: anywhere on the site. A handful of
  *   mailto_click         components already fire these with their own
  *                        `surface`; those carry data-no-auto-track so they
  *                        are not counted twice.
@@ -72,7 +72,7 @@ export function InteractionTracking() {
       const selfTracked = !!a.closest('[data-no-auto-track]');
 
       if (href.startsWith('tel:')) {
-        if (!selfTracked) trackEvent('phone_click', { surface: 'auto', page_path: pagePath() });
+        if (!selfTracked) trackEvent('phone_call', { surface: 'auto', page_path: pagePath() });
         return;
       }
       if (href.startsWith('mailto:')) {

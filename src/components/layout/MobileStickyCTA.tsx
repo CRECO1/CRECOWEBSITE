@@ -40,15 +40,15 @@ export function MobileStickyCTA({ phone = '(210) 817-3443' }: { phone?: string }
       <div
         role="region"
         aria-label="Quick contact actions"
-        // The tel/sms anchors below fire their own phone_click/sms_click with a
+        // The tel/sms anchors below fire their own phone_call/sms_click with a
         // real surface; without this the global capture handler would fire a
-        // second phone_click (surface:'auto') for the same tap.
+        // second phone_call (surface:'auto') for the same tap.
         data-no-auto-track
         className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-3 gap-2 border-t border-border bg-white p-3 shadow-2xl md:hidden"
       >
         <a
           href={telHref}
-          onClick={() => trackEvent('phone_click', { surface: 'mobile_sticky_cta' })}
+          onClick={() => trackEvent('phone_call', { surface: 'mobile_sticky_cta' })}
           className="flex items-center justify-center gap-2 rounded-lg bg-primary px-2 py-3 text-sm font-semibold text-white active:bg-primary/90"
         >
           <Phone className="h-4 w-4" aria-hidden="true" />

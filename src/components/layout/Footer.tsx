@@ -154,7 +154,7 @@ export function Footer() {
                 </li>
                 <li>
                   {/* mailto_click event — was the only major outbound
-                      conversion not tracked yet (phone_click + form
+                      conversion not tracked yet (phone_call + form
                       submits already are). With this in place we can
                       now answer "what do visitors do after they read
                       the page?" with phone, email, or form-submit. */}

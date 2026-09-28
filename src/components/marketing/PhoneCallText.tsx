@@ -51,7 +51,7 @@ interface PhoneCallTextProps {
  * Fires an analytics event when a phone or SMS action is tapped.
  * Non-blocking — never awaited, never throws.
  */
-function fireClickEvent(action: 'phone_click' | 'sms_click', surface: string) {
+function fireClickEvent(action: 'phone_call' | 'sms_click', surface: string) {
   if (typeof window === 'undefined') return;
   try {
     const gtag = (window as any).gtag;
@@ -80,7 +80,7 @@ export function PhoneCallText({
       <div className={`grid grid-cols-2 gap-2 ${className}`} data-no-auto-track>
         <a
           href={PRIMARY_BROKER.phone_href}
-          onClick={() => fireClickEvent('phone_click', surface)}
+          onClick={() => fireClickEvent('phone_call', surface)}
           className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-body-sm font-bold text-white hover:bg-primary/90 shadow-sm transition-colors"
         >
           <Phone className="h-4 w-4 shrink-0" />
@@ -108,7 +108,7 @@ export function PhoneCallText({
     <span className={`inline-flex items-center gap-2 flex-wrap ${className}`} data-no-auto-track>
       <a
         href={PRIMARY_BROKER.phone_href}
-        onClick={() => fireClickEvent('phone_click', surface)}
+        onClick={() => fireClickEvent('phone_call', surface)}
         // Call and Text are the two most-tapped links on a phone; keep them
         // at the 44px guideline there and exactly as they were from md: up.
         className={`inline-flex min-h-[44px] items-center gap-2 font-semibold transition-colors md:min-h-0 ${numberClass}`}
