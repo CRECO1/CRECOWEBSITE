@@ -555,6 +555,11 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
             title={`${config.city} commercial listings represented by CRECO`}
             intro={`Currently available CRECO inventory in the ${config.city} area — retail, office, industrial, flex, and land.`}
             emptyText={`No public CRECO listing in ${config.city} right now. CRECO searches the entire ${config.cityShort} market, including off-market space, for tenant- and buyer-rep clients — call ${BUSINESS.phoneDisplay}.`}
+            emptyHeading={`No public CRECO listings in ${config.city} right now`}
+            // No `asset`: a city hub spans every asset class, so there's no one
+            // category to name and the generic "commercial space" is correct
+            // here — unlike on the city × asset pages.
+            emptySurface={`city-hub-empty-${config.city.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
             className="section-luxury bg-white border-t border-border"
           />
         )}

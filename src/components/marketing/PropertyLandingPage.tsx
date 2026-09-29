@@ -32,6 +32,7 @@ import { getListings } from '@/lib/supabase';
 import { withSyntheticListings, listingLinkProps } from '@/lib/featured-properties';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { breadcrumbList, listingItemList } from '@/lib/schema';
+import { NoListingsCTA } from '@/components/listings/NoListingsCTA';
 
 export interface LandingFAQ { q: string; a: string }
 
@@ -197,6 +198,22 @@ export async function PropertyLandingPage({ config: configIn, dbContent }: Props
                 </p>
               </div>
             </RevealOnScroll>
+
+            {/* With no live inventory this section used to render the heading,
+                the "new properties coming soon" line, an empty grid, and a
+                "View All Texas Properties" button — a whole screen of nothing on
+                a phone. The button stays below; this gives the visitor the
+                category explanation and the three contact routes as well. */}
+            {listings.length === 0 && (
+              <NoListingsCTA
+                heading="Nothing public in this category right now"
+                body="This page lists the properties CRECO can market publicly, and that set changes week to week. Tell us what you need and we will bring vetted options to you — including space that never gets posted."
+                propertyType={config.filterPropertyTypes?.[0]}
+                surface={`property-landing-empty${config.canonicalPath ?? ''}`}
+                needsHref={config.primaryCta.href}
+                className="mx-auto max-w-3xl"
+              />
+            )}
 
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
               {listings.map((listing: any, i: number) => (

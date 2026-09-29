@@ -5,6 +5,7 @@ import type { Listing } from '@/lib/supabase';
 import { listingHref } from '@/lib/featured-properties';
 import { assetCategory, listingItemList, listingPriceText } from '@/lib/schema';
 import { transactionLabel } from '@/lib/utils';
+import { NoListingsCTA } from '@/components/listings/NoListingsCTA';
 
 /**
  * Server-rendered "available now" table + ItemList JSON-LD for market and
@@ -18,6 +19,9 @@ export function AvailableListingsTable({
   title,
   intro,
   emptyText,
+  emptyHeading,
+  asset,
+  emptySurface,
   className = 'section-luxury bg-white',
 }: {
   listings: Listing[];
@@ -25,6 +29,15 @@ export function AvailableListingsTable({
   title: string;
   intro?: string;
   emptyText: string;
+  /** Heading above `emptyText` when there's nothing to table. */
+  emptyHeading?: string;
+  /**
+   * The page's asset value ('office', 'retail', 'industrial'), so the empty
+   * state can name that category instead of "commercial space".
+   */
+  asset?: string;
+  /** Placement id for the empty state's contact taps. Falls back to `path`. */
+  emptySurface?: string;
   className?: string;
 }) {
   return (
@@ -36,7 +49,20 @@ export function AvailableListingsTable({
           <h2 id="available-heading" className="mb-3 font-heading text-heading-xl font-bold text-primary">{title}</h2>
           {intro && <p className="mb-6 text-body text-foreground-muted">{intro}</p>}
           {listings.length === 0 ? (
-            <p className="rounded-xl border border-border bg-background-cream p-6 text-body text-foreground-muted">{emptyText}</p>
+            /* Was a single grey paragraph. Cold organic traffic lands on these
+               pages precisely because they name a city and an asset type, so a
+               page with no live inventory was sending the best-qualified
+               visitor we get away with nothing to tap. The statement of the gap
+               is unchanged — it's now the body of a block that also explains
+               off-market space and offers call, text, email and the needs
+               form. */
+            <NoListingsCTA
+              heading={emptyHeading ?? 'Nothing public to show here right now'}
+              body={emptyText}
+              propertyType={asset}
+              surface={emptySurface ?? `available-table-empty${path}`}
+              action={{ href: '/listings', label: 'Browse all CRECO listings' }}
+            />
           ) : (
             <div className="overflow-x-auto rounded-xl border border-border">
               <table className="w-full min-w-[640px] text-left text-body-sm">

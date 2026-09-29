@@ -18,6 +18,7 @@ import { Container } from '@/components/ui/Container';
 import { useCompareList } from '@/hooks/useCompareList';
 import { formatPrice, formatLeaseRate, formatSqft, formatAcres, propertyTypeLabel, transactionLabel } from '@/lib/utils';
 import type { Listing } from '@/lib/supabase';
+import { NoListingsCTA } from '@/components/listings/NoListingsCTA';
 
 interface Row {
   label: string;
@@ -99,7 +100,7 @@ export default function ComparePage() {
             ) : selected === null ? (
               <div className="py-24 text-center text-foreground-muted">Loading…</div>
             ) : selected.length === 0 ? (
-              <EmptyState message="The properties you selected are no longer available." />
+              <EmptyState stale />
             ) : (
               <div className="overflow-x-auto -mx-4 px-4 sm:-mx-0 sm:px-0">
                 <div className="min-w-[640px]">
@@ -205,7 +206,30 @@ function RowGroup({ row, listings, striped }: { row: Row; listings: Listing[]; s
   );
 }
 
-function EmptyState({ message }: { message?: string }) {
+/**
+ * Two different empty cases land here, and only one of them is benign:
+ *
+ *  - An empty shortlist (`ids.length === 0`) is someone who arrived before
+ *    picking anything. "Browse listings" genuinely is the next step, so that
+ *    case keeps the light dashed-box treatment.
+ *  - Every listing on the shortlist having gone away (`selected.length === 0`)
+ *    is a real dead end: the visitor shortlisted properties, came back, and
+ *    they're gone. That one gets the full no-dead-end block, because a broker
+ *    who knows what four properties they liked is exactly who can help.
+ */
+function EmptyState({ message, stale = false }: { message?: string; stale?: boolean }) {
+  if (stale) {
+    return (
+      <NoListingsCTA
+        heading="The properties you shortlisted are no longer available"
+        body="They’ve been leased, sold, or taken off the market since you saved them. That’s worth a conversation rather than a restart — tell us what drew you to them and we’ll find the current equivalents, including space that isn’t posted publicly."
+        surface="compare-empty-stale"
+        action={{ href: '/listings', label: 'Browse current listings' }}
+        className="mx-auto max-w-3xl"
+      />
+    );
+  }
+
   return (
     <div className="rounded-2xl border-2 border-dashed border-border bg-white py-20 text-center">
       <Scale className="mx-auto h-12 w-12 text-gold/60 mb-4" />
@@ -213,13 +237,23 @@ function EmptyState({ message }: { message?: string }) {
       <p className="text-body text-foreground-muted max-w-md mx-auto mb-6">
         {message ?? 'Browse the listings, tap the compare icon on each one you’re considering, and they’ll show up here side-by-side.'}
       </p>
-      <Link
-        href="/listings"
-        className="inline-flex items-center gap-2 rounded-lg bg-primary px-7 py-3 text-body-sm font-semibold text-white hover:bg-primary/90"
-      >
-        Browse listings
-        <ArrowRight className="h-4 w-4" />
-      </Link>
+      <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <Link
+          href="/listings"
+          className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg bg-primary px-7 py-3 text-body-sm font-semibold text-white hover:bg-primary/90"
+        >
+          Browse listings
+          <ArrowRight className="h-4 w-4" />
+        </Link>
+        {/* Someone who opened /compare is shopping. Telling us what they need
+            is a real alternative to going back to browse, not a consolation. */}
+        <Link
+          href="/get-started"
+          className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-primary/25 px-7 py-3 text-body-sm font-semibold text-primary hover:border-gold hover:text-gold-dark"
+        >
+          Tell us what you need
+        </Link>
+      </div>
     </div>
   );
 }

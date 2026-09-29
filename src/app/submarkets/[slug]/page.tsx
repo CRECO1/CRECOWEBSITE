@@ -18,6 +18,7 @@ import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { getSubmarketBySlug, getListingsBySubmarket } from '@/lib/supabase';
 import { formatSqft, formatLeaseRate, formatPrice, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 import { BUSINESS_ID } from '@/lib/schema';
+import { NoListingsCTA } from '@/components/listings/NoListingsCTA';
 import {
   getSubmarketContent,
   SUBMARKET_LAST_REVIEWED, SUBMARKET_AUTHOR,
@@ -362,12 +363,16 @@ export default async function SubmarketDetailPage({ params }: Props) {
               Available Properties in {submarket.name}
             </h2>
             {listings.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-border bg-background-cream p-12 text-center">
-                <Building2 className="mx-auto mb-3 h-10 w-10 text-foreground-subtle" />
-                <p className="text-body text-foreground-muted">
-                  No active listings in {submarket.name} right now. <Link href="/get-started" className="text-gold hover:text-gold-dark font-semibold">Tell us what you&apos;re looking for</Link> and we&apos;ll bring options to you, including off-market.
-                </p>
-              </div>
+              /* Per-submarket inventory goes to zero routinely — these pages are
+                 narrow by design — and this is organic traffic that named its
+                 target area. Same treatment as the city × asset tables. */
+              <NoListingsCTA
+                heading={`No active listings in ${submarket.name} right now`}
+                body={`CRECO works ${submarket.name} whether or not we have something posted in it today. Tell us what you're looking for and we'll bring options to you, including off-market space.`}
+                surface={`submarket-empty-${slug}`}
+                action={{ href: '/listings', label: 'Browse all CRECO listings' }}
+                className="mx-auto max-w-3xl"
+              />
             ) : (
               <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
                 {listings.map(listing => (

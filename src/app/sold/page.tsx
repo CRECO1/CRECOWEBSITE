@@ -39,6 +39,7 @@ import { formatPrice, formatSqft, transactionLabel, propertyTypeLabel } from '@/
 
 import { JsonLd } from '@/components/seo/JsonLd';
 import { breadcrumbList, webPage } from '@/lib/schema';
+import { NoListingsCTA } from '@/components/listings/NoListingsCTA';
 export default async function SoldPage() {
   // No demo fallback: an empty result renders an empty state rather than
   // presenting invented transactions as CRECO's track record.
@@ -74,11 +75,20 @@ export default async function SoldPage() {
               </h2>
             </RevealOnScroll>
 
+            {/* Someone on /sold is checking whether CRECO has actually done
+                this before — the highest-intent question on the site. A single
+                grey sentence with one inline link was the weakest possible
+                answer, so the same treatment applies here: the honest statement
+                stays, and call, text and email sit next to it. */}
             {properties.length === 0 && (
-              <p className="text-center text-body text-foreground-muted">
-                Recently closed transactions aren&apos;t listed here right now. Please{' '}
-                <Link href="/contact" className="text-gold underline">contact us</Link> and a CRECO principal will walk you through comparable deals we&apos;ve closed.
-              </p>
+              <NoListingsCTA
+                heading="Closed transactions aren’t listed here right now"
+                body="Recent closings aren't published on this page at the moment. A CRECO principal will walk you through comparable deals we've closed in your submarket — including the ones we can only discuss directly."
+                surface="sold-empty"
+                action={{ href: '/listings', label: 'See what’s available now' }}
+                needsHref="/contact"
+                className="mx-auto max-w-3xl"
+              />
             )}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {properties.map((p: any, i: number) => (

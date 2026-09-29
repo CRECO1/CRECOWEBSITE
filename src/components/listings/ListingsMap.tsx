@@ -23,6 +23,7 @@ import { Building2, MapPin, ArrowRight } from 'lucide-react';
 import type { Listing } from '@/lib/supabase';
 import { formatPrice, formatLeaseRate, formatSqft, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 import { BASEMAPS, BasemapToggle, PROPERTY_PIN, pinIcon, type Basemap } from './map-base';
+import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 
 // Texas-center fallback when a listing set has no geocoded entries — keeps the
 // map from snapping to the middle of the Pacific.
@@ -36,9 +37,17 @@ interface Props {
   onClearFilters?: () => void;
   /** Whether any filters are currently applied — used to gate the "Clear filters" button on the empty state. */
   hasFilters?: boolean;
+  /**
+   * Switches /listings back to the grid. This is the important one: by the time
+   * this component renders an empty state there ARE matching properties (the
+   * parent renders ListingsEmptyState instead when the filter set is genuinely
+   * empty) — they just have no coordinates yet. "Clear filters" was therefore
+   * the wrong advice; the matches are one tap away in grid view.
+   */
+  onSwitchToGrid?: () => void;
 }
 
-export function ListingsMap({ listings, height = '70vh', onClearFilters, hasFilters }: Props) {
+export function ListingsMap({ listings, height = '70vh', onClearFilters, hasFilters, onSwitchToGrid }: Props) {
   const [basemap, setBasemap] = useState<Basemap>('street');
 
   // Only listings that actually have coordinates. The filtering chain on
@@ -61,22 +70,52 @@ export function ListingsMap({ listings, height = '70vh', onClearFilters, hasFilt
   }, [placed]);
 
   if (placed.length === 0) {
+    // `listings` here is the already-filtered set, so a non-zero count means
+    // real matches exist and only their coordinates are missing. Say that, and
+    // lead with the tap that shows them.
+    const matches = listings.length;
     return (
-      <div className="flex flex-col items-center justify-center bg-background-cream rounded-xl border border-border p-12 text-center" style={{ height }}>
+      <div
+        className="flex flex-col items-center justify-center bg-background-cream rounded-xl border border-border p-6 sm:p-12 text-center"
+        style={{ minHeight: height }}
+      >
         <MapPin className="h-10 w-10 text-foreground-subtle mb-3" />
-        <h3 className="font-heading text-heading-sm font-semibold text-primary mb-1">No mapped properties match</h3>
+        <h3 className="font-heading text-heading-sm font-semibold text-primary mb-1">
+          {matches > 0
+            ? `${matches} ${matches === 1 ? 'match isn’t' : 'matches aren’t'} on the map yet`
+            : 'No mapped properties match'}
+        </h3>
         <p className="text-body-sm text-foreground-muted max-w-md mb-4">
-          Properties matching your filters don&apos;t have map coordinates yet, or the filter set is empty.
+          {matches > 0
+            ? `We haven’t geocoded ${matches === 1 ? 'it' : 'them'} yet, so ${matches === 1 ? 'it doesn’t' : 'they don’t'} have a pin — but ${matches === 1 ? 'it’s' : 'they’re'} all there in grid view.`
+            : 'Properties matching your filters don’t have map coordinates yet, or the filter set is empty.'}
         </p>
-        {hasFilters && onClearFilters && (
-          <button
-            type="button"
-            onClick={onClearFilters}
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-body-sm font-semibold text-white hover:bg-primary/90"
-          >
-            Clear filters
-          </button>
-        )}
+        <div className="flex w-full max-w-sm flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+          {matches > 0 && onSwitchToGrid && (
+            <button
+              type="button"
+              onClick={onSwitchToGrid}
+              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-body-sm font-semibold text-white hover:bg-primary/90"
+            >
+              See {matches === 1 ? 'it' : `all ${matches}`} in grid view
+            </button>
+          )}
+          {hasFilters && onClearFilters && (
+            <button
+              type="button"
+              onClick={onClearFilters}
+              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-primary/25 px-5 py-2.5 text-body-sm font-semibold text-primary hover:border-gold hover:text-gold-dark"
+            >
+              Clear filters
+            </button>
+          )}
+        </div>
+        {/* Contact routes, quietly — a missing pin is our data problem, not a
+            reason to make someone hunt for the phone number. */}
+        <div className="mt-6 w-full max-w-sm border-t border-border pt-5">
+          <p className="text-caption text-foreground-muted">Want us to just send you the fits?</p>
+          <PhoneCallText variant="stacked" surface="listings-map-empty" className="mt-3" />
+        </div>
       </div>
     );
   }

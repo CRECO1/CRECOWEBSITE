@@ -419,6 +419,7 @@ export function ListingsClient({ initialListings, children }: { initialListings:
                   listings={filtered}
                   hasFilters={hasFilters}
                   onClearFilters={clearAllFilters}
+                  onSwitchToGrid={() => setView('grid')}
                 />
                 <p className="mt-3 text-caption text-foreground-muted text-center">
                   Some properties may not appear on the map until their location has been geocoded. Switch to Grid view to see the full inventory.
