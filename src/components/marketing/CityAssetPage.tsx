@@ -103,7 +103,7 @@ function cityAssetFaqs(config: CityAssetConfig, listings: Listing[]): Faq[] {
       q: `What ${asset} space is available in ${city} right now?`,
       a: listings.length > 0
         ? `CRECO currently markets: ${listings.map(l => `${l.title} (${listingSummary(l)})`).join('; ')}. CRECO's tenant-rep clients also see every other ${city} ${asset} option on the market, including off-market space.`
-        : `CRECO has no public ${asset} listing in ${city} at this moment, but as a tenant-representation brokerage it searches the entire ${city} ${asset} market — including LoopNet/CoStar inventory and off-market space — for its clients. Call ${BUSINESS.phoneDisplay} for a current availability survey.`,
+        : `As a tenant-representation brokerage, CRECO searches the entire ${city} ${asset} market for its clients — including LoopNet/CoStar inventory and off-market space. Call ${BUSINESS.phoneDisplay} for a current availability survey.`,
     },
     {
       q: `Which ${city} submarkets are best for ${asset} space?`,
@@ -361,7 +361,7 @@ export async function CityAssetPage({ config }: { config: CityAssetConfig }) {
             path={config.canonicalPath}
             title={`${config.city} ${config.asset} listings represented by CRECO`}
             intro={`Live CRECO inventory for ${config.asset} space in the ${config.city} area. Tenant-rep clients also get access to every other option on the market.`}
-            emptyText={`No public CRECO ${config.asset} listing in ${config.city} right now — CRECO searches the full market (including off-market space) for tenant-rep clients. Call ${BUSINESS.phoneDisplay}.`}
+            emptyText={`CRECO searches the full ${config.city} ${config.asset} market for tenant-rep clients — including off-market space that never gets posted. Tell us your size, submarket and timing, or call ${BUSINESS.phoneDisplay}.`}
             emptyHeading={`Let’s find your ${config.asset} space in ${config.city}`}
             asset={config.asset}
             emptySurface={`city-asset-empty-${config.city.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${config.asset.toLowerCase()}`}

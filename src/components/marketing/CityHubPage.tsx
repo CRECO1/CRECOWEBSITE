@@ -173,7 +173,7 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
         q: `What commercial space is available in ${config.city} right now?`,
         a: available.length > 0
           ? `CRECO currently markets ${available.length} ${available.length === 1 ? 'property' : 'properties'} in the ${config.city} area: ${available.map(l => `${l.title} (${listingSummary(l)})`).join('; ')}. CRECO's tenant- and buyer-rep clients also get access to all other ${config.cityShort} inventory, including off-market space. Call ${BUSINESS.phoneDisplay}.`
-          : `CRECO has no public listing in ${config.city} at this moment, but it represents tenants and buyers across the full ${config.cityShort} market — including LoopNet/CoStar inventory and off-market space. Call ${BUSINESS.phoneDisplay} or email ${BUSINESS.email} for a current availability survey.`,
+          : `CRECO represents tenants and buyers across the full ${config.cityShort} market — including LoopNet/CoStar inventory and off-market space. Call ${BUSINESS.phoneDisplay} or email ${BUSINESS.email} for a current availability survey.`,
       }]
     : [];
   // Structured data (Place + Article + BreadcrumbList) — these city hubs shipped
@@ -554,7 +554,7 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
             path={config.canonicalPath}
             title={`${config.city} commercial listings represented by CRECO`}
             intro={`Currently available CRECO inventory in the ${config.city} area — retail, office, industrial, flex, and land.`}
-            emptyText={`No public CRECO listing in ${config.city} right now. CRECO searches the entire ${config.cityShort} market, including off-market space, for tenant- and buyer-rep clients — call ${BUSINESS.phoneDisplay}.`}
+            emptyText={`CRECO searches the entire ${config.cityShort} market for tenant- and buyer-rep clients — including off-market space that never gets posted. Tell us what you need, or call ${BUSINESS.phoneDisplay}.`}
             emptyHeading={`Let’s find your space in ${config.city}`}
             // No `asset`: a city hub spans every asset class, so there's no one
             // category to name and the generic "commercial space" is correct

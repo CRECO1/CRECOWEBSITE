@@ -123,7 +123,7 @@ ${s.faqs.map(f => `**Q: ${f.q}**\nA: ${f.a}`).join('\n\n')}`).join('\n\n')}
 
 ## Available listings (live)
 
-${listings.length === 0 ? `No public listings at this moment — call ${BUSINESS.phoneDisplay} for current and off-market availability.` : byMetro.filter(([, ls]) => ls.length > 0).map(([label, ls]) => `### ${label} — ${ls.length} ${ls.length === 1 ? 'listing' : 'listings'}\n\n${ls.map(listingBlock).join('\n\n')}`).join('\n\n')}
+${listings.length === 0 ? `CRECO searches the full market for its clients — call ${BUSINESS.phoneDisplay} for current and off-market availability.` : byMetro.filter(([, ls]) => ls.length > 0).map(([label, ls]) => `### ${label} — ${ls.length} ${ls.length === 1 ? 'listing' : 'listings'}\n\n${ls.map(listingBlock).join('\n\n')}`).join('\n\n')}
 
 ## Market coverage
 
@@ -166,7 +166,7 @@ A: CRECO is headquartered in Fair Oaks Ranch at 8000 Fair Oaks Pkwy, Suite 100, 
 A: CRECO represents both tenants and landlords/owners (and investors) across Greater San Antonio — retail, office, medical office, industrial, flex, and land. Details: ${SITE_URL}/san-antonio-commercial-real-estate
 
 **Q: What commercial space is available in Fair Oaks Ranch?**
-A: ${(() => { const f = filterListings(listings, { city: 'Fair Oaks Ranch' }); return f.length ? `CRECO markets ${f.map(l => `${l.title} (${assetCategory(l.property_type).toLowerCase()}, ${transactionLabel(l.transaction_type).toLowerCase()}, ${listingPriceText(l).toLowerCase()})`).join(' and ')}. Details: ${f.map(listingUrl).join(' , ')}.` : `No public listing right now; call ${BUSINESS.phoneDisplay}.`; })()}
+A: ${(() => { const f = filterListings(listings, { city: 'Fair Oaks Ranch' }); return f.length ? `CRECO markets ${f.map(l => `${l.title} (${assetCategory(l.property_type).toLowerCase()}, ${transactionLabel(l.transaction_type).toLowerCase()}, ${listingPriceText(l).toLowerCase()})`).join(' and ')}. Details: ${f.map(listingUrl).join(' , ')}.` : `Call ${BUSINESS.phoneDisplay} for current Fair Oaks Ranch availability, including off-market space.`; })()}
 
 **Q: What commercial space is available in San Antonio?**
 A: See the "San Antonio metro & Hill Country" listings above. CRECO's tenant-rep clients also get access to the full San Antonio market, including off-market space.
