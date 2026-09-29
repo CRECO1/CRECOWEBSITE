@@ -194,7 +194,7 @@ export default async function HomePage() {
     '8923-dietz-elkhorn',                    // Elkhorn (synthetic)
   ];
 
-  const allListings = withSyntheticListings(dbListings as any);
+  const allListings = withSyntheticListings(dbListings);
   const bySlug = new Map(allListings.map((l: any) => [l.slug, l]));
   const ordered = FEATURED_SLUG_ORDER
     .map(slug => bySlug.get(slug))

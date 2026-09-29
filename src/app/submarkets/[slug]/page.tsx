@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `San Antonio ${name} Commercial Real Estate | CRECO`,
     description: metaDescription(
-      richContent?.overview[0]
+      richContent?.overview?.[0]
       ?? `Commercial real estate in San Antonio's ${name} submarket — retail, industrial, office, and flex properties for lease and sale. Submarket profile, market fundamentals, and current listings from CRECO.`),
     keywords: [
       `${name.toLowerCase()} san antonio commercial real estate`,

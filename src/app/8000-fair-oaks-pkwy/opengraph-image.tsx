@@ -20,7 +20,7 @@ export default async function Image() {
     (
       <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', position: 'relative', backgroundColor: INK, fontFamily: 'sans-serif' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={PHOTO} width={1200} height={630} style={{ position: 'absolute', left: 0, top: 0, width: 1200, height: 630, objectFit: 'cover' }} />
+        <img src={PHOTO} alt="" width={1200} height={630} style={{ position: 'absolute', left: 0, top: 0, width: 1200, height: 630, objectFit: 'cover' }} />
         <div style={{ position: 'absolute', left: 0, top: 0, width: 1200, height: 630, display: 'flex', backgroundImage: 'linear-gradient(to bottom, rgba(26,26,26,0.10), rgba(26,26,26,0.55) 55%, rgba(26,26,26,0.96))' }} />
 
         <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '44px 56px' }}>

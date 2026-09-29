@@ -125,7 +125,7 @@ export async function GET(
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${slug}-brochure.pdf"`,
+        'Content-Disposition': `attachment; filename="${slug.replace(/[^a-z0-9-]/gi, '')}-brochure.pdf"`,
       },
     });
   } catch (err) {

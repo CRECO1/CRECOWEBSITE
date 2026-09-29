@@ -57,7 +57,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         {photo && (
-          <img src={photo} width={1200} height={630}
+          <img src={photo} alt="" width={1200} height={630}
             style={{ position: 'absolute', left: 0, top: 0, width: 1200, height: 630, objectFit: 'cover' }} />
         )}
         {/* Gradient scrim so the text is legible over any photo */}

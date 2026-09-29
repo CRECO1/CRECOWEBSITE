@@ -179,9 +179,13 @@ export async function POST(req: NextRequest) {
           ...ctx.utm,
         },
       }]);
-      // Duplicate (re-subscribe) is OK — treat as success
+      // Duplicate (re-subscribe) is OK — treat as success. A REAL insert error,
+      // though, must stop here: the confirm token lives only on this (now unsaved)
+      // row, so continuing would email a dead confirmation link and lose the signup
+      // with no trace. Fail loudly so the visitor can retry.
       if (error && !error.message.includes('duplicate') && !error.message.includes('unique')) {
         console.error('Subscriber insert error:', error.message);
+        return NextResponse.json({ error: 'Could not complete your signup. Please try again.' }, { status: 500 });
       }
     }
 
