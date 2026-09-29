@@ -20,7 +20,7 @@
 import { useState } from 'react';
 import { TrendingUp } from 'lucide-react';
 import { EmailCaptureCard } from '@/components/forms/EmailCaptureCard';
-import { readUtmsFromCookie } from '@/lib/analytics';
+import { leadPayloadFields } from '@/lib/analytics';
 
 interface MarketReportCaptureProps {
   /**
@@ -70,7 +70,7 @@ export function MarketReportCapture({
           source: 'market-report',
           message: `Subscribed to the quarterly Texas commercial market report from ${surface}.`,
           recaptchaToken,
-          ...readUtmsFromCookie(),
+          ...leadPayloadFields(),
         }),
       }}
     />

@@ -24,8 +24,9 @@ export function SellInquiryForm() {
     setLoading(true);
     const data = new FormData(e.currentTarget);
     const recaptchaToken = await getRecaptchaToken('submit_sell');
-    const { trackEvent, readUtmsFromCookie } = await import('@/lib/analytics');
-    const attribution = readUtmsFromCookie();
+    const { trackEvent, leadPayloadFields, identifyLead } = await import('@/lib/analytics');
+    identifyLead(String(data.get('email') ?? ''), String(data.get('name') ?? ''), 'disposition-inquiry');
+    const attribution = leadPayloadFields();
     await fetch('/api/leads', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

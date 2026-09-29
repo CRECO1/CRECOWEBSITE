@@ -42,7 +42,7 @@
 
 import { useState } from 'react';
 import { getRecaptchaToken } from '@/components/forms/Recaptcha';
-import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
+import { trackEvent, leadPayloadFields, identifyLead } from '@/lib/analytics';
 import { isClientEmailValid } from '@/lib/validation';
 
 interface UseEmailCaptureOpts {
@@ -99,8 +99,9 @@ export function useEmailCapture(opts: UseEmailCaptureOpts): EmailCaptureState {
       // Stamped by <Honeypot>; the server now requires it (lib/bot-filter).
       const formRenderedAt = Number(formData.get('form_rendered_at')) || undefined;
       const recaptchaToken = await getRecaptchaToken(opts.recaptchaAction);
-      const attribution = readUtmsFromCookie();
       const cleanEmail = email.trim().toLowerCase();
+      identifyLead(cleanEmail, null, opts.recaptchaAction);
+      const attribution = leadPayloadFields();
 
       const res = await fetch(opts.endpoint, {
         method: 'POST',

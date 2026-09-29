@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { ArrowRight, CalendarClock, CheckCircle, Phone, Video } from 'lucide-react';
 import { getRecaptchaToken } from './Recaptcha';
 import { Honeypot } from './Honeypot';
-import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
+import { trackEvent, leadPayloadFields, identifyLead } from '@/lib/analytics';
 
 interface Props {
   listingSlug: string;
@@ -60,7 +60,8 @@ export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress }:
       const honeypot = (capturedForm.get('website') as string) ?? '';
       const formRenderedAt = Number(capturedForm.get('form_rendered_at')) || undefined;
       const recaptchaToken = await getRecaptchaToken('schedule_tour');
-      const attribution = readUtmsFromCookie();
+      identifyLead(email, name, 'tour-request');
+      const attribution = leadPayloadFields();
       const res = await fetch('/api/tour-request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

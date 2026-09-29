@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { Honeypot } from '@/components/forms/Honeypot';
 import { InquirySuccessCard } from '@/components/forms/InquirySuccessCard';
-import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
+import { trackEvent, leadPayloadFields, identifyLead } from '@/lib/analytics';
 import type { Broker } from '@/lib/broker';
 
 /**
@@ -36,7 +36,8 @@ export function ListingContactForm({
 
     try {
       const recaptchaToken = await getRecaptchaToken('submit_listing_inquiry');
-      const attribution = readUtmsFromCookie();
+      identifyLead(String(data.get('email') ?? ''), String(data.get('name') ?? ''), 'listing');
+      const attribution = leadPayloadFields();
       const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { getRecaptchaToken } from '@/components/forms/Recaptcha';
-import { trackEvent } from '@/lib/analytics';
+import { trackEvent, journeyPayload, identifyLead } from '@/lib/analytics';
 
 /**
  * The submit engine every email capture on this site shares.
@@ -77,6 +77,8 @@ function capturePageContext(): Record<string, unknown> {
       page_title: document.title || '',
       referrer,
       viewport_width: window.innerWidth,
+      // The visit trail + seconds-on-site travel with every capture too.
+      ...journeyPayload(),
     };
   } catch {
     return {};
@@ -106,10 +108,18 @@ export function useCaptureSubmit(opts: CaptureSubmitOptions): CaptureSubmitState
       // has to remember to — and the notification email stops saying only
       // "property-alerts-inline" when the real question is "from what page?".
       // The surface's own payload wins on any key it already sets.
+      const surfacePayload = opts.buildPayload({ recaptchaToken, website });
+      // Tag the live Clarity session with this lead while the recording is open,
+      // so their full session replay is findable by email/name in Clarity.
+      identifyLead(
+        typeof surfacePayload.email === 'string' ? surfacePayload.email : null,
+        typeof surfacePayload.name === 'string' ? surfacePayload.name : null,
+        typeof surfacePayload.source === 'string' ? surfacePayload.source : opts.recaptchaAction,
+      );
       const res = await fetch(opts.endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ form_rendered_at: formRenderedAt, ...capturePageContext(), ...opts.buildPayload({ recaptchaToken, website }) }),
+        body: JSON.stringify({ form_rendered_at: formRenderedAt, ...capturePageContext(), ...surfacePayload }),
       });
 
       if (!res.ok) {

@@ -34,8 +34,9 @@ export default function ContactPage() {
     const data = new FormData(e.currentTarget);
     const recaptchaToken = await getRecaptchaToken('submit_contact');
     const reason = String(data.get('reason') ?? '');
-    const { trackEvent, readUtmsFromCookie } = await import('@/lib/analytics');
-    const attribution = readUtmsFromCookie();
+    const { trackEvent, leadPayloadFields, identifyLead } = await import('@/lib/analytics');
+    identifyLead(String(data.get('email') ?? ''), String(data.get('name') ?? ''), 'contact');
+    const attribution = leadPayloadFields();
     try {
       const res = await fetch('/api/leads', {
         method: 'POST',

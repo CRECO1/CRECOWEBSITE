@@ -234,6 +234,9 @@ export function trackListingSearch(p: {
  */
 export function captureUtmsToCookie() {
   if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  // Log the page into this visit's trail on every navigation, independent of
+  // whether there is any utm to store.
+  recordJourneyStep();
   try {
     const params = new URLSearchParams(window.location.search);
     const incoming: UtmAttribution = {};
@@ -284,5 +287,104 @@ export function readUtmsFromCookie(): UtmAttribution {
     return (parsed && typeof parsed === 'object') ? parsed as UtmAttribution : {};
   } catch {
     return {};
+  }
+}
+
+/**
+ * The page trail for THIS visit — sessionStorage, per tab. On a lead it answers
+ * "what did they look at, and how long were they here before submitting". Kept
+ * out of the attribution cookie on purpose: a cookie rides on every request and
+ * is size-capped, whereas a visit journey belongs in sessionStorage and only
+ * ever gets spread into a form POST. Every accessor is wrapped — analytics must
+ * never throw.
+ */
+export interface JourneyStep { p: string; t: number }
+
+const JOURNEY_KEY = 'creco_journey';
+const JOURNEY_T0_KEY = 'creco_journey_t0';
+const JOURNEY_MAX_STEPS = 30;
+
+function journeyStart(): number {
+  try {
+    const raw = sessionStorage.getItem(JOURNEY_T0_KEY);
+    const prev = raw ? parseInt(raw, 10) : NaN;
+    if (Number.isFinite(prev)) return prev;
+    const now = Date.now();
+    sessionStorage.setItem(JOURNEY_T0_KEY, String(now));
+    return now;
+  } catch { return Date.now(); }
+}
+
+function readJourney(): JourneyStep[] {
+  try {
+    const raw = sessionStorage.getItem(JOURNEY_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed)
+      ? parsed.filter((s): s is JourneyStep => !!s && typeof s.p === 'string' && typeof s.t === 'number')
+      : [];
+  } catch { return []; }
+}
+
+/** Append the current path to the visit journey. Idempotent per page. */
+export function recordJourneyStep(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const t0 = journeyStart();
+    const steps = readJourney();
+    const p = window.location.pathname.slice(0, 200);
+    if (steps.length && steps[steps.length - 1].p === p) return;
+    steps.push({ p, t: Math.max(0, Date.now() - t0) });
+    sessionStorage.setItem(JOURNEY_KEY, JSON.stringify(steps.slice(-JOURNEY_MAX_STEPS)));
+  } catch {
+    // never break a render
+  }
+}
+
+/**
+ * The visit trail + seconds-on-site, spread into a lead POST so the CRM can
+ * show "what pages did they visit and how long before they left". Records the
+ * submit page as the final step first, in case a form renders without a route
+ * change (a modal on the landing page).
+ */
+export function journeyPayload(): Record<string, unknown> {
+  if (typeof window === 'undefined') return {};
+  recordJourneyStep();
+  const steps = readJourney();
+  const t0 = journeyStart();
+  return {
+    journey: steps,
+    page_views: steps.length,
+    time_on_site_sec: Math.round(Math.max(0, Date.now() - t0) / 1000),
+  };
+}
+
+/**
+ * Everything a lead form should attach so it is both attributable and shows its
+ * visit: the stored utm/referrer attribution plus this visit's page trail and
+ * seconds-on-site. Forms already spread readUtmsFromCookie(); swapping the call
+ * to this keeps journey travelling with the attribution it belongs next to.
+ */
+export function leadPayloadFields(): Record<string, unknown> {
+  return { ...readUtmsFromCookie(), ...journeyPayload() };
+}
+
+/**
+ * Tie the live Microsoft Clarity session to this lead so a named person's
+ * recording — every page, scroll and hesitation — becomes findable in Clarity
+ * by email or name. We already forward event names to Clarity in trackEvent;
+ * this adds identity at the one moment we learn it, the submit. Clarity hashes
+ * the id it stores, so no raw email is exposed. Never throws.
+ */
+export function identifyLead(email?: string | null, name?: string | null, source?: string | null): void {
+  if (typeof window === 'undefined' || !email) return;
+  try {
+    const c = (window as unknown as { clarity?: (...a: unknown[]) => void }).clarity;
+    if (typeof c !== 'function') return;
+    c('identify', email);
+    if (name) c('set', 'lead_name', name);
+    if (source) c('set', 'lead_source', source);
+  } catch {
+    // Clarity must never break a submit.
   }
 }

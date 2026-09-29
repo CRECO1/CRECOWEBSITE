@@ -12,7 +12,7 @@ import { Container } from '@/components/ui/Container';
 import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { Honeypot } from '@/components/forms/Honeypot';
 import { PhoneCallText } from '@/components/marketing/PhoneCallText';
-import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
+import { trackEvent, leadPayloadFields } from '@/lib/analytics';
 import { PRIMARY_BROKER } from '@/lib/broker';
 import { GOOGLE_RATING, GOOGLE_REVIEW_COUNT } from '@/lib/reviews';
 
@@ -355,7 +355,7 @@ function TalkStrip({
           recaptchaToken,
           website,
           form_rendered_at: formRenderedAt,
-          ...readUtmsFromCookie(),
+          ...leadPayloadFields(),
         }),
       });
       if (!res.ok) {
@@ -602,7 +602,7 @@ export default function GetStartedPage() {
           answers: labelled,
           surface: 'get-started',
           recaptchaToken, website: honeypot, form_rendered_at: formRenderedAt,
-          ...readUtmsFromCookie(),
+          ...leadPayloadFields(),
         }),
       });
       // Only show success if the lead actually landed.

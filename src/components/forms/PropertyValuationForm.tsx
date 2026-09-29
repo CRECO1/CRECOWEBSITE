@@ -141,8 +141,9 @@ export function PropertyValuationForm() {
         result ? `Cap rate range: ${(result.capRateRange.low * 100).toFixed(2)}% – ${(result.capRateRange.high * 100).toFixed(2)}%` : null,
       ].filter(Boolean) as string[];
 
-      const { readUtmsFromCookie } = await import('@/lib/analytics');
-      const attribution = readUtmsFromCookie();
+      const { leadPayloadFields, identifyLead } = await import('@/lib/analytics');
+      identifyLead(leadEmail, leadName.trim() || null, 'valuation-request');
+      const attribution = leadPayloadFields();
       const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -47,6 +47,13 @@ export interface CrmLeadPayload {
   /** Coarse city/region from the edge. Never an IP. */
   geo?: string | null;
   device?: string | null;
+  /** Ordered pages this visit touched, [{p,t}] — forwarded to the CRM webhook,
+   *  which sanitises and stores it so a lead shows its page trail + dwell. */
+  journey?: Array<{ p: string; t: number }> | null;
+  /** Seconds on site before submitting. */
+  time_on_site_sec?: number | null;
+  /** Distinct pages in the visit. */
+  page_views?: number | null;
 }
 
 export async function sendLeadToCrm(lead: CrmLeadPayload, opts?: { notify?: boolean }): Promise<{ ok: boolean; skipped?: boolean }> {

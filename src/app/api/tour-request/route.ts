@@ -229,6 +229,11 @@ export async function POST(req: NextRequest) {
         utm_source, utm_medium, utm_campaign, utm_term, utm_content,
         referrer, landing_page,
         page_path: ctx.pagePath,
+        // Visit trail + seconds-on-site → the CRM webhook sanitises and stores
+        // them, so the lead shows what pages it visited and for how long.
+        journey: (body as { journey?: Array<{ p: string; t: number }> }).journey ?? null,
+        time_on_site_sec: (body as { time_on_site_sec?: number }).time_on_site_sec ?? null,
+        page_views: (body as { page_views?: number }).page_views ?? null,
         // Placement id, where the form reports one. Most lead forms are the
         // only capture on their page and send nothing; the value exists for
         // the surfaces that repeat (the alerts card sits in six places).
