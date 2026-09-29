@@ -21,7 +21,11 @@ import { trackEvent } from '@/lib/analytics';
 // DETAIL pages (which have their own MobileInquiryBar "Schedule a Tour" bar, so
 // the two would otherwise stack and occlude each other) while keeping it on the
 // '/listings' index, which has no bar of its own.
-const HIDDEN_PREFIXES = ['/admin', '/manage', '/crm', '/tenant-needs', '/get-started', '/sell', '/contact', '/listings/'];
+//
+// The two property landing pages carry their own StickyPropertyCTABar, pinned
+// to the same bottom edge — with this bar too, the two overlapped on phones.
+// The header's phone icon keeps a one-tap call on those pages.
+const HIDDEN_PREFIXES = ['/admin', '/manage', '/crm', '/tenant-needs', '/get-started', '/sell', '/contact', '/listings/', '/8000-fair-oaks-pkwy', '/8923-dietz-elkhorn'];
 
 export function MobileStickyCTA({ phone = '(210) 817-3443' }: { phone?: string }) {
   const pathname = usePathname() ?? '/';

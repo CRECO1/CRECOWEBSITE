@@ -390,12 +390,17 @@ export default async function ListingDetailPage({ params }: Props) {
                     brochureUrl={listing!.brochure_url}
                   />
                 </div>
-                <ListingInquiryTabs
-                  listingTitle={listing!.title}
-                  listingSlug={listing!.slug}
-                  listingAddress={`${listing!.address}, ${listing!.city}, ${listing!.state} ${listing!.zip ?? ''}`.trim()}
-                  broker={broker}
-                />
+                {/* #inquiry-tour is where the mobile "Schedule a Tour" bar
+                    lands and puts the cursor — the tour form, not the
+                    brochure email above it. */}
+                <div id="inquiry-tour" className="scroll-mt-24">
+                  <ListingInquiryTabs
+                    listingTitle={listing!.title}
+                    listingSlug={listing!.slug}
+                    listingAddress={`${listing!.address}, ${listing!.city}, ${listing!.state} ${listing!.zip ?? ''}`.trim()}
+                    broker={broker}
+                  />
+                </div>
                 {/* Named broker + direct contact + optional Cal.com
                     slot. Replaces the anonymous "Or call us directly"
                     tile. The visible person on the sidebar next to a

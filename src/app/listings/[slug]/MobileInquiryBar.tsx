@@ -30,13 +30,20 @@ export function MobileInquiryBar({ phone = '(210) 817-3443' }: { phone?: string 
           href="#inquiry"
           onClick={(e) => {
             e.preventDefault();
-            const el = document.getElementById('inquiry');
+            // The tour form, not the whole sidebar: #inquiry opens with the
+            // brochure email box, which isn't what "Schedule a Tour" promises.
+            const el = document.getElementById('inquiry-tour') ?? document.getElementById('inquiry');
             if (el) {
               el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              // Drop focus into the first input for keyboard / a11y once the
-              // scroll lands.
+              // Drop focus into the first field a person can actually see.
+              // A bare 'input' selector used to land on the honeypot
+              // (<Honeypot>'s hidden "website" field, tabIndex -1): anyone who
+              // then started typing filled the spam trap, and the server
+              // silently discarded their tour request as a bot.
               setTimeout(() => {
-                const first = el.querySelector<HTMLInputElement | HTMLTextAreaElement>('input, textarea');
+                const first = el.querySelector<HTMLInputElement | HTMLTextAreaElement>(
+                  'input:not([type="hidden"]):not([tabindex="-1"]), textarea:not([tabindex="-1"])',
+                );
                 first?.focus({ preventScroll: true });
               }, 350);
             }
