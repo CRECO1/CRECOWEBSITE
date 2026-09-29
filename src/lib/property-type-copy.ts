@@ -157,7 +157,7 @@ const GUIDES: Record<string, PropertyTypeGuide> = {
  * one thing this component must never do is dead-end.
  */
 export const GENERIC_EMPTY_COPY = {
-  heading: 'Nothing public matches that yet',
+  heading: 'Let’s find what you’re looking for',
   definition:
     'Our listings page shows the Texas properties CRECO can market publicly — it isn’t everything we’re working on, and it changes week to week.',
   whoItsFor:

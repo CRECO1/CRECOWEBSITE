@@ -82,8 +82,8 @@ export function ListingsMap({ listings, height = '70vh', onClearFilters, hasFilt
         <MapPin className="h-10 w-10 text-foreground-subtle mb-3" />
         <h3 className="font-heading text-heading-sm font-semibold text-primary mb-1">
           {matches > 0
-            ? `${matches} ${matches === 1 ? 'match isn’t' : 'matches aren’t'} on the map yet`
-            : 'No mapped properties match'}
+            ? `${matches} ${matches === 1 ? 'match is' : 'matches are'} ready in grid view`
+            : 'Let’s find what you’re looking for'}
         </h3>
         <p className="text-body-sm text-foreground-muted max-w-md mb-4">
           {matches > 0

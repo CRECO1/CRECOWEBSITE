@@ -362,7 +362,7 @@ export async function CityAssetPage({ config }: { config: CityAssetConfig }) {
             title={`${config.city} ${config.asset} listings represented by CRECO`}
             intro={`Live CRECO inventory for ${config.asset} space in the ${config.city} area. Tenant-rep clients also get access to every other option on the market.`}
             emptyText={`No public CRECO ${config.asset} listing in ${config.city} right now — CRECO searches the full market (including off-market space) for tenant-rep clients. Call ${BUSINESS.phoneDisplay}.`}
-            emptyHeading={`No public ${config.asset} listings in ${config.city} right now`}
+            emptyHeading={`Let’s find your ${config.asset} space in ${config.city}`}
             asset={config.asset}
             emptySurface={`city-asset-empty-${config.city.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${config.asset.toLowerCase()}`}
           />

@@ -367,7 +367,7 @@ export default async function SubmarketDetailPage({ params }: Props) {
                  narrow by design — and this is organic traffic that named its
                  target area. Same treatment as the city × asset tables. */
               <NoListingsCTA
-                heading={`No active listings in ${submarket.name} right now`}
+                heading={`Let’s find your space in ${submarket.name}`}
                 body={`CRECO works ${submarket.name} whether or not we have something posted in it today. Tell us what you're looking for and we'll bring options to you, including off-market space.`}
                 surface={`submarket-empty-${slug}`}
                 action={{ href: '/listings', label: 'Browse all CRECO listings' }}

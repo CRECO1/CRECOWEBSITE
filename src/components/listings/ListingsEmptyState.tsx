@@ -9,7 +9,8 @@
  * of nothing.
  *
  * What it does instead, in the order a phone reads it:
- *   1. Names the gap honestly ("No public Flex listings right now").
+ *   1. Opens on an invitation built from the type ("Let’s find your flex
+ *      space"), never on the absence — Zack's call: lead with the offer.
  *   2. Explains what that property type IS and who it's for — useful to the
  *      tenant who half-knows the term, and it makes the page worth landing on.
  *   3. Says we often know of space that never reaches a listing site, which is
@@ -80,7 +81,7 @@ export function ListingsEmptyState({
   const propertyInterest = typed ? `${copy.label} — no public match` : undefined;
 
   const heading = typed
-    ? `No public ${copy.label} listings right now`
+    ? `Let’s find your ${copy.spaceNoun}`
     : copy.heading;
 
   // A zero-result view is a conversion signal, not a non-event: it's the only

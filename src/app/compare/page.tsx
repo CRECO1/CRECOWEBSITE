@@ -221,7 +221,7 @@ function EmptyState({ message, stale = false }: { message?: string; stale?: bool
   if (stale) {
     return (
       <NoListingsCTA
-        heading="The properties you shortlisted are no longer available"
+        heading="Let’s find fresh options like the ones you saved"
         body="They’ve been leased, sold, or taken off the market since you saved them. That’s worth a conversation rather than a restart — tell us what drew you to them and we’ll find the current equivalents, including space that isn’t posted publicly."
         surface="compare-empty-stale"
         action={{ href: '/listings', label: 'Browse current listings' }}
@@ -233,7 +233,7 @@ function EmptyState({ message, stale = false }: { message?: string; stale?: bool
   return (
     <div className="rounded-2xl border-2 border-dashed border-border bg-white py-20 text-center">
       <Scale className="mx-auto h-12 w-12 text-gold/60 mb-4" />
-      <h2 className="font-heading text-heading-lg font-bold text-primary mb-2">Nothing to compare yet</h2>
+      <h2 className="font-heading text-heading-lg font-bold text-primary mb-2">Start your side-by-side comparison</h2>
       <p className="text-body text-foreground-muted max-w-md mx-auto mb-6">
         {message ?? 'Browse the listings, tap the compare icon on each one you’re considering, and they’ll show up here side-by-side.'}
       </p>

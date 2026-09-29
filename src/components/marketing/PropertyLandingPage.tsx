@@ -206,7 +206,7 @@ export async function PropertyLandingPage({ config: configIn, dbContent }: Props
                 category explanation and the three contact routes as well. */}
             {listings.length === 0 && (
               <NoListingsCTA
-                heading="Nothing public in this category right now"
+                heading="Let’s find the right property for you"
                 body="This page lists the properties CRECO can market publicly, and that set changes week to week. Tell us what you need and we will bring vetted options to you — including space that never gets posted."
                 propertyType={config.filterPropertyTypes?.[0]}
                 surface={`property-landing-empty${config.canonicalPath ?? ''}`}

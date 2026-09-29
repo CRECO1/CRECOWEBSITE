@@ -82,7 +82,7 @@ export default async function SoldPage() {
                 stays, and call, text and email sit next to it. */}
             {properties.length === 0 && (
               <NoListingsCTA
-                heading="Closed transactions aren’t listed here right now"
+                heading="Ask us about the deals we’ve closed"
                 body="Recent closings aren't published on this page at the moment. A CRECO principal will walk you through comparable deals we've closed in your submarket — including the ones we can only discuss directly."
                 surface="sold-empty"
                 action={{ href: '/listings', label: 'See what’s available now' }}

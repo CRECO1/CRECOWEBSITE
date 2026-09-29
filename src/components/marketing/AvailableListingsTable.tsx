@@ -57,7 +57,7 @@ export function AvailableListingsTable({
                off-market space and offers call, text, email and the needs
                form. */
             <NoListingsCTA
-              heading={emptyHeading ?? 'Nothing public to show here right now'}
+              heading={emptyHeading ?? 'Let’s find the right space for you'}
               body={emptyText}
               propertyType={asset}
               surface={emptySurface ?? `available-table-empty${path}`}
