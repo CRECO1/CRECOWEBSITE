@@ -10,7 +10,7 @@ import { enforceRateLimit } from '@/lib/rate-limit';
 import { buildSignupContext } from '@/lib/signup-context';
 import { renderSubscriberNotification } from '@/lib/subscriber-notification-email';
 import { renderConfirmEmail } from '@/lib/subscriber-confirm-email';
-import { checkFormTiming } from '@/lib/form-timing';
+import { screenSubmission } from '@/lib/bot-filter';
 import { SITE_URL } from '@/lib/schema';
 import { checkEmailQuality, isOutOfMarket } from '@/lib/email-quality';
 import { randomBytes } from 'node:crypto';
@@ -81,14 +81,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true });
     }
 
-    // Timing — a submission faster than a person can read the field. Answered
-    // like the honeypot: success to the caller, nothing stored, so a bot gets
-    // no signal about which layer caught it.
-    const timing = checkFormTiming((body as Record<string, unknown>).form_rendered_at);
-    if (!timing.ok) {
-      console.warn('[subscribe] rejected on timing', { reason: timing.reason, elapsedMs: timing.elapsedMs });
-      return NextResponse.json({ success: true });
-    }
+    // Bot screen — mandatory fill-time stamp + keyboard-mash names (see
+    // lib/bot-filter). reCAPTCHA stays fail-open on purpose; this is what
+    // stops a token-less scripted POST instead.
+    const screened = screenSubmission({ tag: 'subscribe', body: body as Record<string, unknown>, name: rawName, successBody: { success: true } });
+    if (screened) return screened;
 
     // Email quality: shape, disposable domains, role addresses, and whether the
     // domain can receive mail at all. Unlike the silent gates above this one

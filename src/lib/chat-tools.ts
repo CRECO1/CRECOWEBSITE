@@ -20,6 +20,7 @@
  */
 
 import { createClient } from '@supabase/supabase-js';
+import { looksLikeGibberishName } from '@/lib/bot-filter';
 
 // ─── Tool schemas (fed to Claude) ────────────────────────────────────
 
@@ -219,6 +220,15 @@ export async function executeCaptureLead(input: CaptureLeadInput) {
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { error: 'Email format looks invalid. Ask the visitor to confirm their email.' };
+  }
+
+  // Same keyboard-mash screen as the form handlers (no fill-time stamp here —
+  // a chat has no form). Answered like a success so a scripted conversation
+  // learns nothing; nothing is stored.
+  const nameVerdict = looksLikeGibberishName(name);
+  if (nameVerdict.gibberish) {
+    console.warn('[chat] capture_lead rejected on gibberish name', { reason: nameVerdict.reason, sample: name.slice(0, 24) });
+    return { success: true, message: 'Lead recorded. A CRECO principal will follow up personally by phone or email. Confirm this to the visitor without promising a specific response time.' };
   }
 
   const { data, error } = await supabase

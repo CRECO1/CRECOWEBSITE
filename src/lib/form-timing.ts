@@ -32,11 +32,13 @@ export interface TimingVerdict {
 export function checkFormTiming(renderedAt: unknown, now = Date.now()): TimingVerdict {
   const stamp = typeof renderedAt === 'number' ? renderedAt : Number(renderedAt);
 
-  // No stamp: an older cached bundle, or a form that predates this. Allow —
-  // the honeypot and everything downstream still apply. Never fail a real
-  // visitor because their HTML is a deploy behind.
+  // No stamp: mandatory now. Every form on the site renders <Honeypot> and
+  // every submit path sends the stamp, so a POST without one didn't come from
+  // our page — the classic scripted lead. Callers answer 'missing' with a
+  // "refresh and try again" 400 (see lib/bot-filter), not a silent drop, so a
+  // human on a pre-deploy tab can still get through.
   if (!renderedAt || !Number.isFinite(stamp) || stamp <= 0) {
-    return { ok: true, elapsedMs: null, reason: 'missing' };
+    return { ok: false, elapsedMs: null, reason: 'missing' };
   }
 
   const elapsedMs = now - stamp;

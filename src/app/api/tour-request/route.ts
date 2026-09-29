@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { verifyRecaptcha } from '@/lib/recaptcha';
 import { escapeHtml, clampString, isValidEmail, safePhone, MAX_LEN } from '@/lib/sanitize';
-import { checkFormTiming } from '@/lib/form-timing';
+import { screenSubmission } from '@/lib/bot-filter';
 import { buildSignupContext } from '@/lib/signup-context';
 import { checkEmailQuality } from '@/lib/email-quality';
 import { buildIcs } from '@/lib/ics';
@@ -108,13 +108,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true });
     }
 
-    // Timing — a post faster than a person can fill the form. Answered like
-    // the honeypot above: success to the caller, nothing recorded.
-    const timing = checkFormTiming((body as Record<string, unknown>).form_rendered_at);
-    if (!timing.ok) {
-      console.warn('[tour-request] rejected on timing', { reason: timing.reason, elapsedMs: timing.elapsedMs });
-      return NextResponse.json({ success: true });
-    }
+    // Bot screen — mandatory fill-time stamp + keyboard-mash names (see
+    // lib/bot-filter). reCAPTCHA stays fail-open on purpose; this is what
+    // stops a token-less scripted POST instead.
+    const screened = screenSubmission({ tag: 'tour-request', body: body as Record<string, unknown>, name: rawName, successBody: { success: true } });
+    if (screened) return screened;
 
     // Disposable domains and addresses whose domain cannot receive mail. This
     // one answers honestly — a real person who mistyped needs to know.

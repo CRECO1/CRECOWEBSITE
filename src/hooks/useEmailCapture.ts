@@ -94,7 +94,10 @@ export function useEmailCapture(opts: UseEmailCaptureOpts): EmailCaptureState {
 
     setSubmitting(true);
     try {
-      const honeypot = (new FormData(e.currentTarget).get('website') as string) ?? '';
+      const formData = new FormData(e.currentTarget);
+      const honeypot = (formData.get('website') as string) ?? '';
+      // Stamped by <Honeypot>; the server now requires it (lib/bot-filter).
+      const formRenderedAt = Number(formData.get('form_rendered_at')) || undefined;
       const recaptchaToken = await getRecaptchaToken(opts.recaptchaAction);
       const attribution = readUtmsFromCookie();
       const cleanEmail = email.trim().toLowerCase();
@@ -106,6 +109,7 @@ export function useEmailCapture(opts: UseEmailCaptureOpts): EmailCaptureState {
           ...opts.buildPayload(cleanEmail),
           recaptchaToken,
           website: honeypot,
+          form_rendered_at: formRenderedAt,
           ...attribution,
         }),
       });
