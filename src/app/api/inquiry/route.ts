@@ -11,6 +11,7 @@ import { pushToCrm } from '@/lib/crm';
 import { enforceRateLimit } from '@/lib/rate-limit';
 import { buildLeadNotificationEmail, leadNotificationSubject, type LeadAnswer } from '@/lib/lead-notification-email';
 import { buildInquiryAutoreplyEmail, INQUIRY_AUTOREPLY_SUBJECT } from '@/lib/inquiry-autoreply-email';
+import { phoneOnlyEmail } from '@/lib/placeholder-email';
 
 /**
  * Unified inquiry endpoint — handles all 5 paths from /get-started:
@@ -43,7 +44,7 @@ function getFromEmail(): string {
 const PATH_LABELS: Record<string, { subject: string; source: string; humanLabel: string }> = {
   tenant:    { subject: 'New Tenant Inquiry',              source: 'tenant-needs',      humanLabel: 'Looking for space' },
   buyer:     { subject: 'New Buyer / Investment Inquiry',  source: 'buyer-inquiry',     humanLabel: 'Looking to buy' },
-  seller:    { subject: 'New Seller / Listing Inquiry',    source: 'owner-inquiry',     humanLabel: 'Want to sell or list' },
+  seller:    { subject: 'New Property Owner Inquiry',      source: 'owner-inquiry',     humanLabel: 'Owns a property (sell, lease out, or value)' },
   pm:        { subject: 'New Property Management Inquiry', source: 'pm-inquiry',        humanLabel: 'Needs property management' },
   exploring: { subject: 'New Inquiry — Exploring',         source: 'exploring',         humanLabel: 'Just exploring' },
   agent:     { subject: 'New Agent Application',           source: 'agent-application', humanLabel: 'Wants to join CRECO as an agent' },
@@ -80,6 +81,12 @@ const FIELD_LABELS: Record<string, string> = {
   service_area: 'Service area',
   // exploring
   interest: 'Area of interest',
+  // /get-started v2 (three questions per path)
+  purchase_type: 'Kind of purchase',
+  owner_goal: 'What they want to do',
+  location: 'Property location',
+  // call-me panel
+  requested_from_step: 'Asked for a call at',
   // agent application
   license_status: 'License status',
   license_number: 'TREC license #',
@@ -132,7 +139,7 @@ export async function POST(req: NextRequest) {
     const ctx = buildSignupContext(req, body);
     const {
       path, name: rawName, company: rawCompany, email: rawEmail,
-      phone: rawPhone, answers, recaptchaToken, website,
+      phone: rawPhone, answers, recaptchaToken, website, callback,
           utm_source: rawUtmSource, utm_medium: rawUtmMedium,
       utm_campaign: rawUtmCampaign, utm_term: rawUtmTerm,
       utm_content: rawUtmContent, referrer: rawReferrer,
@@ -154,24 +161,30 @@ export async function POST(req: NextRequest) {
     const screened = screenSubmission({ tag: 'inquiry', body: body as Record<string, unknown>, name: rawName, successBody: { success: true } });
     if (screened) return screened;
 
-    // Disposable domains and addresses whose domain cannot receive mail. This
-    // one answers honestly — a real person who mistyped needs to know.
-    const quality = await checkEmailQuality(rawEmail, { checkMx: true });
-    if (!quality.ok) {
-      console.warn('[inquiry] rejected on email quality', { reason: quality.reason, domain: quality.domain });
-      return NextResponse.json({
-        error: quality.reason === 'disposable'
-          ? 'Please use a permanent email address.'
-          : quality.reason === 'no-mx'
-            ? "That email domain can't receive mail — check the spelling?"
-            : 'Valid email is required',
-      }, { status: 400 });
+    // Email is optional: /get-started's finish screen and its "Have us call
+    // you" panel ask only for a name and a number. When one IS given it gets
+    // the same checks as before — disposable domains and addresses whose
+    // domain cannot receive mail are refused honestly, because a real person
+    // who mistyped needs to know.
+    const emailGiven = typeof rawEmail === 'string' && rawEmail.trim().length > 0;
+    let email: string | null = null;
+    if (emailGiven) {
+      const quality = await checkEmailQuality(rawEmail, { checkMx: true });
+      if (!quality.ok) {
+        console.warn('[inquiry] rejected on email quality', { reason: quality.reason, domain: quality.domain });
+        return NextResponse.json({
+          error: quality.reason === 'disposable'
+            ? 'Please use a permanent email address.'
+            : quality.reason === 'no-mx'
+              ? "That email domain can't receive mail — check the spelling?"
+              : 'Please check your email address',
+        }, { status: 400 });
+      }
+      if (!isValidEmail(rawEmail)) {
+        return NextResponse.json({ error: 'Please check your email address' }, { status: 400 });
+      }
+      email = rawEmail.trim().toLowerCase();
     }
-
-    if (!isValidEmail(rawEmail)) {
-      return NextResponse.json({ error: 'Valid email is required' }, { status: 400 });
-    }
-    const email = rawEmail.trim().toLowerCase();
 
     const name = clampString(rawName, MAX_LEN.name);
     const phone = safePhone(rawPhone);
@@ -186,7 +199,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Spam check failed', reason: captcha.reason }, { status: 400 });
     }
 
-    const meta = PATH_LABELS[path];
+    const baseMeta = PATH_LABELS[path];
+    // A "Have us call you" request from any step of /get-started. Same path
+    // (so the CRM type and source stay right), flagged loudly in the subject
+    // because the ask is a phone call, soon.
+    const isCallback = callback === true;
+    const meta = isCallback
+      ? { ...baseMeta, subject: `Call-back requested — ${baseMeta.humanLabel}`, humanLabel: `Call-back requested · ${baseMeta.humanLabel}` }
+      : baseMeta;
+    // Both stores below require an email; a phone-only lead is kept under a
+    // never-deliverable stand-in derived from the number (lib/placeholder-email).
+    const storedEmail = email ?? phoneOnlyEmail(phone);
+    // Owners who want to lease their space out are landlords, not sellers.
+    const answerText = JSON.stringify(answers ?? {}).toLowerCase();
+    const crmType = path === 'agent'
+      ? 'Agent'
+      : path === 'seller'
+        ? (answerText.includes('lease it out') ? 'Landlord/Investor' : 'Seller')
+        : path === 'pm'
+          ? 'Landlord/Investor'
+          : 'Tenant';
     // Recruiting is handled differently from a client inquiry at two points:
     // where the contact lands in the CRM, and whether we auto-reply at all.
     const isAgentApplication = path === 'agent';
@@ -218,7 +250,7 @@ export async function POST(req: NextRequest) {
       const supabase = createClient(supabaseUrl, supabaseKey);
       const { data, error } = await supabase.from('leads').insert([{
         name,
-        email,
+        email: storedEmail,
         phone,
         company: company || null,
         source: meta.source,
@@ -245,12 +277,12 @@ export async function POST(req: NextRequest) {
       // the recruiting funnel (tagged Recruiting + Recruiting: Prospect) so
       // they never mix into the client pipeline.
       await sendLeadToCrm({
-        name, email, phone, company,
+        name, email: storedEmail, phone, company,
         message: typeof meta?.subject === 'string' ? meta.subject : null,
         source: isAgentApplication
           ? 'Agent application — crecotx.com/careers'
           : `website — crecotx.com (${typeof path === 'string' ? path : 'inquiry'})`,
-        type: isAgentApplication ? 'Agent' : 'Tenant',
+        type: crmType,
         // Attribution — captured above and written to our own `leads` row;
         // these are the fields the CRM webhook reads to derive channel.
         utm_source, utm_medium, utm_campaign, utm_term, utm_content,
@@ -276,11 +308,11 @@ export async function POST(req: NextRequest) {
       lead_id: leadId,
       source: meta.source,
       name,
-      email,
+      email: storedEmail,
       phone,
       company: company || null,
       message: `${meta.humanLabel}\n\n${answerSummary}`,
-      metadata: { path, answers },
+      metadata: { path, answers, callback: isCallback, email_provided: email !== null },
     });
 
     // Notification email — every interpolated value is escaped inside the
@@ -293,7 +325,8 @@ export async function POST(req: NextRequest) {
         to: NOTIFICATION_EMAIL,
         // Hitting reply in the broker's inbox goes straight to the lead
         // instead of to the no-reply sender.
-        replyTo: email,
+        // Hitting reply goes straight to the lead — when they gave an email.
+        ...(email ? { replyTo: email } : {}),
         subject: leadNotificationSubject({ heading: meta.subject, name, company }),
         html: buildLeadNotificationEmail({
           heading: meta.subject,
@@ -309,7 +342,8 @@ export async function POST(req: NextRequest) {
       // Auto-reply to the prospect — same brand chrome as the internal copy.
       // Not for agent applicants: recruiting conversations start with a real
       // message from Zack, never an automated acknowledgement.
-      if (!isAgentApplication) {
+      // No email given (phone-only finish or call-me panel): nothing to send.
+      if (!isAgentApplication && email) {
         await resend.emails.send({
           from: getFromEmail(),
           to: email,

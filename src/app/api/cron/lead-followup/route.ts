@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { escapeHtml } from '@/lib/sanitize';
 import { automatedFollowupEnabled, followupDisabledBody } from '@/lib/automated-followup';
+import { PLACEHOLDER_EMAIL_LIKE } from '@/lib/placeholder-email';
 
 /**
  * GET /api/cron/lead-followup
@@ -231,6 +232,9 @@ export async function GET(req: NextRequest) {
     .from('leads')
     .select('id, name, email, phone, property_interest, source, message, created_at')
     .neq('source', 'valuation-request')  // Handled by valuation-followup
+    // Phone-only leads carry a never-deliverable stand-in address
+    // (lib/placeholder-email) — nothing to email; the broker calls them.
+    .not('email', 'like', PLACEHOLDER_EMAIL_LIKE)
     .is('general_followup_sent_at', null)
     .gte('created_at', windowLow)
     .lte('created_at', windowHigh)
