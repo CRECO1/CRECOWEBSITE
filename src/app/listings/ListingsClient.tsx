@@ -97,7 +97,9 @@ export function ListingsClient({ initialListings, children }: { initialListings:
     const type = sp.get('type'); if (type) setPropertyType(type);
     const txn = sp.get('txn'); if (txn) setTransactionType(txn);
     const sub = sp.get('submarket'); if (sub) setSubmarket(sub);
-    const size = Number(sp.get('size') ?? '0'); if (Number.isFinite(size) && size) setSizeIdx(size);
+    // Clamp to a real SIZE_RANGES index — a crafted/stale ?size=7 (or 2.5) used to
+    // set sizeIdx out of bounds and crash the whole page on SIZE_RANGES[sizeIdx].min.
+    const size = Number(sp.get('size') ?? '0'); if (Number.isFinite(size) && size > 0) setSizeIdx(Math.min(Math.trunc(size), SIZE_RANGES.length - 1));
     const q = sp.get('q'); if (q) setSearch(q);
     if (sp.get('view') === 'map') setView('map');
     setUrlRead(true);
@@ -175,7 +177,7 @@ export function ListingsClient({ initialListings, children }: { initialListings:
   }, [reloadKey]);
 
   const filtered = useMemo(() => {
-    const range = SIZE_RANGES[sizeIdx];
+    const range = SIZE_RANGES[sizeIdx] ?? SIZE_RANGES[0];   // never let a bad index throw
     return listings.filter(l => {
       const matchSearch = !search
         || l.title.toLowerCase().includes(search.toLowerCase())

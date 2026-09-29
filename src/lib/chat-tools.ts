@@ -10,9 +10,10 @@
  *
  *   2. capture_lead — Claude can offer to have someone follow up. If the
  *      visitor agrees and shares contact info, this writes a row to the
- *      leads table with source='chat-widget' so it flows into the same
- *      Resend + CRM pipeline as every other lead. The T+24hr generic
- *      follow-up cron picks it up like any other inquiry.
+ *      leads table (source='chat-widget') AND hands the lead to the CRM via
+ *      sendLeadToCrm(notify:true) so it becomes a real contact and the broker
+ *      is alerted — the same destinations as every form lead. The T+24hr
+ *      generic follow-up cron also picks it up.
  *
  * Both are read/write-narrow: search_listings can only SELECT, and
  * capture_lead can only INSERT into leads. Neither can touch anything
@@ -21,6 +22,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { looksLikeGibberishName } from '@/lib/bot-filter';
+import { sendLeadToCrm } from '@/lib/crm-lead';
 
 // ─── Tool schemas (fed to Claude) ────────────────────────────────────
 
@@ -248,6 +250,17 @@ export async function executeCaptureLead(input: CaptureLeadInput) {
   if (error) {
     return { error: `Could not record lead: ${error.message}` };
   }
+
+  // Hand the chat lead to the CRM as a real contact AND alert the broker. Every form
+  // route pushes to the CRM in-app; the chat path skipped it, so a consented,
+  // high-intent chat lead used to sit in `leads` with nobody told. Non-fatal — the
+  // row is already saved and sendLeadToCrm logs-and-returns instead of throwing.
+  await sendLeadToCrm({
+    name, email, phone,
+    message: interest,
+    source: 'website — crecotx.com (chat concierge)',
+    type: 'Buyer',
+  }, { notify: true });
 
   return {
     success: true,

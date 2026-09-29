@@ -49,7 +49,7 @@ export interface CrmLeadPayload {
   device?: string | null;
 }
 
-export async function sendLeadToCrm(lead: CrmLeadPayload): Promise<{ ok: boolean; skipped?: boolean }> {
+export async function sendLeadToCrm(lead: CrmLeadPayload, opts?: { notify?: boolean }): Promise<{ ok: boolean; skipped?: boolean }> {
   if (!CRM_LEAD_WEBHOOK_SECRET) {
     console.warn('[crm-lead] CRM_LEAD_WEBHOOK_SECRET not set — lead not handed to the CRM');
     return { ok: false, skipped: true };
@@ -65,8 +65,10 @@ export async function sendLeadToCrm(lead: CrmLeadPayload): Promise<{ ok: boolean
         // and a caller cannot forget it. The CRM uses it to separate crecotx
         // leads from the Fair Oaks and Elkhorn feeds.
         lead_site: 'crecotx.com',
-        // The forms already email the team; one lead should not alert twice.
-        notify: false,
+        // The forms already email the team; one lead should not alert twice. Paths
+        // with no team email of their own (e.g. the chat concierge) pass notify:true
+        // so the CRM webhook raises the broker alert instead of nobody being told.
+        notify: opts?.notify ?? false,
         tags: ['Website', ...(lead.tags ?? [])],
         submitted_at: new Date().toISOString(),
       }),
