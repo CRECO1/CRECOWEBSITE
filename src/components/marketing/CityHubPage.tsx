@@ -344,6 +344,29 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
           </Container>
         </section>
 
+        {/* Prominent capture high on the page. Organic search is the top channel
+            into these hubs but previously converted ~zero: the only real form
+            sat below the entire market write-up, and the hero CTA linked away to
+            /get-started. This catches the searcher in the hero flow, city-framed,
+            with a distinct surface from the bottom form. */}
+        <section className="section-luxury bg-background-cream border-b border-border">
+          <Container>
+            <div className="mx-auto max-w-3xl">
+              <InlineLeadForm
+                tone="light"
+                eyebrow={`${config.cityShort} — tenant & buyer representation`}
+                heading={`Looking for commercial space in ${config.city}?`}
+                body={`Tell us the type, size and timing and a CRECO broker sends you matching ${config.cityShort} availabilities — including off-market space you won't find on LoopNet. No obligation.`}
+                contextLabel="What are you looking for?"
+                contextPlaceholder={`e.g. 5,000 SF retail in ${config.cityShort}, moving Q1`}
+                source="tenant-needs"
+                submitLabel="Send me options"
+                surface={`${(config.canonicalPath || config.city).replace(/^\//, '')}-hero`}
+              />
+            </div>
+          </Container>
+        </section>
+
         {/* Answer-first summary — the concise snippet AI + featured results lift */}
         {config.quickAnswer && (
           <section className="bg-white border-b border-border py-8">

@@ -32,6 +32,7 @@ import { withSyntheticListings, listingLinkProps } from '@/lib/featured-properti
 import { trackViewItemList, trackListingSearch, trackSelectItem } from '@/lib/analytics';
 import { PropertyAlertsInline } from '@/components/marketing/PropertyAlertsInline';
 import { MarketReportCapture } from '@/components/marketing/MarketReportCapture';
+import { InlineLeadForm } from '@/components/forms/InlineLeadForm';
 
 // Map view is heavy (Leaflet + react-leaflet bundle) — only loaded when
 // the user opts in, so grid view keeps a tight first-load bundle for SEO.
@@ -501,6 +502,28 @@ export function ListingsClient({ initialListings, children }: { initialListings:
                 </div>
               </>
             )}
+          </Container>
+        </div>
+
+        {/* Higher-intent capture for the browser who scrolled the grid but
+            didn't find their space. Organic listings traffic converted ~zero on
+            the email-alert bands alone; a "we'll source it, incl. off-market"
+            requirements form is a stronger ask, so it leads, with alerts below. */}
+        <div className="bg-primary py-14">
+          <Container>
+            <div className="max-w-3xl mx-auto">
+              <InlineLeadForm
+                tone="dark"
+                eyebrow="Tenant & buyer representation"
+                heading="Don't see the right space?"
+                body="Tell us the type, size, submarket and timing — a CRECO broker sends you matching Texas availabilities, including off-market space that never hits the public listings."
+                contextLabel="What are you looking for?"
+                contextPlaceholder="e.g. 10,000–15,000 SF warehouse, San Antonio NE, moving Q1"
+                source="tenant-needs"
+                submitLabel="Send me options"
+                surface="listings-requirements"
+              />
+            </div>
           </Container>
         </div>
 
