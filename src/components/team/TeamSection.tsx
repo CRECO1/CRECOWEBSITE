@@ -24,7 +24,7 @@ import { Phone, Award, User, X, ArrowRight, Send, Loader2, CheckCircle, MessageS
 import { Container } from '@/components/ui/Container';
 import { Honeypot } from '@/components/forms/Honeypot';
 import { supabase } from '@/lib/supabase';
-import { trackEvent, readUtmsFromCookie } from '@/lib/analytics';
+import { trackEvent, leadPayloadFields } from '@/lib/analytics';
 
 /**
  * Shape of a row in the `agents` table. This used to be derived from a
@@ -118,7 +118,7 @@ export function TeamSection({
       const honeypot = (capturedForm.get('website') as string) ?? '';
       const formRenderedAt = Number(capturedForm.get('form_rendered_at')) || undefined;
       if (honeypot) { setMsgSubmitted(true); setMsgSubmitting(false); return; }
-      const attribution = readUtmsFromCookie();
+      const attribution = leadPayloadFields();
       const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

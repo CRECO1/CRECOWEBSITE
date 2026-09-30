@@ -134,8 +134,10 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
         notes ? `\nNotes: ${notes}` : '',
       ].filter(Boolean).join('\n');
 
-      const { trackEvent, readUtmsFromCookie } = await import('@/lib/analytics');
-      const attribution = readUtmsFromCookie();
+      const { trackEvent, leadPayloadFields } = await import('@/lib/analytics');
+      // leadPayloadFields = utm + the full visit journey/dwell, so this development
+      // inquiry lands in the CRM with its page trail, not just the campaign source.
+      const attribution = leadPayloadFields();
       const res = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

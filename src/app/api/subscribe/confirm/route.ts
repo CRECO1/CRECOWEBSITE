@@ -101,6 +101,18 @@ export async function GET(req: NextRequest) {
     subscription_type: row.subscription_type,
     asset_slug: row.asset_slug || null,
     filters: row.filters ?? null,
+    // Attribution captured at signup and stored on subscribers.context — thread it
+    // through so a confirmed subscriber lands in the CRM with its source/channel,
+    // not blank (the Lead Attribution tab reads these). Journey isn't captured for
+    // subscribe forms, so it stays null; utm/referrer/page_path are the signal.
+    utm_source: str(stored.utm_source), utm_medium: str(stored.utm_medium),
+    utm_campaign: str(stored.utm_campaign), utm_term: str(stored.utm_term),
+    utm_content: str(stored.utm_content),
+    referrer: str(stored.referrer),
+    page_path: str(stored.page_path),
+    surface: str(stored.surface),
+    geo: str(stored.geo),
+    device: str(stored.device),
   }).catch(err => console.error('[subscribe/confirm] CRM push failed:', (err as Error).message));
 
   if (process.env.RESEND_API_KEY) {

@@ -201,6 +201,16 @@ export async function POST(req: NextRequest) {
       subscription_type,
       asset_slug: asset_slug || null,
       filters: filters ?? null,
+      // Attribution captured for this signup (same fields stored on
+      // subscribers.context) — thread it into the CRM so a lead-magnet contact
+      // lands with its source/channel/landing instead of blank, which the Lead
+      // Attribution tab reads. (Newsletter/alerts confirm first — see below.)
+      ...(ctx.utm ?? {}),
+      referrer: ctx.referrer,
+      page_path: ctx.pagePath,
+      geo: ctx.geo,
+      device: ctx.device,
+      surface: clampString((body as Record<string, unknown>).surface, MAX_LEN.shortField) || null,
     });
 
     // Confirmation email to the subscriber
