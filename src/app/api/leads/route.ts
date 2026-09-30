@@ -342,6 +342,19 @@ export async function POST(req: NextRequest) {
       company: company || null,
       message: message || null,
       property_interest: property_interest || null,
+      // Attribution + visit journey — so the contact pushToCrm creates in the CRM
+      // carries where it came from and what pages it visited (the "Lead
+      // Attribution" tab). pushToCrm is the writer that actually authors the row
+      // in prod, so this is what makes attribution land.
+      utm_source, utm_medium, utm_campaign, utm_term, utm_content,
+      referrer, landing_page,
+      page_path: ctx.pagePath,
+      surface: clampString((body as Record<string, unknown>).surface, MAX_LEN.shortField) || null,
+      geo: ctx.geo,
+      device: ctx.device,
+      journey: (body as { journey?: Array<{ p: string; t: number }> }).journey ?? null,
+      time_on_site_sec: (body as { time_on_site_sec?: number }).time_on_site_sec ?? null,
+      page_views: (body as { page_views?: number }).page_views ?? null,
     });
 
     if (process.env.RESEND_API_KEY) {

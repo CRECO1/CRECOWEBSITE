@@ -169,6 +169,29 @@ export interface CrmPayload {
   asset_slug?: string | null;
   filters?: Record<string, unknown> | null;
   metadata?: Record<string, unknown> | null;
+  // ── Attribution ────────────────────────────────────────────────────────────
+  // Forwarded from the lead routes so the contact pushToCrm creates carries
+  // WHERE it came from (utm/referrer/landing) and the visit journey + dwell —
+  // the exact columns the FORG webhook receiver stores. Without these, pushToCrm
+  // (the writer that actually authors the crm_clients row in prod, since the
+  // webhook path is dormant) inserted an attribution-less row, so the CRM's
+  // "Lead Attribution" tab showed "not recorded". All optional: an omitted
+  // field stays null, exactly as before.
+  utm_source?: string | null;
+  utm_medium?: string | null;
+  utm_campaign?: string | null;
+  utm_term?: string | null;
+  utm_content?: string | null;
+  referrer?: string | null;
+  landing_page?: string | null;
+  page_path?: string | null;
+  surface?: string | null;
+  geo?: string | null;
+  device?: string | null;
+  /** Ordered pages this visit touched, [{p,t}] (t = ms since first view). */
+  journey?: Array<{ p: string; t: number }> | null;
+  time_on_site_sec?: number | null;
+  page_views?: number | null;
 }
 
 /** Service-role Supabase client for the CRM (FORG project). Prefers
@@ -249,6 +272,93 @@ function syntheticMessageId(p: CrmPayload): string {
 }
 
 /**
+ * Coarse channel bucket from referrer + utm_medium/source, roughly GA4's
+ * default channel grouping. Kept in lockstep with the FORG webhook receiver's
+ * channelFor (FairOaks-consolidate/src/lib/lead-context.ts) so the two CRM
+ * writers bucket a lead the same way and first-party numbers stay comparable.
+ */
+function channelFor(referrer: string | null, utmMedium: string | null, utmSource: string | null): string {
+  const m = (utmMedium ?? '').toLowerCase();
+  if (m.includes('cpc') || m.includes('ppc') || m.includes('paid')) return 'Paid Search';
+  if (m.includes('email')) return 'Email';
+  if (m.includes('social')) return 'Organic Social';
+  if (m.includes('referral')) return 'Referral';
+  const r = (referrer ?? '').toLowerCase();
+  const s = (utmSource ?? '').toLowerCase();
+  const hay = `${r} ${s}`;
+  if (!r && !s) return 'Direct';
+  if (/google|bing|yahoo|duckduckgo|ecosia/.test(hay)) return 'Organic Search';
+  if (/facebook|instagram|linkedin|twitter|x\.com|tiktok|youtube|pinterest|nextdoor/.test(hay)) return 'Organic Social';
+  if (/zillow|realtor\.com|redfin|har\.com|trulia|homes\.com|loopnet|crexi/.test(hay)) return 'Listing Portal';
+  if (/mail\.|outlook|gmail/.test(hay)) return 'Email';
+  return 'Referral';
+}
+
+/** Non-empty trimmed string, capped — null otherwise. */
+function attrStr(v: unknown, max = 200): string | null {
+  if (typeof v !== 'string') return null;
+  const t = v.trim();
+  return t ? t.slice(0, max) : null;
+}
+
+/** Non-negative integer from a number/string, capped. */
+function intOrNull(v: unknown, max = 86400): number | null {
+  const n = typeof v === 'number' ? v : typeof v === 'string' ? parseInt(v, 10) : NaN;
+  if (!Number.isFinite(n) || n < 0) return null;
+  return Math.min(Math.round(n), max);
+}
+
+/** Sanitise the visit trail ([{p,t}]); caps length + field sizes; null if empty. */
+function sanitizeJourney(v: unknown): Array<{ p: string; t: number }> | null {
+  if (!Array.isArray(v)) return null;
+  const out: Array<{ p: string; t: number }> = [];
+  for (const item of v) {
+    if (out.length >= 40) break;
+    if (item && typeof item === 'object' && !Array.isArray(item)) {
+      const p = (item as Record<string, unknown>).p;
+      const t = (item as Record<string, unknown>).t;
+      if (typeof p === 'string' && p.trim()) {
+        out.push({ p: p.trim().slice(0, 200), t: typeof t === 'number' && t >= 0 ? Math.round(t) : 0 });
+      }
+    }
+  }
+  return out.length ? out : null;
+}
+
+/**
+ * Build the crm_clients attribution columns from a lead payload — the same
+ * shape the FORG webhook receiver writes (utm_*, referrer, landing_page,
+ * page_path, surface, geo, device, derived channel, journey, time_on_site_sec,
+ * page_views). Only non-empty values are included, so an unknown field stays
+ * null rather than being written as an empty string.
+ */
+function attributionFields(p: CrmPayload): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  const strs: Array<[string, unknown]> = [
+    ['utm_source', p.utm_source], ['utm_medium', p.utm_medium], ['utm_campaign', p.utm_campaign],
+    ['utm_term', p.utm_term], ['utm_content', p.utm_content], ['referrer', p.referrer],
+    ['landing_page', p.landing_page], ['page_path', p.page_path], ['surface', p.surface],
+    ['geo', p.geo], ['device', p.device],
+  ];
+  for (const [k, v] of strs) {
+    const s = attrStr(v, k === 'referrer' || k === 'landing_page' || k === 'page_path' ? 300 : 200);
+    if (s) out[k] = s;
+  }
+  // Derive the channel only when there are signals, matching the webhook: a pure
+  // Direct visit leaves channel null so a later campaign visit can still set it.
+  if (out.referrer || out.utm_medium || out.utm_source) {
+    out.channel = channelFor((out.referrer as string) ?? null, (out.utm_medium as string) ?? null, (out.utm_source as string) ?? null);
+  }
+  const journey = sanitizeJourney(p.journey);
+  if (journey) out.journey = journey;
+  const tos = intOrNull(p.time_on_site_sec);
+  if (tos != null) out.time_on_site_sec = tos;
+  const pv = intOrNull(p.page_views, 1000) ?? (journey ? journey.length : null);
+  if (pv != null) out.page_views = pv;
+  return out;
+}
+
+/**
  * Push a single lead to the shared CRM. Always writes to both
  * `crm_clients` (dedupe by email) and `email_lead_imports` (the table
  * the Prospects dashboard reads from).
@@ -271,6 +381,7 @@ export async function pushToCrm(p: CrmPayload): Promise<boolean> {
     const tags = buildTags(p);
     const message = buildMessage(p);
     const sourceLabel = SOURCE_TO_LABEL[p.source] ?? 'CRECO Website';
+    const attr = attributionFields(p);
 
     // An UNMAPPED source is not a buyer. It used to default to 'Buyer',
     // which both mislabeled the contact and (via TYPE_TO_DEAL) manufactured
@@ -287,7 +398,7 @@ export async function pushToCrm(p: CrmPayload): Promise<boolean> {
 
     const { data: matches } = await supabase
       .from('crm_clients')
-      .select('id, tags, lead_source, prospect_status, agent_id, business_name')
+      .select('id, tags, lead_source, prospect_status, agent_id, business_name, channel')
       .or(matchFilter)
       .limit(1);
     const existing = matches?.[0] ?? null;
@@ -303,6 +414,11 @@ export async function pushToCrm(p: CrmPayload): Promise<boolean> {
         .update({
           tags: mergedTags,
           lead_source: existing.lead_source || sourceLabel,
+          // Backfill attribution only when the contact has none (no channel yet),
+          // matching the FORG webhook: a returning lead that arrives with a
+          // campaign/journey shouldn't lose it because we already knew the person,
+          // but a later Direct visit must not overwrite the original acquisition.
+          ...(existing.channel ? {} : attr),
           // Fill in a company we captured later; never blank an existing one.
           ...(company && !existing.business_name ? { business_name: company } : {}),
           // Re-surface to "new" if the broker had moved them elsewhere
@@ -346,6 +462,10 @@ export async function pushToCrm(p: CrmPayload): Promise<boolean> {
           business_unit: 'commercial',
           tags,
           prospect_status: 'new',
+          // Where this lead came from + the pages/dwell of the visit that
+          // produced it. Matches the FORG webhook's insert so both writers
+          // store the same shape; omitted fields simply stay null.
+          ...attr,
         }])
         .select('id')
         .single();

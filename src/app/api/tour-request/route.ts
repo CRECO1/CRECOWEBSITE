@@ -264,6 +264,22 @@ export async function POST(req: NextRequest) {
         listing_title: listingTitle || null,
         listing_address: listingAddress || null,
       },
+      // Attribution + visit journey → the CRM's "Lead Attribution" tab. Computed
+      // inline from the raw cookie values because the clamped consts above are
+      // scoped to the DB-write block; these raw vars + ctx are request-scoped.
+      utm_source: clampString(rawUtmSource, MAX_LEN.shortField) || null,
+      utm_medium: clampString(rawUtmMedium, MAX_LEN.shortField) || null,
+      utm_campaign: clampString(rawUtmCampaign, MAX_LEN.shortField) || null,
+      utm_term: clampString(rawUtmTerm, MAX_LEN.shortField) || null,
+      utm_content: clampString(rawUtmContent, MAX_LEN.shortField) || null,
+      referrer: clampString(rawReferrer, MAX_LEN.shortField) || null,
+      landing_page: clampString(rawLandingPage, MAX_LEN.shortField) || null,
+      page_path: ctx.pagePath,
+      geo: ctx.geo,
+      device: ctx.device,
+      journey: (body as { journey?: Array<{ p: string; t: number }> }).journey ?? null,
+      time_on_site_sec: (body as { time_on_site_sec?: number }).time_on_site_sec ?? null,
+      page_views: (body as { page_views?: number }).page_views ?? null,
     });
 
     // Build the calendar invite

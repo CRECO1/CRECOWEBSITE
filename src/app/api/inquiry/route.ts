@@ -318,6 +318,15 @@ export async function POST(req: NextRequest) {
       company: company || null,
       message: `${meta.humanLabel}\n\n${answerSummary}`,
       metadata: { path, answers, callback: isCallback, email_provided: email !== null },
+      // Attribution + visit journey → the CRM's "Lead Attribution" tab.
+      utm_source, utm_medium, utm_campaign, utm_term, utm_content,
+      referrer, landing_page,
+      page_path: ctx.pagePath,
+      geo: ctx.geo,
+      device: ctx.device,
+      journey: (body as { journey?: Array<{ p: string; t: number }> }).journey ?? null,
+      time_on_site_sec: (body as { time_on_site_sec?: number }).time_on_site_sec ?? null,
+      page_views: (body as { page_views?: number }).page_views ?? null,
     });
 
     // Notification email — every interpolated value is escaped inside the
