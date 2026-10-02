@@ -50,6 +50,8 @@ export interface InlineLeadFormProps {
    * unset by surfaces where the page itself isn't about one property type.
    */
   propertyInterest?: string;
+  /** Pre-fills the context question — e.g. the filters a visitor already set. */
+  initialContext?: string;
   submitLabel?: string;
   /** Dark rides on the primary ground; light on cream or white. */
   tone?: 'light' | 'dark';
@@ -65,11 +67,12 @@ export function InlineLeadForm({
   source,
   surface,
   propertyInterest,
+  initialContext = '',
   submitLabel = 'Request a call',
   tone = 'light',
   className = '',
 }: InlineLeadFormProps) {
-  const [f, setF] = useState({ name: '', email: '', phone: '', context: '' });
+  const [f, setF] = useState({ name: '', email: '', phone: '', context: initialContext });
   const set = (k: keyof typeof f) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
       setF(prev => ({ ...prev, [k]: e.target.value }));

@@ -412,6 +412,14 @@ export function ListingsClient({ initialListings, children }: { initialListings:
                 totalCount={listings.length}
                 onClearFilters={clearAllFilters}
                 onClearOtherFilters={clearOtherFilters}
+                searchTerm={search}
+                filterSummary={[
+                  propertyType !== 'all' ? propertyTypeLabel(propertyType) : null,
+                  transactionType !== 'all' ? transactionLabel(transactionType) : null,
+                  submarket !== 'all' ? submarket : null,
+                  sizeIdx > 0 ? SIZE_RANGES[sizeIdx].label : null,
+                  search.trim() ? `"${search.trim()}"` : null,
+                ].filter(Boolean).join(' · ')}
               />
             ) : view === 'map' ? (
               <>

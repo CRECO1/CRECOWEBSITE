@@ -16,7 +16,7 @@
  * visited a high-intent page (analytics).
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { VALUATION_DISCLAIMER } from '@/lib/valuation-copy';
 import { ArrowRight, Calculator, CheckCircle, Loader2, TrendingUp } from 'lucide-react';
 import { getRecaptchaToken } from './Recaptcha';
@@ -44,6 +44,12 @@ export function PropertyValuationForm() {
   const [propertyType, setPropertyType] = useState<PropertyType>('industrial');
   const [submarketTier, setSubmarketTier] = useState<SubmarketTier>('secondary');
   const [address, setAddress] = useState('');
+  // /listings sends address searches that matched nothing here as ?address=…,
+  // so the visitor lands with their property already typed in.
+  useEffect(() => {
+    const a = new URLSearchParams(window.location.search).get('address');
+    if (a) setAddress(a.slice(0, 200));
+  }, []);
   const [city, setCity] = useState('');
   const [totalSf, setTotalSf] = useState('');
   const [yearBuilt, setYearBuilt] = useState('');

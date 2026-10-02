@@ -37,7 +37,7 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { Building2, Compass, Mail, Sparkles } from 'lucide-react';
+import { ArrowRight, Building2, Calculator, Compass, Mail, Sparkles } from 'lucide-react';
 import { InlineLeadForm } from '@/components/forms/InlineLeadForm';
 import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 import { emptyStateCopy, offMarketLine } from '@/lib/property-type-copy';
@@ -62,6 +62,21 @@ interface ListingsEmptyStateProps {
   onClearFilters?: () => void;
   /** Clears everything except the property type, for the combo case. */
   onClearOtherFilters?: () => void;
+  /** The search box text — an address here usually means "what's mine worth". */
+  searchTerm?: string;
+  /** The active filters in words ("Industrial · For Lease · 5,000 – 15,000 SF"),
+   *  pre-filled into the needs form so the visitor doesn't retype them. */
+  filterSummary?: string;
+}
+
+/**
+ * "2627 Valwood Parkway Dallas" — a street number then a street name. Clarity
+ * showed a ChatGPT-referred owner type exactly that into this search, get an
+ * empty grid, and leave: they wanted a value for their own building, not a
+ * listing. Such a search gets the valuation offer first.
+ */
+function looksLikeAddress(q: string): boolean {
+  return /^\d{1,6}\s+[a-z]/i.test(q.trim()) && q.trim().length >= 6;
 }
 
 export function ListingsEmptyState({
@@ -70,7 +85,10 @@ export function ListingsEmptyState({
   totalCount = 0,
   onClearFilters,
   onClearOtherFilters,
+  searchTerm = '',
+  filterSummary = '',
 }: ListingsEmptyStateProps) {
+  const address = looksLikeAddress(searchTerm) ? searchTerm.trim() : null;
   const copy = emptyStateCopy(propertyType);
   const typed = copy.kind === 'typed';
   const typeValue = copy.kind === 'typed' ? copy.value : null;
@@ -101,6 +119,29 @@ export function ListingsEmptyState({
       {/* Mobile-first: one column, everything full-bleed within the container.
           From lg: up the explanation and the capture sit side by side so the
           form is visible without scrolling on a laptop. */}
+      {address && (
+        <div className="mx-auto mb-8 max-w-5xl rounded-2xl border border-gold/40 bg-gold-lighter/60 p-5 sm:flex sm:items-center sm:justify-between sm:gap-6 sm:p-6">
+          <div className="flex gap-3">
+            <Calculator className="mt-1 h-5 w-5 shrink-0 text-gold-dark" aria-hidden="true" />
+            <div>
+              <p className="font-heading text-heading-sm font-bold text-primary">
+                Want to know what {address} is worth?
+              </p>
+              <p className="mt-1 text-body-sm text-foreground-muted">
+                It isn&rsquo;t one of our listings, but our free valuation tool gives you an
+                instant estimate, and a broker can follow up with real comps.
+              </p>
+            </div>
+          </div>
+          <Link
+            href={`/property-valuation?address=${encodeURIComponent(address)}`}
+            onClick={() => trackEvent('listings_address_to_valuation', { surface })}
+            className="mt-4 inline-flex min-h-[44px] w-full shrink-0 items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-body-sm font-semibold text-white hover:bg-primary/90 sm:mt-0 sm:w-auto"
+          >
+            Value this property <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+      )}
       <div className="mx-auto max-w-5xl lg:grid lg:grid-cols-5 lg:gap-10">
         <div className="lg:col-span-3">
           <div className="flex items-center gap-3">
@@ -172,6 +213,10 @@ export function ListingsEmptyState({
             source="tenant-needs"
             surface={surface}
             propertyInterest={propertyInterest}
+            // Keyed so a change of filters re-seeds the pre-filled answer.
+            // An address search wants a valuation (offered above), not space.
+            key={address ? '' : filterSummary}
+            initialContext={address ? '' : filterSummary}
             submitLabel="Send me options"
           />
         </div>
