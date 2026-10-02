@@ -45,6 +45,7 @@ const cspDirectives = {
   ],
   'connect-src': [
     "'self'",
+    'https://www.fairoaksrealtygroup.com', // live pageview beacon → CRM ingest
     'https://*.supabase.co',             // Supabase API + Storage
     'https://*.supabase.in',
     'https://www.google-analytics.com',  // GA collect endpoint

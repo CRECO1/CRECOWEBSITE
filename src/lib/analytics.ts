@@ -290,6 +290,47 @@ export function readUtmsFromCookie(): UtmAttribution {
   }
 }
 
+// ── Live pageview beacon → the CRM's first-party ingest. Feeds the real-time
+//    "who's on the site now" feed on the Lead Attribution page. crecotx.com
+//    posts CROSS-ORIGIN to fairoaksrealtygroup.com; sendBeacon + text/plain is a
+//    CORS "simple request" (no preflight) and the response is ignored, so no
+//    CORS config is needed on the receiver — only connect-src here (next.config).
+const BEACON_URL = 'https://www.fairoaksrealtygroup.com/api/track/pageview';
+const SESSION_KEY = 'creco_sid';
+
+function sessionId(): string {
+  try {
+    let id = sessionStorage.getItem(SESSION_KEY);
+    if (!id) {
+      id = (typeof crypto !== 'undefined' && crypto.randomUUID)
+        ? crypto.randomUUID()
+        : `s_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`;
+      sessionStorage.setItem(SESSION_KEY, id);
+    }
+    return id;
+  } catch { return `s_${Math.random().toString(36).slice(2, 12)}`; }
+}
+
+/** Fire-and-forget pageview beacon. Non-PII only; the server adds geo + device. */
+export function sendPageviewBeacon(): void {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined' || typeof navigator.sendBeacon !== 'function') return;
+  const host = window.location.hostname;
+  if (/localhost|127\.0\.0\.1|\.local$/.test(host)) return;
+  try {
+    const a = readUtmsFromCookie();
+    const payload = JSON.stringify({
+      site: host.replace(/^www\./, ''),
+      session_id: sessionId(),
+      path: window.location.pathname.slice(0, 512),
+      title: (document.title || '').slice(0, 300),
+      referrer: (document.referrer && !document.referrer.includes(host)) ? document.referrer.slice(0, 512) : '',
+      utm_source: a.utm_source, utm_medium: a.utm_medium, utm_campaign: a.utm_campaign,
+      utm_term: a.utm_term, utm_content: a.utm_content,
+    });
+    navigator.sendBeacon(BEACON_URL, new Blob([payload], { type: 'text/plain' }));
+  } catch { /* analytics must never break a render */ }
+}
+
 /**
  * The page trail for THIS visit — sessionStorage, per tab. On a lead it answers
  * "what did they look at, and how long were they here before submitting". Kept
