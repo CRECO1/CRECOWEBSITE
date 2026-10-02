@@ -11,6 +11,7 @@ import {
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
+import { MarketReportCapture } from '@/components/marketing/MarketReportCapture';
 import { findMarketReport, MARKET_REPORTS, type MarketReport } from '@/lib/market-reports';
 import { BUSINESS_ID } from '@/lib/schema';
 
@@ -242,6 +243,9 @@ export default async function MarketReportPage({ params }: PageProps) {
                   </div>
                 </div>
               ))}
+              {/* The one place a reader who got value from the report could ask
+                  for the next one — the page had no capture at all. */}
+              <MarketReportCapture variant="light" surface={`research-${report.slug}`} />
             </div>
           </Container>
         </section>

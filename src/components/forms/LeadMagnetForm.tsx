@@ -14,6 +14,12 @@ import { useCaptureSubmit } from '@/lib/use-capture-submit';
 
 const STORAGE_KEY_PREFIX = 'creco-guide-unlocked-';
 
+/** "jane.doe@acme.com" → "Jane Doe" — a usable contact name when none is given. */
+function nameFromEmail(email: string): string {
+  return (email.split('@')[0] ?? '').replace(/[._-]+/g, ' ').replace(/\d+/g, '').trim()
+    .replace(/\b\w/g, ch => ch.toUpperCase());
+}
+
 export function LeadMagnetForm({
   assetSlug,
   outcomes,
@@ -41,7 +47,9 @@ export function LeadMagnetForm({
     recaptchaAction: 'subscribe_lead_magnet',
     buildPayload: ({ recaptchaToken, website }) => ({
       email,
-      name,
+      // Name is optional: the copy promised "enter your email" while the form
+      // demanded a name too. Derive one so the CRM contact isn't "Web Lead".
+      name: name.trim() || nameFromEmail(email),
       subscription_type: 'lead-magnet',
       source: `guide:${assetSlug}`,
       asset_slug: assetSlug,
@@ -87,19 +95,20 @@ export function LeadMagnetForm({
         <Honeypot />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <input
-            type="text"
-            required
-            value={name}
-            onChange={e => setName(e.target.value)}
-            placeholder="Your name"
-            className="rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:outline-none focus:border-gold-dark"
-          />
-          <input
             type="email"
             required
+            autoComplete="email"
             value={email}
             onChange={e => setEmail(e.target.value)}
             placeholder="you@company.com"
+            className="rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:outline-none focus:border-gold-dark"
+          />
+          <input
+            type="text"
+            autoComplete="name"
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="Your name (optional)"
             className="rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:outline-none focus:border-gold-dark"
           />
         </div>
