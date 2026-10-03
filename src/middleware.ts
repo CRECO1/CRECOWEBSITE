@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import type { NextFetchEvent, NextRequest } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
+import { matchCrawler, logCrawlerHit } from '@/lib/crawler-hits';
 
 // Protected routes that require authentication. /admin is content management;
 // /billing is the financial surface (invoices, expenses, email template) —
@@ -12,11 +13,35 @@ const protectedRoutes = ['/admin', '/billing', '/manage'];
 // Supabase's recovery email links to).
 const publicRoutes = ['/manage/login', '/manage/forgot-password', '/manage/reset-password'];
 
-export async function middleware(request: NextRequest) {
+// The matcher below covers every page (the crawler tracker needs to see them
+// all), but the auth gate in handle() still applies only to protectedRoutes —
+// everything else passes straight through.
+export async function middleware(request: NextRequest, event: NextFetchEvent) {
+  const res = await handle(request);
+
+  const bot = matchCrawler(request.headers.get('user-agent'));
+  if (bot) {
+    // Pass-through responses are rendered by the app after middleware, so their
+    // status isn't known here; record it only when middleware answered itself.
+    const passedThrough = res.headers.has('x-middleware-next') || res.headers.has('x-middleware-rewrite');
+    event.waitUntil(logCrawlerHit({
+      bot_name: bot,
+      path: request.nextUrl.pathname,            // no query string: keeps tokens/emails out
+      status: passedThrough ? null : res.status,
+      user_agent: request.headers.get('user-agent') ?? '',
+      host: request.headers.get('host'),
+    }));
+  }
+  return res;
+}
+
+async function handle(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
 
   // Skip middleware for non-admin routes
-  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
+  // Segment-exact, matching the old '/admin/:path*'-style matcher now that the
+  // matcher covers every page.
+  const isProtectedRoute = protectedRoutes.some(route => pathname === route || pathname.startsWith(`${route}/`));
   const isPublicRoute = publicRoutes.some(route => pathname === route);
 
   if (!isProtectedRoute) {
@@ -93,10 +118,10 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Run the middleware on every protected surface. The handler itself
-    // decides which paths are protected and which are public.
-    '/admin/:path*',
-    '/billing/:path*',
-    '/manage/:path*',
+    // Everything except build assets and static media, so the crawler tracker
+    // sees every page. Text/XML files stay in (robots.txt, sitemap.xml,
+    // llms.txt) — those are what crawlers fetch. handle() decides which paths
+    // are protected and which are public.
+    '/((?!_next/static|_next/image|.*\\.(?:png|jpe?g|gif|svg|webp|avif|ico|css|js|mjs|map|woff2?|ttf|otf|mp4|webm)$).*)',
   ],
 };
