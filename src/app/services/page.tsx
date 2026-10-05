@@ -3,7 +3,8 @@ import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import Link from 'next/link';
 import { Briefcase, LineChart, Building2, Wrench, Layers, Leaf, ArrowRight } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
-import { Button } from '@/components/ui/Button';
+import { InlineLeadForm } from '@/components/forms/InlineLeadForm';
+import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import { JsonLd } from '@/components/seo/JsonLd';
@@ -575,6 +576,15 @@ export default function ServicesPage() {
               <p className="mt-6 text-body-lg text-white/80">
                 Leasing, owner services, investment sales and development — with principal-level attention on every engagement.
               </p>
+              <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3">
+                <Link
+                  href="#services-form"
+                  className="inline-flex items-center gap-2 rounded-lg bg-gold px-7 py-3 text-body-sm font-semibold text-primary hover:bg-gold-light"
+                >
+                  Tell us what you&apos;re working on <ArrowRight className="h-4 w-4" />
+                </Link>
+                <PhoneCallText variant="inline" tone="dark" surface="services-hero" />
+              </div>
             </div>
           </Container>
         </section>
@@ -626,17 +636,22 @@ export default function ServicesPage() {
           </Container>
         </section>
 
-        {/* CTA */}
-        <section className="section-compact bg-primary text-white">
+        {/* The page's own form — it used to close on a "Get in Touch" button
+            that left for /contact. */}
+        <section id="services-form" className="section-luxury bg-primary scroll-mt-24" aria-label="Not sure which service fits?">
           <Container>
-            <div className="text-center max-w-2xl mx-auto">
-              <h2 className="font-heading text-display-sm font-bold mb-4">Not sure which service fits?</h2>
-              <p className="text-body text-white/70 mb-8">
-                Start with a conversation. We&apos;ll listen, ask the right questions, and recommend an approach — even if that means pointing you somewhere else.
-              </p>
-              <Button size="lg" asChild>
-                <Link href="/contact">Get in Touch</Link>
-              </Button>
+            <div className="mx-auto max-w-3xl">
+              <InlineLeadForm
+                tone="dark"
+                eyebrow="Start with a conversation"
+                heading="Not sure which service fits?"
+                body="Tell us what you're working on. We'll recommend an approach — even if that means pointing you somewhere else."
+                contextLabel="What are you working on?"
+                contextPlaceholder="e.g. Lease ends next year and we may need more space — or, own a strip center and thinking about selling"
+                source="contact"
+                submitLabel="Talk to a broker"
+                surface="services-inline"
+              />
             </div>
           </Container>
         </section>

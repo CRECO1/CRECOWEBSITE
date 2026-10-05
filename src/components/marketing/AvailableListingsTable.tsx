@@ -22,6 +22,7 @@ export function AvailableListingsTable({
   emptyHeading,
   asset,
   emptySurface,
+  needsHref,
   className = 'section-luxury bg-white',
 }: {
   listings: Listing[];
@@ -38,6 +39,8 @@ export function AvailableListingsTable({
   asset?: string;
   /** Placement id for the empty state's contact taps. Falls back to `path`. */
   emptySurface?: string;
+  /** Where the empty state's "tell us what you need" goes — the page's own form when it has one. */
+  needsHref?: string;
   className?: string;
 }) {
   return (
@@ -62,6 +65,7 @@ export function AvailableListingsTable({
               propertyType={asset}
               surface={emptySurface ?? `available-table-empty${path}`}
               action={{ href: '/listings', label: 'Browse all CRECO listings' }}
+              needsHref={needsHref}
             />
           ) : (
             <div className="overflow-x-auto rounded-xl border border-border">

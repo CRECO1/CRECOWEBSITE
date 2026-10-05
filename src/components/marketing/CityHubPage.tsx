@@ -11,7 +11,7 @@ import React from 'react';
 import { findGuide } from '@/lib/guides';
 import { SourcesMethodology, asOfMonth } from '@/components/marketing/SourcesMethodology';
 import {
-  ArrowRight, MapPin, TrendingUp, Building2, Phone, BellRing,
+  ArrowRight, MapPin, TrendingUp, Building2, BellRing,
   CheckCircle, BookOpen,
 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
@@ -53,6 +53,7 @@ function linkifyContact(value: string): React.ReactNode {
   });
 }
 import { InlineLeadForm } from '@/components/forms/InlineLeadForm';
+import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 import { GoogleReviews } from '@/components/marketing/GoogleReviews';
 import { RepresentationBand } from '@/components/marketing/RepresentationBand';
 import { filterListings, getAvailableListings } from '@/lib/public-listings';
@@ -296,21 +297,17 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
               <p className="max-w-2xl text-body-lg text-white/70 leading-relaxed mb-8">
                 How CRECO works this market — and what that means for your next lease or sale.
               </p>
-              <div className="flex flex-wrap gap-4">
+              {/* Jumps to this page's own city-framed form just below, instead
+                  of leaving for the generic /get-started quiz. */}
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
                 <Link
-                  href="/get-started"
+                  href="#city-form"
                   className="inline-flex items-center gap-2 rounded-lg bg-gold px-7 py-3.5 text-body-sm font-semibold text-primary hover:bg-gold-light"
                 >
-                  Get started
+                  Send me {config.cityShort} options
                   <ArrowRight className="h-4 w-4" />
                 </Link>
-                <a
-                  href="tel:+12108173443"
-                  className="inline-flex items-center gap-2 rounded-lg border border-white/30 px-7 py-3.5 text-body-sm font-semibold text-white hover:bg-white/10"
-                >
-                  <Phone className="h-4 w-4" />
-                  (210) 817-3443
-                </a>
+                <PhoneCallText variant="inline" tone="dark" surface={`${(config.canonicalPath || config.city).replace(/^\//, '')}-hero-phone`} />
               </div>
             </div>
           </Container>
@@ -349,7 +346,7 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
             sat below the entire market write-up, and the hero CTA linked away to
             /get-started. This catches the searcher in the hero flow, city-framed,
             with a distinct surface from the bottom form. */}
-        <section className="section-luxury bg-background-cream border-b border-border">
+        <section id="city-form" className="section-luxury bg-background-cream border-b border-border scroll-mt-24">
           <Container>
             <div className="mx-auto max-w-3xl">
               <InlineLeadForm
@@ -583,6 +580,7 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
             // category to name and the generic "commercial space" is correct
             // here — unlike on the city × asset pages.
             emptySurface={`city-hub-empty-${config.city.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+            needsHref="#city-form"
             className="section-luxury bg-white border-t border-border"
           />
         )}
@@ -655,10 +653,10 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
               </p>
               <div className="flex flex-wrap justify-center gap-4">
                 <Link
-                  href="/get-started"
+                  href="#city-form-bottom"
                   className="inline-flex items-center gap-2 rounded-lg bg-gold px-7 py-3.5 text-body-sm font-semibold text-primary hover:bg-gold-light"
                 >
-                  Get started
+                  Tell us what you need
                   <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
@@ -680,7 +678,7 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
             footer newsletter to act on. Real reviews, then a short ask. */}
         <GoogleReviews className="section-luxury bg-background-cream" />
 
-        <section className="section-luxury bg-white" aria-label="Contact CRECO">
+        <section id="city-form-bottom" className="section-luxury bg-white scroll-mt-24" aria-label="Contact CRECO">
           <Container>
             <div className="mx-auto max-w-3xl">
               <InlineLeadForm

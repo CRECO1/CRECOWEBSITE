@@ -1,11 +1,12 @@
 import Link from 'next/link';
-import { ArrowRight, CheckCircle2, Phone } from 'lucide-react';
+import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { OwnerPathsBand } from '@/components/marketing/OwnerPathsBand';
 import { InlineLeadForm } from '@/components/forms/InlineLeadForm';
 import { GoogleReviews } from '@/components/marketing/GoogleReviews';
+import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 import { FaqSection } from '@/components/marketing/FaqSection';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { BUSINESS, CANONICAL_DESCRIPTION, DBA_STATEMENT, SITE_URL, breadcrumbList, businessRef, webPage } from '@/lib/schema';
@@ -58,13 +59,18 @@ export function RepresentationPage({ content }: { content: RepresentationPageCon
               <p className="overline mb-3 text-gold">{content.eyebrow}</p>
               <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-5 leading-tight">{content.h1}</h1>
               <p className="text-body-lg text-white/85 leading-relaxed max-w-2xl">{content.heroLine}</p>
-              <div className="mt-7 flex flex-wrap gap-4">
-                <Link href="/get-started" className="inline-flex items-center gap-2 rounded-lg bg-gold px-7 py-3 text-body-sm font-semibold text-primary hover:bg-gold-light">
-                  Talk to CRECO <ArrowRight className="h-4 w-4" />
+              {/* One primary action — this page's own form, with its own
+                  wording — and the quiet call/text line. It used to send
+                  visitors off to the generic /get-started quiz while the
+                  page's form sat further down. */}
+              <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
+                <Link
+                  href={content.inlineForm ? '#rep-form' : '/get-started'}
+                  className="inline-flex items-center gap-2 rounded-lg bg-gold px-7 py-3 text-body-sm font-semibold text-primary hover:bg-gold-light"
+                >
+                  {content.inlineForm ? content.inlineForm.submitLabel : 'Talk to CRECO'} <ArrowRight className="h-4 w-4" />
                 </Link>
-                <a href={`tel:${BUSINESS.phoneE164.replace(/-/g, '')}`} className="inline-flex items-center gap-2 rounded-lg border border-white/30 px-7 py-3 text-body-sm font-semibold text-white hover:bg-white/10">
-                  <Phone className="h-4 w-4" /> {BUSINESS.phoneDisplay}
-                </a>
+                <PhoneCallText variant="inline" tone="dark" surface={`${slug}-hero`} />
               </div>
             </div>
           </Container>
@@ -105,7 +111,7 @@ export function RepresentationPage({ content }: { content: RepresentationPageCon
         ))}
 
         {content.inlineForm && (
-          <section className="section-luxury bg-white" aria-label="Contact CRECO">
+          <section id="rep-form" className="section-luxury bg-white scroll-mt-24" aria-label="Contact CRECO">
             <Container>
               <div className="mx-auto max-w-3xl">
                 <InlineLeadForm

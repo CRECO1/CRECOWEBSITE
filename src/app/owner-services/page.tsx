@@ -4,7 +4,7 @@ import { jsonLd } from '@/lib/jsonLd';
 import Link from 'next/link';
 import {
   Building2, LineChart, Wrench, RefreshCw, FileBarChart, Layers, ArrowRight,
-  CheckCircle, Phone, Sparkles, Calculator,
+  CheckCircle, Sparkles, Calculator,
 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { OwnerPathsBand } from '@/components/marketing/OwnerPathsBand';
@@ -16,6 +16,7 @@ import { getLandingPage } from '@/lib/supabase';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { InlineLeadForm } from '@/components/forms/InlineLeadForm';
 import { GoogleReviews } from '@/components/marketing/GoogleReviews';
+import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 import { breadcrumbList, webPage } from '@/lib/schema';
 // Hourly ISR — landing-page CMS content changes rarely (operator
 // edits maybe once a week); hourly revalidation is plenty fresh.
@@ -188,13 +189,13 @@ export default async function OwnerServicesPage() {
               <p className="text-body-lg text-white/80 mb-8">
                 {content.subhead}
               </p>
-              <div className="flex flex-wrap gap-4">
+              {/* One action, one name for it, and it stays on this page —
+                  it used to leave for the generic /contact form. */}
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
                 <Button size="lg" asChild>
-                  <Link href="/contact">Schedule a Portfolio Review <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                  <Link href="#portfolio-review">Schedule a portfolio review <ArrowRight className="ml-2 h-5 w-5" /></Link>
                 </Button>
-                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" asChild>
-                  <a href="tel:+12108173443"><Phone className="mr-2 h-4 w-4" />(210) 817-3443</a>
-                </Button>
+                <PhoneCallText variant="inline" tone="dark" surface="owner-services-hero" />
               </div>
             </div>
           </Container>
@@ -350,7 +351,7 @@ export default async function OwnerServicesPage() {
                 <p className="mt-2 text-body text-primary/70">A CRECO principal will tour your assets, review your rent rolls, and deliver a written strategic recommendation within two weeks.</p>
               </div>
               <Button size="xl" className="shrink-0 bg-primary text-white hover:bg-primary/90 shadow-lg font-bold" asChild>
-                <Link href="/contact">Schedule Portfolio Review <ArrowRight className="ml-2 h-5 w-5" /></Link>
+                <Link href="#portfolio-review">Schedule a portfolio review <ArrowRight className="ml-2 h-5 w-5" /></Link>
               </Button>
             </div>
           </Container>
@@ -360,7 +361,7 @@ export default async function OwnerServicesPage() {
             had neither. */}
         <GoogleReviews className="section-luxury bg-white" />
 
-        <section className="section-luxury bg-background-cream" aria-label="Contact CRECO">
+        <section id="portfolio-review" className="section-luxury bg-background-cream scroll-mt-24" aria-label="Schedule a portfolio review">
           <Container>
             <div className="mx-auto max-w-3xl">
               <InlineLeadForm
@@ -370,7 +371,7 @@ export default async function OwnerServicesPage() {
                 contextLabel="What do you own?"
                 contextPlaceholder="How many properties, types and roughly where — e.g. 6 retail strips across San Antonio and Boerne"
                 source="listing-inquiry"
-                submitLabel="Talk to a broker"
+                submitLabel="Schedule a portfolio review"
                 surface="owner-services-inline"
               />
             </div>

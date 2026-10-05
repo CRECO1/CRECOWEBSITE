@@ -36,8 +36,12 @@ export interface InlineLeadFormProps {
   /** Label + placeholder for the single contextual question. */
   contextLabel: string;
   contextPlaceholder: string;
-  /** A source the /api/leads route already maps to the right CRM type. */
-  source: 'listing-inquiry' | 'disposition-inquiry' | 'tenant-needs';
+  /**
+   * A source the /api/leads route already maps to the right CRM type.
+   * 'contact' is the route's general default, for surfaces (e.g. /services)
+   * where the visitor's side of the deal isn't known yet.
+   */
+  source: 'listing-inquiry' | 'disposition-inquiry' | 'tenant-needs' | 'contact';
   /** Placement id — forwarded to the CRM so reporting can separate surfaces. */
   surface: string;
   /**

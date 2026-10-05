@@ -8,13 +8,83 @@ import { metaTitle, metaDescription } from '@/lib/seo-meta';
 import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, CheckCircle, Phone } from 'lucide-react';
+import { ArrowLeft, ArrowRight, CheckCircle } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
-import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import { SERVICES } from '../page';
 import { BUSINESS_ID } from '@/lib/schema';
+import { InlineLeadForm, type InlineLeadFormProps } from '@/components/forms/InlineLeadForm';
+import { PhoneCallText } from '@/components/marketing/PhoneCallText';
+
+/**
+ * Each service page's own short form. These pages used to have no hero action
+ * at all and closed on a "Schedule a Call" button that left for /contact; now
+ * the hero button names the ask and jumps to the form at the foot of the page.
+ * `source` reuses what /api/leads already types for the CRM: tenants →
+ * tenant-needs, owner/investor-side services → listing-inquiry.
+ */
+type ServiceForm = Pick<InlineLeadFormProps, 'heading' | 'body' | 'contextLabel' | 'contextPlaceholder' | 'source' | 'submitLabel'> & {
+  /** Hero button label — the same ask, phrased as an action. */
+  cta: string;
+};
+
+const SERVICE_FORMS: Record<string, ServiceForm> = {
+  'tenant-representation': {
+    cta: 'Tell us what you need — free for tenants',
+    heading: 'Tell us what you need — free for tenants',
+    body: 'Type, size, area and timing. A CRECO broker sends matching Texas options, including off-market space. Tenant representation is typically paid by the landlord, not you.',
+    contextLabel: 'What are you looking for?',
+    contextPlaceholder: 'e.g. 4,000 SF office in North San Antonio, lease ends in March',
+    source: 'tenant-needs',
+    submitLabel: 'Send me options',
+  },
+  'investment-advisory': {
+    cta: 'Share your investment criteria',
+    heading: 'What are you looking to buy?',
+    body: 'Asset type, price range, target yield and timing — including 1031 deadlines. A CRECO principal follows up with on- and off-market options.',
+    contextLabel: 'Your investment criteria',
+    contextPlaceholder: 'e.g. NNN retail, $2–4M, San Antonio or Austin, 1031 identification by June',
+    source: 'listing-inquiry',
+    submitLabel: 'Send me opportunities',
+  },
+  'leasing-sales': {
+    cta: 'Get a leasing or sale plan',
+    heading: 'Leasing or selling a Texas property?',
+    body: 'Tell us what you own and what you want from it. A CRECO principal comes back with a pricing view and a plan to lease or sell it.',
+    contextLabel: 'What do you own?',
+    contextPlaceholder: 'e.g. 22,000 SF retail strip in Boerne, 30% vacant — lease up or sell?',
+    source: 'listing-inquiry',
+    submitLabel: 'Get my plan',
+  },
+  'property-management': {
+    cta: 'Request a management proposal',
+    heading: 'Request a property management proposal',
+    body: 'Tell us what you own and what is not working today. We reply with a scope and fee proposal for your portfolio.',
+    contextLabel: 'What do you own?',
+    contextPlaceholder: 'e.g. 3 office buildings in San Antonio, ~60,000 SF total',
+    source: 'listing-inquiry',
+    submitLabel: 'Request a proposal',
+  },
+  'development': {
+    cta: 'Talk through your project',
+    heading: 'Planning a development?',
+    body: 'Site, concept and stage — even if it is just an idea and a parcel. A CRECO principal will walk through feasibility and next steps with you.',
+    contextLabel: 'About the project',
+    contextPlaceholder: 'e.g. 4-acre pad on FM 3351, considering retail + flex',
+    source: 'listing-inquiry',
+    submitLabel: 'Talk through my project',
+  },
+  'sustainability': {
+    cta: 'Request a sustainability consultation',
+    heading: 'Request a sustainability consultation',
+    body: 'Tell us about the building and what you are trying to achieve — lower operating cost, ESG reporting or a tenant requirement.',
+    contextLabel: 'About the property',
+    contextPlaceholder: 'e.g. 1990s office building, high utility costs, tenant asking for ESG data',
+    source: 'listing-inquiry',
+    submitLabel: 'Request a consultation',
+  },
+};
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -44,6 +114,7 @@ export default async function ServiceDetailPage({ params }: Props) {
   if (!service) notFound();
 
   const Icon = service.icon;
+  const form = SERVICE_FORMS[service.slug];
   const related = service.relatedSlugs
     .map(rs => SERVICES.find(s => s.slug === rs))
     .filter((s): s is NonNullable<typeof s> => Boolean(s));
@@ -100,6 +171,17 @@ export default async function ServiceDetailPage({ params }: Props) {
               <p className="overline mb-3 text-gold">CRECO Services · Texas Commercial Real Estate</p>
               <h1 className="font-heading text-display font-bold">{service.title}</h1>
               <p className="mt-4 text-body-lg text-white/80">{service.heroSubhead}</p>
+              {form && (
+                <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
+                  <Link
+                    href="#service-form"
+                    className="inline-flex items-center gap-2 rounded-lg bg-gold px-7 py-3 text-body-sm font-semibold text-primary hover:bg-gold-light"
+                  >
+                    {form.cta} <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <PhoneCallText variant="inline" tone="dark" surface={`service-${service.slug}-hero`} />
+                </div>
+              )}
             </div>
           </Container>
         </section>
@@ -255,25 +337,27 @@ export default async function ServiceDetailPage({ params }: Props) {
           </section>
         )}
 
-        {/* CTA */}
-        <section className="section-compact bg-primary text-white">
-          <Container>
-            <div className="text-center max-w-2xl mx-auto">
-              <h2 className="font-heading text-display-sm font-bold mb-4">Talk to a CRECO principal</h2>
-              <p className="text-body text-white/70 mb-8">
-                No-pressure consultation. We&apos;ll listen first and recommend an approach — even if that means pointing you somewhere else.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button size="lg" asChild>
-                  <Link href="/contact">Schedule a Call <ArrowRight className="ml-2 h-5 w-5" /></Link>
-                </Button>
-                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" asChild>
-                  <a href="tel:+12108173443"><Phone className="mr-2 h-4 w-4" />(210) 817-3443</a>
-                </Button>
+        {/* The page's own form — replaces a "Schedule a Call" button that left
+            for the generic /contact page. */}
+        {form && (
+          <section id="service-form" className="section-luxury bg-primary scroll-mt-24" aria-label={form.heading}>
+            <Container>
+              <div className="mx-auto max-w-3xl">
+                <InlineLeadForm
+                  tone="dark"
+                  eyebrow={service.title}
+                  heading={form.heading}
+                  body={form.body}
+                  contextLabel={form.contextLabel}
+                  contextPlaceholder={form.contextPlaceholder}
+                  source={form.source}
+                  submitLabel={form.submitLabel}
+                  surface={`service-${service.slug}-inline`}
+                />
               </div>
-            </div>
-          </Container>
-        </section>
+            </Container>
+          </section>
+        )}
 
         {/* Service pages linked to no market at all. A service is delivered
             somewhere, and these are the somewheres. */}

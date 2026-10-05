@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import { SourcesMethodology } from '@/components/marketing/SourcesMethodology';
-import { ArrowRight, BarChart3, Building2, MapPin, Phone, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, BarChart3, Building2, MapPin, CheckCircle2 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { jsonLd } from '@/lib/jsonLd';
 import { InlineLeadForm } from '@/components/forms/InlineLeadForm';
+import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 import { GoogleReviews } from '@/components/marketing/GoogleReviews';
 import { FaqSection } from '@/components/marketing/FaqSection';
 import { AvailableListingsTable } from '@/components/marketing/AvailableListingsTable';
@@ -198,19 +199,15 @@ export async function CityAssetPage({ config }: { config: CityAssetConfig }) {
               <p className="text-body-lg text-white/80 leading-relaxed max-w-2xl">
                 What&apos;s available, what it costs, and how CRECO works the market.
               </p>
-              <div className="mt-7 flex flex-wrap gap-4">
+              {/* Jumps to this page's own form rather than the generic quiz. */}
+              <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
                 <Link
-                  href="/get-started"
+                  href="#asset-form"
                   className="inline-flex items-center gap-2 rounded-lg bg-gold px-7 py-3 text-body-sm font-semibold text-primary hover:bg-gold-light"
                 >
-                  Get started <ArrowRight className="h-4 w-4" />
+                  Send me {config.asset} options <ArrowRight className="h-4 w-4" />
                 </Link>
-                <a
-                  href="tel:+12108173443"
-                  className="inline-flex items-center gap-2 rounded-lg border border-white/30 px-7 py-3 text-body-sm font-semibold text-white hover:bg-white/10"
-                >
-                  <Phone className="h-4 w-4" /> (210) 817-3443
-                </a>
+                <PhoneCallText variant="inline" tone="dark" surface={`${(config.canonicalPath || `${config.city}-${config.asset}`).replace(/^\//, '')}-hero-phone`} />
               </div>
             </div>
           </Container>
@@ -365,6 +362,7 @@ export async function CityAssetPage({ config }: { config: CityAssetConfig }) {
             emptyHeading={`Let’s find your ${config.asset} space in ${config.city}`}
             asset={config.asset}
             emptySurface={`city-asset-empty-${config.city.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${config.asset.toLowerCase()}`}
+            needsHref="#asset-form"
           />
         )}
 
@@ -372,7 +370,7 @@ export async function CityAssetPage({ config }: { config: CityAssetConfig }) {
             only the footer newsletter to act on. */}
         <GoogleReviews className="section-luxury bg-background-cream border-t border-border" />
 
-        <section className="section-luxury bg-white" aria-label="Contact CRECO">
+        <section id="asset-form" className="section-luxury bg-white scroll-mt-24" aria-label="Contact CRECO">
           <Container>
             <div className="mx-auto max-w-3xl">
               <InlineLeadForm
@@ -435,10 +433,10 @@ export async function CityAssetPage({ config }: { config: CityAssetConfig }) {
                 Tenants: we filter the market to the 4-5 properties worth a tour, typically at no cost to you. Owners and investors: we lease and sell {config.asset} property in {config.city}.
               </p>
               <Link
-                href="/get-started"
+                href="#asset-form"
                 className="inline-flex items-center gap-2 rounded-lg bg-gold px-7 py-3 text-body-sm font-semibold text-primary hover:bg-gold-light"
               >
-                Start with CRECO <ArrowRight className="h-4 w-4" />
+                Send me {config.asset} options <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           </Container>

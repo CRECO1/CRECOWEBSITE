@@ -19,7 +19,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Search, SlidersHorizontal, MapPin, Building2, Layers, X, Grid3x3, Map as MapIcon, BellRing } from 'lucide-react';
+import { Search, SlidersHorizontal, MapPin, Building2, Layers, X, Grid3x3, Map as MapIcon, BellRing, ArrowRight } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Input } from '@/components/ui/Input';
@@ -490,13 +490,25 @@ export function ListingsClient({ initialListings, children }: { initialListings:
                         </div>
                       </div>
                     </Link>
-                    {/* Loud lead-magnet injected mid-grid — browsers on the
-                        listings page are the prime audience for new-listing
-                        alerts, so we catch them in the flow instead of only at
-                        the very bottom (which most never scroll to). */}
+                    {/* Mid-grid nudge for the browser who hasn't found it yet.
+                        This was a second copy of the property-alerts form (the
+                        same one sits at the bottom of the page); it now points
+                        at the higher-intent requirements form below instead of
+                        asking for the same email twice. */}
                     {filtered.length > 6 && i === 5 && (
                       <div className="sm:col-span-2 lg:col-span-3">
-                        <PropertyAlertsInline variant="dark" surface="listings-inline" />
+                        <div className="flex flex-col gap-4 rounded-2xl bg-primary px-6 py-6 text-white sm:flex-row sm:items-center sm:justify-between sm:px-8">
+                          <div>
+                            <p className="font-heading text-heading-sm font-bold">Not seeing the right space?</p>
+                            <p className="mt-1 text-body-sm text-white/70">Tell us what you need — we&apos;ll send off-market options that never hit the public listings.</p>
+                          </div>
+                          <a
+                            href="#listings-requirements"
+                            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-gold px-6 py-3 text-body-sm font-semibold text-primary hover:bg-gold-light"
+                          >
+                            Tell us what you need <ArrowRight className="h-4 w-4" />
+                          </a>
+                        </div>
                       </div>
                     )}
                     </Fragment>
@@ -511,7 +523,7 @@ export function ListingsClient({ initialListings, children }: { initialListings:
             didn't find their space. Organic listings traffic converted ~zero on
             the email-alert bands alone; a "we'll source it, incl. off-market"
             requirements form is a stronger ask, so it leads, with alerts below. */}
-        <div className="bg-primary py-14">
+        <div id="listings-requirements" className="bg-primary py-14 scroll-mt-24">
           <Container>
             <div className="max-w-3xl mx-auto">
               <InlineLeadForm
