@@ -74,14 +74,16 @@ export function PhoneCallText({
   className = '',
 }: PhoneCallTextProps = {}) {
   if (variant === 'stacked') {
-    // Two side-by-side pill buttons — Call primary, Text secondary.
-    // Both min 44px tall for tap-target compliance.
+    // Two side-by-side outlined buttons, equal weight. Deliberately quiet:
+    // these sit beside forms and the gold-filled Text button used to compete
+    // with the page's real primary CTA. Both min 44px tall for tap targets.
+    const quiet = 'inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-primary/25 bg-white px-4 py-3 text-body-sm font-semibold text-primary hover:border-gold hover:text-gold-dark transition-colors';
     return (
       <div className={`grid grid-cols-2 gap-2 ${className}`} data-no-auto-track>
         <a
           href={PRIMARY_BROKER.phone_href}
           onClick={() => fireClickEvent('phone_call', surface)}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-body-sm font-bold text-white hover:bg-primary/90 shadow-sm transition-colors"
+          className={quiet}
         >
           <Phone className="h-4 w-4 shrink-0" />
           Call
@@ -89,7 +91,7 @@ export function PhoneCallText({
         <a
           href={PRIMARY_BROKER.sms_href}
           onClick={() => fireClickEvent('sms_click', surface)}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-gold px-4 py-3 text-body-sm font-bold text-primary hover:bg-gold-light shadow-sm transition-colors"
+          className={quiet}
         >
           <MessageSquare className="h-4 w-4 shrink-0" />
           Text

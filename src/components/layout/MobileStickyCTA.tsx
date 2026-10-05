@@ -12,6 +12,7 @@
  * intent or covering the form submit button.
  */
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Phone, Building2, MessageSquare } from 'lucide-react';
@@ -27,9 +28,33 @@ import { trackEvent } from '@/lib/analytics';
 // The header's phone icon keeps a one-tap call on those pages.
 const HIDDEN_PREFIXES = ['/admin', '/manage', '/crm', '/tenant-needs', '/get-started', '/sell', '/contact', '/listings/', '/8000-fair-oaks-pkwy', '/8923-dietz-elkhorn'];
 
+// The page's own main form, if it has one. Alerts/newsletter don't count —
+// they're the soft ask, not the page's conversion form.
+const PAGE_FORM_SELECTOR = 'form[data-lead-form]:not([data-lead-form="property_alerts"])';
+
+/** First visible, fillable field — never the honeypot (tabIndex -1). */
+const FIRST_FIELD = 'input:not([type="hidden"]):not([tabindex="-1"]), textarea:not([tabindex="-1"]), select:not([tabindex="-1"])';
+
 export function MobileStickyCTA({ phone = '(210) 817-3443' }: { phone?: string }) {
   const pathname = usePathname() ?? '/';
+  // Page-aware third button: on a page with its own form it jumps there
+  // ("Inquire") instead of sending the visitor away to the generic
+  // /get-started quiz. Detected after mount, per route.
+  const [hasPageForm, setHasPageForm] = useState(false);
+  useEffect(() => {
+    setHasPageForm(!!document.querySelector(PAGE_FORM_SELECTOR));
+  }, [pathname]);
+
   if (HIDDEN_PREFIXES.some(p => pathname.startsWith(p))) return null;
+
+  const goToPageForm = (e: React.MouseEvent) => {
+    const form = document.querySelector<HTMLFormElement>(PAGE_FORM_SELECTOR);
+    if (!form) return; // fall through to the href
+    e.preventDefault();
+    trackEvent('cta_clicked', { cta: 'on_page_form', destination: 'mobile_sticky_cta', page_path: pathname });
+    form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => form.querySelector<HTMLElement>(FIRST_FIELD)?.focus({ preventScroll: true }), 350);
+  };
 
   const telHref = `tel:+1${phone.replace(/\D/g, '')}`;
 
@@ -37,7 +62,7 @@ export function MobileStickyCTA({ phone = '(210) 817-3443' }: { phone?: string }
     <>
       {/* Spacer so the fixed bar doesn't cover the bottom of page content */}
       <div className="h-16 md:hidden" aria-hidden="true" />
-      {/* Three-button strip on mobile — Call | Text | Get Started. The
+      {/* Three-button strip on mobile — Call | Text | Inquire/Start. The
           Text option was missing before, meaning texters had no thumb-
           distance CTA. Grid-cols-3 splits the space evenly; each cell
           maintains the ~44px tap target via py-3. */}
@@ -53,7 +78,7 @@ export function MobileStickyCTA({ phone = '(210) 817-3443' }: { phone?: string }
         <a
           href={telHref}
           onClick={() => trackEvent('phone_call', { surface: 'mobile_sticky_cta' })}
-          className="flex items-center justify-center gap-2 rounded-lg bg-primary px-2 py-3 text-sm font-semibold text-white active:bg-primary/90"
+          className="flex items-center justify-center gap-2 rounded-lg border border-primary/25 bg-white px-2 py-3 text-sm font-semibold text-primary active:bg-primary/5"
         >
           <Phone className="h-4 w-4" aria-hidden="true" />
           Call
@@ -61,17 +86,20 @@ export function MobileStickyCTA({ phone = '(210) 817-3443' }: { phone?: string }
         <a
           href={`sms:+1${phone.replace(/\D/g, '')}`}
           onClick={() => trackEvent('sms_click', { surface: 'mobile_sticky_cta' })}
-          className="flex items-center justify-center gap-2 rounded-lg bg-primary/10 border border-primary/30 px-2 py-3 text-sm font-semibold text-primary active:bg-primary/20"
+          className="flex items-center justify-center gap-2 rounded-lg border border-primary/25 bg-white px-2 py-3 text-sm font-semibold text-primary active:bg-primary/5"
         >
           <MessageSquare className="h-4 w-4" aria-hidden="true" />
           Text
         </a>
+        {/* Call and Text are the quiet pair; this is the bar's one filled
+            button. */}
         <Link
           href="/get-started"
+          onClick={hasPageForm ? goToPageForm : undefined}
           className="flex items-center justify-center gap-2 rounded-lg bg-gold px-2 py-3 text-sm font-semibold text-primary active:bg-gold-dark"
         >
           <Building2 className="h-4 w-4" aria-hidden="true" />
-          Start
+          {hasPageForm ? 'Inquire' : 'Start'}
         </Link>
       </div>
     </>

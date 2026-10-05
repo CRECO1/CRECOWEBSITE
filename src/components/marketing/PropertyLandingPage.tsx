@@ -23,6 +23,7 @@ import {
 import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
+import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import {
   formatPrice, formatSqft, formatLeaseRate, transactionLabel, propertyTypeLabel,
@@ -166,13 +167,17 @@ export async function PropertyLandingPage({ config: configIn, dbContent }: Props
               <p className="overline mb-4 text-gold">{config.eyebrow}</p>
               <h1 className="font-heading text-display font-bold mb-6">{config.h1}</h1>
               <p className="text-body-lg text-white/80 mb-8">{config.subhead}</p>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
                 <Button size="lg" asChild>
                   <Link href={config.primaryCta.href}>
                     {config.primaryCta.label} <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-                {config.secondaryCta && (
+                {/* A phone secondary renders as the sitewide quiet Call · Text
+                    line rather than a second outlined button. */}
+                {config.secondaryCta?.href.startsWith('tel:') ? (
+                  <PhoneCallText variant="inline" tone="dark" surface={`${config.canonicalPath?.replace(/^\//, '') ?? 'landing'}-hero`} />
+                ) : config.secondaryCta && (
                   <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" asChild>
                     <Link href={config.secondaryCta.href}>
                       <Phone className="mr-2 h-4 w-4" /> {config.secondaryCta.label}
@@ -320,16 +325,11 @@ export async function PropertyLandingPage({ config: configIn, dbContent }: Props
                   <p className="mb-6 text-body text-white/70">
                     No-pressure consultation. We&apos;ll listen to your needs and recommend an approach — even if that means pointing you somewhere else.
                   </p>
-                  <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                     <Button size="md" fullWidth asChild>
                       <Link href={config.primaryCta.href}>{config.primaryCta.label}</Link>
                     </Button>
-                    <a
-                      href="tel:+12108173443"
-                      className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg border border-white/30 px-4 py-2.5 font-semibold hover:bg-white/10 transition-colors"
-                    >
-                      <Phone className="h-4 w-4" /> (210) 817-3443
-                    </a>
+                    <PhoneCallText variant="inline" tone="dark" surface="landing-cta" className="justify-center sm:flex-1" />
                   </div>
                 </div>
               </RevealOnScroll>

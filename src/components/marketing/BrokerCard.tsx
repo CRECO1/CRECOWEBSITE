@@ -19,9 +19,10 @@
  */
 
 import Image from 'next/image';
-import { Mail, Calendar, ArrowRight } from 'lucide-react';
+import { Mail, Calendar, Star } from 'lucide-react';
 import { PRIMARY_BROKER, brokerInitials, type Broker } from '@/lib/broker';
 import { PhoneCallText } from '@/components/marketing/PhoneCallText';
+import { GOOGLE_RATING, GOOGLE_REVIEW_COUNT, GOOGLE_PROFILE_URL } from '@/lib/reviews';
 
 // ─── Avatar ──────────────────────────────────────────────────────────
 
@@ -124,35 +125,69 @@ export function BrokerCard({
         </div>
       </div>
 
-      <div className="space-y-2">
+      {/* Quiet on purpose: this card sits next to a form, and its contact
+          routes used to be three filled buttons (gold Book, navy Call, gold
+          Text) competing with that form's own submit. Now Call · Text is one
+          line, and booking and email are text links. */}
+      <div className="space-y-1.5">
+        <PhoneCallText variant="inline" tone={variant === 'dark' ? 'dark' : 'light'} surface="broker_card" />
         {broker.calendar_url && !hideCalendar && (
           <a
             href={broker.calendar_url}
             target="_blank"
             rel="noreferrer noopener"
-            className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-gold px-4 py-3 text-body-sm font-bold text-primary hover:bg-gold-light shadow-sm transition-colors"
+            className={`flex items-center gap-2 text-body-sm font-semibold ${linkClass}`}
           >
             <Calendar className="h-4 w-4 shrink-0" />
             Book 15 min directly
-            <ArrowRight className="h-4 w-4 shrink-0" />
           </a>
         )}
-        {/* Call + Text side-by-side. Prospects who prefer texting
-            (increasingly common — Pew found 60%+ of adults 18-49
-            prefer SMS over voice for first-touch) previously had no
-            visible affordance for it despite the phone being SMS-
-            capable. Showing both up-front reads as "we're approachable
-            either way." */}
-        <div className="text-caption font-semibold text-center opacity-70 pt-1">
-          {broker.phone_display}
-        </div>
-        <PhoneCallText variant="stacked" surface="broker_card" />
         <a
           href={`mailto:${broker.email}`}
-          className={`w-full inline-flex items-center justify-center gap-2 text-body-sm font-semibold ${linkClass}`}
+          className={`flex items-center gap-2 text-body-sm font-semibold break-all ${linkClass}`}
         >
           <Mail className="h-4 w-4 shrink-0" />
           {broker.email}
+        </a>
+      </div>
+    </div>
+  );
+}
+
+// ─── Compact trust line for forms ────────────────────────────────────
+
+/**
+ * The person and the rating, in one row, to sit at the top of a lead form:
+ * photo, "Zachary Stovall, Broker — replies personally", and the Google
+ * rating linking to the profile. Small enough to ride inside the form card
+ * rather than as a sidebar, so it works at phone width with no layout change.
+ */
+export function BrokerTrustLine({
+  broker = PRIMARY_BROKER,
+  tone = 'light',
+  className = '',
+}: {
+  broker?: Broker;
+  tone?: 'light' | 'dark';
+  className?: string;
+}) {
+  const dark = tone === 'dark';
+  return (
+    <div className={`flex items-center gap-3 ${className}`}>
+      <BrokerAvatar broker={broker} size={48} />
+      <div className="min-w-0 text-body-sm leading-snug">
+        <p className={`font-semibold ${dark ? 'text-white' : 'text-primary'}`}>
+          {broker.name}, {broker.title}
+          <span className={`font-normal ${dark ? 'text-white/60' : 'text-foreground-muted'}`}> — replies personally</span>
+        </p>
+        <a
+          href={GOOGLE_PROFILE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`inline-flex items-center gap-1 text-caption hover:underline ${dark ? 'text-white/70' : 'text-foreground-muted'}`}
+        >
+          <Star className="h-3.5 w-3.5 shrink-0 fill-gold text-gold" aria-hidden="true" />
+          {GOOGLE_RATING.toFixed(1)} on Google · {GOOGLE_REVIEW_COUNT} reviews
         </a>
       </div>
     </div>

@@ -27,6 +27,7 @@ import { Honeypot } from './Honeypot';
 import { useCaptureSubmit } from '@/lib/use-capture-submit';
 import { readUtmsFromCookie } from '@/lib/analytics';
 import { BUSINESS } from '@/lib/schema';
+import { BrokerTrustLine } from '@/components/marketing/BrokerCard';
 
 export interface InlineLeadFormProps {
   /** Small caps line above the heading. */
@@ -57,6 +58,8 @@ export interface InlineLeadFormProps {
   submitLabel?: string;
   /** Dark rides on the primary ground; light on cream or white. */
   tone?: 'light' | 'dark';
+  /** Show who replies + the Google rating above the fields. On by default. */
+  showBroker?: boolean;
   className?: string;
 }
 
@@ -71,6 +74,7 @@ export function InlineLeadForm({
   propertyInterest,
   submitLabel = 'Request a call',
   tone = 'light',
+  showBroker = true,
   className = '',
 }: InlineLeadFormProps) {
   const [f, setF] = useState({ name: '', email: '', phone: '', context: '' });
@@ -133,6 +137,8 @@ export function InlineLeadForm({
           {body}
         </p>
       )}
+
+      {showBroker && <BrokerTrustLine tone={tone} className="mt-5" />}
 
       <form onSubmit={submit} className="mt-5 space-y-3" data-lead-form="inline_lead" data-surface={surface}>
         <Honeypot />

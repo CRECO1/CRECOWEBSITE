@@ -6,6 +6,8 @@ import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { CapRateTable } from '@/components/marketing/CapRateTable';
 import { PropertyValuationForm } from '@/components/forms/PropertyValuationForm';
+import { BrokerTrustLine } from '@/components/marketing/BrokerCard';
+import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 import { TrustStrip } from '@/components/marketing/TrustStrip';
 import { Testimonials } from '@/components/marketing/Testimonials';
 import { jsonLd } from '@/lib/jsonLd';
@@ -150,9 +152,10 @@ export default function PropertyValuationPage() {
                 <div className="rounded-2xl bg-white shadow-card p-7 sm:p-10">
                   <p className="overline mb-3">Your property</p>
                   <h2 className="font-heading text-heading-xl font-bold text-primary mb-2">Tell us about it.</h2>
-                  <p className="text-body text-foreground-muted mb-8">
+                  <p className="text-body text-foreground-muted mb-5">
                     We need property type and submarket. The other fields make the range tighter — fill in what you know, skip what you don't.
                   </p>
+                  <BrokerTrustLine className="mb-8" />
                   <PropertyValuationForm />
                 </div>
               </div>
@@ -176,9 +179,7 @@ export default function PropertyValuationPage() {
                   <p className="text-body-sm text-foreground-muted leading-relaxed mb-3">
                     Skip the form and walk through your property with a CRECO broker on the phone. We'll tell you a range in 15 minutes.
                   </p>
-                  <a href="tel:+12108173443" className="inline-flex items-center gap-1.5 text-body-sm font-semibold text-gold-dark hover:text-gold">
-                    (210) 817-3443 <ArrowRight className="h-3 w-3" />
-                  </a>
+                  <PhoneCallText variant="inline" tone="light" surface="valuation-sidebar" />
                 </div>
               </aside>
             </div>

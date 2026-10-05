@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import {
-  Megaphone, Scale, ShieldCheck, Clock, FileText, UserCheck, Handshake, Building2, Phone,
+  Megaphone, Scale, ShieldCheck, Clock, FileText, UserCheck, Handshake, Building2,
 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { OwnerPathsBand } from '@/components/marketing/OwnerPathsBand';
 import { Container } from '@/components/ui/Container';
+import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { breadcrumbList, webPage, businessRef, BUSINESS, SITE_URL } from '@/lib/schema';
 import { DEFAULT_OG_IMAGE } from '@/lib/og';
@@ -135,12 +136,7 @@ export default function ListYourSpacePage() {
                   himself and gets it in front of the tenants and tenant-rep brokers actually looking.
                 </p>
                 <div className="mt-7">
-                  <a
-                    href={`tel:${BUSINESS.phoneE164.replace(/-/g, '')}`}
-                    className="inline-flex items-center gap-2 rounded-lg border border-white/30 px-7 py-3 text-body-sm font-semibold text-white transition-colors hover:bg-white/10"
-                  >
-                    <Phone className="h-4 w-4" /> {BUSINESS.phoneDisplay}
-                  </a>
+                  <PhoneCallText variant="inline" tone="dark" surface="list-your-space-hero" />
                 </div>
               </div>
 
@@ -221,12 +217,7 @@ export default function ListYourSpacePage() {
                 >
                   List your space
                 </a>
-                <a
-                  href={`tel:${BUSINESS.phoneE164.replace(/-/g, '')}`}
-                  className="inline-flex items-center gap-2 rounded-lg border border-white/30 px-7 py-3.5 text-body-sm font-semibold text-white transition-colors hover:border-gold hover:text-gold"
-                >
-                  <Phone className="h-4 w-4" /> {BUSINESS.phoneDisplay}
-                </a>
+                <PhoneCallText variant="inline" tone="dark" surface="list-your-space-closing" />
               </div>
               <p className="mt-6 text-caption text-white/50">
                 {BUSINESS.fullAddress} · {BUSINESS.trecLicenseDisplay}

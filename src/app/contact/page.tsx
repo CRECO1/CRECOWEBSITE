@@ -9,6 +9,7 @@ import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { Honeypot } from '@/components/forms/Honeypot';
 import { googleMapsUrl } from '@/lib/utils';
 import { PhoneCallText } from '@/components/marketing/PhoneCallText';
+import { BrokerTrustLine } from '@/components/marketing/BrokerCard';
 import { FaqSection } from '@/components/marketing/FaqSection';
 import { CONTACT_FAQS } from './faqs';
 
@@ -168,10 +169,12 @@ export default function ContactPage() {
                     + Text pair since the site number takes both. Copy
                     updated to say "call or text" so the offering is
                     unambiguous. */}
-                <div id="schedule" className="rounded-xl bg-gold p-6">
-                  <Calendar className="mb-3 h-6 w-6 text-primary/70" />
+                {/* Was a gold-filled box — on a contact page the form is the
+                    primary action, so this aside stays quiet. */}
+                <div id="schedule" className="rounded-xl border border-border bg-background-cream p-6">
+                  <Calendar className="mb-3 h-6 w-6 text-gold-dark" />
                   <h3 className="mb-2 font-heading text-heading-sm font-bold text-primary">Schedule a Consultation</h3>
-                  <p className="mb-4 text-body-sm text-primary/70">
+                  <p className="mb-4 text-body-sm text-foreground-muted">
                     Prefer to pick a time? Use the form to request your preferred date and time, or call or text us directly.
                   </p>
                   <PhoneCallText variant="stacked" surface="contact_page_schedule" />
@@ -193,7 +196,8 @@ export default function ContactPage() {
                     </div>
                   ) : (
                     <>
-                      <h2 className="mb-6 font-heading text-heading-xl font-bold text-primary">Send Us a Message</h2>
+                      <h2 className="mb-4 font-heading text-heading-xl font-bold text-primary">Send Us a Message</h2>
+                      <BrokerTrustLine className="mb-6" />
                       <form onSubmit={handleSubmit} className="space-y-5" data-lead-form="contact" data-surface="contact-page">
                         <Honeypot />
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">

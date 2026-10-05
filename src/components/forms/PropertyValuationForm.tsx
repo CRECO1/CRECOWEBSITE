@@ -182,7 +182,7 @@ export function PropertyValuationForm() {
   return (
     <div className="space-y-6">
       {/* Step 1 — Calculate form */}
-      <form onSubmit={handleCalculate} className="space-y-5">
+      <form onSubmit={handleCalculate} className="space-y-5" data-lead-form="valuation" data-surface="property-valuation">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <label className="block">
             <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-1.5">Property type *</span>

@@ -5,6 +5,7 @@ import { ArrowRight, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { Honeypot } from '@/components/forms/Honeypot';
+import { BrokerTrustLine } from '@/components/marketing/BrokerCard';
 
 /**
  * Owner-inquiry form island for /sell.
@@ -66,9 +67,10 @@ export function SellInquiryForm() {
       ) : (
         <>
           <h3 className="mb-2 font-heading text-heading-xl font-bold text-primary">Request a Property Opinion</h3>
-          <p className="mb-6 text-body-sm text-foreground-muted">
+          <p className="mb-5 text-body-sm text-foreground-muted">
             Tell us about your property and we&apos;ll provide a no-obligation Broker Opinion of Value or leasing strategy.
           </p>
+          <BrokerTrustLine className="mb-6" />
           <form onSubmit={handleSubmit} className="space-y-4">
             <Honeypot />
             <div className="grid grid-cols-2 gap-4">

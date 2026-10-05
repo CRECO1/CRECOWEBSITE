@@ -22,6 +22,8 @@ interface Props {
   listingSlug: string;
   listingTitle: string;
   listingAddress: string;
+  /** When set, the success state offers the brochure — the follow-up ask. */
+  brochureHref?: string;
 }
 
 const TOUR_FORMATS = [
@@ -39,7 +41,7 @@ function defaultDate(): string {
 
 const DEFAULT_TIME = '10:00';
 
-export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress }: Props) {
+export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress, brochureHref }: Props) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -108,6 +110,19 @@ export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress }:
         <p className="text-body-sm text-foreground-muted max-w-md mx-auto">
           Check your inbox — we just sent a confirmation with a calendar invite you can add to your calendar. A CRECO broker will reach out shortly to confirm.
         </p>
+        {brochureHref && (
+          <p className="mt-4">
+            <a
+              href={brochureHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackEvent('brochure_downloaded_direct', { listing_slug: listingSlug, surface: 'tour_success' })}
+              className="inline-flex items-center gap-1.5 text-body-sm font-semibold text-gold-dark hover:underline"
+            >
+              While you wait — download the brochure (PDF) →
+            </a>
+          </p>
+        )}
         <p className="mt-3 text-caption text-foreground-muted">
           Need to talk now? Call <a href="tel:+12108173443" className="text-gold-dark hover:underline font-semibold">(210) 817-3443</a>.
         </p>
@@ -222,9 +237,9 @@ export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress }:
       <button
         type="submit"
         disabled={submitting}
-        className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 text-body-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-60"
+        className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-gold px-5 py-3 text-body-sm font-bold text-primary shadow-sm hover:bg-gold-light disabled:opacity-60"
       >
-        {submitting ? 'Sending…' : <>Request tour <ArrowRight className="h-4 w-4" /></>}
+        {submitting ? 'Sending…' : <>Schedule a tour <ArrowRight className="h-4 w-4" /></>}
       </button>
 
       <p className="text-caption text-foreground-muted text-center">

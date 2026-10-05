@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Phone, Handshake, Search, MessageSquare, FileSignature, Calculator } from 'lucide-react';
+import { Handshake, Search, MessageSquare, FileSignature, Calculator } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
+import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { breadcrumbList, webPage, businessRef, BUSINESS, SITE_URL } from '@/lib/schema';
 import { DEFAULT_OG_IMAGE } from '@/lib/og';
@@ -127,12 +128,7 @@ export default function DevelopmentOpportunitiesPage() {
                   negotiates the terms.
                 </p>
                 <div className="mt-7">
-                  <a
-                    href={`tel:${BUSINESS.phoneE164.replace(/-/g, '')}`}
-                    className="inline-flex items-center gap-2 rounded-lg border border-white/30 px-7 py-3 text-body-sm font-semibold text-white transition-colors hover:bg-white/10"
-                  >
-                    <Phone className="h-4 w-4" /> {BUSINESS.phoneDisplay}
-                  </a>
+                  <PhoneCallText variant="inline" tone="dark" surface="development-hero" />
                 </div>
               </div>
 

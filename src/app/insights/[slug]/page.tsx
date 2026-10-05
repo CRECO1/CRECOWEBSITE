@@ -5,10 +5,11 @@ import { metaTitle, metaDescription } from '@/lib/seo-meta';
 import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowRight, Calendar, Clock, BookOpen, Phone } from 'lucide-react';
+import { ArrowRight, Calendar, Clock, BookOpen } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
+import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { POSTS, findPost } from '@/lib/insights';
 import { BUSINESS_ID } from '@/lib/schema';
@@ -167,13 +168,11 @@ export default async function InsightDetailPage({ params }: Props) {
                 <p className="text-body text-foreground-muted mb-6 max-w-xl mx-auto">
                   CRECO works retail, industrial, and office across Texas — for tenants, owners, and investors. Get in touch and we&apos;ll share our perspective without expectation.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <div className="flex flex-col sm:flex-row gap-x-6 gap-y-3 justify-center items-center">
                   <Button size="lg" asChild>
                     <Link href="/contact">Get in Touch <ArrowRight className="ml-2 h-5 w-5" /></Link>
                   </Button>
-                  <Button size="lg" variant="outline" asChild>
-                    <a href="tel:+12108173443"><Phone className="mr-2 h-4 w-4" />(210) 817-3443</a>
-                  </Button>
+                  <PhoneCallText variant="inline" tone="light" surface="insight-cta" className="justify-center" />
                 </div>
               </div>
             </article>

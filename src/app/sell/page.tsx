@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import { TrendingUp, Building2, FileText, Users, CheckCircle, ArrowRight, Phone, Calculator } from 'lucide-react';
+import { TrendingUp, Building2, FileText, Users, CheckCircle, ArrowRight, Calculator } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { OwnerPathsBand } from '@/components/marketing/OwnerPathsBand';
+import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
@@ -84,13 +85,11 @@ export default function SellPage() {
                 <p className="mb-8 max-w-lg text-body-lg text-white/70">
                   Feasibility run, priced to real comps, marketed to CRECO&apos;s buyer and investor network, and negotiated through to close.
                 </p>
-                <div className="flex flex-wrap gap-4">
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
                   <Button size="lg" asChild>
-                    <a href="#valuation">Get a Property Opinion</a>
+                    <a href="#valuation">Request a property opinion</a>
                   </Button>
-                  <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" asChild>
-                    <a href="tel:+12108173443"><Phone className="mr-2 h-4 w-4" />(210) 817-3443</a>
-                  </Button>
+                  <PhoneCallText variant="inline" tone="dark" surface="sell-hero" />
                 </div>
               </div>
 

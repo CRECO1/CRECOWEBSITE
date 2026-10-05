@@ -29,9 +29,16 @@ interface Props {
   listingSlug: string;
   listingTitle: string;
   brochureUrl?: string | null;
+  /**
+   * `card` (default) shows the form outright. `link` folds it behind a quiet
+   * "Get the brochure" text link so it doesn't compete with the tour button.
+   * The form is inside a <details>, so it — and its Honeypot timestamp — is
+   * mounted with the page; opening it late can't trip the fill-time check.
+   */
+  variant?: 'card' | 'link';
 }
 
-export function BrochureRequestForm({ listingSlug, listingTitle, brochureUrl }: Props) {
+export function BrochureRequestForm({ listingSlug, listingTitle, brochureUrl, variant = 'card' }: Props) {
   const [email, setEmail] = useState('');
 
   const { submit, submitting, submitted, error } = useEmailCapture({
@@ -82,13 +89,16 @@ export function BrochureRequestForm({ listingSlug, listingTitle, brochureUrl }: 
     );
   }
 
-  return (
-    <form onSubmit={(e) => submit(e, email)} className="rounded-xl border border-border bg-background-cream/50 p-4">
+  const link = variant === 'link';
+  const form = (
+    <form onSubmit={(e) => submit(e, email)} className={link ? 'mt-3' : 'rounded-xl border border-border bg-background-cream/50 p-4'}>
       <Honeypot />
-      <div className="flex items-center gap-2 mb-2">
-        <FileDown className="h-4 w-4 text-gold" />
-        <p className="text-body-sm font-semibold text-primary">Get the brochure</p>
-      </div>
+      {!link && (
+        <div className="flex items-center gap-2 mb-2">
+          <FileDown className="h-4 w-4 text-gold" />
+          <p className="text-body-sm font-semibold text-primary">Get the brochure</p>
+        </div>
+      )}
       <p className="text-caption text-foreground-muted mb-3">
         Full property details — specs, pricing, and highlights — as an instant PDF download. No call required.
       </p>
@@ -123,5 +133,16 @@ export function BrochureRequestForm({ listingSlug, listingTitle, brochureUrl }: 
         </p>
       )}
     </form>
+  );
+
+  if (!link) return form;
+  return (
+    <details className="group">
+      <summary className="inline-flex cursor-pointer list-none items-center gap-1.5 text-body-sm font-semibold text-gold-dark hover:text-primary marker:hidden">
+        <FileDown className="h-4 w-4 shrink-0" />
+        Prefer to read first? Get the brochure (PDF)
+      </summary>
+      {form}
+    </details>
   );
 }

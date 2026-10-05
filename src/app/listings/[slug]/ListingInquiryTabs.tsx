@@ -21,6 +21,7 @@ export function ListingInquiryTabs({
   listingSlug,
   listingAddress,
   broker,
+  brochureHref,
 }: {
   listingTitle: string;
   listingSlug: string;
@@ -32,6 +33,8 @@ export function ListingInquiryTabs({
    * — falls back to Zach via InquirySuccessCard's own default.
    */
   broker?: Broker;
+  /** Offered after a tour request goes through. */
+  brochureHref?: string;
 }) {
   const [tab, setTab] = useState<'tour' | 'message'>('tour');
 
@@ -42,7 +45,7 @@ export function ListingInquiryTabs({
           type="button"
           onClick={() => setTab('tour')}
           className={`flex-1 inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-2 text-body-sm font-semibold transition-colors ${
-            tab === 'tour' ? 'bg-primary text-white shadow-sm' : 'text-foreground-muted hover:text-primary'
+            tab === 'tour' ? 'bg-white text-primary shadow-sm ring-1 ring-border' : 'text-foreground-muted hover:text-primary'
           }`}
           aria-pressed={tab === 'tour'}
         >
@@ -53,7 +56,7 @@ export function ListingInquiryTabs({
           type="button"
           onClick={() => setTab('message')}
           className={`flex-1 inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-2 text-body-sm font-semibold transition-colors ${
-            tab === 'message' ? 'bg-primary text-white shadow-sm' : 'text-foreground-muted hover:text-primary'
+            tab === 'message' ? 'bg-white text-primary shadow-sm ring-1 ring-border' : 'text-foreground-muted hover:text-primary'
           }`}
           aria-pressed={tab === 'message'}
         >
@@ -74,6 +77,7 @@ export function ListingInquiryTabs({
             listingSlug={listingSlug}
             listingTitle={listingTitle}
             listingAddress={listingAddress}
+            brochureHref={brochureHref}
           />
         </>
       ) : (

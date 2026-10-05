@@ -380,25 +380,27 @@ export default async function ListingDetailPage({ params }: Props) {
                 id="inquiry"
                 className="sticky top-28 scroll-mt-24 rounded-xl border border-border bg-white p-6 shadow-card"
               >
-                {/* Lowest-commitment ask first — capture the email-only crowd
-                    before they bounce. Tour scheduling is one step heavier
-                    (name + phone + date + format) and lives below in the tabs. */}
-                <div className="mb-5">
-                  <BrochureRequestForm
-                    listingSlug={listing!.slug}
-                    listingTitle={listing!.title}
-                    brochureUrl={listing!.brochure_url}
-                  />
-                </div>
                 {/* #inquiry-tour is where the mobile "Schedule a Tour" bar
-                    lands and puts the cursor — the tour form, not the
-                    brochure email above it. */}
+                    lands and puts the cursor. */}
                 <div id="inquiry-tour" className="scroll-mt-24">
                   <ListingInquiryTabs
                     listingTitle={listing!.title}
                     listingSlug={listing!.slug}
                     listingAddress={`${listing!.address}, ${listing!.city}, ${listing!.state} ${listing!.zip ?? ''}`.trim()}
                     broker={broker}
+                    brochureHref={listing!.brochure_url || `/api/brochure/${listing!.slug}`}
+                  />
+                </div>
+                {/* The brochure used to sit above the tour form as its own
+                    filled-button card, so the sidebar opened on two competing
+                    asks. Tour is the one primary; the brochure is a quiet
+                    link here and the offer after a tour request. */}
+                <div className="mt-4">
+                  <BrochureRequestForm
+                    listingSlug={listing!.slug}
+                    listingTitle={listing!.title}
+                    brochureUrl={listing!.brochure_url}
+                    variant="link"
                   />
                 </div>
                 {/* Named broker + direct contact + optional Cal.com
