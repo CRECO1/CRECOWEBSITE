@@ -3,7 +3,6 @@ import {
   Megaphone, Scale, ShieldCheck, Clock, FileText, UserCheck, Handshake, Building2,
 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
-import { OwnerPathsBand } from '@/components/marketing/OwnerPathsBand';
 import { Container } from '@/components/ui/Container';
 import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 import { JsonLd } from '@/components/seo/JsonLd';
@@ -226,7 +225,6 @@ export default function ListYourSpacePage() {
           </Container>
         </section>
 
-        <OwnerPathsBand surface="list-your-space" exclude={['/list-your-space']} />
       </main>
       <Footer />
     </>

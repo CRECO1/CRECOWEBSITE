@@ -17,7 +17,6 @@ const navLinks = [
   { href: '/property-valuation', label: 'Free Valuation' },
   { href: '/insights', label: 'Insights' },
   { href: '/about', label: 'About' },
-  { href: '/contact', label: 'Contact Us' },
   { href: '/get-started', label: 'Get Started', isHighlight: true },
 ];
 

@@ -3,7 +3,6 @@ import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
-import { OwnerPathsBand } from '@/components/marketing/OwnerPathsBand';
 import { InlineLeadForm } from '@/components/forms/InlineLeadForm';
 import { GoogleReviews } from '@/components/marketing/GoogleReviews';
 import { PhoneCallText } from '@/components/marketing/PhoneCallText';
@@ -175,9 +174,6 @@ export function RepresentationPage({ content }: { content: RepresentationPageCon
           </section>
         )}
 
-        {(content.showListingCta || content.showValuationCta) && (
-          <OwnerPathsBand surface={content.path.replace(/^\//, '')} />
-        )}
       </main>
       <Footer />
     </>

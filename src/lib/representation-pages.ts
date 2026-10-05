@@ -48,10 +48,6 @@ export type RepresentationPageContent = {
   serviceType: string[];
   sections: { heading: string; intro?: string; items: { title: string; body: string }[] }[];
   faqs: Faq[];
-  /** Show the valuation CTA — only for pages whose audience owns property. */
-  showValuationCta?: boolean;
-  /** Show the listing CTA — only where the audience has space to lease out. */
-  showListingCta?: boolean;
 };
 
 const PROPERTY_TYPES_SENTENCE =
@@ -65,8 +61,6 @@ const TENANT_ONLY_ANSWER =
 
 export const LANDLORD_PAGE: RepresentationPageContent = {
   path: '/landlord-representation',
-  showValuationCta: true,
-  showListingCta: true,
   label: 'Landlord & Owner Representation',
   metaTitle: 'Landlord & Owner Representation in Texas | CRECO',
   metaDescription:
@@ -151,7 +145,6 @@ export const LANDLORD_PAGE: RepresentationPageContent = {
 
 export const SELLER_INVESTOR_PAGE: RepresentationPageContent = {
   path: '/seller-investor-representation',
-  showValuationCta: true,
   label: 'Sellers & Investors',
   metaTitle: 'Seller & Investor Representation in Texas | CRECO',
   metaDescription:

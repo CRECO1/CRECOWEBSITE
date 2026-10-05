@@ -613,7 +613,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── Google Reviews ───────────────────────────────────────────── */}
-      <GoogleReviews />
+      <GoogleReviews askForReview />
 
       {/* ── FAQ ──────────────────────────────────────────────────────── */}
       <section className="section-luxury bg-white">

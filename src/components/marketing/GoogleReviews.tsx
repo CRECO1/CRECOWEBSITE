@@ -51,7 +51,19 @@ function Attribution({ review }: { review: Review }) {
   );
 }
 
-export function GoogleReviews({ className = 'section-luxury bg-background-cream' }: { className?: string }) {
+export function GoogleReviews({
+  className = 'section-luxury bg-background-cream',
+  askForReview = false,
+}: {
+  className?: string;
+  /**
+   * Show the "Worked with us? Leave a Google review" line. Homepage only:
+   * on conversion pages (representation, city, owner pages) it was one more
+   * link competing with the page's form, aimed at people who are already
+   * clients.
+   */
+  askForReview?: boolean;
+}) {
   if (REVIEWS.length === 0) return null;
 
   // Long reviews lead; anything short enough to look thin in a card is
@@ -136,8 +148,7 @@ export function GoogleReviews({ className = 'section-luxury bg-background-cream'
           </RevealOnScroll>
         )}
 
-        {/* One line to remove or relocate. */}
-        <ReviewCta />
+        {askForReview && <ReviewCta />}
       </Container>
     </section>
   );
