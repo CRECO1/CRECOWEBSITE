@@ -96,7 +96,7 @@ export const PRIMARY_BROKER: Broker = {
 };
 
 /**
- * Brian Blanco — Director of Leasing. Second broker in the roster.
+ * Brian Blanco — Director of Leasing (licensed agent; Zack is the only broker).
  * Handles medical + specialty retail leases where his Amazon site-
  * selection background maps directly onto tenant needs. Same office
  * phone + email as Zach for now — swap to Brian-specific direct lines

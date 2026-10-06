@@ -439,7 +439,9 @@ export async function POST(req: NextRequest) {
       // (Day 0 of the valuation drip sequence); standard ack for everything
       // else. Subject line + body differ.
       const isValuation = source === 'valuation-request';
-      await resend.emails.send({
+      // Market-report signups were promised "Free. No call." — the generic
+      // "we'll be in touch" acknowledgement contradicts that, so skip it.
+      if (!isSubscription) await resend.emails.send({
         from: getFromEmail(),
         to: email,
         subject: isValuation
