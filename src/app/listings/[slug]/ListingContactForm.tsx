@@ -18,9 +18,12 @@ import type { Broker } from '@/lib/broker';
 export function ListingContactForm({
   listingTitle,
   broker,
+  listingSlug,
 }: {
   listingTitle: string;
   broker?: Broker;
+  /** Routes the lead to this listing's broker (see getLeadOwner). */
+  listingSlug?: string;
 }) {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -48,6 +51,7 @@ export function ListingContactForm({
           phone: data.get('phone'),
           message: data.get('message') || `I'm interested in ${listingTitle}`,
           property_interest: listingTitle,
+          ...(listingSlug ? { listing_slug: listingSlug } : {}),
           source: 'listing',
           recaptchaToken,
           website: data.get('website'),  // honeypot

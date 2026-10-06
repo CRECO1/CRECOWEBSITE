@@ -18,6 +18,7 @@ import { MarketReportCapture } from '@/components/marketing/MarketReportCapture'
 import { PropertyAlertsInline } from '@/components/marketing/PropertyAlertsInline';
 import { StickyPropertyCTABar } from '@/components/marketing/StickyPropertyCTABar';
 import { BrokerCard } from '@/components/marketing/BrokerCard';
+import { BRIAN_BLANCO } from '@/lib/broker';
 
 // ─── Property photos ────────────────────────────────────────────────────
 // Site-shot photo set of 8000 Fair Oaks Plaza, taken on-site. Sourced
@@ -553,6 +554,7 @@ export default function FairOaksDevPage() {
                     contact info from src/lib/broker.ts so future
                     broker changes are a one-file edit. */}
                 <BrokerCard
+                  backup={BRIAN_BLANCO}
                   variant="light"
                   intro="Your inquiry is going to:"
                 />

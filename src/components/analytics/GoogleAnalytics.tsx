@@ -27,36 +27,23 @@
  * come from normal browsers, so they're unaffected. Sophisticated bots that
  * fully mimic a browser still get through; for those, read reports net of the
  * datacenter cities.
+ *
+ * Team devices and datacenter scanners are now skipped too — see
+ * lib/analytics-gate.ts for the rules (shared with Clarity).
  */
 
 import Script from 'next/script';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-
-const PROD_HOSTS = new Set(['crecotx.com', 'www.crecotx.com']);
-// Authenticated portal — keep these sessions out of the marketing GA4 property.
-const EXCLUDED_PREFIXES = ['/admin', '/billing', '/manage'];
-
-/** Unambiguous automation / bot signals. Real browsers match none of these. */
-function isLikelyBot(): boolean {
-  try {
-    // navigator.webdriver is true under Selenium/Puppeteer/Playwright/headless
-    // automation and false/undefined in real user browsers.
-    if (navigator.webdriver) return true;
-    const ua = navigator.userAgent || '';
-    return /bot|crawl|spider|headless|scrape|lighthouse|pagespeed|gtmetrix|pingdom|phantom|puppeteer|playwright|selenium|prerender|slurp|monitoring/i.test(ua);
-  } catch {
-    return false;
-  }
-}
+import { isExcludedPath, shouldTrackVisitor } from '@/lib/analytics-gate';
 
 export function GoogleAnalytics({ gaId }: { gaId: string }) {
   const pathname = usePathname();
-  const excludedPath = !pathname || EXCLUDED_PREFIXES.some((p) => pathname.startsWith(p));
+  const excludedPath = isExcludedPath(pathname);
   const [enabled, setEnabled] = useState(false);
 
   useEffect(() => {
-    setEnabled(PROD_HOSTS.has(window.location.hostname) && !isLikelyBot());
+    setEnabled(shouldTrackVisitor());
   }, []);
 
   if (!gaId || !enabled || excludedPath) return null;

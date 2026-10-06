@@ -48,6 +48,14 @@ export interface Broker {
    * without touching phone_href.
    */
   sms_href: string;
+  /** Private inbox the "new lead" alert is sent to (never shown on the site). */
+  alert_email: string;
+  /**
+   * The broker's CRM login email — how the CRM finds the profile that owns
+   * the contact and its call-back task. Differs from alert_email for Zack,
+   * whose CRM profile sits under the Fair Oaks address.
+   */
+  crm_profile_email: string;
   /**
    * Public URL to the broker's headshot. Optional — when unset the
    * UI shows an initials avatar. Prefer a local /public/team/*.jpg
@@ -73,6 +81,8 @@ export const PRIMARY_BROKER: Broker = {
   phone_display: '(210) 817-3443',
   phone_href: 'tel:+12108173443',
   sms_href: 'sms:+12108173443',
+  alert_email: 'zack@crecotx.com',
+  crm_profile_email: 'info@fairoaksrealtygroup.com',
   // Real headshot (512px square, sourced from the agents table / About page)
   // — switches every avatar sitewide from the initials fallback to the photo.
   photo_url: '/team/zach-stovall.jpg',
@@ -99,6 +109,8 @@ export const BRIAN_BLANCO: Broker = {
   phone_display: '(210) 817-3443',
   phone_href: 'tel:+12108173443',
   sms_href: 'sms:+12108173443',
+  alert_email: 'brian@crecotx.com',
+  crm_profile_email: 'brian@crecotx.com',
   // Real headshot (512px square, face-cropped from the agents-table photo).
   photo_url: '/team/brian-blanco.jpg',
   // Add Brian's Cal.com share URL here to activate his "Book 15 min
@@ -107,8 +119,15 @@ export const BRIAN_BLANCO: Broker = {
 };
 
 /**
+ * Who a listing's inquiries go to when the listing has no explicit
+ * assignment. Brian owns inbound leads (Oct 2026), so the person a visitor
+ * sees on the listing is the person who will call them back.
+ */
+export const LISTING_DEFAULT_BROKER: Broker = BRIAN_BLANCO;
+
+/**
  * Per-listing broker assignment. Maps listing slugs to broker records —
- * anything not listed here falls through to PRIMARY_BROKER (Zach).
+ * anything not listed here falls through to LISTING_DEFAULT_BROKER (Brian).
  *
  * Why by-slug and not a DB column: the roster is small (2 brokers)
  * and stable, and slug matching is O(1) in a small map. When the
@@ -118,20 +137,57 @@ export const BRIAN_BLANCO: Broker = {
  * lightest workflow.
  */
 const LISTING_BROKER_MAP: Record<string, Broker> = {
+  // Zack is the point of contact on these (his own listings / sales).
+  '1353-w-french-pl': PRIMARY_BROKER,   // French Pl warehouse
+  '5402-us-hwy-87-e': PRIMARY_BROKER,   // AutoBrite car wash sale
+  'elkhorn-point-pad': PRIMARY_BROKER,  // Elkhorn Point
+  '8000-fair-oaks-pkwy': PRIMARY_BROKER, // 8000 Fair Oaks Plaza
   // 7830 Louis Pasteur — medical office building, Brian's specialty
   'move-in-ready-medical-building': BRIAN_BLANCO,
 };
 
 /**
+ * Lead sources that belong to a broker regardless of listing — the custom
+ * property pages whose forms don't carry a listing slug.
+ */
+const SOURCE_BROKER_PREFIXES: Array<[string, Broker]> = [
+  ['8923-dietz-elkhorn', PRIMARY_BROKER], // Elkhorn Point leasing page
+  ['8000-fair-oaks-pkwy', PRIMARY_BROKER], // 8000 Fair Oaks Pkwy plaza page
+];
+
+/**
  * Return the broker responsible for a given listing slug. Falls back
- * to PRIMARY_BROKER when the listing isn't explicitly assigned. Every
+ * to LISTING_DEFAULT_BROKER when the listing isn't explicitly assigned. Every
  * inquiry surface that renders a broker card should call this rather
  * than reading PRIMARY_BROKER directly, so per-listing overrides
  * always land.
  */
 export function getBrokerForListing(slug: string | null | undefined): Broker {
-  if (!slug) return PRIMARY_BROKER;
-  return LISTING_BROKER_MAP[slug] ?? PRIMARY_BROKER;
+  if (!slug) return LISTING_DEFAULT_BROKER;
+  return LISTING_BROKER_MAP[slug] ?? LISTING_DEFAULT_BROKER;
+}
+
+/**
+ * Who owns a lead: the alert goes to them and the CRM contact + call-back
+ * task are theirs. Listing assignment wins, then the page's source, then the
+ * default owner (Brian).
+ */
+export function getLeadOwner(opts: { listingSlug?: string | null; source?: string | null }): Broker {
+  if (opts.listingSlug && LISTING_BROKER_MAP[opts.listingSlug]) return LISTING_BROKER_MAP[opts.listingSlug];
+  const src = opts.source ?? '';
+  for (const [prefix, broker] of SOURCE_BROKER_PREFIXES) {
+    if (src.startsWith(prefix)) return broker;
+  }
+  return LISTING_DEFAULT_BROKER;
+}
+
+/**
+ * The other person on a lead — Zack (the broker) and Brian (agent) back each
+ * other up on every listing. Copied on the alert, shares the CRM contact, and gets the lead
+ * escalated to them if the owner hasn't made contact in time.
+ */
+export function getLeadBackup(owner: Broker): Broker {
+  return owner === PRIMARY_BROKER ? BRIAN_BLANCO : PRIMARY_BROKER;
 }
 
 /** Derive initials from a full name for the avatar fallback. */

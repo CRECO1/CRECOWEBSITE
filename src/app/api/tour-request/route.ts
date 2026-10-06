@@ -11,6 +11,8 @@ import { checkEmailQuality } from '@/lib/email-quality';
 import { buildIcs } from '@/lib/ics';
 import { pushToCrm } from '@/lib/crm';
 import { enforceRateLimit } from '@/lib/rate-limit';
+import { leadAlertRecipients, leadCrmOwners } from '@/lib/lead-owner';
+import { getLeadOwner } from '@/lib/broker';
 
 /**
  * POST /api/tour-request
@@ -220,6 +222,7 @@ export async function POST(req: NextRequest) {
       // Also create the contact in the CRM (owner: the broker). Non-blocking.
       await sendLeadToCrm({
         name, email, phone,
+        ...leadCrmOwners(getLeadOwner({ listingSlug })),
         message: [listingTitle || listingSlug, preferredDate, preferredTime].filter(Boolean).join(' · ') || null,
         source: `website — crecotx.com (tour request${listingSlug ? `: ${listingSlug}` : ''})`,
         type: 'Tenant',
@@ -363,7 +366,7 @@ export async function POST(req: NextRequest) {
       const confirmUrl = `https://www.crecotx.com/api/tour-confirm?token=${confirmToken}`;
       await resend.emails.send({
         from: getFromEmail(),
-        to: NOTIFICATION_EMAIL,
+        to: leadAlertRecipients(getLeadOwner({ listingSlug })),
         subject: `🏢 Tour requested: ${listingTitle || listingSlug || 'Property'} — ${name}`,
         html: `
           <div style="font-family:Helvetica,Arial,sans-serif;max-width:600px;color:#1A1A1A">

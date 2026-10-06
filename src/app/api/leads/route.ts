@@ -11,8 +11,8 @@ import { checkEmailQuality } from '@/lib/email-quality';
 import { pushToCrm } from '@/lib/crm';
 import { enforceRateLimit } from '@/lib/rate-limit';
 import { scoreLead, tierSubjectLabel, tierColor } from '@/lib/lead-score';
-
-const NOTIFICATION_EMAIL = process.env.LEAD_NOTIFICATION_EMAIL ?? 'info@crecotx.com';
+import { leadAlertRecipients, leadCrmOwners } from '@/lib/lead-owner';
+import { getLeadOwner } from '@/lib/broker';
 
 // Resolved at request time (not module load) so env var changes from Vercel
 // take effect on next deploy without code changes. Defaults to Resend's free
@@ -206,6 +206,10 @@ export async function POST(req: NextRequest) {
     const message = clampString(rawMessage, MAX_LEN.message);
     const property_interest = clampString(rawPropertyInterest, MAX_LEN.shortField);
     const source = clampString(rawSource, MAX_LEN.shortField) || 'contact';
+    // Listing forms send their slug so the lead routes to that listing's broker.
+    const rawListingSlug = (body as { listing_slug?: unknown }).listing_slug;
+    const listingSlug = typeof rawListingSlug === 'string' && /^[a-z0-9-]{1,120}$/.test(rawListingSlug) ? rawListingSlug : null;
+    const owner = getLeadOwner({ listingSlug, source });
     // A listing inquiry is an owner offering CRECO the mandate on their space —
     // the lead this business most wants to win. Kept separate from a valuation
     // request, which only asks what a property is worth.
@@ -263,6 +267,7 @@ export async function POST(req: NextRequest) {
       const isValuation = source === 'valuation-request';
       await sendLeadToCrm({
         name, email, phone, company, message,
+        ...leadCrmOwners(owner),
         // The slug decides what KIND of lead this is; the page the form was
         // actually on decides WHERE it came from. Before this, an inline
         // landlord form on /landlord-representation reported itself as
@@ -342,6 +347,7 @@ export async function POST(req: NextRequest) {
       company: company || null,
       message: message || null,
       property_interest: property_interest || null,
+      listing_slug: listingSlug,
       // Attribution + visit journey — so the contact pushToCrm creates in the CRM
       // carries where it came from and what pages it visited (the "Lead
       // Attribution" tab). pushToCrm is the writer that actually authors the row
@@ -403,7 +409,7 @@ export async function POST(req: NextRequest) {
       // so the broker can just hit Reply to respond to the prospect directly.
       await resend.emails.send({
         from: getFromEmail(),
-        to: NOTIFICATION_EMAIL,
+        to: leadAlertRecipients(owner),
         replyTo: email,
         subject,
         html: `

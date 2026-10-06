@@ -26,29 +26,15 @@
 import Script from 'next/script';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-
-const PROD_HOSTS = new Set(['crecotx.com', 'www.crecotx.com']);
-// Authenticated portal — never record session replay or fire analytics here.
-const EXCLUDED_PREFIXES = ['/admin', '/billing', '/manage'];
-
-/** Unambiguous automation / bot signals — mirrors GoogleAnalytics.isLikelyBot. */
-function isLikelyBot(): boolean {
-  try {
-    if (navigator.webdriver) return true;
-    const ua = navigator.userAgent || '';
-    return /bot|crawl|spider|headless|scrape|lighthouse|pagespeed|gtmetrix|pingdom|phantom|puppeteer|playwright|selenium|prerender|slurp|monitoring/i.test(ua);
-  } catch {
-    return false;
-  }
-}
+import { isExcludedPath, shouldTrackVisitor } from '@/lib/analytics-gate';
 
 export function ClarityAnalytics({ clarityId }: { clarityId: string }) {
   const pathname = usePathname();
-  const excludedPath = !pathname || EXCLUDED_PREFIXES.some((p) => pathname.startsWith(p));
+  const excludedPath = isExcludedPath(pathname);
   const [prodHuman, setProdHuman] = useState(false);
 
   useEffect(() => {
-    setProdHuman(PROD_HOSTS.has(window.location.hostname) && !isLikelyBot());
+    setProdHuman(shouldTrackVisitor());
   }, []);
 
   // Halt an already-running recording the moment the user enters the portal.

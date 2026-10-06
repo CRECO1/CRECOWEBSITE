@@ -11,7 +11,7 @@ import { FaqSection } from '@/components/marketing/FaqSection';
 import { BUSINESS, assetCategory, breadcrumbList, listingPriceText, listingSchema, listingSummary } from '@/lib/schema';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { MapPin, Calendar, Building2, CheckCircle, Layers, Ruler, Truck, Download, Map, Video } from 'lucide-react';
+import { MapPin, Calendar, Building2, CheckCircle, Layers, Ruler, Truck, Map, Video } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
@@ -23,7 +23,7 @@ import { ListingInquiryTabs } from './ListingInquiryTabs';
 import { ListingViewTracker } from './ListingViewTracker';
 import { MobileInquiryBar } from './MobileInquiryBar';
 import { BrokerCard } from '@/components/marketing/BrokerCard';
-import { getBrokerForListing } from '@/lib/broker';
+import { getBrokerForListing, getLeadBackup } from '@/lib/broker';
 import { RelatedListings } from '@/components/marketing/RelatedListings';
 import { HubLinks } from '@/components/marketing/HubLinks';
 import { hubLinksForListing } from '@/lib/hub-links';
@@ -356,19 +356,18 @@ export default async function ListingDetailPage({ params }: Props) {
                 </div>
               )}
 
-              {/* Brochure */}
-              {listing!.brochure_url && (
-                <div className="mb-8">
-                  <a
-                    href={listing!.brochure_url}
-                    target="_blank" rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-lg border border-gold px-5 py-3 text-body-sm font-semibold text-gold-dark transition-colors hover:bg-gold hover:text-primary"
-                  >
-                    <Download className="h-4 w-4" />
-                    Download Marketing Brochure
-                  </a>
-                </div>
-              )}
+              {/* Brochure — one email, then the PDF. This was a free
+                  download link, so the most-read listing pages (email
+                  campaign traffic) handed out the brochure and captured
+                  nobody. Every listing has one: the uploaded PDF, or the
+                  generated one-pager at /api/brochure/[slug]. */}
+              <div className="mb-8 max-w-xl">
+                <BrochureRequestForm
+                  listingSlug={listing!.slug}
+                  listingTitle={listing!.title}
+                  brochureUrl={listing!.brochure_url}
+                />
+              </div>
             </div>
 
             {/* Sidebar — tabbed inquiry (Tour | Message). #inquiry anchor is
@@ -412,11 +411,11 @@ export default async function ListingDetailPage({ params }: Props) {
                 <div className="mt-6 pt-6 border-t border-border">
                   {/* Per-listing broker override — getBrokerForListing
                       returns the broker assigned in LISTING_BROKER_MAP
-                      or falls back to PRIMARY_BROKER. Louis Pasteur
-                      (move-in-ready-medical-building) routes to Brian
-                      Blanco; the other listings still land with Zach. */}
+                      or falls back to LISTING_DEFAULT_BROKER (Brian,
+                      who owns inbound leads). */}
                   <BrokerCard
-                    broker={getBrokerForListing(listing!.slug)}
+                    broker={broker}
+                    backup={getLeadBackup(broker)}
                     intro="Your inquiry is going to:"
                   />
                 </div>

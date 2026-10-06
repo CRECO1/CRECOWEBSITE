@@ -93,6 +93,12 @@ interface BrokerCardProps {
   variant?: 'light' | 'dark';
   /** Hide the calendar CTA even if the broker has a calendar_url. */
   hideCalendar?: boolean;
+  /**
+   * The second person on the listing (Zack the broker + Brian the agent).
+   * Every listing shows both — a two-person team reads as a firm, one name
+   * reads as a solo agent. Contact links stay the lead's (one office line).
+   */
+  backup?: Broker;
   className?: string;
 }
 
@@ -101,6 +107,7 @@ export function BrokerCard({
   intro = "You'll hear from:",
   variant = 'light',
   hideCalendar = false,
+  backup,
   className = '',
 }: BrokerCardProps) {
   const cardBg = variant === 'dark'
@@ -125,12 +132,23 @@ export function BrokerCard({
         </div>
       </div>
 
+      {backup && (
+        <div className={`flex items-center gap-4 mb-4 pt-4 border-t ${variant === 'dark' ? 'border-white/10' : 'border-border'}`}>
+          <BrokerAvatar broker={backup} size={48} className="ml-2" />
+          <div className="min-w-0">
+            <p className={`text-caption uppercase tracking-widest ${introClass}`}>Also on this listing</p>
+            <p className={`font-heading text-body font-bold leading-tight ${nameClass}`}>{backup.name}</p>
+            <p className={`text-caption ${introClass}`}>{backup.title}</p>
+          </div>
+        </div>
+      )}
+
       {/* Quiet on purpose: this card sits next to a form, and its contact
           routes used to be three filled buttons (gold Book, navy Call, gold
           Text) competing with that form's own submit. Now Call · Text is one
           line, and booking and email are text links. */}
       <div className="space-y-1.5">
-        <PhoneCallText variant="inline" tone={variant === 'dark' ? 'dark' : 'light'} surface="broker_card" />
+        <PhoneCallText variant="inline" tone={variant === 'dark' ? 'dark' : 'light'} surface="broker_card" broker={broker} />
         {broker.calendar_url && !hideCalendar && (
           <a
             href={broker.calendar_url}

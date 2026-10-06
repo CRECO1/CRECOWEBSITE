@@ -12,7 +12,7 @@
  * ListingContactForm. Switches to a success state on submit.
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowRight, CalendarClock, CheckCircle, Phone, Video } from 'lucide-react';
 import { getRecaptchaToken } from './Recaptcha';
 import { Honeypot } from './Honeypot';
@@ -32,21 +32,54 @@ const TOUR_FORMATS = [
   { value: 'either',    label: 'Either',    description: 'Whichever works for the broker',               icon: Phone },
 ] as const;
 
-function defaultDate(): string {
-  // Tomorrow, formatted YYYY-MM-DD
-  const d = new Date();
-  d.setDate(d.getDate() + 1);
-  return d.toISOString().slice(0, 10);
+/**
+ * Tap-to-pick slots instead of the native date/time inputs. On a phone those
+ * open a spinner per field and let people pick a Sunday at 2 AM; a row of
+ * real weekday chips and broker-hours times is one tap each, and every pick
+ * is a time a broker can actually show the property.
+ */
+const TIME_SLOTS = [
+  { value: '09:00', label: '9:00 AM' },
+  { value: '10:30', label: '10:30 AM' },
+  { value: '12:00', label: '12:00 PM' },
+  { value: '13:30', label: '1:30 PM' },
+  { value: '15:00', label: '3:00 PM' },
+  { value: '16:30', label: '4:30 PM' },
+] as const;
+
+const DEFAULT_TIME = '10:30';
+
+/** YYYY-MM-DD in the visitor's local calendar (toISOString would shift to UTC). */
+function localYmd(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-const DEFAULT_TIME = '10:00';
+/** The next `n` weekdays, starting tomorrow. */
+function nextBusinessDays(n: number): Date[] {
+  const days: Date[] = [];
+  const d = new Date();
+  while (days.length < n) {
+    d.setDate(d.getDate() + 1);
+    const dow = d.getDay();
+    if (dow !== 0 && dow !== 6) days.push(new Date(d));
+  }
+  return days;
+}
 
 export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress, brochureHref }: Props) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [preferredDate, setPreferredDate] = useState(defaultDate());
+  // Days are computed after mount: the page is statically rendered and cached,
+  // so a server-side "tomorrow" would be stale (and in UTC, not Texas).
+  const [days, setDays] = useState<Date[]>([]);
+  const [preferredDate, setPreferredDate] = useState('');
   const [preferredTime, setPreferredTime] = useState(DEFAULT_TIME);
+  useEffect(() => {
+    const next = nextBusinessDays(5);
+    setDays(next);
+    setPreferredDate(localYmd(next[0]));
+  }, []);
   const [tourFormat, setTourFormat] = useState<typeof TOUR_FORMATS[number]['value']>('in-person');
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -171,28 +204,57 @@ export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress, b
         />
       </label>
 
-      <div className="grid grid-cols-2 gap-3">
-        <label className="block">
-          <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-1">Preferred date *</span>
-          <input
-            type="date"
-            required
-            min={defaultDate()}
-            value={preferredDate}
-            onChange={e => setPreferredDate(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
-          />
-        </label>
-        <label className="block">
-          <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-1">Preferred time *</span>
-          <input
-            type="time"
-            required
-            value={preferredTime}
-            onChange={e => setPreferredTime(e.target.value)}
-            className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"
-          />
-        </label>
+      <div>
+        <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-2">Pick a day *</span>
+        <div className="grid grid-cols-5 gap-1.5" role="radiogroup" aria-label="Tour day">
+          {days.length === 0
+            ? Array.from({ length: 5 }).map((_, k) => (
+                <div key={k} className="h-[52px] rounded-lg border-2 border-border bg-background-cream/50" aria-hidden />
+              ))
+            : days.map(d => {
+                const value = localYmd(d);
+                const selected = preferredDate === value;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => setPreferredDate(value)}
+                    className={`rounded-lg border-2 px-2 py-2 text-center transition-colors ${selected ? 'border-gold bg-gold/5' : 'border-border bg-white hover:border-gold/50'}`}
+                  >
+                    <span className="block text-caption font-semibold uppercase text-foreground-muted">
+                      {d.toLocaleDateString('en-US', { weekday: 'short' })}
+                    </span>
+                    <span className="block text-body-sm font-bold text-primary">
+                      {d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </span>
+                  </button>
+                );
+              })}
+        </div>
+      </div>
+
+      <div>
+        <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-2">Pick a time *</span>
+        <div className="grid grid-cols-3 gap-1.5" role="radiogroup" aria-label="Tour time">
+          {TIME_SLOTS.map(t => {
+            const selected = preferredTime === t.value;
+            return (
+              <button
+                key={t.value}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                onClick={() => setPreferredTime(t.value)}
+                className={`rounded-lg border-2 px-2 py-2 text-center transition-colors text-body-sm font-semibold ${selected ? 'border-gold bg-gold/5 text-primary' : 'border-border bg-white text-primary hover:border-gold/50'}`}
+              >
+                {t.label}
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-1.5 text-caption text-foreground-muted">Need a different time? Add it in the notes.</p>
       </div>
 
       <div>
@@ -236,7 +298,7 @@ export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress, b
 
       <button
         type="submit"
-        disabled={submitting}
+        disabled={submitting || !preferredDate}
         className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-gold px-5 py-3 text-body-sm font-bold text-primary shadow-sm hover:bg-gold-light disabled:opacity-60"
       >
         {submitting ? 'Sending…' : <>Schedule a tour <ArrowRight className="h-4 w-4" /></>}

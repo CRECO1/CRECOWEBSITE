@@ -88,7 +88,7 @@ export function ListingInquiryTabs({
           <p className="mb-5 text-body-sm text-foreground-muted">
             Ask a question, request additional financials, or get the brochure. A CRECO broker will respond personally.
           </p>
-          <ListingContactForm listingTitle={listingTitle} broker={broker} />
+          <ListingContactForm listingTitle={listingTitle} broker={broker} listingSlug={listingSlug} />
         </>
       )}
     </>

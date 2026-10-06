@@ -30,6 +30,7 @@
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { assetTypeTags } from './asset-types';
+import { getLeadOwner, getLeadBackup } from './broker';
 
 type CrmLeadType = 'Buyer' | 'Seller' | 'Tenant' | 'Landlord/Investor' | 'Agent' | 'Broker' | 'Other';
 
@@ -140,6 +141,7 @@ const SOURCE_TO_LABEL: Record<string, string> = {
   'contact':           'CRECO Website — Contact Form',
   'listing':           'CRECO Website — Listing Inquiry',
   'quiz':              'CRECO Website — Get Started Quiz',
+  'brochure-request':  'CRECO Website — Brochure Request',
 };
 
 /** Map the CRM client-type onto a Deal Flow pipeline type, so a web lead
@@ -431,15 +433,32 @@ export async function pushToCrm(p: CrmPayload): Promise<boolean> {
       }
       clientId = existing.id;
     } else {
-      // Need to assign to an admin agent — same approach the FORG
-      // webhook uses. Pick the first commercial admin we find.
-      const { data: adminProfile } = await supabase
+      // The lead's owner (Zack for his listings, Brian for the rest — see
+      // getLeadOwner). Falls back to the first admin only if that profile
+      // can't be found, so a renamed mailbox never leaves the contact unowned.
+      const leadOwner = getLeadOwner({ listingSlug: p.listing_slug, source: p.source });
+      const ownerEmail = leadOwner.crm_profile_email;
+      const { data: ownerProfile } = await supabase
+        .from('crm_profiles')
+        .select('id')
+        .ilike('email', ownerEmail)
+        .limit(1)
+        .maybeSingle();
+      const { data: adminProfile } = ownerProfile ? { data: null } : await supabase
         .from('crm_profiles')
         .select('id')
         .eq('role', 'admin')
         .limit(1)
         .maybeSingle();
-      agentId = adminProfile?.id ?? null;
+      agentId = ownerProfile?.id ?? adminProfile?.id ?? null;
+      // The backup (the other of Zack/Brian) shares the contact (assigned_agent_ids).
+      const { data: backupProfile } = await supabase
+        .from('crm_profiles')
+        .select('id')
+        .ilike('email', getLeadBackup(leadOwner).crm_profile_email)
+        .limit(1)
+        .maybeSingle();
+      const backupIds = backupProfile?.id && backupProfile.id !== agentId ? [backupProfile.id] : [];
 
       const { data: created, error: insertErr } = await supabase
         .from('crm_clients')
@@ -457,7 +476,7 @@ export async function pushToCrm(p: CrmPayload): Promise<boolean> {
           type,
           notes:      message,
           agent_id:   agentId,
-          assigned_agent_ids: [],
+          assigned_agent_ids: backupIds,
           lead_source: sourceLabel,
           business_unit: 'commercial',
           tags,

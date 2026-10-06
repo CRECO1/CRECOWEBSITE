@@ -9,22 +9,39 @@
  *
  * The button scrolls to #inquiry — the listing detail page anchors the
  * inquiry panel with that ID.
+ *
+ * Text sits beside Call: on a phone, a text is the lowest-effort way to ask
+ * "is this still available?", and the global sticky bar (which had Text) is
+ * hidden on listing pages so the two bars don't stack.
  */
 
-import { CalendarClock, Phone } from 'lucide-react';
+import { CalendarClock, MessageSquare, Phone } from 'lucide-react';
+import { trackEvent } from '@/lib/analytics';
 
 export function MobileInquiryBar({ phone = '(210) 817-3443' }: { phone?: string }) {
-  const telHref = `tel:+1${phone.replace(/\D/g, '')}`;
+  const digits = phone.replace(/\D/g, '');
+  const telHref = `tel:+1${digits}`;
+  const smsHref = `sms:+1${digits}`;
+  const iconBtn = 'inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-border bg-white text-primary transition-colors hover:border-gold hover:text-gold';
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-white/95 backdrop-blur shadow-[0_-4px_16px_rgba(0,0,0,0.06)] lg:hidden">
+    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-white/95 backdrop-blur shadow-[0_-4px_16px_rgba(0,0,0,0.06)] lg:hidden" data-no-auto-track>
       <div className="mx-auto flex max-w-md items-center gap-2 px-4 py-3">
         <a
           href={telHref}
           aria-label={`Call CRECO at ${phone}`}
-          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-border bg-white text-primary transition-colors hover:border-gold hover:text-gold"
+          onClick={() => trackEvent('phone_call', { surface: 'listing_mobile_bar' })}
+          className={iconBtn}
         >
           <Phone className="h-5 w-5" />
+        </a>
+        <a
+          href={smsHref}
+          aria-label={`Text CRECO at ${phone}`}
+          onClick={() => trackEvent('sms_click', { surface: 'listing_mobile_bar' })}
+          className={iconBtn}
+        >
+          <MessageSquare className="h-5 w-5" />
         </a>
         <a
           href="#inquiry"

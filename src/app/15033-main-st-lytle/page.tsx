@@ -17,6 +17,7 @@ import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { ListingContactForm } from '@/app/listings/[slug]/ListingContactForm';
 import { BrokerCard } from '@/components/marketing/BrokerCard';
+import { LISTING_DEFAULT_BROKER, getLeadBackup } from '@/lib/broker';
 import { MarketReportCapture } from '@/components/marketing/MarketReportCapture';
 import { PropertyAlertsInline } from '@/components/marketing/PropertyAlertsInline';
 
@@ -509,11 +510,11 @@ export default function LytleMainStPage() {
                 {/* Named broker + direct contact + optional Cal.com
                     booking. Replaces the anonymous "Prefer to talk?"
                     line with a visible person to reduce submit-anxiety. */}
-                <BrokerCard intro="Your inquiry is going to:" />
+                <BrokerCard broker={LISTING_DEFAULT_BROKER} backup={getLeadBackup(LISTING_DEFAULT_BROKER)} intro="Your inquiry is going to:" />
               </div>
               <div className="lg:col-span-3">
                 <div className="rounded-2xl border border-border bg-background-cream p-6 sm:p-8">
-                  <ListingContactForm listingTitle="15033 Main St — Lytle Retail Leasing" />
+                  <ListingContactForm listingTitle="15033 Main St — Lytle Retail Leasing" broker={LISTING_DEFAULT_BROKER} />
                 </div>
               </div>
             </div>

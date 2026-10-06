@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextFetchEvent, NextRequest } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
 import { matchCrawler, logCrawlerHit } from '@/lib/crawler-hits';
+import { DATACENTER_COOKIE } from '@/lib/analytics-gate';
 
 // Protected routes that require authentication. /admin is content management;
 // /billing is the financial surface (invoices, expenses, email template) —
@@ -16,8 +17,27 @@ const publicRoutes = ['/manage/login', '/manage/forgot-password', '/manage/reset
 // The matcher below covers every page (the crawler tracker needs to see them
 // all), but the auth gate in handle() still applies only to protectedRoutes —
 // everything else passes straight through.
+// Datacenter towns whose "visitors" are email security scanners and cloud
+// crawlers, not people (Oct-2026 GA review: ~0-20% engagement, spiking with
+// every campaign send). Matched against Vercel's geo header and flagged with a
+// cookie the analytics loaders read — see lib/analytics-gate.ts.
+const DATACENTER_CITIES = new Set([
+  'Ashburn', 'Boardman', 'Council Bluffs', 'Des Moines', 'West Des Moines',
+  'Moses Lake', 'Quincy', 'The Dalles', 'Prineville', 'Singapore', 'Glenview',
+]);
+
+function flagDatacenterVisit(request: NextRequest, res: NextResponse) {
+  if (request.headers.get('sec-fetch-dest') !== 'document') return;
+  if (request.cookies.get(DATACENTER_COOKIE)?.value === '1') return;
+  let city = request.headers.get('x-vercel-ip-city') ?? '';
+  try { city = decodeURIComponent(city); } catch { /* keep raw */ }
+  if (!DATACENTER_CITIES.has(city)) return;
+  res.cookies.set(DATACENTER_COOKIE, '1', { path: '/', maxAge: 60 * 60 * 24 * 7, sameSite: 'lax' });
+}
+
 export async function middleware(request: NextRequest, event: NextFetchEvent) {
   const res = await handle(request);
+  flagDatacenterVisit(request, res);
 
   const bot = matchCrawler(request.headers.get('user-agent'));
   if (bot) {

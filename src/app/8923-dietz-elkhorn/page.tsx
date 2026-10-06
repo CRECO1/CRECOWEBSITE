@@ -20,6 +20,7 @@ import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { RetailLeasingInquiryForm } from '@/components/forms/RetailLeasingInquiryForm';
 import { BrokerCard } from '@/components/marketing/BrokerCard';
+import { BRIAN_BLANCO } from '@/lib/broker';
 import { ClaimSuiteButton } from '@/components/marketing/ClaimSuiteButton';
 import { MarketReportCapture } from '@/components/marketing/MarketReportCapture';
 import { PropertyAlertsInline } from '@/components/marketing/PropertyAlertsInline';
@@ -626,7 +627,7 @@ export default async function DietzElkhornPage() {
                   <RetailLeasingInquiryForm />
                 </div>
                 <div className="lg:sticky lg:top-24">
-                  <BrokerCard intro="Your inquiry is going to:" />
+                  <BrokerCard backup={BRIAN_BLANCO} intro="Your inquiry is going to:" />
                 </div>
               </div>
 

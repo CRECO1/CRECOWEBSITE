@@ -31,7 +31,7 @@
  */
 
 import { Phone, MessageSquare } from 'lucide-react';
-import { PRIMARY_BROKER } from '@/lib/broker';
+import { PRIMARY_BROKER, type Broker } from '@/lib/broker';
 
 interface PhoneCallTextProps {
   /**
@@ -45,6 +45,8 @@ interface PhoneCallTextProps {
   /** GA attribution surface, forwarded to trackEvent on click */
   surface?: string;
   className?: string;
+  /** Whose number to dial/text. Defaults to the brokerage's main line. */
+  broker?: Broker;
 }
 
 /**
@@ -72,6 +74,7 @@ export function PhoneCallText({
   tone = 'light',
   surface = 'unknown',
   className = '',
+  broker = PRIMARY_BROKER,
 }: PhoneCallTextProps = {}) {
   if (variant === 'stacked') {
     // Two side-by-side outlined buttons, equal weight. Deliberately quiet:
@@ -81,7 +84,7 @@ export function PhoneCallText({
     return (
       <div className={`grid grid-cols-2 gap-2 ${className}`} data-no-auto-track>
         <a
-          href={PRIMARY_BROKER.phone_href}
+          href={broker.phone_href}
           onClick={() => fireClickEvent('phone_call', surface)}
           className={quiet}
         >
@@ -89,7 +92,7 @@ export function PhoneCallText({
           Call
         </a>
         <a
-          href={PRIMARY_BROKER.sms_href}
+          href={broker.sms_href}
           onClick={() => fireClickEvent('sms_click', surface)}
           className={quiet}
         >
@@ -109,22 +112,22 @@ export function PhoneCallText({
   return (
     <span className={`inline-flex items-center gap-2 flex-wrap ${className}`} data-no-auto-track>
       <a
-        href={PRIMARY_BROKER.phone_href}
+        href={broker.phone_href}
         onClick={() => fireClickEvent('phone_call', surface)}
         // Call and Text are the two most-tapped links on a phone; keep them
         // at the 44px guideline there and exactly as they were from md: up.
         className={`inline-flex min-h-[44px] items-center gap-2 font-semibold transition-colors md:min-h-0 ${numberClass}`}
-        aria-label={`Call CRECO at ${PRIMARY_BROKER.phone_display}`}
+        aria-label={`Call CRECO at ${broker.phone_display}`}
       >
         <Phone className="h-4 w-4 shrink-0" />
-        <span className="whitespace-nowrap">{PRIMARY_BROKER.phone_display}</span>
+        <span className="whitespace-nowrap">{broker.phone_display}</span>
       </a>
       <span className={`text-caption ${sepClass}`}>·</span>
       <a
-        href={PRIMARY_BROKER.sms_href}
+        href={broker.sms_href}
         onClick={() => fireClickEvent('sms_click', surface)}
         className={`inline-flex min-h-[44px] items-center gap-1 text-body-sm font-semibold transition-colors md:min-h-0 ${smsClass}`}
-        aria-label={`Text CRECO at ${PRIMARY_BROKER.phone_display}`}
+        aria-label={`Text CRECO at ${broker.phone_display}`}
       >
         <MessageSquare className="h-3.5 w-3.5 shrink-0" />
         Text

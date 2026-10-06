@@ -12,6 +12,8 @@ import { enforceRateLimit } from '@/lib/rate-limit';
 import { buildLeadNotificationEmail, leadNotificationSubject, type LeadAnswer } from '@/lib/lead-notification-email';
 import { buildInquiryAutoreplyEmail, INQUIRY_AUTOREPLY_SUBJECT } from '@/lib/inquiry-autoreply-email';
 import { phoneOnlyEmail } from '@/lib/placeholder-email';
+import { leadAlertRecipients, leadCrmOwners } from '@/lib/lead-owner';
+import { getLeadOwner } from '@/lib/broker';
 
 /**
  * Unified inquiry endpoint — handles all 5 paths from /get-started:
@@ -278,6 +280,7 @@ export async function POST(req: NextRequest) {
       // they never mix into the client pipeline.
       await sendLeadToCrm({
         name, email: storedEmail, phone, company,
+        ...leadCrmOwners(getLeadOwner({})),
         message: typeof meta?.subject === 'string' ? meta.subject : null,
         source: isAgentApplication
           ? 'Agent application — crecotx.com/careers'
@@ -336,7 +339,9 @@ export async function POST(req: NextRequest) {
 
       await resend.emails.send({
         from: getFromEmail(),
-        to: NOTIFICATION_EMAIL,
+        // Client inquiries also go straight to the lead owner; agent
+        // applications are recruiting, not leads, so they stay with the inbox.
+        to: isAgentApplication ? NOTIFICATION_EMAIL : leadAlertRecipients(getLeadOwner({})),
         // Hitting reply in the broker's inbox goes straight to the lead
         // instead of to the no-reply sender.
         // Hitting reply goes straight to the lead — when they gave an email.

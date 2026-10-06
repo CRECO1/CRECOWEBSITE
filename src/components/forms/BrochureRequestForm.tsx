@@ -52,6 +52,7 @@ export function BrochureRequestForm({ listingSlug, listingTitle, brochureUrl, va
       email: cleanEmail,
       message: `Requested the marketing brochure for ${listingTitle}. ${brochureUrl ? 'An uploaded brochure PDF is on file.' : 'The auto-generated one-pager was served — consider following up with a full offering memo.'}`,
       property_interest: `${listingTitle} (${listingSlug})`,
+      listing_slug: listingSlug,
       source: 'brochure-request',
     }),
   });

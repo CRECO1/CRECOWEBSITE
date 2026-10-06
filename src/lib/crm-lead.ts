@@ -22,6 +22,10 @@ export interface CrmLeadPayload {
   source: string;
   /** CRM contact type; the webhook falls back to Buyer for anything else. */
   type?: 'Buyer' | 'Seller' | 'Tenant' | 'Landlord/Investor' | 'Agent' | 'Broker';
+  /** CRM login email of the broker who owns this lead (see getLeadOwner). */
+  owner_email?: string | null;
+  /** CRM login email of the backup (the other of Zack/Brian), who shares the contact. */
+  backup_email?: string | null;
   tags?: string[];
 
   /**
