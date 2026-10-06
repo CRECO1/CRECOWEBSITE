@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     images: [DEFAULT_OG_IMAGE],
     title: 'Texas Commercial Real Estate Markets | CRECO',
     description:
-      'Submarket-level guide to Texas commercial real estate — Austin, Houston, DFW, San Antonio, Hill Country. Local market data + CRECO broker contacts.',
+      'Submarket-level guide to Texas commercial real estate — Austin, Houston, DFW, San Antonio, Hill Country. Local market data + direct CRECO contacts.',
     url: 'https://www.crecotx.com/markets',
     type: 'website',
   },
@@ -216,7 +216,7 @@ export default function MarketsHubPage() {
                 href="/get-started"
                 className="inline-flex items-center gap-2 rounded-lg bg-gold px-7 py-3.5 text-body-sm font-semibold text-primary hover:bg-gold-light"
               >
-                Talk to a broker
+                Talk to our team
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </div>

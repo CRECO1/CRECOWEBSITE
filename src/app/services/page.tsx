@@ -353,7 +353,7 @@ export const SERVICES: ServiceContent[] = [
     heroSubhead: 'Day-to-day operations and tenant relations for commercial assets across Texas — built for owners with portfolios who need institutional-quality reporting at boutique-firm responsiveness.',
     intro: [
       'CRECO\'s property management practice is built for the multi-property Texas commercial owner. The big national management firms are great for institutional clients with 100+ trophy assets — but they tend to treat 5-property and 10-property owners as small accounts. Local property managers can handle one or two buildings, but typically lack the systems, reporting, and strategic capabilities a portfolio owner needs.',
-      'We sit in the gap. CRECO manages portfolios from 5 to 50+ Texas commercial properties — retail, industrial, office, flex, mixed-use — with the same operational rigor and reporting infrastructure you would expect from a national firm. Every owner relationship is led by a senior CRECO broker who knows every asset, meets your tenants, and answers your calls directly.',
+      'We sit in the gap. CRECO manages portfolios from 5 to 50+ Texas commercial properties — retail, industrial, office, flex, mixed-use — with the same operational rigor and reporting infrastructure you would expect from a national firm. Every owner relationship is handled personally by the CRECO team — people who know every asset, meet your tenants, and answer your calls directly.',
       'Our management approach is proactive, not reactive. We tour every asset on a regular cadence, meet with key tenants quarterly, track lease expirations 12-24 months ahead, and surface capex needs before they become emergencies. The goal is sustained NOI growth and tenant retention — not just keeping the lights on.',
     ],
     body: [
@@ -649,7 +649,7 @@ export default function ServicesPage() {
                 contextLabel="What are you working on?"
                 contextPlaceholder="e.g. Lease ends next year and we may need more space — or, own a strip center and thinking about selling"
                 source="contact"
-                submitLabel="Talk to a broker"
+                submitLabel="Talk to our team"
                 surface="services-inline"
               />
             </div>

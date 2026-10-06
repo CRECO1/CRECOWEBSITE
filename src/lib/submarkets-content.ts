@@ -117,7 +117,7 @@ export const SUBMARKETS: SubmarketEntry[] = [
         'Active in I-35 small-bay industrial deal flow',
         'Tenant rep for Samsung-Taylor supplier ecosystem',
         'Off-market access through Austin + statewide broker network',
-        'Direct broker access — every engagement led by a senior CRECO broker',
+        'Direct access — every engagement handled personally by the CRECO team',
         'Lease structure expertise — TI, abatement, exit options',
       ],
       relatedInsights: [
@@ -236,7 +236,7 @@ export const SUBMARKETS: SubmarketEntry[] = [
         'Premium retail leasing in mixed-use lifestyle districts',
         'Investment-sale advisory for institutional-grade Austin assets',
         'Off-market deal flow across the North Austin corridor',
-        'Direct broker access — every engagement led by a senior CRECO broker',
+        'Direct access — every engagement handled personally by the CRECO team',
         'Tech-tenant lease structure expertise (large-block, multi-year deals)',
       ],
       relatedInsights: [
@@ -303,7 +303,7 @@ export const SUBMARKETS: SubmarketEntry[] = [
         'Class A office + premium retail leasing across the Tollway corridor',
         'Investment-sale advisory for institutional Frisco assets',
         'Off-market deal flow through DFW broker network',
-        'Direct broker access — every engagement led by a senior CRECO broker',
+        'Direct access — every engagement handled personally by the CRECO team',
         'Net-occupancy modeling for corporate-tenant location decisions',
       ],
       relatedInsights: [
@@ -989,7 +989,7 @@ export const SUBMARKETS: SubmarketEntry[] = [
         'Premium retail and restaurant leasing in walkable urban districts',
         'Investment-sale advisory for institutional Houston urban assets',
         'Off-market commercial deal flow through Houston + statewide broker network',
-        'Direct broker access — every engagement led by a senior CRECO broker',
+        'Direct access — every engagement handled personally by the CRECO team',
         'Corporate-tenant lease structure expertise (large-block, multi-year deals)',
       ],
       relatedInsights: [

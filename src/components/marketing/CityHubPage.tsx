@@ -353,7 +353,7 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
                 tone="light"
                 eyebrow={`${config.cityShort} — tenant & buyer representation`}
                 heading={`Looking for commercial space in ${config.city}?`}
-                body={`Tell us the type, size and timing and a CRECO broker sends you matching ${config.cityShort} availabilities — including off-market space you won't find on LoopNet. No obligation.`}
+                body={`Tell us the type, size and timing and our team sends you matching ${config.cityShort} availabilities — including off-market space you won't find on LoopNet. No obligation.`}
                 contextLabel="What are you looking for?"
                 contextPlaceholder={`e.g. 5,000 SF retail in ${config.cityShort}, moving Q1`}
                 source="tenant-needs"
@@ -684,7 +684,7 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
               <InlineLeadForm
                 eyebrow={config.cityShort}
                 heading={`Looking for space in ${config.city}?`}
-                body={`Tell us what you need and a CRECO broker will send ${config.cityShort} options that match — including space that is not publicly listed.`}
+                body={`Tell us what you need and our team will send ${config.cityShort} options that match — including space that is not publicly listed.`}
                 contextLabel="What are you looking for?"
                 contextPlaceholder={`Type, size and timing — e.g. 5,000 SF retail in ${config.cityShort}, Q1`}
                 source="tenant-needs"

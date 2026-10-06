@@ -147,7 +147,7 @@ export default async function SoldPage() {
                   <Link href="/sell">Request a Property Opinion</Link>
                 </Button>
                 <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" asChild>
-                  <Link href="/contact">Talk to a Broker</Link>
+                  <Link href="/contact">Talk to Our Team</Link>
                 </Button>
               </div>
             </div>

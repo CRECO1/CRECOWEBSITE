@@ -318,7 +318,7 @@ export const POSTS: InsightPost[] = [
         heading: 'When to add CRECO\'s owner services',
         paragraphs: [
           'Multi-property Texas commercial real estate owners eventually outgrow generic property management. Once you cross 5 properties — and certainly by 10 — strategy becomes as important as operations. CRECO\'s owner services practice is built for that transition.',
-          'We provide quarterly portfolio reviews with asset-level hold/sell/reposition recommendations, off-market deal flow for acquisitions and 1031 replacement, day-to-day property management with institutional-quality reporting, and direct broker access — every engagement led by a senior CRECO broker who knows every asset.',
+          'We provide quarterly portfolio reviews with asset-level hold/sell/reposition recommendations, off-market deal flow for acquisitions and 1031 replacement, day-to-day property management with institutional-quality reporting, and direct access — every engagement handled personally by a CRECO team that knows every asset.',
         ],
       },
     ],

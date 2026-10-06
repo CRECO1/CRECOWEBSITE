@@ -25,7 +25,7 @@ export function SourcesMethodology({ asOf, className = '' }: { asOf: string; cla
             <strong className="text-primary">CRECO market estimates</strong>, as of <strong className="text-primary">{asOf}</strong>.
             They are not attributed to a third-party research provider or data service, have not been independently
             verified, and are approximate; published market reports may differ. For current figures on a specific
-            property or submarket, talk to a CRECO broker at {BUSINESS.phoneDisplay} or {BUSINESS.email}.
+            property or submarket, talk to our team at {BUSINESS.phoneDisplay} or {BUSINESS.email}.
           </p>
         </div>
       </Container>

@@ -71,7 +71,7 @@ export function ListingInquiryTabs({
             Schedule a tour
           </h3>
           <p className="mb-5 text-body-sm text-foreground-muted">
-            Pick a date and time. A CRECO broker will confirm within an hour during business hours.
+            Pick a date and time. We'll confirm within an hour during business hours.
           </p>
           <TourSchedulerForm
             listingSlug={listingSlug}
@@ -86,7 +86,7 @@ export function ListingInquiryTabs({
             Interested in this property?
           </h3>
           <p className="mb-5 text-body-sm text-foreground-muted">
-            Ask a question, request additional financials, or get the brochure. A CRECO broker will respond personally.
+            Ask a question, request additional financials, or get the brochure. Someone from our team will respond personally.
           </p>
           <ListingContactForm listingTitle={listingTitle} broker={broker} listingSlug={listingSlug} />
         </>

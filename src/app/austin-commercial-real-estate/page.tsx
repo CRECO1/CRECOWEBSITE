@@ -60,7 +60,7 @@ export default function AustinPage() {
         servicesIntro: [
           "From our Fair Oaks Ranch headquarters, CRECO's Austin practice focuses on the same disciplined work we bring to every Texas market — tenant rep for businesses signing leases, landlord rep for owners optimizing rent rolls, investment advisory for buyers and sellers, and portfolio strategy for multi-property owners.",
           "Austin tenancy demands particular discipline because the market is bifurcated. CRECO's Austin tenant rep practice runs structured 4-5 candidate processes that use the asymmetry between strong and weak Austin submarkets to negotiate effective rents, TI, abatement, and exit options that wouldn't be on the table otherwise.",
-          "For Austin commercial property owners, our owner services practice provides quarterly portfolio reviews, off-market deal flow for acquisitions and 1031 replacement, day-to-day property management, and direct broker access — every engagement led by a senior CRECO broker who knows the Austin market.",
+          "For Austin commercial property owners, our owner services practice provides quarterly portfolio reviews, off-market deal flow for acquisitions and 1031 replacement, day-to-day property management, and direct access — every engagement handled personally by a CRECO team that knows the Austin market.",
         ],
         submarkets: [
           {
@@ -109,7 +109,7 @@ export default function AustinPage() {
           'Off-market deal flow across all major Austin submarkets',
           'Represents tenants, landlords/owners, and investors — including tenant rep for businesses scouting Austin space (typically paid by the landlord)',
           'Owner services for Austin-based investors and property owners',
-          'Direct broker access — every engagement led by a senior CRECO broker',
+          'Direct access — every engagement handled personally by the CRECO team',
           'Tenant Improvement, abatement, and exit-option negotiation as core competencies',
           'Investment advisory and 1031 exchange coordination across Texas',
         ],

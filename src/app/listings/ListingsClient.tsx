@@ -530,7 +530,7 @@ export function ListingsClient({ initialListings, children }: { initialListings:
                 tone="dark"
                 eyebrow="Tenant & buyer representation"
                 heading="Don't see the right space?"
-                body="Tell us the type, size, submarket and timing — a CRECO broker sends you matching Texas availabilities, including off-market space that never hits the public listings."
+                body="Tell us the type, size, submarket and timing — our team sends you matching Texas availabilities, including off-market space that never hits the public listings."
                 contextLabel="What are you looking for?"
                 contextPlaceholder="e.g. 10,000–15,000 SF warehouse, San Antonio NE, moving Q1"
                 source="tenant-needs"

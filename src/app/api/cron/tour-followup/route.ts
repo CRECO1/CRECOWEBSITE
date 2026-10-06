@@ -98,7 +98,7 @@ function followupHtml(stage: Stage, name: string, propertyInterest: string | nul
     case 'day-1':
       body = `
         <h2 style="margin:0 0 16px;color:#1A1A1A;font-size:20px">Quick check-in, ${safeName}.</h2>
-        <p style="line-height:1.6">Just confirming we got your tour request${propertyLine} yesterday. A CRECO broker is lining up a window — typically Tuesday or Thursday late-morning if those work, otherwise reply with what does and we'll match it.</p>
+        <p style="line-height:1.6">Just confirming we got your tour request${propertyLine} yesterday. We're lining up a window — typically Tuesday or Thursday late-morning if those work, otherwise reply with what does and we'll match it.</p>
         <p style="line-height:1.6">If something's changed and you don't need the tour anymore, that's fine — just reply "skip" and we won't bug you again. Otherwise we'll have a confirmation out shortly.</p>
       `;
       break;

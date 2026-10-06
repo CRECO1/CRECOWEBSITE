@@ -62,7 +62,7 @@ export default async function SubscribeConfirmedPage(
                 </Button>
                 <Button size="lg" variant="outline" asChild>
                   <Link href={key === 'invalid' ? '/property-alerts' : '/contact'}>
-                    {key === 'invalid' ? 'Sign up again' : 'Talk to a broker'}
+                    {key === 'invalid' ? 'Sign up again' : 'Talk to our team'}
                   </Link>
                 </Button>
               </div>

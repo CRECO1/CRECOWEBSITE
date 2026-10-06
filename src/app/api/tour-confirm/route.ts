@@ -180,7 +180,7 @@ export async function GET(req: NextRequest) {
               </a>
             </div>
             <h2 style="margin:0 0 16px;color:#1A1A1A;font-size:20px">You're confirmed, ${escapeHtml(lead.name)}.</h2>
-            <p style="line-height:1.6">A CRECO broker just confirmed your tour request${lead.property_interest ? ` for <strong>${escapeHtml(lead.property_interest)}</strong>` : ''}. The calendar invite from our earlier email is on your calendar — we'll see you then.</p>
+            <p style="line-height:1.6">CRECO just confirmed your tour request${lead.property_interest ? ` for <strong>${escapeHtml(lead.property_interest)}</strong>` : ''}. The calendar invite from our earlier email is on your calendar — we'll see you then.</p>
             <p style="line-height:1.6;margin-top:16px"><strong>Before the tour:</strong> if anything changes on your end, reply to this email or call <a href="tel:+12108173443" style="color:#C9A962">(210) 817-3443</a> and we'll reschedule.</p>
             <p style="line-height:1.6;margin-top:16px">If you'd like to share what you're hoping to learn during the walkthrough — use case, headcount, layout preferences, timeline — feel free to reply ahead of time. The more context, the better the conversation.</p>
             <p style="color:#525252;margin:24px 0 0">— The CRECO Team</p>

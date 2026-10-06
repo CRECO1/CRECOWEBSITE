@@ -123,7 +123,7 @@ const DEFAULTS = {
     'We sit in your seat. Every quarter, we walk your full Texas portfolio and tell you: keep, reposition, or sell. We make the case with hard numbers — submarket comps, tenant credit analysis, mark-to-market upside — and we execute the recommendations through our leasing, sales, and management teams.',
   ],
   why_bullets: [
-    'Principal-level relationship — every engagement is led by a senior CRECO broker',
+    'Personal relationship — every engagement is handled directly by the CRECO team',
     'Quarterly portfolio strategy reviews with actionable recommendations',
     'Texas-wide coverage: San Antonio, Austin, Houston, DFW, and beyond',
     'Institutional reporting (monthly financials, leasing pipeline, capex tracking)',
@@ -366,7 +366,7 @@ export default async function OwnerServicesPage() {
               <InlineLeadForm
                 eyebrow="Owner Services"
                 heading="Have a portfolio to hand over?"
-                body="Tell us what you hold and a CRECO broker will come back with where the upside is and how we would run it."
+                body="Tell us what you hold and our team will come back with where the upside is and how we would run it."
                 contextLabel="What do you own?"
                 contextPlaceholder="How many properties, types and roughly where — e.g. 6 retail strips across San Antonio and Boerne"
                 source="listing-inquiry"

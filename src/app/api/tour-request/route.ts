@@ -336,7 +336,7 @@ export async function POST(req: NextRequest) {
               </a>
             </div>
             <h2 style="margin:0 0 16px;color:#1A1A1A;font-size:20px">Tour request received, ${safeName}.</h2>
-            <p>Thanks for your interest in <strong>${safeTitle}</strong>. A CRECO broker will confirm your tour shortly — usually within an hour during business hours.</p>
+            <p>Thanks for your interest in <strong>${safeTitle}</strong>. We'll confirm your tour shortly — usually within an hour during business hours.</p>
             <table style="width:100%;border-collapse:collapse;margin:0 0 20px">
               <tr><td style="padding:8px 12px;background:#FAFAF8;border:1px solid #E8E5E0"><strong>Property</strong></td><td style="padding:8px 12px;border:1px solid #E8E5E0">${safeTitle}</td></tr>
               ${safeAddress ? `<tr><td style="padding:8px 12px;background:#FAFAF8;border:1px solid #E8E5E0"><strong>Address</strong></td><td style="padding:8px 12px;border:1px solid #E8E5E0">${safeAddress}</td></tr>` : ''}

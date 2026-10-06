@@ -100,7 +100,7 @@ export default function BoernePage() {
           'Owner services for Boerne and Kendall County property owners',
           'Investment advisory connecting Boerne deals to our Texas-wide 1031 + buyer network',
           'Off-market deal flow across Main Street, I-10, and Highway 46 corridors',
-          'Direct broker access — every engagement led by a senior CRECO broker',
+          'Direct access — every engagement handled personally by the CRECO team',
         ],
         relatedInsights: [
           {

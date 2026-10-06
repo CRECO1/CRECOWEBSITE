@@ -107,7 +107,7 @@ export default function FairOaksRanchPage() {
           'Landlord and owner representation — leasing, sales, and property management for Fair Oaks Ranch and Hill Country owners',
           'Investment sales and land sales — retail centers, office buildings, and development pads',
           'Off-market deal flow on land, retail, and owner-user opportunities',
-          'Direct broker access — every engagement led by a senior CRECO broker',
+          'Direct access — every engagement handled personally by the CRECO team',
         ],
         authority: {
           heading: 'Who does commercial real estate in Fair Oaks Ranch? CRECO is headquartered here.',

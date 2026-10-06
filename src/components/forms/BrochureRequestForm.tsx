@@ -82,7 +82,7 @@ export function BrochureRequestForm({ listingSlug, listingTitle, brochureUrl, va
                 Download the brochure (PDF) →
               </a>
               <br />
-              A CRECO broker will also follow up with current pricing and availability.
+              Someone from our team will also follow up with current pricing and availability.
             </p>
           </div>
         </div>

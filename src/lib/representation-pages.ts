@@ -68,7 +68,7 @@ export const LANDLORD_PAGE: RepresentationPageContent = {
     'Yes — CRECO represents landlords and owners: leasing, tenant procurement, and dispositions for retail, office, industrial, flex, and land across Texas.',
   inlineForm: {
     heading: 'Have space to lease?',
-    body: 'Tell us what you own and a CRECO broker will come back with how we would market it, who we would target, and what it should command.',
+    body: 'Tell us what you own and our team will come back with how we would market it, who we would target, and what it should command.',
     contextLabel: 'What do you own?',
     contextPlaceholder: 'Property address, type and approximate size — e.g. 12,000 SF retail strip on Bandera Rd',
     source: 'listing-inquiry',
@@ -151,7 +151,7 @@ export const SELLER_INVESTOR_PAGE: RepresentationPageContent = {
     'CRECO represents sellers and investors on Texas commercial acquisitions and dispositions — retail, office, industrial, flex, and land. TREC #9014367.',
   inlineForm: {
     heading: 'Thinking about selling?',
-    body: 'Tell us what you hold and a CRECO broker will come back with a no-obligation opinion of value and how we would take it to market.',
+    body: 'Tell us what you hold and our team will come back with a no-obligation opinion of value and how we would take it to market.',
     contextLabel: 'What are you looking to sell or acquire?',
     contextPlaceholder: 'Property address and type, or what you are looking to buy — e.g. NNN retail, $2\u20134M, San Antonio',
     source: 'disposition-inquiry',

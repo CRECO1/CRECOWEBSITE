@@ -17,7 +17,7 @@ import { breadcrumbList } from '@/lib/schema';
 export const metadata: Metadata = {
   title: "What's My Commercial Property Worth? | CRECO",
   description:
-    "Get an instant cap-rate value range for your Texas commercial property — free, no email, ~60 seconds. Then a CRECO broker sends the full opinion of value.",
+    "Get an instant cap-rate value range for your Texas commercial property — free, no email, ~60 seconds. Then CRECO sends the full opinion of value.",
   keywords: [
     'commercial property valuation texas',
     'what is my commercial property worth',
@@ -177,7 +177,7 @@ export default function PropertyValuationPage() {
                   <Phone className="h-7 w-7 text-gold mb-3" />
                   <h3 className="font-heading text-heading-sm font-bold text-primary mb-2">Rather just talk?</h3>
                   <p className="text-body-sm text-foreground-muted leading-relaxed mb-3">
-                    Skip the form and walk through your property with a CRECO broker on the phone. We'll tell you a range in 15 minutes.
+                    Skip the form and walk through your property with our team on the phone. We'll tell you a range in 15 minutes.
                   </p>
                   <PhoneCallText variant="inline" tone="light" surface="valuation-sidebar" />
                 </div>

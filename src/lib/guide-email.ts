@@ -76,7 +76,7 @@ export function renderGuideEmailHtml(opts: { guide: Guide; recipientName: string
     <div style="margin:32px 0 16px;padding:22px 24px;background:${BRAND.navy};border-radius:10px;text-align:center">
       <p style="color:#FFFFFF;font-size:15px;margin:0 0 14px;line-height:1.5">Have a specific Texas commercial real estate question this report didn't cover?</p>
       <a href="https://www.crecotx.com/get-started" style="display:inline-block;padding:11px 22px;background:${BRAND.gold};color:${BRAND.navy};text-decoration:none;border-radius:6px;font-weight:600;font-size:14px">
-        Talk to a CRECO broker →
+        Talk to our team →
       </a>
       <p style="color:#999;font-size:12px;margin:14px 0 0">Or call <a href="tel:+12108173443" style="color:${BRAND.gold}">(210) 817-3443</a></p>
     </div>

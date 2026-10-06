@@ -376,7 +376,7 @@ export async function CityAssetPage({ config }: { config: CityAssetConfig }) {
               <InlineLeadForm
                 eyebrow={`${config.city} ${config.asset}`}
                 heading={`Looking for ${config.asset} space in ${config.city}?`}
-                body={`Tell us your size and timing and a CRECO broker will send matching ${config.city} ${config.asset} options — including space that is not publicly listed.`}
+                body={`Tell us your size and timing and our team will send matching ${config.city} ${config.asset} options — including space that is not publicly listed.`}
                 contextLabel="What are you looking for?"
                 contextPlaceholder={`Size, submarket and timing — e.g. 8,000 SF ${config.asset} near the airport, Q2`}
                 source="tenant-needs"

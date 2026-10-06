@@ -33,7 +33,7 @@ const SERVICE_FORMS: Record<string, ServiceForm> = {
   'tenant-representation': {
     cta: 'Tell us what you need — free for tenants',
     heading: 'Tell us what you need — free for tenants',
-    body: 'Type, size, area and timing. A CRECO broker sends matching Texas options, including off-market space. Tenant representation is typically paid by the landlord, not you.',
+    body: 'Type, size, area and timing. Our team sends matching Texas options, including off-market space. Tenant representation is typically paid by the landlord, not you.',
     contextLabel: 'What are you looking for?',
     contextPlaceholder: 'e.g. 4,000 SF office in North San Antonio, lease ends in March',
     source: 'tenant-needs',

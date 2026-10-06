@@ -117,7 +117,7 @@ export function InlineLeadForm({
           Got it — we&rsquo;ll be in touch.
         </p>
         <p className={`mt-2 text-body-sm ${dark ? 'text-white/70' : 'text-foreground-muted'}`}>
-          A CRECO broker responds within one business day. Need us sooner?{' '}
+          Our team responds within one business day. Need us sooner?{' '}
           <a href={`tel:${BUSINESS.phoneE164}`} className="font-semibold text-gold-dark hover:underline">
             {BUSINESS.phoneDisplay}
           </a>

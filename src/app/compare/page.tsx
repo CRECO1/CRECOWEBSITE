@@ -124,7 +124,7 @@ export default function ComparePage() {
                   href="/get-started"
                   className="inline-flex items-center gap-2 rounded-lg bg-primary px-7 py-3 text-body-sm font-semibold text-white hover:bg-primary/90"
                 >
-                  Talk to a CRECO broker
+                  Talk to our team
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>

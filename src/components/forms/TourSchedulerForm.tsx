@@ -27,9 +27,9 @@ interface Props {
 }
 
 const TOUR_FORMATS = [
-  { value: 'in-person', label: 'In-person', description: 'Walk the property with a CRECO broker', icon: CalendarClock },
+  { value: 'in-person', label: 'In-person', description: 'Walk the property with a CRECO team member', icon: CalendarClock },
   { value: 'video',     label: 'Video',     description: 'Live video walk-through over Zoom / FaceTime',  icon: Video },
-  { value: 'either',    label: 'Either',    description: 'Whichever works for the broker',               icon: Phone },
+  { value: 'either',    label: 'Either',    description: 'Whichever works best for scheduling',               icon: Phone },
 ] as const;
 
 /**
@@ -141,7 +141,7 @@ export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress, b
         <CheckCircle className="mx-auto h-10 w-10 text-gold mb-3" />
         <h3 className="font-heading text-heading-sm font-bold text-primary mb-2">Tour request sent.</h3>
         <p className="text-body-sm text-foreground-muted max-w-md mx-auto">
-          Check your inbox — we just sent a confirmation with a calendar invite you can add to your calendar. A CRECO broker will reach out shortly to confirm.
+          Check your inbox — we just sent a confirmation with a calendar invite you can add to your calendar. Someone from our team will reach out shortly to confirm.
         </p>
         {brochureHref && (
           <p className="mt-4">

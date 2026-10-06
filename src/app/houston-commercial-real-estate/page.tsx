@@ -111,7 +111,7 @@ export default function HoustonPage() {
           'Represents tenants, landlords/owners, and investors — including tenant rep for Houston businesses (typically paid by the landlord)',
           'Owner services for Houston-area investors and property owners',
           'Investment advisory with Texas-wide 1031 buyer network',
-          'Direct broker access — every engagement led by a senior CRECO broker',
+          'Direct access — every engagement handled personally by the CRECO team',
         ],
         relatedInsights: [
           {

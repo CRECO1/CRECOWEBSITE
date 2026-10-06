@@ -539,7 +539,7 @@ export default function FairOaksDevPage() {
                   <p className="overline mb-3">Inquire</p>
                   <h2 className="font-heading text-heading-xl font-bold text-primary mb-2">Tell us about your situation.</h2>
                   <p className="text-body text-foreground-muted mb-8">
-                    Quick form — about 30 seconds. A CRECO broker will follow up directly with current availability, rates, and next steps.
+                    Quick form — about 30 seconds. Someone from our team will follow up directly with current availability, rates, and next steps.
                   </p>
                   <DevelopmentInterestForm />
                 </div>

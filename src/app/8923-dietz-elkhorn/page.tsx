@@ -565,7 +565,7 @@ export default async function DietzElkhornPage() {
               </h2>
 
               <ol className="space-y-6">
-                <ProcessStep n={1} title="Pre-qualifying call (~15 min)" body="A CRECO broker reviews your concept, SF, timeline, and financing posture. We tell you honestly whether you're a fit — and which suite is a fit for you." />
+                <ProcessStep n={1} title="Pre-qualifying call (~15 min)" body="We review your concept, SF, timeline, and financing posture. We tell you honestly whether you're a fit — and which suite is a fit for you." />
                 <ProcessStep n={2} title="Site tour" body="We walk you the whole center, not just the bay. You see the co-tenancy story, talk through buildout, and visualize signage + patio + flow." />
                 <ProcessStep n={3} title="1-2 page LOI" body="A clean, owner-friendly LOI covers suite, term, base rent, escalations, NNN, TI, free rent, and exclusive use. No 40-page document required to get to yes." />
                 <ProcessStep n={4} title="Lease + buildout" body="We use a consistent NNN lease form across the center, so we move fast. Buildout is collaborative — landlord and tenant work split per the LOI." />
@@ -612,7 +612,7 @@ export default async function DietzElkhornPage() {
                   Tell us about your concept.
                 </h2>
                 <p className="text-body text-foreground-muted leading-relaxed max-w-xl mx-auto">
-                  A CRECO broker will follow up personally. Established
+                  Someone from our team will follow up personally. Established
                   operators with strong concepts get first pick of end-cap
                   positions and layout.
                 </p>

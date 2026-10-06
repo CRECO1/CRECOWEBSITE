@@ -136,7 +136,7 @@ export function ListingsEmptyState({
               {copy.ctaLine}
             </p>
             <p className="mt-2 text-body-sm text-white/70">
-              No obligation, and no cost to tell us what you&rsquo;re after. A CRECO broker
+              No obligation, and no cost to tell us what you&rsquo;re after. Our team
               replies within one business day — sooner by phone.
             </p>
             <PhoneCallText variant="stacked" surface={surface} className="mt-4" />

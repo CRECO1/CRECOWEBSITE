@@ -79,7 +79,7 @@ const PATHS: Record<Path, PathConfig> = {
     icon: Building2,
     finishHeading: 'Where should we send your options?',
     ctaCopy: 'Send my options',
-    successCopy: 'A CRECO broker will reach out personally with vetted space that fits — including options that aren’t posted publicly.',
+    successCopy: 'Someone from our team will reach out personally with vetted space that fits — including options that aren’t posted publicly.',
     steps: [
       {
         id: 'space_type',
@@ -519,7 +519,7 @@ export default function GetStartedPage() {
                 How can we help?
               </h1>
               <p className="mt-3 text-body text-foreground-muted">
-                Three quick questions, then a CRECO broker takes it from there.
+                Three quick questions, then our team takes it from there.
               </p>
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
