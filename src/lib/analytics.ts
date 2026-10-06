@@ -69,6 +69,8 @@ const LEAD_EVENTS = new Set<string>([
   'market_report_subscribed',
   'save_search_submitted',
   'brochure_requested',
+  // Owner asked for a Broker Opinion of Value from their private report.
+  'owner_report_bov_requested',
 ]);
 
 /**

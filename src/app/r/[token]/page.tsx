@@ -5,7 +5,7 @@
  * appraisal roll, how they compare with the county, one plain-English
  * takeaway, and a one-tap request for a free Broker Opinion of Value.
  * Data + rules: lib/owner-report.ts. Not indexed, not in the sitemap, and
- * excluded from GA/Clarity so the token never leaves our own logs.
+ * tracked in GA with a generic page path so the token never leaves our own logs.
  */
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';

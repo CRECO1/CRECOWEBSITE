@@ -19,10 +19,11 @@
 
 export const PROD_HOSTS = new Set(['crecotx.com', 'www.crecotx.com']);
 
-// Authenticated portal, the token-auth client invoice portal, and private owner
-// reports (/r/<token> — the token must never reach GA) — never record
-// session replay or fire marketing analytics on these.
-export const EXCLUDED_PREFIXES = ['/admin', '/billing', '/manage', '/client/', '/r/'];
+// Authenticated portal + the token-auth client invoice portal — never record
+// session replay or fire marketing analytics on these. Owner reports (/r/)
+// ARE tracked: GA gets a generic page_location (see GoogleAnalytics.tsx) so
+// the token never leaves our logs.
+export const EXCLUDED_PREFIXES = ['/admin', '/billing', '/manage', '/client/'];
 
 // Staff-only areas. Visiting one marks the device as internal.
 const STAFF_PREFIXES = ['/admin', '/billing', '/manage'];

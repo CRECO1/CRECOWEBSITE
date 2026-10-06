@@ -13,6 +13,7 @@
 import { useEffect, useState } from 'react';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import { isDatacenterVisitor, isInternalVisitor, isLikelyBot } from '@/lib/analytics-gate';
+import { trackEvent } from '@/lib/analytics';
 
 const INTERESTS = ['Selling', 'Leasing up space', '1031 / refinancing', 'Just keeping tabs'] as const;
 const VIEW_DELAY_MS = 4000;
@@ -40,9 +41,10 @@ export function OwnerReportActions({ token, one, alreadyRequested }: { token: st
       if (document.visibilityState !== 'visible') return;
       try { sessionStorage.setItem(key, '1'); } catch { /* ignore */ }
       post(token, { type: 'view' }).catch(() => {});
+      trackEvent('owner_report_viewed', { properties: one ? 1 : 2 });
     }, VIEW_DELAY_MS);
     return () => clearTimeout(timer);
-  }, [token]);
+  }, [token, one]);
 
   async function request() {
     setState('sending');
@@ -50,6 +52,7 @@ export function OwnerReportActions({ token, one, alreadyRequested }: { token: st
       const res = await post(token, { type: 'bov', interest, phone: phone.trim() || undefined });
       if (!res.ok) throw new Error(String(res.status));
       setState('sent');
+      trackEvent('owner_report_bov_requested', { interest, has_phone: !!phone.trim(), surface: 'owner_report' });
     } catch {
       setState('error');
     }
@@ -80,7 +83,7 @@ export function OwnerReportActions({ token, one, alreadyRequested }: { token: st
             type="button"
             role="radio"
             aria-checked={interest === i}
-            onClick={() => setInterest(i)}
+            onClick={() => { setInterest(i); trackEvent('owner_report_interest_selected', { interest: i }); }}
             className={`min-h-[44px] rounded-full border-2 px-4 py-2 text-body-sm font-semibold transition-colors ${interest === i ? 'border-gold bg-[#fffaf0] text-primary' : 'border-border bg-white text-primary hover:border-gold/60'}`}
           >
             {i}

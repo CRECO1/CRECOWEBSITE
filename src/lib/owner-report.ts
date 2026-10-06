@@ -6,7 +6,7 @@
  * (Marketing/Kendall-Landlords/build_owner_reports.mjs) into the CRM table
  * crm_owner_reports. The page reads it server-side with the CRM service role;
  * the token in the URL is the only key, so it is long, random, and never
- * logged to analytics (/r/ is excluded in lib/analytics-gate.ts).
+ * sent to GA (GoogleAnalytics.tsx reports /r/ pages as /r/owner-report).
  *
  * Everything shown is public record or derived from it — no CRECO-estimated
  * price. The ask is a Broker Opinion of Value, which Zack prepares.

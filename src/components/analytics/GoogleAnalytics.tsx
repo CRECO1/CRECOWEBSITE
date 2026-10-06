@@ -63,7 +63,14 @@ export function GoogleAnalytics({ gaId }: { gaId: string }) {
           // keeps the visit's original source instead of crediting stripe.com.
           var ref = '';
           try { ref = new URL(document.referrer).hostname; } catch (e) {}
-          gtag('config', '${gaId}', /(^|\\.)stripe\\.com$/.test(ref) ? { ignore_referrer: true } : {});
+          var cfg = /(^|\\.)stripe\\.com$/.test(ref) ? { ignore_referrer: true } : {};
+          // Private owner reports (/r/<token>): the token is a bearer key, so
+          // GA gets a generic path — campaign UTMs kept, token never sent.
+          if (location.pathname.indexOf('/r/') === 0) {
+            cfg.page_location = location.origin + '/r/owner-report' + location.search;
+            cfg.page_title = 'Owner property report';
+          }
+          gtag('config', '${gaId}', cfg);
         `}
       </Script>
     </>
