@@ -18,7 +18,7 @@ import { MetadataRoute } from 'next';
  * crawler has to infer intent from the wildcard rule. Note: a crawler that
  * matches a named group ignores the `*` group, so the disallows are repeated.
  */
-const PRIVATE_PATHS = ['/admin', '/manage', '/api/', '/billing', '/client/'];
+const PRIVATE_PATHS = ['/admin', '/manage', '/api/', '/billing', '/client/', '/r/'];
 
 const AI_CRAWLERS = [
   // OpenAI

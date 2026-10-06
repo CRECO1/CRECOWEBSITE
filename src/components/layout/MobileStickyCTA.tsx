@@ -26,7 +26,7 @@ import { trackEvent } from '@/lib/analytics';
 // The two property landing pages carry their own StickyPropertyCTABar, pinned
 // to the same bottom edge — with this bar too, the two overlapped on phones.
 // The header's phone icon keeps a one-tap call on those pages.
-const HIDDEN_PREFIXES = ['/admin', '/manage', '/crm', '/tenant-needs', '/get-started', '/sell', '/contact', '/listings/', '/8000-fair-oaks-pkwy', '/8923-dietz-elkhorn'];
+const HIDDEN_PREFIXES = ['/admin', '/manage', '/crm', '/tenant-needs', '/get-started', '/sell', '/contact', '/listings/', '/8000-fair-oaks-pkwy', '/8923-dietz-elkhorn', '/r/'];
 
 // The page's own main form, if it has one. Alerts/newsletter don't count —
 // they're the soft ask, not the page's conversion form.

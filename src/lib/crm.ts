@@ -199,6 +199,10 @@ export interface CrmPayload {
 /** Service-role Supabase client for the CRM (FORG project). Prefers
  *  CRM_SUPABASE_* env vars; falls back to the local Supabase if the CRM
  *  happens to live in the same database (e.g. unified dev). */
+export function crmAdminClient(): SupabaseClient | null {
+  return adminClient();
+}
+
 function adminClient(): SupabaseClient | null {
   const url = process.env.CRM_SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.CRM_SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
