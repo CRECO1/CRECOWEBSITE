@@ -150,7 +150,7 @@ const LISTING_BROKER_MAP: Record<string, Broker> = {
   // Zack is the point of contact on these (his own listings / sales).
   '1353-w-french-pl': PRIMARY_BROKER,   // French Pl warehouse
   '5402-us-hwy-87-e': PRIMARY_BROKER,   // AutoBrite car wash sale
-  'elkhorn-point-pad': PRIMARY_BROKER,  // Elkhorn Point
+  'elkhorn-point-pad': PRIMARY_BROKER,  // Elkhorn Pointe
   '8000-fair-oaks-pkwy': PRIMARY_BROKER, // 8000 Fair Oaks Plaza
   // 7830 Louis Pasteur — medical office building, Brian's specialty
   'move-in-ready-medical-building': BRIAN_BLANCO,
@@ -161,7 +161,7 @@ const LISTING_BROKER_MAP: Record<string, Broker> = {
  * property pages whose forms don't carry a listing slug.
  */
 const SOURCE_BROKER_PREFIXES: Array<[string, Broker]> = [
-  ['8923-dietz-elkhorn', PRIMARY_BROKER], // Elkhorn Point leasing page
+  ['8923-dietz-elkhorn', PRIMARY_BROKER], // Elkhorn Pointe leasing page
   ['8000-fair-oaks-pkwy', PRIMARY_BROKER], // 8000 Fair Oaks Pkwy plaza page
   ['owner-report', PRIMARY_BROKER],        // owner property reports — Zack prepares the BOV
   ['valuation-request', PRIMARY_BROKER],   // /property-valuation — Zack prepares the BOV

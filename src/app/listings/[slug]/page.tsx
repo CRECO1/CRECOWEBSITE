@@ -52,7 +52,7 @@ const getListing = cache(async (slug: string) => {
   if (db) return db;
   // Synthetic listings (CRECO-owned, code-defined in featured-properties.ts)
   // that do NOT carry a landing_url render here as a normal detail page — e.g.
-  // the Elkhorn Point ±2-acre pad. Ones WITH a landing_url live at their own
+  // the Elkhorn Pointe ±2-acre pad. Ones WITH a landing_url live at their own
   // page (elkhornpoint.com, bespoke routes), so they stay 404 here to avoid a
   // duplicate of that page.
   return SYNTHETIC_LISTINGS.find((l) => l.slug === slug && !l.landing_url) ?? null;

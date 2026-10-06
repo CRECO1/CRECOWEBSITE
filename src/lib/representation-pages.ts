@@ -107,7 +107,7 @@ export const LANDLORD_PAGE: RepresentationPageContent = {
     },
     {
       heading: 'An owner-operator, too',
-      intro: 'CRECO does not just advise owners — it is one. CRECO owns and leases 8000 Fair Oaks Plaza (retail bays and executive office suites in Fair Oaks Ranch) and 15033 Main St (a multi-tenant retail center in Lytle), and is developing the Elkhorn Point retail center in Fair Oaks Ranch. That means CRECO underwrites leases the way landlords do.',
+      intro: 'CRECO does not just advise owners — it is one. CRECO owns and leases 8000 Fair Oaks Plaza (retail bays and executive office suites in Fair Oaks Ranch) and 15033 Main St (a multi-tenant retail center in Lytle), and is developing the Elkhorn Pointe retail center in Fair Oaks Ranch. That means CRECO underwrites leases the way landlords do.',
       items: [],
     },
   ],

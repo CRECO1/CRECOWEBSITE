@@ -203,7 +203,7 @@ export default function SanAntonioPage() {
           proof: [
             { label: 'Headquarters', value: '8000 Fair Oaks Pkwy, Suite 100, Fair Oaks Ranch, TX 78015 (San Antonio metro) — (210) 817-3443 · info@crecotx.com' },
             { label: 'Current San Antonio assignments', value: 'Active office, medical office, and warehouse listings in Northwest, the Medical Center, and Northeast San Antonio — every current property, with size and pricing, is in the live listings table on this page.' },
-            { label: 'Owner-operator in the metro', value: '8000 Fair Oaks Plaza (retail + executive suites, Fair Oaks Ranch), 15033 Main St (±11,750 SF retail, Lytle), and Elkhorn Point (±20,000 SF retail in development, Fair Oaks Ranch).' },
+            { label: 'Owner-operator in the metro', value: '8000 Fair Oaks Plaza (retail + executive suites, Fair Oaks Ranch), 15033 Main St (±11,750 SF retail, Lytle), and Elkhorn Pointe (±20,000 SF retail in development, Fair Oaks Ranch).' },
             { label: 'Broker & founder', value: 'Zachary A. Stovall (TREC #691174), an eighth-generation Texan raised in San Antonio; over eight years he has closed more than $130 million in acquisitions and dispositions and $95 million in leases.' },
             { label: 'Director of Leasing', value: 'Brian Blanco, a San Antonio native with four-plus years in Amazon\'s delivery-station site-selection process.' },
             { label: 'License', value: 'Licensed Texas real estate brokerage, TREC #9014367.' },

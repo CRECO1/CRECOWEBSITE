@@ -75,7 +75,7 @@ export const FAIR_OAKS_PLAZA_LISTING: Listing = {
 };
 
 /**
- * 8923 Dietz Elkhorn — "Elkhorn Point" — new ±20,000 SF neighborhood
+ * 8923 Dietz Elkhorn — "Elkhorn Pointe" — new ±20,000 SF neighborhood
  * retail center pre-leasing in Fair Oaks Ranch: TWO ±10,000 SF retail
  * buildings, ground-up build-to-suit (nothing is built yet).
  *
@@ -96,7 +96,7 @@ export const FAIR_OAKS_PLAZA_LISTING: Listing = {
  */
 export const DIETZ_ELKHORN_LISTING: Listing = {
   id: 'synth-8923-dietz-elkhorn',
-  title: 'Elkhorn Point — 8923 Dietz Elkhorn',
+  title: 'Elkhorn Pointe — 8923 Dietz Elkhorn',
   slug: '8923-dietz-elkhorn',
   address: '8923 Dietz Elkhorn Rd',
   city: 'Fair Oaks Ranch',
@@ -213,8 +213,8 @@ export const LYTLE_MAIN_ST_LISTING: Listing = {
 };
 
 /**
- * Elkhorn Point — the back ±2-acre development pad, FOR SALE (build-to-suit).
- * This is the raw pad behind CRECO's Elkhorn Point retail development (same
+ * Elkhorn Pointe — the back ±2-acre development pad, FOR SALE (build-to-suit).
+ * This is the raw pad behind CRECO's Elkhorn Pointe retail development (same
  * ~4-acre site at 8923 Dietz Elkhorn); the front is the two ±10,000 SF retail
  * buildings (DIETZ_ELKHORN_LISTING above), and this is the separate single-user
  * pad sold to an owner-user who builds in parallel.
@@ -232,7 +232,7 @@ export const LYTLE_MAIN_ST_LISTING: Listing = {
  */
 export const ELKHORN_POINT_PAD_LISTING: Listing = {
   id: 'synth-elkhorn-point-pad',
-  title: 'Elkhorn Point — ±2-Acre Development Pad',
+  title: 'Elkhorn Pointe — ±2-Acre Development Pad',
   slug: 'elkhorn-point-pad',
   address: '8923 Dietz Elkhorn Rd',
   city: 'Fair Oaks Ranch',
@@ -251,14 +251,14 @@ export const ELKHORN_POINT_PAD_LISTING: Listing = {
   clear_height: null,
   dock_doors: null,
   grade_doors: null,
-  headline: 'Raw ±2-acre development pad behind Elkhorn Point — utilities being brought to the site, sold build-to-suit. A fit for a freestanding ER, childcare/daycare, medical, or fitness owner-user. Call for offers.',
+  headline: 'Raw ±2-acre development pad behind Elkhorn Pointe — utilities being brought to the site, sold build-to-suit. A fit for a freestanding ER, childcare/daycare, medical, or fitness owner-user. Call for offers.',
   description:
-    "A raw ±2-acre development pad at the rear of Elkhorn Point, CRECO's new neighborhood retail development at 8923 Dietz Elkhorn Rd in Fair Oaks Ranch. Utilities are being brought to the site, and the pad is offered for sale as a build-to-suit opportunity — the buyer develops a single-tenant building in parallel with CRECO's front-retail construction. It sits in one of the fastest-growing stretches of the Boerne / northwest San Antonio Hill Country corridor, an affluent trade area (~$168K median household income) with heavy rooftop and retail growth arriving nearby: Baptist Health's new Boerne acute-care hospital at I-10 & Hwy 46, Valcor's 118-acre H-E-B-anchored Lemon Creek Ranch, and Embrey's 214-unit build-to-rent on SH-46. The ±2-acre footprint fits the site criteria of freestanding-ER, childcare/daycare (suburban prototypes run ~2 acres), medical and urgent-care, and large-format fitness owner-users — uses actively expanding in this corridor with no Fair Oaks Ranch / Boerne location yet. Call for offers.",
+    "A raw ±2-acre development pad at the rear of Elkhorn Pointe, CRECO's new neighborhood retail development at 8923 Dietz Elkhorn Rd in Fair Oaks Ranch. Utilities are being brought to the site, and the pad is offered for sale as a build-to-suit opportunity — the buyer develops a single-tenant building in parallel with CRECO's front-retail construction. It sits in one of the fastest-growing stretches of the Boerne / northwest San Antonio Hill Country corridor, an affluent trade area (~$168K median household income) with heavy rooftop and retail growth arriving nearby: Baptist Health's new Boerne acute-care hospital at I-10 & Hwy 46, Valcor's 118-acre H-E-B-anchored Lemon Creek Ranch, and Embrey's 214-unit build-to-rent on SH-46. The ±2-acre footprint fits the site criteria of freestanding-ER, childcare/daycare (suburban prototypes run ~2 acres), medical and urgent-care, and large-format fitness owner-users — uses actively expanding in this corridor with no Fair Oaks Ranch / Boerne location yet. Call for offers.",
   features: [
     '±2 acres — single-user development pad',
     'Sold build-to-suit / owner-user — call for offers',
     'Utilities being brought to the site',
-    "Behind CRECO's Elkhorn Point retail — develop in parallel",
+    "Behind CRECO's Elkhorn Pointe retail — develop in parallel",
     'Fair Oaks Ranch / Boerne — Hill Country growth corridor',
     'Affluent trade area (~$168K median household income)',
     'Fits daycare, freestanding ER, medical, or fitness prototypes',
@@ -271,7 +271,7 @@ export const ELKHORN_POINT_PAD_LISTING: Listing = {
   closed_date: null,
   submarket: 'Fair Oaks Ranch',
   featured: true,
-  latitude: 29.73119,                        // shares the Elkhorn Point site geocode
+  latitude: 29.73119,                        // shares the Elkhorn Pointe site geocode
   longitude: -98.662645,
   geocoded_at: null,
   created_at: '',

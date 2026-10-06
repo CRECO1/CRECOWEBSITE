@@ -100,7 +100,7 @@ const FALLBACK = {
   faqs: [
     {
       q: 'How big are the spaces and how are they divided?',
-      a: 'Elkhorn Point is two ±10,000 SF retail buildings — ±20,000 SF of divisible space. Nothing is built yet, so demising is set to your plan rather than chosen from what is left: take a small bay or a large footprint. End-cap positions are finite and the earliest LOIs get first pick.',
+      a: 'Elkhorn Pointe is two ±10,000 SF retail buildings — ±20,000 SF of divisible space. Nothing is built yet, so demising is set to your plan rather than chosen from what is left: take a small bay or a large footprint. End-cap positions are finite and the earliest LOIs get first pick.',
     },
     {
       q: 'Can my food concept work here?',
@@ -244,11 +244,11 @@ export default async function DietzElkhornPage() {
     listingSchema(DIETZ_ELKHORN_LISTING, {
       url: '/8923-dietz-elkhorn',
       description:
-        'Elkhorn Point: new ±20,000 SF neighborhood retail center pre-leasing at 8923 Dietz Elkhorn Rd, Fair Oaks Ranch, TX 78015. Two ±10,000 SF retail buildings, divisible and built to suit, with end-cap F&B positions. Developed and leased by CRECO; call for pricing.',
+        'Elkhorn Pointe: new ±20,000 SF neighborhood retail center pre-leasing at 8923 Dietz Elkhorn Rd, Fair Oaks Ranch, TX 78015. Two ±10,000 SF retail buildings, divisible and built to suit, with end-cap F&B positions. Developed and leased by CRECO; call for pricing.',
     }),
     breadcrumbList([
       { name: 'Listings', path: '/listings' },
-      { name: 'Elkhorn Point — 8923 Dietz Elkhorn', path: '/8923-dietz-elkhorn' },
+      { name: 'Elkhorn Pointe — 8923 Dietz Elkhorn', path: '/8923-dietz-elkhorn' },
     ]),
   ];
   const FAQ_SCHEMA = {

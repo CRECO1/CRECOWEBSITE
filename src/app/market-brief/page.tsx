@@ -150,7 +150,7 @@ export default function MarketBriefPage() {
               </h2>
               <p className="mt-1 text-caption text-foreground-muted">TREC #{FOUNDER.trecLicense}</p>
               <p className="mt-4 text-body text-foreground-muted leading-relaxed">
-                CRECO owns and operates Fair Oaks Plaza in Fair Oaks Ranch and our Lytle center, and is developing Elkhorn Point. The brief is written from that seat — as owners, landlords and brokers in the same markets it covers.
+                CRECO owns and operates Fair Oaks Plaza in Fair Oaks Ranch and our Lytle center, and is developing Elkhorn Pointe. The brief is written from that seat — as owners, landlords and brokers in the same markets it covers.
               </p>
               <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                 <Link

@@ -17,7 +17,7 @@ export async function GET(
 
   try {
     const { slug } = await params;
-    // CRECO's own code-defined listings (e.g. the Elkhorn Point pad) aren't in the
+    // CRECO's own code-defined listings (e.g. the Elkhorn Pointe pad) aren't in the
     // listings table, so fall back to them — the detail page does the same.
     const listing = (await getListingBySlug(slug)) ?? SYNTHETIC_LISTINGS.find((l) => l.slug === slug) ?? null;
 

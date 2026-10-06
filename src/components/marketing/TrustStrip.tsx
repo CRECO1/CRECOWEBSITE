@@ -31,7 +31,7 @@ interface TrustData {
   activeListings: number;
 }
 
-// CRECO's own bespoke-page properties (8000 Fair Oaks Plaza, Elkhorn Point,
+// CRECO's own bespoke-page properties (8000 Fair Oaks Plaza, Elkhorn Pointe,
 // 15033 Main St Lytle) live in code as synthetic listings, not DB rows — see
 // featured-properties.ts. They already appear in the /listings grid and the
 // homepage Featured section, so the count has to include them; otherwise the
