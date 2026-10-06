@@ -29,7 +29,7 @@ import { sendLeadToCrm } from '@/lib/crm-lead';
 export const SEARCH_LISTINGS_TOOL = {
   name: 'search_listings',
   description:
-    'Search the live CRECO listings database for currently-available Texas commercial properties. Use this whenever a visitor asks about specific space (e.g. "do you have warehouse in Northeast San Antonio?", "any retail under 2000 SF in Fair Oaks Ranch?", "office space for lease in Austin?"). Returns up to 5 matches with title, slug, city, size, and other spec chips. Prefer to return the results as a short conversational list with clickable URLs — never claim to have listings that aren\'t in the returned array.',
+    'Search the live CRECO listings database for currently-available commercial properties (CRECO\'s inventory is concentrated in San Antonio and the Texas Hill Country). Use this whenever a visitor asks about specific space (e.g. "do you have warehouse in Northeast San Antonio?", "any retail under 2000 SF in Fair Oaks Ranch?", "office space for lease in Boerne?"). Returns up to 5 matches with title, slug, city, size, and other spec chips. Prefer to return the results as a short conversational list with clickable URLs — never claim to have listings that aren\'t in the returned array.',
   input_schema: {
     type: 'object' as const,
     properties: {
@@ -47,7 +47,7 @@ export const SEARCH_LISTINGS_TOOL = {
       city: {
         type: 'string',
         description:
-          'City name (case-insensitive substring match) — e.g. "San Antonio", "Austin", "Fair Oaks Ranch", "Lytle". Leave empty for statewide.',
+          'City name (case-insensitive substring match) — e.g. "San Antonio", "Boerne", "Fair Oaks Ranch", "Lytle". Leave empty to search all locations.',
       },
       min_sqft: {
         type: 'number',

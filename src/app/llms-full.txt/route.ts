@@ -134,7 +134,7 @@ ${metros.map(m => {
 ### City and asset-class guides
 - San Antonio: ${SITE_URL}/san-antonio-commercial-real-estate · office ${SITE_URL}/san-antonio-office-space · industrial ${SITE_URL}/san-antonio-industrial-space · retail ${SITE_URL}/san-antonio-retail-space
 - Fair Oaks Ranch: ${SITE_URL}/fair-oaks-ranch-commercial-real-estate · Boerne: ${SITE_URL}/boerne-commercial-real-estate
-- Statewide: ${SITE_URL}/texas-retail-space-for-lease · ${SITE_URL}/texas-office-space-for-lease · ${SITE_URL}/texas-industrial-property-for-lease · ${SITE_URL}/texas-commercial-property-for-sale
+- San Antonio & Hill Country, by asset type: ${SITE_URL}/texas-retail-space-for-lease · ${SITE_URL}/texas-office-space-for-lease · ${SITE_URL}/texas-industrial-property-for-lease · ${SITE_URL}/texas-commercial-property-for-sale
 
 ## Market data
 

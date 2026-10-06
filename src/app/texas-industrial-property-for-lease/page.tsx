@@ -7,30 +7,31 @@ import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { PropertyLandingPage } from '@/components/marketing/PropertyLandingPage';
 import { getLandingPage } from '@/lib/supabase';
 
+// The URL keeps its original "texas-" slug (inbound links + rankings), but the
+// copy is San Antonio & Hill Country — where CRECO works and owns property.
+// NOTE: the landing_pages row for this slug overrides the hero/meta/bullets/
+// FAQs below when populated; keep it in sync (see
+// supabase/landing-pages-sa-hill-country.sql).
 const baseMetadata: Metadata = {
-  title: 'Industrial & Warehouse Property for Lease in Texas | CRECO',
+  title: 'Industrial & Warehouse for Lease in San Antonio & the Hill Country | CRECO',
   description:
-    'Industrial property and warehouse for lease across Texas — distribution, light manufacturing, flex-industrial, last-mile logistics, and cold storage.',
+    'Industrial, warehouse and flex space for lease in San Antonio and the Texas Hill Country — distribution, light manufacturing, flex and service-industrial on the I-35, I-10 and Loop 1604 corridors.',
   keywords: [
-    'industrial property for lease texas',
-    'warehouse for lease texas',
-    'texas industrial real estate',
-    'distribution center for lease texas',
     'warehouse for lease san antonio',
-    'warehouse for lease austin',
-    'warehouse for lease houston',
-    'warehouse for lease dallas',
-    'industrial space for lease texas',
-    'flex industrial texas',
-    'last mile logistics texas',
-    'cold storage texas',
+    'industrial space for lease san antonio',
+    'flex space for lease san antonio',
+    'warehouse for lease boerne',
+    'industrial property for lease texas hill country',
+    'distribution center for lease san antonio',
+    'flex industrial san antonio',
+    'industrial property for lease texas',
   ],
   alternates: { canonical: 'https://www.crecotx.com/texas-industrial-property-for-lease' },
   openGraph: {
     images: [DEFAULT_OG_IMAGE],
-    title: 'Industrial & Warehouse Property for Lease in Texas | CRECO',
+    title: 'Industrial & Warehouse for Lease in San Antonio & the Hill Country | CRECO',
     description:
-      'Texas industrial real estate — distribution, manufacturing, flex, last-mile. I-35 corridor, Houston Ship Channel, DFW industrial markets, and statewide.',
+      'San Antonio and Hill Country industrial — distribution, light manufacturing, flex and service-industrial on the I-35, I-10 and Loop 1604 corridors.',
     url: 'https://www.crecotx.com/texas-industrial-property-for-lease',
     type: 'website',
   },
@@ -52,17 +53,17 @@ export default async function Page() {
       dbContent={dbContent}
       config={{
         sourcesAsOf: 'April 2026',
-        eyebrow: 'Texas Commercial Real Estate · Industrial & Warehouse',
-        h1: 'Industrial & Warehouse Property for Lease in Texas',
+        eyebrow: 'San Antonio & Hill Country · Industrial & Warehouse',
+        h1: 'Industrial & Warehouse Space for Lease in San Antonio & the Hill Country',
         subhead:
-          'Distribution centers, light and heavy manufacturing, flex-industrial, last-mile logistics, cold storage, and bulk warehouse — across all the major Texas industrial submarkets. Whether you need 10,000 SF for a regional service business or 250,000 SF for a Texas distribution hub, CRECO brings vetted options with the right clear height, dock-door count, power, parking, and yard.',
+          'Distribution, light manufacturing, flex-industrial, service-industrial, and contractor space — across San Antonio\'s industrial submarkets and the I-10 and I-35 corridors into the Hill Country. Whether you need a small flex bay for a service business or a larger distribution building, CRECO brings options with the right clear height, dock-door count, power, parking, and yard.',
         filterPropertyTypes: ['warehouse', 'industrial', 'flex'],
         filterTransactionType: 'lease',
         canonicalPath: '/texas-industrial-property-for-lease',
         marketBullets: [
           {
-            title: 'Texas is the #1 industrial market in the U.S.',
-            body: 'DFW, Houston, and San Antonio rank among the top 10 industrial markets nationally by absorption. The I-35 corridor between San Antonio and Dallas, the Houston Ship Channel, and the Austin/Round Rock chip-and-EV corridor are seeing record industrial demand.',
+            title: 'San Antonio sits on the I-35 and I-10 corridors.',
+            body: 'The Northeast / I-35 corridor toward Schertz and New Braunfels anchors modern bulk distribution, while infill flex and service-industrial on the North Side and along I-10 toward Boerne serve operators who need to be close to their customers.',
           },
           {
             title: 'Specs matter more than rent.',
@@ -77,37 +78,42 @@ export default async function Page() {
           'Detailed property-spec underwriting (clear height, doors, power, sprinkler class, parking)',
           'Submarket comp analysis for honest rent benchmarking',
           'Free-rent and TI-allowance negotiation for racking, office, and buildout',
-          'Multi-site rollout strategy for distribution and last-mile expansion',
-          'Texas-wide reach: I-35, Houston Ship Channel, DFW, El Paso, Austin/Round Rock',
+          'Multi-site strategy for distribution and last-mile expansion',
+          'Local coverage: Northeast / I-35, Far Northwest / Loop 1604 and I-10, plus Hill Country flex and service-industrial',
         ],
         faqs: [
           {
-            q: 'What does industrial space cost per square foot in Texas?',
-            a: 'Industrial lease rates in Texas typically range from $6 to $14 per SF per year on a triple-net (NNN) basis, depending on submarket, building class, and clear height. Older Class C distribution can be found at $5-7/SF NNN; modern Class A bulk distribution in DFW or Houston can exceed $10-12/SF NNN. Class A flex/industrial with office buildout often runs $11-18/SF NNN.',
+            q: 'What does industrial space cost in San Antonio?',
+            a: 'It depends on submarket, building age, clear height, and bay size — modern bulk distribution, older second-generation warehouse, and small-bay flex with office buildout all price differently. Most industrial is quoted triple-net (NNN). Our San Antonio industrial space page has CRECO\'s current estimates by product type; for comps on a specific building, call (210) 817-3443.',
           },
           {
             q: 'What clear height should I look for?',
-            a: 'For typical Texas distribution, 24-32 ft clear height is standard. 18-24 ft is common in older or Class C industrial. Modern bulk distribution centers built since 2018 are often 32-40 ft clear, accommodating 5-6 levels of pallet racking. The right clear height depends on your storage profile — if you stack 4 levels of pallet racking, 24 ft is the minimum; for narrow-aisle automation, 36+ ft is preferred.',
+            a: 'For typical distribution, 24-32 ft clear height is standard. 18-24 ft is common in older or Class C industrial. Modern bulk distribution centers built since 2018 are often 32-40 ft clear, accommodating 5-6 levels of pallet racking. The right clear height depends on your storage profile — if you stack 4 levels of pallet racking, 24 ft is the minimum; for narrow-aisle automation, 36+ ft is preferred.',
           },
           {
             q: 'How many dock doors do I need?',
             a: 'A common rule of thumb is 1 dock door per 5,000-10,000 SF, but it depends on throughput. High-velocity distribution and cross-dock operations may need 1 door per 2,000-3,000 SF. Service or storage operations may only need 1 door per 15,000-20,000 SF. Always confirm whether dock doors are dock-high (typical) or grade-level (drive-in) — they serve different purposes.',
           },
           {
-            q: 'Where are the best Texas industrial submarkets?',
-            a: 'San Antonio: Northeast (I-35 corridor), Far Northwest (Loop 1604/I-10). Austin: Northeast, Round Rock, Pflugerville. Houston: Northwest (290/Beltway 8), Northeast (East Sam Houston Tollway), Southwest (290/Hwy 6). DFW: South Dallas, GSW Industrial, Alliance, Arlington, North Fort Worth, Mesquite. We work them all.',
+            q: 'Where are the main San Antonio-area industrial submarkets?',
+            a: 'In San Antonio: the Northeast (the I-35 corridor toward Schertz and New Braunfels) for modern bulk distribution, and the Far Northwest (Loop 1604 / I-10) for flex and smaller-bay product closer to the North Side. Up the I-10 corridor, Boerne and the Hill Country communities have a smaller supply of mostly small-bay flex and service-industrial space. The right one depends on where your customers, employees, and trucks need to go.',
           },
           {
             q: 'Can CRECO help with cold storage or specialized industrial?',
-            a: 'Yes. Cold storage, food-grade, hazmat-rated, biotech/lab, manufacturing with heavy power requirements (1000+ amps), and refrigerated distribution all require specialized site selection. We have placed clients into all of these and know which Texas submarkets and buildings actually meet specs vs claim to.',
+            a: 'Yes. Cold storage, food-grade, hazmat-rated, lab, manufacturing with heavy power requirements, and refrigerated distribution all require specialized site selection — and plenty of buildings claim specs they don\'t actually meet. We verify the specs that matter before you tour.',
+          },
+          {
+            q: 'Do you only work in San Antonio and the Hill Country?',
+            a: 'That is where we focus and where we own property. If you\'re a tenant with a requirement elsewhere in Texas, we can help there too.',
           },
         ],
         relatedLinks: [
+          { href: '/san-antonio-industrial-space', label: 'San Antonio Industrial Space' },
+          { href: '/submarkets/northeast', label: 'San Antonio Northeast' },
           { href: '/texas-retail-space-for-lease', label: 'Retail Space' },
           { href: '/texas-office-space-for-lease', label: 'Office Space' },
           { href: '/texas-commercial-property-for-sale', label: 'Properties for Sale' },
           { href: '/services/tenant-representation', label: 'Tenant Representation' },
-          { href: '/submarkets/northeast', label: 'San Antonio Northeast' },
           { href: '/listings?type=warehouse', label: 'All Industrial Listings' },
         ],
         primaryCta: { href: '/get-started', label: 'Get Started' },

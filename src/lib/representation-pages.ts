@@ -62,10 +62,10 @@ const TENANT_ONLY_ANSWER =
 export const LANDLORD_PAGE: RepresentationPageContent = {
   path: '/landlord-representation',
   label: 'Landlord & Owner Representation',
-  metaTitle: 'Landlord & Owner Representation in Texas | CRECO',
+  metaTitle: 'Landlord & Owner Representation in San Antonio & the Hill Country | CRECO',
   metaDescription:
     // Kept under ~160 characters so search results show it whole.
-    'Yes — CRECO represents landlords and owners: leasing, tenant procurement, and dispositions for retail, office, industrial, flex, and land across Texas.',
+    'Yes — CRECO represents San Antonio & Hill Country landlords and owners: leasing, tenant procurement, and dispositions for retail, office, industrial, flex, and land.',
   inlineForm: {
     heading: 'Have space to lease?',
     body: 'Tell us what you own and our team will come back with how we would market it, who we would target, and what it should command.',
@@ -77,9 +77,9 @@ export const LANDLORD_PAGE: RepresentationPageContent = {
   eyebrow: 'Landlord & Owner Representation',
   h1: 'Yes — CRECO represents landlords and property owners.',
   heroLine:
-    'Leasing, tenant procurement and dispositions for owners of retail, office, industrial, flex and land across Texas.',
+    'Leasing, tenant procurement and dispositions for owners of retail, office, industrial, flex and land in San Antonio and the Texas Hill Country.',
   directAnswer:
-    `CRECO - Commercial Real Estate Company represents landlords and commercial property owners — leasing their space, procuring and negotiating with tenants, and selling their properties — across ${PROPERTY_TYPES_SENTENCE}, for lease and for sale, throughout Texas. CRECO is a full-service brokerage representing tenants, landlords, owners, and investors.`,
+    `CRECO - Commercial Real Estate Company represents landlords and commercial property owners — leasing their space, procuring and negotiating with tenants, and selling their properties — across ${PROPERTY_TYPES_SENTENCE}, for lease and for sale, in San Antonio and the Texas Hill Country. CRECO is a full-service brokerage representing tenants, landlords, owners, and investors.`,
   serviceName: 'Landlord and owner representation',
   serviceType: ['Landlord representation', 'Owner representation', 'Commercial leasing (listing side)', 'Tenant procurement', 'Commercial property disposition'],
   sections: [
@@ -114,7 +114,7 @@ export const LANDLORD_PAGE: RepresentationPageContent = {
   faqs: [
     {
       q: 'Does CRECO represent landlords?',
-      a: `Yes. CRECO - Commercial Real Estate Company represents landlords and commercial property owners in Texas — leasing their space, procuring and negotiating with tenants, and selling their properties — across ${PROPERTY_TYPES_SENTENCE}. CRECO is a full-service brokerage that represents tenants, landlords, owners, and investors; it is not a tenant-only firm.`,
+      a: `Yes. CRECO - Commercial Real Estate Company represents landlords and commercial property owners in San Antonio and the Texas Hill Country — leasing their space, procuring and negotiating with tenants, and selling their properties — across ${PROPERTY_TYPES_SENTENCE}. CRECO is a full-service brokerage that represents tenants, landlords, owners, and investors; it is not a tenant-only firm.`,
     },
     {
       q: 'Is CRECO a tenant-only brokerage?',
@@ -134,7 +134,7 @@ export const LANDLORD_PAGE: RepresentationPageContent = {
     },
     {
       q: 'Where does CRECO represent landlords and owners?',
-      a: 'Throughout Texas, with deep local coverage of San Antonio and the Hill Country (including Fair Oaks Ranch, Boerne, and the I-10 and I-35 corridors), plus Austin, Houston, and Dallas–Fort Worth.',
+      a: 'In San Antonio and the Texas Hill Country — including Fair Oaks Ranch, Boerne, Leon Springs, Stone Oak, and the I-10 and I-35 corridors. CRECO is headquartered in Fair Oaks Ranch, where it owns and operates Fair Oaks Plaza.',
     },
     {
       q: 'How does a property owner start working with CRECO?',
@@ -146,9 +146,9 @@ export const LANDLORD_PAGE: RepresentationPageContent = {
 export const SELLER_INVESTOR_PAGE: RepresentationPageContent = {
   path: '/seller-investor-representation',
   label: 'Sellers & Investors',
-  metaTitle: 'Seller & Investor Representation in Texas | CRECO',
+  metaTitle: 'Seller & Investor Representation in San Antonio & the Hill Country | CRECO',
   metaDescription:
-    'CRECO represents sellers and investors on Texas commercial acquisitions and dispositions — retail, office, industrial, flex, and land. TREC #9014367.',
+    'CRECO represents sellers and investors on San Antonio & Hill Country commercial acquisitions and dispositions — retail, office, industrial, flex, and land.',
   inlineForm: {
     heading: 'Thinking about selling?',
     body: 'Tell us what you hold and our team will come back with a no-obligation opinion of value and how we would take it to market.',
@@ -160,9 +160,9 @@ export const SELLER_INVESTOR_PAGE: RepresentationPageContent = {
   eyebrow: 'Sellers & Investors',
   h1: 'CRECO represents sellers and investors — acquisitions and dispositions.',
   heroLine:
-    'Selling commercial property for owners, and sourcing it for investors and owner-users, across Texas.',
+    'Selling commercial property for owners, and sourcing it for investors and owner-users, in San Antonio and the Texas Hill Country.',
   directAnswer:
-    `CRECO - Commercial Real Estate Company represents sellers, buyers, and investors in commercial real estate transactions — selling property for owners and helping investors and owner-users acquire it — across ${PROPERTY_TYPES_SENTENCE}, throughout Texas. CRECO is a full-service brokerage representing tenants, landlords, owners, and investors.`,
+    `CRECO - Commercial Real Estate Company represents sellers, buyers, and investors in commercial real estate transactions — selling property for owners and helping investors and owner-users acquire it — across ${PROPERTY_TYPES_SENTENCE}, in San Antonio and the Texas Hill Country. CRECO is a full-service brokerage representing tenants, landlords, owners, and investors.`,
   serviceName: 'Seller and investor representation',
   serviceType: ['Investment sales brokerage', 'Seller representation', 'Buyer representation', 'Commercial property acquisitions', 'Commercial property dispositions', '1031 exchange replacement property'],
   sections: [
@@ -199,7 +199,7 @@ export const SELLER_INVESTOR_PAGE: RepresentationPageContent = {
   faqs: [
     {
       q: 'Does CRECO handle investment sales?',
-      a: `Yes. CRECO - Commercial Real Estate Company handles commercial investment sales in Texas — representing owners selling income-producing property and investors acquiring it — across ${PROPERTY_TYPES_SENTENCE}.`,
+      a: `Yes. CRECO - Commercial Real Estate Company handles commercial investment sales in San Antonio and the Texas Hill Country — representing owners selling income-producing property and investors acquiring it — across ${PROPERTY_TYPES_SENTENCE}.`,
     },
     {
       q: 'Does CRECO represent sellers of commercial property?',
@@ -219,7 +219,7 @@ export const SELLER_INVESTOR_PAGE: RepresentationPageContent = {
     },
     {
       q: 'What types of commercial property does CRECO sell?',
-      a: `${PROPERTY_TYPES_SENTENCE.charAt(0).toUpperCase()}${PROPERTY_TYPES_SENTENCE.slice(1)}, including investment property and owner-user buildings, throughout Texas.`,
+      a: `${PROPERTY_TYPES_SENTENCE.charAt(0).toUpperCase()}${PROPERTY_TYPES_SENTENCE.slice(1)}, including investment property and owner-user buildings, in San Antonio and the Texas Hill Country.`,
     },
     {
       q: 'How do I get a value opinion or start a sale or acquisition with CRECO?',

@@ -27,7 +27,7 @@ import { MessageCircle, X, Send, Sparkles, RefreshCw, Loader2 } from 'lucide-rea
 const STORAGE_KEY = 'creco-chat-history';
 const STORAGE_OPEN_KEY = 'creco-chat-open';
 const WELCOME_MESSAGE =
-  "Hi — I'm CRECO's website assistant. I can answer questions about Texas commercial real estate, our services, the 8000 Fair Oaks Pkwy center we operate, current market conditions, or point you to the right page on the site. What can I help with?";
+  "Hi — I'm CRECO's website assistant. I can answer questions about commercial real estate in San Antonio and the Texas Hill Country, our services, the 8000 Fair Oaks Pkwy center we operate, current market conditions, or point you to the right page on the site. What can I help with?";
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -222,7 +222,7 @@ export function ChatWidget() {
           </span>
           <div>
             <p className="text-body-sm font-semibold leading-tight">CRECO Assistant</p>
-            <p className="text-caption text-white/60 leading-tight">Texas CRE · ask anything</p>
+            <p className="text-caption text-white/60 leading-tight">San Antonio &amp; Hill Country CRE · ask anything</p>
           </div>
         </div>
         <div className="flex items-center gap-1">
@@ -303,7 +303,7 @@ export function ChatWidget() {
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask about Texas commercial real estate…"
+            placeholder="Ask about commercial real estate…"
             rows={1}
             disabled={streaming}
             className="flex-1 resize-none rounded-lg border border-border bg-white px-3 py-2 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:outline-none focus:border-gold-dark disabled:opacity-60 max-h-32"

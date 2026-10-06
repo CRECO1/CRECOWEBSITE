@@ -25,8 +25,8 @@ const PROPERTY_TYPES = [
 
 const SUBMARKETS = [
   'Northwest', 'North Central', 'Northeast', 'Downtown', 'South Side', 'Far West',
-  'Fair Oaks Ranch', 'Boerne', 'Schertz', 'New Braunfels',
-  'Austin', 'Houston', 'Dallas', 'Fort Worth',
+  'Fair Oaks Ranch', 'Boerne', 'Leon Springs', 'Schertz', 'New Braunfels',
+  'Elsewhere in Texas',
 ];
 
 const SIZE_RANGES = [
@@ -243,7 +243,7 @@ export function PropertyAlertsForm() {
 
       {/* Submarkets */}
       <div>
-        <label className="block text-body-sm font-semibold text-primary mb-2">Texas submarkets <span className="text-foreground-muted font-normal">(select any)</span></label>
+        <label className="block text-body-sm font-semibold text-primary mb-2">Submarkets <span className="text-foreground-muted font-normal">(select any)</span></label>
         <div className="flex flex-wrap gap-2">
           {SUBMARKETS.map(s => {
             const selected = submarkets.includes(s);

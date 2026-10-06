@@ -50,15 +50,15 @@ const ASSET_LABEL: Record<string, string> = {
   industrial: 'Industrial & warehouse space',
 };
 
-/** Statewide fallback per asset, and the sale page for for-sale listings. */
+/** Region-wide (San Antonio & Hill Country) fallback per asset, and the sale page for for-sale listings. */
 const TEXAS_ASSET_HUB: Record<string, HubLink> = {
-  office:     { href: '/texas-office-space-for-lease',        label: 'Texas office space for lease' },
-  retail:     { href: '/texas-retail-space-for-lease',        label: 'Texas retail space for lease' },
-  industrial: { href: '/texas-industrial-property-for-lease', label: 'Texas industrial property for lease' },
+  office:     { href: '/texas-office-space-for-lease',        label: 'San Antonio & Hill Country office space for lease' },
+  retail:     { href: '/texas-retail-space-for-lease',        label: 'San Antonio & Hill Country retail space for lease' },
+  industrial: { href: '/texas-industrial-property-for-lease', label: 'San Antonio & Hill Country industrial for lease' },
 };
 const TEXAS_FOR_SALE: HubLink = {
   href: '/texas-commercial-property-for-sale',
-  label: 'Texas commercial property for sale',
+  label: 'San Antonio & Hill Country commercial property for sale',
 };
 
 export function hubLinksForListing(l: {

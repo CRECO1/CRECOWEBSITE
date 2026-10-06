@@ -22,7 +22,7 @@ const SERVICES_FAQS = [
   },
   {
     q: 'What property types and markets does CRECO cover?',
-    a: 'Retail (including restaurant space and pad sites), office (including medical office), industrial and warehouse, flex, land, and investment property — for lease and for sale — in San Antonio, Austin, Houston, Dallas–Fort Worth, the Hill Country, and statewide Texas.',
+    a: 'Retail (including restaurant space and pad sites), office (including medical office), industrial and warehouse, flex, land, and investment property — for lease and for sale — in San Antonio and the Texas Hill Country, including Fair Oaks Ranch, Boerne, Leon Springs, and the I-10 and I-35 corridors. If you are a tenant with a requirement elsewhere in Texas, we help there too.',
   },
   {
     q: 'Can CRECO manage my commercial property or help with a 1031 exchange?',
@@ -35,12 +35,14 @@ const SERVICES_FAQS = [
 ];
 
 export const metadata: Metadata = {
-  title: 'Texas Commercial Real Estate Services | CRECO',
+  title: 'San Antonio & Hill Country Commercial Real Estate Services | CRECO',
   description:
     'Tenant representation, investment advisory, leasing and sales, property management, and development from CRECO, in San Antonio and the Texas Hill Country.',
   keywords: [
+    'commercial real estate services san antonio',
+    'commercial real estate services texas hill country',
+    'tenant representation san antonio',
     'commercial real estate services texas',
-    'tenant representation texas',
     'investment advisory commercial real estate',
     'commercial property management texas',
     'commercial real estate development texas',
@@ -55,7 +57,7 @@ export const metadata: Metadata = {
   // social previews than the generic homepage one.
   openGraph: {
     images: [DEFAULT_OG_IMAGE],
-    title: 'Texas Commercial Real Estate Services | CRECO',
+    title: 'San Antonio & Hill Country Commercial Real Estate Services | CRECO',
     description:
       'Tenant representation, investment advisory, leasing & sales, property management, and development in San Antonio and the Texas Hill Country.',
     url: 'https://www.crecotx.com/services',
@@ -63,9 +65,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Texas Commercial Real Estate Services | CRECO',
+    title: 'San Antonio & Hill Country Commercial Real Estate Services | CRECO',
     description:
-      'Full-service Texas CRE firm — tenant rep, investment advisory, leasing & sales, property management.',
+      'Full-service San Antonio & Hill Country CRE firm — tenant rep, investment advisory, leasing & sales, property management.',
   },
 };
 
@@ -115,7 +117,7 @@ export const SERVICES: ServiceContent[] = [
     icon: Briefcase,
     title: 'Tenant Representation',
     shortDescription: 'Site selection and lease negotiation for businesses leasing retail, restaurant, office, medical office, industrial, and flex space — one of CRECO\'s full-service lines alongside landlord representation and investment sales.',
-    metaDescription: 'Texas tenant representation for retail, restaurant, office, medical, industrial, and flex tenants from CRECO — a full-service brokerage that also represents landlords, owners, and investors — across San Antonio, Fair Oaks Ranch, the Hill Country, and statewide.',
+    metaDescription: 'Tenant representation for retail, restaurant, office, medical, industrial, and flex tenants in San Antonio, Fair Oaks Ranch, and the Hill Country — from a full-service brokerage that also represents landlords, owners, and investors.',
     keywords: [
       'tenant representation texas',
       'commercial tenant rep texas',
@@ -127,27 +129,27 @@ export const SERVICES: ServiceContent[] = [
       'retail tenant rep texas',
       'industrial tenant rep texas',
     ],
-    heroSubhead: 'Dedicated advocacy for tenants leasing retail, restaurant, office, medical, industrial, and flex space across Texas — from a full-service brokerage that also represents landlords, owners, and investors.',
+    heroSubhead: 'Dedicated advocacy for tenants leasing retail, restaurant, office, medical, industrial, and flex space in San Antonio and the Texas Hill Country — from a full-service brokerage that also represents landlords, owners, and investors.',
     positioningNote:
       'CRECO is a full-service commercial real estate brokerage. This page covers tenant representation; CRECO also represents landlords, owners, sellers, and investors — for lease and for sale — across retail, office, industrial, flex, and land.',
     intro: [
       'Tenant representation is the most undervalued service in Texas commercial real estate. The landlord pays our commission per market convention, which means hiring CRECO as your tenant rep is typically free to your business — yet the right tenant rep can save your company $50,000 to $5,000,000 over the life of a lease through better terms, larger tenant improvement allowances, free rent, and stronger renewal language.',
       'When CRECO represents you as a tenant, our duty on that engagement is to your business. Because CRECO is a full-service brokerage — we also represent landlords, owners, and investors, and we own and lease our own centers — we know exactly how landlords underwrite a deal, and we use that to negotiate for you. If you want to see a property CRECO also represents for the owner, we disclose it up front; CRECO acts as an intermediary only if both you and the owner authorize it in writing, as Texas law requires.',
-      'Our practice spans every major Texas commercial real estate market — San Antonio, Austin, Houston, Dallas–Fort Worth, El Paso, and the Hill Country — and every property type: retail (strip centers, restaurants, freestanding), industrial (warehouse, distribution, flex), and office (Class A/B/C, medical, executive). Whether you are a first-time tenant looking for a single 2,500 SF office or a multi-location operator rolling out 20 retail units across Texas, the playbook is the same: rigorous site selection, financial benchmarking, aggressive negotiation, and clean-handoff buildout coordination.',
+      'Our practice is centered on San Antonio and the Texas Hill Country — Fair Oaks Ranch, Boerne, Leon Springs and the I-10 corridor, Stone Oak, the Medical Center and Northwest San Antonio, and New Braunfels — and covers every property type: retail (strip centers, restaurants, freestanding), industrial (warehouse, distribution, flex), and office (Class A/B/C, medical, executive). If your requirement is elsewhere in Texas, we can help there too. Whether you are a first-time tenant looking for a single 2,500 SF office or a multi-location operator planning several units, the playbook is the same: rigorous site selection, financial benchmarking, aggressive negotiation, and clean-handoff buildout coordination.',
     ],
     body: [
-      'Site selection across all Texas submarkets and property types — including off-market sublease opportunities our network sees first',
+      'Site selection across San Antonio and Hill Country submarkets and every property type — including off-market sublease opportunities our network sees first',
       'LOI strategy and lease negotiation focused on tenant-favorable terms (free rent, TI allowance, renewal options, exclusivity, expansion rights)',
       'Effective rent analysis comparing offers net of concessions, NNN, and amenity values',
       'Buildout coordination — architect, contractor, permitting — through tenant move-in',
       'Renewal vs. relocation analysis at lease expiration to maximize your leverage',
       'Multi-site rollout strategy for franchisees and growing concepts',
       'Sublease evaluation when direct lease isn\'t the best path',
-      'Texas market-rent benchmarking using current comparable transactions, not asking-rent surveys',
+      'Local market-rent benchmarking using current comparable transactions, not asking-rent surveys',
     ],
     process: [
       { step: '01', title: 'Discovery & Brief', description: 'We start by understanding your business — headcount, growth trajectory, work culture, customer profile, parking and access needs, technology requirements. The brief becomes the rubric we use to evaluate every site.' },
-      { step: '02', title: 'Market Survey', description: 'We tour 15-30 candidate Texas properties (depending on market and specs), narrow to a shortlist of 5-7, and provide a written comparison report — physical, financial, and locational analysis side-by-side.' },
+      { step: '02', title: 'Market Survey', description: 'We tour 15-30 candidate properties (depending on market and specs), narrow to a shortlist of 5-7, and provide a written comparison report — physical, financial, and locational analysis side-by-side.' },
       { step: '03', title: 'Negotiation', description: 'We draft your LOI, run multi-landlord competitive tension when possible, and negotiate the lease line-by-line. Your attorney reviews; we coordinate. The goal is the best total economic outcome, not just the lowest rent.' },
       { step: '04', title: 'Buildout & Move-In', description: 'We coordinate with your architect, GC, and IT teams. We monitor the landlord\'s delivery commitments, track the tenant improvement allowance disbursement, and sign off on the move-in checklist.' },
       { step: '05', title: 'Lifecycle Partnership', description: 'After move-in, we stay engaged. 12+ months ahead of your renewal, we re-survey the market and run a fresh renewal-vs-relocation analysis so you negotiate from leverage, not from inertia.' },
@@ -155,7 +157,7 @@ export const SERVICES: ServiceContent[] = [
     useCases: [
       { title: 'Growing tenants', description: 'Companies hiring fast and outgrowing current space. We negotiate expansion options into your lease so growth doesn\'t mean relocation pain.' },
       { title: 'First-time leasers', description: 'Founders and small businesses signing their first commercial lease in Texas. We translate every clause and protect you from gotchas.' },
-      { title: 'Multi-location rollouts', description: 'Franchisees and concept brands opening 5-50 Texas locations. We standardize site criteria, lease templates, and rollout cadence.' },
+      { title: 'Multi-location rollouts', description: 'Franchisees and concept brands opening multiple locations. We standardize site criteria, lease templates, and rollout cadence.' },
       { title: 'Lease renewals', description: 'Existing tenants approaching renewal. We benchmark the market and create competitive tension to push the landlord into better terms.' },
       { title: 'Distress / restructure', description: 'Tenants needing to sublet, terminate, or restructure existing leases. We work with landlord and lender to find a path.' },
     ],
@@ -167,7 +169,7 @@ export const SERVICES: ServiceContent[] = [
       // intermediary only on written consent from both sides.
       {
         q: 'Does CRECO represent landlords?',
-        a: 'Yes. CRECO represents landlords and commercial property owners throughout Texas — listing and leasing their space, sourcing and qualifying tenants, and negotiating on the ownership side — alongside tenants, buyers, sellers, and investors. CRECO is a full-service brokerage, not a tenant-only firm; tenant representation is one service line among several, and CRECO also owns and leases its own centers. What is scoped to a single deal is the duty, not the firm: when CRECO represents you as a tenant, our duty on that engagement is to your business, and we do not also represent the landlord on that same transaction unless both parties authorize an intermediary relationship in writing.',
+        a: 'Yes. CRECO represents landlords and commercial property owners in San Antonio and the Texas Hill Country — listing and leasing their space, sourcing and qualifying tenants, and negotiating on the ownership side — alongside tenants, buyers, sellers, and investors. CRECO is a full-service brokerage, not a tenant-only firm; tenant representation is one service line among several, and CRECO also owns and leases its own centers. What is scoped to a single deal is the duty, not the firm: when CRECO represents you as a tenant, our duty on that engagement is to your business, and we do not also represent the landlord on that same transaction unless both parties authorize an intermediary relationship in writing.',
       },
       {
         q: 'Can CRECO represent both landlords and tenants?',
@@ -200,8 +202,8 @@ export const SERVICES: ServiceContent[] = [
     slug: 'investment-advisory',
     icon: LineChart,
     title: 'Investment Advisory',
-    shortDescription: 'Underwriting, market analysis, and portfolio strategy for multi-property owners and investors across Texas.',
-    metaDescription: 'Texas commercial real estate investment advisory. Underwriting, market analysis, portfolio strategy, and 1031 exchange guidance for owners and investors across San Antonio, Austin, Houston, Dallas–Fort Worth.',
+    shortDescription: 'Underwriting, market analysis, and portfolio strategy for owners and investors in San Antonio and the Texas Hill Country.',
+    metaDescription: 'Commercial real estate investment advisory in San Antonio and the Texas Hill Country. Underwriting, market analysis, portfolio strategy, and 1031 exchange guidance for owners and investors.',
     keywords: [
       'commercial real estate investment advisory texas',
       'commercial real estate investment texas',
@@ -212,33 +214,33 @@ export const SERVICES: ServiceContent[] = [
       'cre portfolio strategy texas',
       'commercial real estate investor san antonio',
     ],
-    heroSubhead: 'Underwriting, market intelligence, and portfolio strategy for Texas commercial real estate investors — from first acquisition to multi-property portfolio.',
+    heroSubhead: 'Underwriting, market intelligence, and portfolio strategy for San Antonio and Hill Country commercial real estate investors — from first acquisition to multi-property portfolio.',
     intro: [
       'Smart Texas commercial real estate investors don\'t buy on cap rate alone. They buy on a defensible thesis built from current submarket comps, tenant credit analysis, mark-to-market upside, lease rollover risk, capex backlog, and disposition path. CRECO brings that level of underwriting rigor to every engagement, whether you are an entrepreneur evaluating your first acquisition or a family office pacing through your tenth deal.',
-      'Our investment advisory practice spans every Texas market and asset type. We work with private investors, family offices, real estate operators, and high-net-worth individuals deploying $1M to $50M in Texas commercial real estate. Many of our clients have 5 to 50+ property portfolios, and we are deeply engaged in the strategic decisions that compound returns: which assets to hold, which to reposition, when to dispose, where to redeploy 1031 proceeds.',
-      'We also bring deal flow. Through the Texas commercial real estate relationships our team has built — owners, brokers, attorneys, lenders, family offices, and operators — our network sees off-market acquisition opportunities that never hit LoopNet, CoStar, or Crexi, including family-office portfolio dispositions, owner-operator retirements, and quiet auction processes. When you engage CRECO as your investment advisor, you tap that network.',
+      'Our investment advisory practice covers every asset type in San Antonio and the Texas Hill Country. We work with private investors, family offices, real estate operators, and high-net-worth individuals deploying capital in commercial real estate here. Many of our clients have 5 to 50+ property portfolios, and we are deeply engaged in the strategic decisions that compound returns: which assets to hold, which to reposition, when to dispose, where to redeploy 1031 proceeds.',
+      'We also bring deal flow. Through the San Antonio and Hill Country commercial real estate relationships our team has built — owners, brokers, attorneys, lenders, family offices, and operators — our network sees off-market acquisition opportunities that never hit LoopNet, CoStar, or Crexi, including family-office portfolio dispositions, owner-operator retirements, and quiet auction processes. When you engage CRECO as your investment advisor, you tap that network.',
     ],
     body: [
       'Acquisition underwriting and pro forma modeling on every property you evaluate',
-      'Market and submarket comp analysis using current Texas transactions, not stale CoStar data',
+      'Market and submarket comp analysis using current local transactions, not stale CoStar data',
       'Tenant credit and lease audit (rent roll review, mark-to-market analysis, expense recovery)',
       '1031 exchange identification within the 45-day window — including up-leg coordination',
       'Coordination with your CPA on tax-driven decisions like 1031 timing',
       'Hold/sell/reposition recommendations on existing portfolio assets',
-      'Off-market deal sourcing through our Texas owner and broker network',
+      'Off-market deal sourcing through our San Antonio and Hill Country owner and broker network',
       'Disposition strategy: BOV, marketing, buyer targeting, negotiation to close',
     ],
     process: [
       { step: '01', title: 'Investment Thesis', description: 'We start with what you\'re trying to achieve — yield target, hold period, risk tolerance, asset-class preference, geographic preference. Without a thesis, "good deals" become noise.' },
-      { step: '02', title: 'Sourcing', description: 'We surface acquisition opportunities matched to your thesis — both market listings and off-market through our Texas network. You see deals before they hit the broader market.' },
+      { step: '02', title: 'Sourcing', description: 'We surface acquisition opportunities matched to your thesis — both market listings and off-market through our local network. You see deals before they hit the broader market.' },
       { step: '03', title: 'Underwriting', description: 'For every shortlist deal, we deliver a written underwriting memo: pro forma cash flows, exit assumptions, sensitivity tables, key risks, and a buy/no-buy recommendation with reasoning.' },
       { step: '04', title: 'Diligence & Close', description: 'Once you\'re under contract, we coordinate the full diligence team: lender, attorney, environmental (Phase I/II), surveyor, inspector. We track every diligence deliverable through close.' },
       { step: '05', title: 'Asset Management', description: 'After close, we transition into ongoing asset management — quarterly portfolio reviews, lease administration, capex planning, and disposition timing analysis.' },
     ],
     useCases: [
       { title: 'First-time CRE investors', description: 'Buying your first commercial property — typically a small retail strip, office condo, or single-tenant net-lease. We\'ll underwrite the deal, walk you through risks, and structure financing.' },
-      { title: 'Active investors', description: 'Family offices and real estate operators acquiring 2-5 Texas commercial properties per year. We become an extension of your acquisitions team.' },
-      { title: '1031 buyers', description: 'You\'ve sold a property and have 45 days to identify replacement. We move fast, surface qualified Texas options, and get you under contract.' },
+      { title: 'Active investors', description: 'Family offices and real estate operators acquiring commercial properties in San Antonio and the Hill Country. We become an extension of your acquisitions team.' },
+      { title: '1031 buyers', description: 'You\'ve sold a property and have 45 days to identify replacement. We move fast, surface qualified San Antonio and Hill Country options, and get you under contract.' },
       { title: 'Portfolio repositioners', description: 'You own 10+ properties and want to redeploy capital — selling underperformers, acquiring better assets, restructuring debt. We run the strategy.' },
     ],
     faqs: [
@@ -248,11 +250,11 @@ export const SERVICES: ServiceContent[] = [
       },
       {
         q: 'Can you help with a 1031 exchange?',
-        a: 'Yes — 1031 exchanges are a core part of our investment advisory practice. The 45-day identification window and 180-day close window are tight, especially in active markets. We coordinate with your qualified intermediary (QI), CPA, and lender, surface qualified Texas replacement properties (up-leg) within the window, and execute through close.',
+        a: 'Yes — 1031 exchanges are a core part of our investment advisory practice. The 45-day identification window and 180-day close window are tight, especially in active markets. We coordinate with your qualified intermediary (QI), CPA, and lender, surface qualified San Antonio and Hill Country replacement properties (up-leg) within the window, and execute through close.',
       },
       {
         q: 'How do you find off-market deals?',
-        a: 'Through the Texas commercial real estate relationships our team has built — owners we\'ve repped, brokers we\'ve closed with, attorneys, lenders, family offices, and operators. When a private owner is ready to sell quietly, they often call us first. We don\'t guarantee off-market flow on every assignment, but it\'s a meaningful part of what we bring.',
+        a: 'Through the San Antonio and Hill Country commercial real estate relationships our team has built — owners we\'ve repped, brokers we\'ve closed with, attorneys, lenders, family offices, and operators. When a private owner is ready to sell quietly, they often call us first. We don\'t guarantee off-market flow on every assignment, but it\'s a meaningful part of what we bring.',
       },
       {
         q: 'Do you help with debt placement?',
@@ -270,7 +272,7 @@ export const SERVICES: ServiceContent[] = [
     icon: Building2,
     title: 'Landlord Representation: Leasing & Sales',
     shortDescription: 'Landlord and owner representation — leasing and sales across retail, restaurant, office, medical, industrial, flex, and land. Marketing, negotiation, diligence to close.',
-    metaDescription: 'Texas commercial real estate leasing and sales. Owner-side representation for retail, industrial, office, flex, and land properties. Comprehensive marketing, aggressive negotiation, smooth close across Texas.',
+    metaDescription: 'Commercial real estate leasing and sales in San Antonio and the Texas Hill Country. Owner-side representation for retail, industrial, office, flex, and land — marketing, negotiation, and close.',
     keywords: [
       'commercial real estate leasing texas',
       'commercial real estate sales texas',
@@ -280,23 +282,23 @@ export const SERVICES: ServiceContent[] = [
       'commercial real estate broker texas',
       'cre listing agent san antonio',
     ],
-    heroSubhead: 'Owner-side leasing and sales across every Texas commercial property type. Institutional-quality marketing, principal-led negotiation, and execution from listing to close.',
+    heroSubhead: 'Owner-side leasing and sales across every commercial property type in San Antonio and the Texas Hill Country. Institutional-quality marketing, principal-led negotiation, and execution from listing to close.',
     intro: [
       'Listing a Texas commercial property is not "putting it on LoopNet and waiting." Done well, it\'s a coordinated marketing campaign — broker book, drone photography, custom property website, CoStar / LoopNet / Crexi syndication, direct outreach to qualified principals — combined with disciplined negotiation and diligence management. Done poorly, your property sits on the market for 12 months, signals distress, and trades at a discount.',
-      'CRECO\'s leasing and sales practice handles owner-side representation across all Texas commercial property types: retail centers, industrial buildings, office buildings, mixed-use, flex, and land. Whether you\'re leasing up vacant space, listing a stabilized asset for sale, or testing the market — we bring institutional-quality marketing materials, target the right buyer or tenant pool, and negotiate aggressively for your outcome.',
+      'CRECO\'s leasing and sales practice handles owner-side representation across all commercial property types in San Antonio and the Hill Country: retail centers, industrial buildings, office buildings, mixed-use, flex, and land. Whether you\'re leasing up vacant space, listing a stabilized asset for sale, or testing the market — we bring institutional-quality marketing materials, target the right buyer or tenant pool, and negotiate aggressively for your outcome.',
       'Every CRECO listing is worked directly by our team — not handed off to a junior associate. You get senior-level attention from listing day through close, including weekly progress reports, real-time activity tracking, and direct availability for buyer/tenant questions.',
     ],
     body: [
       'Comprehensive marketing materials: broker book, drone photography, professional photo, custom property website, virtual tours',
-      'Listing syndication: CoStar, LoopNet, Crexi, plus our proprietary Texas owner/broker network',
+      'Listing syndication: CoStar, LoopNet, Crexi, plus our local owner/broker network',
       'Direct outreach campaigns to qualified buyer/tenant pools — including principals who never search public listings',
       'Aggressive offer negotiation: multi-bid tension when possible, walk-away leverage on terms that matter',
       'Diligence coordination from contract through close (or lease execution through delivery)',
       'Quarterly tenant retention check-ins on leasing assignments to push renewal rates',
-      'Listing across all Texas property types and price ranges',
+      'Listing across all commercial property types and price ranges',
     ],
     process: [
-      { step: '01', title: 'Property Evaluation', description: 'We tour the asset, audit operating history, and benchmark recent comparable Texas transactions. We deliver a Broker Opinion of Value (BOV) and recommended price/rent strategy within 5-7 business days.' },
+      { step: '01', title: 'Property Evaluation', description: 'We tour the asset, audit operating history, and benchmark recent comparable local transactions. We deliver a Broker Opinion of Value (BOV) and recommended price/rent strategy within 5-7 business days.' },
       { step: '02', title: 'Positioning Strategy', description: 'We craft the marketing narrative tailored to your asset and target buyer/tenant. Class B retail center messaging is different from Class A office tower messaging — we calibrate.' },
       { step: '03', title: 'Marketing Launch', description: 'Property hits the market with full materials, MLS-style syndication, and direct outreach to qualified principals. Weekly progress reports show every showing, every inquiry, every level of interest.' },
       { step: '04', title: 'Offer Negotiation', description: 'When offers come in, we tee up multi-offer competition where possible, walk you through tradeoffs (price vs. terms vs. certainty), and negotiate aggressively. Your goal — top dollar, fast close, or lowest risk — drives our strategy.' },
@@ -336,8 +338,8 @@ export const SERVICES: ServiceContent[] = [
     slug: 'property-management',
     icon: Wrench,
     title: 'Property Management',
-    shortDescription: 'Day-to-day operations and tenant relations for commercial assets — built for owners with multiple Texas properties.',
-    metaDescription: 'Texas commercial property management. Day-to-day operations, vendor coordination, lease administration, CAM reconciliations, and reporting for retail, industrial, office, and mixed-use properties statewide.',
+    shortDescription: 'Day-to-day operations and tenant relations for commercial assets — built for owners with properties in San Antonio and the Texas Hill Country.',
+    metaDescription: 'Commercial property management in San Antonio and the Texas Hill Country. Operations, vendor coordination, lease administration, CAM reconciliations, and reporting.',
     keywords: [
       'commercial property management texas',
       'commercial property management san antonio',
@@ -349,10 +351,10 @@ export const SERVICES: ServiceContent[] = [
       'office property management texas',
       'cam reconciliation texas',
     ],
-    heroSubhead: 'Day-to-day operations and tenant relations for commercial assets across Texas — built for owners with portfolios who need institutional-quality reporting at boutique-firm responsiveness.',
+    heroSubhead: 'Day-to-day operations and tenant relations for commercial assets in San Antonio and the Texas Hill Country — built for owners with portfolios who need institutional-quality reporting at boutique-firm responsiveness.',
     intro: [
-      'CRECO\'s property management practice is built for the multi-property Texas commercial owner. The big national management firms are great for institutional clients with 100+ trophy assets — but they tend to treat 5-property and 10-property owners as small accounts. Local property managers can handle one or two buildings, but typically lack the systems, reporting, and strategic capabilities a portfolio owner needs.',
-      'We sit in the gap. CRECO manages portfolios from 5 to 50+ Texas commercial properties — retail, industrial, office, flex, mixed-use — with the same operational rigor and reporting infrastructure you would expect from a national firm. Every owner relationship is handled personally by the CRECO team — people who know every asset, meet your tenants, and answer your calls directly.',
+      'CRECO\'s property management practice is built for the multi-property commercial owner in San Antonio and the Hill Country. The big national management firms are great for institutional clients with 100+ trophy assets — but they tend to treat 5-property and 10-property owners as small accounts. Local property managers can handle one or two buildings, but typically lack the systems, reporting, and strategic capabilities a portfolio owner needs.',
+      'We sit in the gap. CRECO manages portfolios from 5 to 50+ commercial properties — retail, industrial, office, flex, mixed-use — with the same operational rigor and reporting infrastructure you would expect from a national firm. Every owner relationship is handled personally by the CRECO team — people who know every asset, meet your tenants, and answer your calls directly.',
       'Our management approach is proactive, not reactive. We tour every asset on a regular cadence, meet with key tenants quarterly, track lease expirations 12-24 months ahead, and surface capex needs before they become emergencies. The goal is sustained NOI growth and tenant retention — not just keeping the lights on.',
     ],
     body: [
@@ -366,14 +368,14 @@ export const SERVICES: ServiceContent[] = [
       'Lease audits to ensure tenants are paying correctly and recovering OpEx accurately',
     ],
     process: [
-      { step: '01', title: 'Onboarding', description: '30-60 day onboarding for a new portfolio: tour every Texas asset, audit existing leases and rent rolls, transition vendor contracts, set up financial reporting, and meet every tenant.' },
+      { step: '01', title: 'Onboarding', description: '30-60 day onboarding for a new portfolio: tour every asset, audit existing leases and rent rolls, transition vendor contracts, set up financial reporting, and meet every tenant.' },
       { step: '02', title: 'Operating Cadence', description: 'Monthly financials by the 15th. Quarterly tenant check-ins on key leases. Annual budgets in October. Capex calendar reviewed every quarter.' },
       { step: '03', title: 'Strategic Review', description: 'Quarterly portfolio review meeting with you (the owner): NOI by asset, leasing pipeline, capex status, market trends, hold/sell recommendations.' },
       { step: '04', title: 'Continuous Improvement', description: 'We don\'t just manage — we improve. Every quarter we identify 3-5 actionable initiatives (vendor rebids, lease renegotiations, capex projects, tenant repositioning) to push NOI.' },
     ],
     useCases: [
-      { title: 'Multi-property portfolios', description: 'Owners with 5-50+ Texas properties needing one firm to coordinate operations, leasing, and strategy across all of them.' },
-      { title: 'Long-distance owners', description: 'Texas property owners who live out of state — California, New York, Florida — and need on-the-ground management with weekly communication.' },
+      { title: 'Multi-property portfolios', description: 'Owners with multiple San Antonio and Hill Country properties needing one firm to coordinate operations, leasing, and strategy across all of them.' },
+      { title: 'Long-distance owners', description: 'San Antonio and Hill Country property owners who live out of state — California, New York, Florida — and need on-the-ground management with weekly communication.' },
       { title: 'Family offices', description: 'Multi-generational property owners needing institutional-quality reporting with boutique-firm responsiveness for the family decision-makers.' },
       { title: 'Owner-operator hybrids', description: 'Owners who run their own business in part of the property and lease the rest to other tenants. We handle the tenant side and tie into your operations.' },
     ],
@@ -406,7 +408,7 @@ export const SERVICES: ServiceContent[] = [
     icon: Layers,
     title: 'Property Development',
     shortDescription: 'From conceptualization through completion — site selection, entitlements, and construction.',
-    metaDescription: 'Texas commercial real estate development services. Site selection, entitlements, feasibility, design coordination, GC oversight, and lease-up across San Antonio, Austin, Houston, Dallas–Fort Worth, and beyond.',
+    metaDescription: 'Commercial real estate development services in San Antonio and the Texas Hill Country. Site selection, entitlements, feasibility, design coordination, GC oversight, and lease-up.',
     keywords: [
       'commercial real estate development texas',
       'cre development san antonio',
@@ -418,14 +420,14 @@ export const SERVICES: ServiceContent[] = [
       'build to suit texas',
       'commercial real estate developer san antonio',
     ],
-    heroSubhead: 'Concept-to-stabilization development advisory for Texas commercial real estate. Site selection, feasibility, entitlements, design and construction coordination, and lease-up.',
+    heroSubhead: 'Concept-to-stabilization development advisory for commercial real estate in San Antonio and the Texas Hill Country. Site selection, feasibility, entitlements, design and construction coordination, and lease-up.',
     intro: [
       'Texas commercial real estate development is a long, capital-intensive game with dozens of fail points along the way: site selection mistakes, entitlement delays, construction cost overruns, leasing risk, capital stack misalignment. Most owners who attempt development without an experienced advisor learn expensive lessons.',
       'CRECO\'s development practice provides advisory and coordination services across the full development lifecycle. We work with first-time developers (often owner-operators expanding their own businesses) and sophisticated repeat developers who need expanded capacity. We are not a general contractor or design firm — we are the owner\'s advocate sitting alongside the GC, architect, lender, and city, making sure the project hits pro forma.',
-      'Our Texas development experience spans retail centers, industrial parks, mixed-use, flex, and adaptive reuse. We have helped clients deliver projects in San Antonio, Austin, Houston, DFW, and the Hill Country. The playbook is consistent: rigorous site selection, conservative pro forma, fast entitlements, controlled construction costs, and pre-leasing to de-risk the lease-up.',
+      'Our development work is centered on San Antonio and the Texas Hill Country — including CRECO\'s own Elkhorn Pointe retail center in Fair Oaks Ranch — and spans retail, mixed-use, flex, and land. The playbook is consistent: rigorous site selection, conservative pro forma, fast entitlements, controlled construction costs, and pre-leasing to de-risk the lease-up.',
     ],
     body: [
-      'Site identification and acquisition advisory across Texas',
+      'Site identification and acquisition advisory in San Antonio and the Hill Country',
       'Highest and best use analysis for raw or improved land parcels',
       'Pro forma development modeling: development cost, NOI projection, exit value, IRR, equity-multiple',
       'Zoning, entitlement, and platting coordination with city planning departments',
@@ -444,9 +446,9 @@ export const SERVICES: ServiceContent[] = [
     ],
     useCases: [
       { title: 'Owner-user expansion', description: 'You operate a Texas business and want to develop your own building (vs continued leasing). Often eligible for SBA 504 financing.' },
-      { title: 'Land you already own', description: 'You own raw or under-improved land in a Texas growth corridor and want to maximize value through development.' },
+      { title: 'Land you already own', description: 'You own raw or under-improved land in a San Antonio or Hill Country growth corridor and want to maximize value through development.' },
       { title: 'Build-to-suit', description: 'A specific tenant has committed to lease a custom-built building. We deliver the project to spec, on time, on budget.' },
-      { title: 'Spec retail or industrial', description: 'Speculative development of retail centers or industrial buildings in growing Texas submarkets — relying on lease-up confidence to justify the build.' },
+      { title: 'Spec retail or industrial', description: 'Speculative development of retail centers or industrial buildings in growing San Antonio and Hill Country submarkets — relying on lease-up confidence to justify the build.' },
     ],
     faqs: [
       {
@@ -467,7 +469,7 @@ export const SERVICES: ServiceContent[] = [
       },
       {
         q: 'Do you develop your own projects?',
-        a: 'CRECO is primarily an advisory and brokerage firm — our principals occasionally develop or co-invest in select Texas projects, but we are not a vertically-integrated developer. The advantage to you: we are aligned with your interests, not pushing our own pipeline.',
+        a: 'CRECO is primarily an advisory and brokerage firm — our principals occasionally develop or co-invest in select local projects, but we are not a vertically-integrated developer. The advantage to you: we are aligned with your interests, not pushing our own pipeline.',
       },
     ],
     relatedSlugs: ['investment-advisory', 'leasing-sales', 'property-management'],

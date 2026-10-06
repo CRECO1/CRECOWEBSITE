@@ -7,14 +7,15 @@ import { PropertyAlertsForm } from '@/components/forms/PropertyAlertsForm';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { breadcrumbList, webPage } from '@/lib/schema';
 export const metadata: Metadata = {
-  title: 'Texas Commercial Property Alerts | CRECO',
+  title: 'San Antonio & Hill Country Commercial Property Alerts | CRECO',
   description:
-    'Get alerts when a Texas commercial property matching your filters is listed with CRECO — retail, industrial, office, flex, and land. Free, no obligation.',
+    'Get alerts when a San Antonio or Hill Country commercial property matching your filters is listed with CRECO — retail, industrial, office, flex, and land. Free, no obligation.',
   keywords: [
+    'san antonio commercial property alerts',
+    'commercial real estate alerts san antonio',
+    'hill country commercial property alerts',
+    'commercial property alerts boerne fair oaks ranch',
     'texas commercial property alerts',
-    'commercial real estate alerts texas',
-    'texas commercial real estate email alerts',
-    'commercial property alerts san antonio austin houston dallas',
     'creco property alerts',
   ],
   alternates: { canonical: 'https://www.crecotx.com/property-alerts' },
@@ -24,7 +25,7 @@ const VALUE_PROPS = [
   {
     icon: BellRing,
     title: 'New listings as they go live',
-    body: 'We email you when a matching Texas commercial property goes live on the CRECO inventory — often before it hits LoopNet or Crexi.',
+    body: 'We email you when a matching commercial property goes live on the CRECO inventory — often before it hits LoopNet or Crexi.',
   },
   {
     icon: Filter,
@@ -33,8 +34,8 @@ const VALUE_PROPS = [
   },
   {
     icon: MapPin,
-    title: 'Statewide Texas coverage',
-    body: 'San Antonio, Austin, Houston, Dallas, Fort Worth, and surrounding submarkets. All property types: office, warehouse, flex, retail, mixed-use, and land.',
+    title: 'San Antonio & Hill Country coverage',
+    body: 'San Antonio submarkets plus Fair Oaks Ranch, Boerne, Leon Springs, and the I-10 and I-35 corridors. All property types: office, warehouse, flex, retail, mixed-use, and land.',
   },
   {
     icon: Mail,
@@ -48,7 +49,7 @@ export default function PropertyAlertsPage() {
     <>
       <JsonLd
         data={[
-          webPage('WebPage', '/property-alerts', 'Texas Commercial Property Alerts | CRECO', 'Get alerts when a Texas commercial property matching your filters is listed with CRECO — retail, industrial, office, flex, and land. Free, no obligation.'),
+          webPage('WebPage', '/property-alerts', 'San Antonio & Hill Country Commercial Property Alerts | CRECO', 'Get alerts when a San Antonio or Hill Country commercial property matching your filters is listed with CRECO — retail, industrial, office, flex, and land. Free, no obligation.'),
           breadcrumbList([{ name: 'Property Alerts', path: '/property-alerts' }]),
         ]}
       />
@@ -58,9 +59,9 @@ export default function PropertyAlertsPage() {
         <section className="bg-primary py-16 sm:py-20 text-white">
           <Container>
             <div className="max-w-3xl">
-              <p className="overline mb-3 text-gold">Texas Commercial Property Alerts</p>
+              <p className="overline mb-3 text-gold">San Antonio &amp; Hill Country Property Alerts</p>
               <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-4">
-                Get the Texas commercial properties you actually want — sent to your inbox.
+                Get the San Antonio and Hill Country commercial properties you actually want — sent to your inbox.
               </h1>
               <p className="text-body-lg text-white/70 leading-relaxed">
                 Tell us what you're looking for — property type, submarket, size, lease or buy — and we'll alert you the moment a matching property hits the CRECO listings. No spam. Unsubscribe anytime.
