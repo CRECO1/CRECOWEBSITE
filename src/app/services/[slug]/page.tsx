@@ -42,7 +42,7 @@ const SERVICE_FORMS: Record<string, ServiceForm> = {
   'investment-advisory': {
     cta: 'Share your investment criteria',
     heading: 'What are you looking to buy?',
-    body: 'Asset type, price range, target yield and timing — including 1031 deadlines. A CRECO principal follows up with on- and off-market options.',
+    body: 'Asset type, price range, target yield and timing — including 1031 deadlines. Someone from our team follows up with on- and off-market options.',
     contextLabel: 'Your investment criteria',
     contextPlaceholder: 'e.g. NNN retail, $2–4M, San Antonio or Austin, 1031 identification by June',
     source: 'listing-inquiry',
@@ -69,7 +69,7 @@ const SERVICE_FORMS: Record<string, ServiceForm> = {
   'development': {
     cta: 'Talk through your project',
     heading: 'Planning a development?',
-    body: 'Site, concept and stage — even if it is just an idea and a parcel. A CRECO principal will walk through feasibility and next steps with you.',
+    body: 'Site, concept and stage — even if it is just an idea and a parcel. Someone from our team will walk through feasibility and next steps with you.',
     contextLabel: 'About the project',
     contextPlaceholder: 'e.g. 4-acre pad on FM 3351, considering retail + flex',
     source: 'listing-inquiry',

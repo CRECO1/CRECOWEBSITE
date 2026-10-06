@@ -32,6 +32,16 @@ import { CompareToggle } from '@/components/listings/CompareToggle';
 import { ListingDetailMap } from '@/components/listings/ListingDetailMap';
 import { BrochureRequestForm } from '@/components/forms/BrochureRequestForm';
 import { Bell } from 'lucide-react';
+import type { Listing } from '@/lib/supabase';
+
+// Leased/sold rows stay reachable at their URL (inbound links, /sold) but must
+// never read as available: the title says "Leased"/"Sold" and the inquiry
+// forms give way to a closed-deal panel.
+function closedLabel(listing: Pick<Listing, 'status'>): 'Leased' | 'Sold' | null {
+  if (listing.status === 'leased') return 'Leased';
+  if (listing.status === 'sold') return 'Sold';
+  return null;
+}
 
 // Dedupe the per-request fetch: generateMetadata() and the page body both need
 // the listing, and without this each fires the same Supabase query. cache()
@@ -72,7 +82,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!listing) {
     return { title: 'Property Not Found | CRECO' };
   }
-  const txn = transactionLabel(listing.transaction_type) || 'Available';
+  const txn = closedLabel(listing) ?? (transactionLabel(listing.transaction_type) || 'Available');
   const type = propertyTypeLabel(listing.property_type) || 'Commercial Property';
   const sf = listing.sqft ? `${listing.sqft.toLocaleString()} SF ` : '';
   // Fit the ~60-character results-page title: drop the city, then the size, before
@@ -116,8 +126,11 @@ export default async function ListingDetailPage({ params }: Props) {
   if (!listing) notFound();
 
   const images = (listing!.images as string[] | null) ?? [];
+  const closed = closedLabel(listing!);
 
-  const priceDisplay = listing!.transaction_type === 'sale' && listing!.sale_price
+  const priceDisplay = closed
+    ? closed
+    : listing!.transaction_type === 'sale' && listing!.sale_price
     ? formatPrice(listing!.sale_price)
     : listing!.lease_rate
       ? formatLeaseRate(listing!.lease_rate, listing!.lease_rate_basis)
@@ -128,7 +141,7 @@ export default async function ListingDetailPage({ params }: Props) {
   // so listing pages, ItemLists and llms-full.txt all describe inventory the
   // same way.
   const broker = getBrokerForListing(listing!.slug);
-  const listingFaqs = [
+  const allListingFaqs = [
     {
       q: `Is ${listing!.title} still available?`,
       a: listing!.status === 'active'
@@ -148,6 +161,8 @@ export default async function ListingDetailPage({ params }: Props) {
       a: `Request a tour with the form on this page or call ${BUSINESS.phoneDisplay}. CRECO responds personally and can arrange in-person or virtual tours.`,
     },
   ];
+  // A closed deal has no asking price to quote and nothing to tour.
+  const listingFaqs = closed ? [allListingFaqs[0], allListingFaqs[2]] : allListingFaqs;
 
   return (
     <>
@@ -174,7 +189,7 @@ export default async function ListingDetailPage({ params }: Props) {
       />
       {/* pb-24 lg:pb-0 reserves space under the MobileInquiryBar so the
           last bit of content (related listings, footer) isn't obscured. */}
-      <main className="min-h-screen pt-20 pb-24 lg:pb-0">
+      <main className={`min-h-screen pt-20 ${closed ? '' : 'pb-24 lg:pb-0'}`}>
         {/* Breadcrumb strip — replaces the old "Back to Listings" link
             (the first chevron still points back to /listings, and the
             full path tells Google + LLMs where this page sits in the
@@ -232,9 +247,15 @@ export default async function ListingDetailPage({ params }: Props) {
                     {priceDisplay}
                   </p>
                   <div className="mt-2 flex flex-wrap justify-end gap-2">
-                    <span className="rounded-full bg-gold/20 px-3 py-0.5 text-caption font-semibold text-gold-dark uppercase">
-                      {transactionLabel(listing!.transaction_type)}
-                    </span>
+                    {closed ? (
+                      <span className="rounded-full bg-slate-700 px-3 py-0.5 text-caption font-semibold text-white uppercase">
+                        {closed}
+                      </span>
+                    ) : (
+                      <span className="rounded-full bg-gold/20 px-3 py-0.5 text-caption font-semibold text-gold-dark uppercase">
+                        {transactionLabel(listing!.transaction_type)}
+                      </span>
+                    )}
                     <span className="rounded-full bg-primary/10 px-3 py-0.5 text-caption font-semibold text-primary uppercase">
                       {propertyTypeLabel(listing!.property_type)}
                     </span>
@@ -361,13 +382,15 @@ export default async function ListingDetailPage({ params }: Props) {
                   campaign traffic) handed out the brochure and captured
                   nobody. Every listing has one: the uploaded PDF, or the
                   generated one-pager at /api/brochure/[slug]. */}
-              <div className="mb-8 max-w-xl">
-                <BrochureRequestForm
-                  listingSlug={listing!.slug}
-                  listingTitle={listing!.title}
-                  brochureUrl={listing!.brochure_url}
-                />
-              </div>
+              {!closed && (
+                <div className="mb-8 max-w-xl">
+                  <BrochureRequestForm
+                    listingSlug={listing!.slug}
+                    listingTitle={listing!.title}
+                    brochureUrl={listing!.brochure_url}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Sidebar — tabbed inquiry (Tour | Message). #inquiry anchor is
@@ -379,29 +402,51 @@ export default async function ListingDetailPage({ params }: Props) {
                 id="inquiry"
                 className="sticky top-28 scroll-mt-24 rounded-xl border border-border bg-white p-6 shadow-card"
               >
-                {/* #inquiry-tour is where the mobile "Schedule a Tour" bar
-                    lands and puts the cursor. */}
-                <div id="inquiry-tour" className="scroll-mt-24">
-                  <ListingInquiryTabs
-                    listingTitle={listing!.title}
-                    listingSlug={listing!.slug}
-                    listingAddress={`${listing!.address}, ${listing!.city}, ${listing!.state} ${listing!.zip ?? ''}`.trim()}
-                    broker={broker}
-                    brochureHref={listing!.brochure_url || `/api/brochure/${listing!.slug}`}
-                  />
-                </div>
-                {/* The brochure used to sit above the tour form as its own
-                    filled-button card, so the sidebar opened on two competing
-                    asks. Tour is the one primary; the brochure is a quiet
-                    link here and the offer after a tour request. */}
-                <div className="mt-4">
-                  <BrochureRequestForm
-                    listingSlug={listing!.slug}
-                    listingTitle={listing!.title}
-                    brochureUrl={listing!.brochure_url}
-                    variant="link"
-                  />
-                </div>
+                {closed ? (
+                  // Closed deal: no tour/message/brochure asks for a space
+                  // that is no longer on the market.
+                  <div>
+                    <p className="text-caption font-semibold uppercase tracking-widest text-gold-dark">{closed}</p>
+                    <h2 className="mt-1 font-heading text-heading font-semibold text-primary">
+                      {closed === 'Leased' ? 'This space has been leased.' : 'This property has been sold.'}
+                    </h2>
+                    <p className="mt-2 text-body-sm text-foreground-muted">
+                      It is no longer available. See what CRECO has on the market now.
+                    </p>
+                    <Link
+                      href="/listings"
+                      className="mt-4 inline-flex items-center justify-center rounded-lg bg-gold px-5 py-3 text-body-sm font-semibold text-primary transition-colors hover:bg-gold-dark"
+                    >
+                      View available listings
+                    </Link>
+                  </div>
+                ) : (
+                  <>
+                    {/* #inquiry-tour is where the mobile "Schedule a Tour" bar
+                        lands and puts the cursor. */}
+                    <div id="inquiry-tour" className="scroll-mt-24">
+                      <ListingInquiryTabs
+                        listingTitle={listing!.title}
+                        listingSlug={listing!.slug}
+                        listingAddress={`${listing!.address}, ${listing!.city}, ${listing!.state} ${listing!.zip ?? ''}`.trim()}
+                        broker={broker}
+                        brochureHref={listing!.brochure_url || `/api/brochure/${listing!.slug}`}
+                      />
+                    </div>
+                    {/* The brochure used to sit above the tour form as its own
+                        filled-button card, so the sidebar opened on two competing
+                        asks. Tour is the one primary; the brochure is a quiet
+                        link here and the offer after a tour request. */}
+                    <div className="mt-4">
+                      <BrochureRequestForm
+                        listingSlug={listing!.slug}
+                        listingTitle={listing!.title}
+                        brochureUrl={listing!.brochure_url}
+                        variant="link"
+                      />
+                    </div>
+                  </>
+                )}
                 {/* Named broker + direct contact + optional Cal.com
                     slot. Replaces the anonymous "Or call us directly"
                     tile. The visible person on the sidebar next to a
@@ -416,7 +461,7 @@ export default async function ListingDetailPage({ params }: Props) {
                   <BrokerCard
                     broker={broker}
                     backup={getLeadBackup(broker)}
-                    intro="Your inquiry is going to:"
+                    intro={closed ? 'Questions about this property:' : 'Your inquiry is going to:'}
                   />
                 </div>
                 {/* Re-engagement CTA — for tenants who looked but aren't ready
@@ -468,7 +513,7 @@ export default async function ListingDetailPage({ params }: Props) {
           subtitle={`Other Texas commercial real estate currently on the market — prioritized by similar property type${listing!.submarket ? ' and submarket' : ''}.`}
         />
       </main>
-      <MobileInquiryBar />
+      {!closed && <MobileInquiryBar />}
       <Footer />
     </>
   );

@@ -30,7 +30,7 @@ const SERVICES_FAQS = [
   },
   {
     q: 'How do I start working with CRECO?',
-    a: `Call ${BUSINESS.phoneDisplay}, email ${BUSINESS.email}, or submit the Get Started form. A senior broker responds personally. CRECO is licensed by the Texas Real Estate Commission, ${BUSINESS.trecLicenseDisplay}.`,
+    a: `Call ${BUSINESS.phoneDisplay}, email ${BUSINESS.email}, or submit the Get Started form. Our team responds personally. CRECO is licensed by the Texas Real Estate Commission, ${BUSINESS.trecLicenseDisplay}.`,
   },
 ];
 
@@ -179,7 +179,7 @@ export const SERVICES: ServiceContent[] = [
       },
       {
         q: 'How is tenant representation different from a regular real estate agent?',
-        a: 'Residential agents help families buy houses. Tenant reps are commercial real estate brokers who advocate for tenants in commercial leases. The skill sets, lease structures, market knowledge, and economic stakes are entirely different. CRECO\'s brokers are licensed Texas commercial brokers who work tenant, landlord, and investment assignments — commercial only, not residential.',
+        a: 'Residential agents help families buy houses. Tenant reps are commercial real estate brokers who advocate for tenants in commercial leases. The skill sets, lease structures, market knowledge, and economic stakes are entirely different. CRECO is a licensed Texas commercial brokerage whose team works tenant, landlord, and investment assignments — commercial only, not residential.',
       },
       {
         q: 'Can I just respond to LoopNet listings myself?',
@@ -216,7 +216,7 @@ export const SERVICES: ServiceContent[] = [
     intro: [
       'Smart Texas commercial real estate investors don\'t buy on cap rate alone. They buy on a defensible thesis built from current submarket comps, tenant credit analysis, mark-to-market upside, lease rollover risk, capex backlog, and disposition path. CRECO brings that level of underwriting rigor to every engagement, whether you are an entrepreneur evaluating your first acquisition or a family office pacing through your tenth deal.',
       'Our investment advisory practice spans every Texas market and asset type. We work with private investors, family offices, real estate operators, and high-net-worth individuals deploying $1M to $50M in Texas commercial real estate. Many of our clients have 5 to 50+ property portfolios, and we are deeply engaged in the strategic decisions that compound returns: which assets to hold, which to reposition, when to dispose, where to redeploy 1031 proceeds.',
-      'We also bring deal flow. Through the Texas commercial real estate relationships our brokers have built — owners, brokers, attorneys, lenders, family offices, and operators — our network sees off-market acquisition opportunities that never hit LoopNet, CoStar, or Crexi, including family-office portfolio dispositions, owner-operator retirements, and quiet auction processes. When you engage CRECO as your investment advisor, you tap that network.',
+      'We also bring deal flow. Through the Texas commercial real estate relationships our team has built — owners, brokers, attorneys, lenders, family offices, and operators — our network sees off-market acquisition opportunities that never hit LoopNet, CoStar, or Crexi, including family-office portfolio dispositions, owner-operator retirements, and quiet auction processes. When you engage CRECO as your investment advisor, you tap that network.',
     ],
     body: [
       'Acquisition underwriting and pro forma modeling on every property you evaluate',
@@ -253,7 +253,7 @@ export const SERVICES: ServiceContent[] = [
       },
       {
         q: 'How do you find off-market deals?',
-        a: 'Through the Texas commercial real estate relationships our brokers have built — owners we\'ve repped, brokers we\'ve closed with, attorneys, lenders, family offices, and operators. When a private owner is ready to sell quietly, they often call us first. We don\'t guarantee off-market flow on every assignment, but it\'s a meaningful part of what we bring.',
+        a: 'Through the Texas commercial real estate relationships our team has built — owners we\'ve repped, brokers we\'ve closed with, attorneys, lenders, family offices, and operators. When a private owner is ready to sell quietly, they often call us first. We don\'t guarantee off-market flow on every assignment, but it\'s a meaningful part of what we bring.',
       },
       {
         q: 'Do you help with debt placement?',
@@ -285,7 +285,7 @@ export const SERVICES: ServiceContent[] = [
     intro: [
       'Listing a Texas commercial property is not "putting it on LoopNet and waiting." Done well, it\'s a coordinated marketing campaign — broker book, drone photography, custom property website, CoStar / LoopNet / Crexi syndication, direct outreach to qualified principals — combined with disciplined negotiation and diligence management. Done poorly, your property sits on the market for 12 months, signals distress, and trades at a discount.',
       'CRECO\'s leasing and sales practice handles owner-side representation across all Texas commercial property types: retail centers, industrial buildings, office buildings, mixed-use, flex, and land. Whether you\'re leasing up vacant space, listing a stabilized asset for sale, or testing the market — we bring institutional-quality marketing materials, target the right buyer or tenant pool, and negotiate aggressively for your outcome.',
-      'Every CRECO listing is led by a principal broker — not handed off to a junior associate. You get senior-level attention from listing day through close, including weekly progress reports, real-time activity tracking, and direct broker availability for buyer/tenant questions.',
+      'Every CRECO listing is worked directly by our team — not handed off to a junior associate. You get senior-level attention from listing day through close, including weekly progress reports, real-time activity tracking, and direct availability for buyer/tenant questions.',
     ],
     body: [
       'Comprehensive marketing materials: broker book, drone photography, professional photo, custom property website, virtual tours',

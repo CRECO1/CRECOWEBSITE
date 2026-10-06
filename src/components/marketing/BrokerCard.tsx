@@ -20,7 +20,7 @@
 
 import Image from 'next/image';
 import { Mail, Calendar, Star } from 'lucide-react';
-import { PRIMARY_BROKER, brokerInitials, type Broker } from '@/lib/broker';
+import { PRIMARY_BROKER, BRIAN_BLANCO, brokerInitials, type Broker } from '@/lib/broker';
 import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 import { GOOGLE_RATING, GOOGLE_REVIEW_COUNT, GOOGLE_PROFILE_URL } from '@/lib/reviews';
 
@@ -175,13 +175,18 @@ export function BrokerCard({
 // ─── Compact trust line for forms ────────────────────────────────────
 
 /**
- * The person and the rating, in one row, to sit at the top of a lead form:
- * photo, "Zachary Stovall, Broker — replies personally", and the Google
- * rating linking to the profile. Small enough to ride inside the form card
- * rather than as a sidebar, so it works at phone width with no layout change.
+ * The people and the rating, in one row, to sit at the top of a lead form:
+ * photo(s), who replies, and the Google rating linking to the profile. Small
+ * enough to ride inside the form card rather than as a sidebar, so it works at
+ * phone width with no layout change.
+ *
+ * With no `broker`, it shows both Zack and Brian: general-form leads route to
+ * Brian by default (getLeadOwner) with Zack as backup, so naming only Zack
+ * promised a reply from someone who usually isn't the one answering. Pass a
+ * broker when the page knows exactly who owns its leads.
  */
 export function BrokerTrustLine({
-  broker = PRIMARY_BROKER,
+  broker,
   tone = 'light',
   className = '',
 }: {
@@ -190,14 +195,29 @@ export function BrokerTrustLine({
   className?: string;
 }) {
   const dark = tone === 'dark';
+  const muted = dark ? 'text-white/60' : 'text-foreground-muted';
   return (
     <div className={`flex items-center gap-3 ${className}`}>
-      <BrokerAvatar broker={broker} size={48} />
+      {broker ? (
+        <BrokerAvatar broker={broker} size={48} />
+      ) : (
+        <div className="flex shrink-0">
+          <BrokerAvatar broker={PRIMARY_BROKER} size={48} />
+          <BrokerAvatar broker={BRIAN_BLANCO} size={48} className="-ml-3" />
+        </div>
+      )}
       <div className="min-w-0 text-body-sm leading-snug">
-        <p className={`font-semibold ${dark ? 'text-white' : 'text-primary'}`}>
-          {broker.name}, {broker.title}
-          <span className={`font-normal ${dark ? 'text-white/60' : 'text-foreground-muted'}`}> — replies personally</span>
-        </p>
+        {broker ? (
+          <p className={`font-semibold ${dark ? 'text-white' : 'text-primary'}`}>
+            {broker.name}, {broker.title}
+            <span className={`font-normal ${muted}`}> — replies personally</span>
+          </p>
+        ) : (
+          <p className={`font-semibold ${dark ? 'text-white' : 'text-primary'}`}>
+            Zack Stovall <span className={`font-normal ${muted}`}>(Broker)</span> &amp; Brian Blanco{' '}
+            <span className={`font-normal ${muted}`}>(Director of Leasing) — one of us replies personally</span>
+          </p>
+        )}
         <a
           href={GOOGLE_PROFILE_URL}
           target="_blank"

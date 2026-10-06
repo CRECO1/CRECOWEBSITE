@@ -111,7 +111,7 @@ export default function SanAntonioIndustrialSpacePage() {
         whyBullets: [
           'CRECO is headquartered in San Antonio — we know the parks, the developers, and the landlords by name',
           'Fluent in the near-shoring / cross-border logistics story that drives SA industrial demand',
-          'Senior broker leads every engagement — from a 5,000 SF flex bay to a 300,000 SF distribution requirement',
+          'You work directly with the people doing the deal — from a 5,000 SF flex bay to a 300,000 SF distribution requirement',
           'We qualify buildings on power, clear height, trailer parking, and FTZ status before you tour',
           'Full-service representation — tenants, landlords/owners, and investors; tenant rep is typically paid by the landlord',
           'Concession benchmarking from the deals CRECO is actually closing each quarter, not aggregated marketplace data',

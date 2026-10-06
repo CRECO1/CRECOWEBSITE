@@ -150,8 +150,11 @@ export interface ClosedDeal {
 export async function getListings(status: 'active' | 'pending' | 'sold' | 'leased' | 'all' = 'active'): Promise<Listing[]> {
   let query = supabase.from('listings').select('*');
   if (status === 'active') {
-    // Include 'leased' so recently-closed deals stay visible with a LEASED badge (social proof).
-    query = query.in('status', ['active', 'pending', 'leased']);
+    // Truly available inventory only. Leased/sold rows used to ride along here
+    // for social proof, which put closed deals in the /listings grid and the
+    // "active listings" count as if they were still on the market. Closed
+    // deals have their own home on /sold (getClosedDeals).
+    query = query.in('status', ['active', 'pending']);
   } else if (status !== 'all') {
     query = query.eq('status', status);
   }

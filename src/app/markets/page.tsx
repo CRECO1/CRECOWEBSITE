@@ -120,7 +120,7 @@ export default function MarketsHubPage() {
               Texas commercial real estate, mapped by where the deals actually live.
             </h1>
             <p className="text-body-lg text-white/70 leading-relaxed max-w-2xl">
-              Texas CRE isn't one market — it's thirty. Every submarket has its own rent dynamics, tenant base, supply pipeline, and broker network. This is the guide to the submarkets that matter. Pick a metro, then a submarket; each page has current data and a way to talk to a broker who actually works there.
+              Texas CRE isn't one market — it's thirty. Every submarket has its own rent dynamics, tenant base, supply pipeline, and broker network. This is the guide to the submarkets that matter. Pick a metro, then a submarket; each page has current data and a way to talk to the people who actually work there.
             </p>
           </Container>
         </section>
@@ -148,7 +148,7 @@ export default function MarketsHubPage() {
                 Each submarket gets its own page.
               </h2>
               <p className="text-body text-foreground-muted">
-                Current rents, vacancy, what's leasing, and the broker contacts who actually work that submarket. Updated as the market moves.
+                Current rents, vacancy, what's leasing, and the CRECO contacts who actually work that submarket. Updated as the market moves.
               </p>
             </div>
 

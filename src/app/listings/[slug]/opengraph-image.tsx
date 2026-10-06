@@ -25,7 +25,12 @@ export default async function Image({ params }: { params: Promise<{ slug: string
   // optimizer's WebP/AVIF output). Falls back to a photo-less branded card when
   // there's no image. The generated card is cached, so the one-time decode of a
   // larger source is acceptable.
-  const photo = listing && Array.isArray(listing.images) && listing.images[0] ? listing.images[0] : null;
+  const rawPhoto = listing && Array.isArray(listing.images) && listing.images[0] ? listing.images[0] : null;
+  // Synthetic listings use site-relative paths ('/site-plans/...'); satori can
+  // only fetch absolute URLs, and a relative src 500s the whole card.
+  const photo = rawPhoto && rawPhoto.startsWith('/') && !rawPhoto.startsWith('//')
+    ? `https://www.crecotx.com${rawPhoto}`
+    : rawPhoto;
 
   const priceDisplay = listing
     ? (listing.transaction_type === 'sale' && listing.sale_price

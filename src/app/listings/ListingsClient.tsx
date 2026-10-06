@@ -269,6 +269,7 @@ export function ListingsClient({ initialListings, children }: { initialListings:
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-foreground-muted" />
                 <Input
                   placeholder="Search address, zip, or submarket…"
+                  aria-label="Search listings by address, zip, or submarket"
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   className="pl-9"

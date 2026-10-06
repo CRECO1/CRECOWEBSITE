@@ -29,7 +29,7 @@ const PATH = '/list-your-space';
 export const metadata: Metadata = {
   title: 'List Your Commercial Property for Lease | CRECO',
   description:
-    'List retail, office, industrial, flex or land with CRECO. Professional marketing, syndication to LoopNet, Crexi and CoStar, screened tenants, and a broker who works your listing himself.',
+    'List retail, office, industrial, flex or land with CRECO. Professional marketing, syndication to LoopNet, Crexi and CoStar, screened tenants, and a team that works your listing directly.',
   keywords: [
     'list commercial property for lease',
     'list my commercial space',
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     images: [DEFAULT_OG_IMAGE],
     title: 'List Your Commercial Property for Lease | CRECO',
     description:
-      'Put a broker on your space who works the deal himself — and gets it in front of the tenants and tenant-rep brokers actually looking.',
+      'Put a team on your space that works the deal directly — and gets it in front of the tenants and tenant-rep brokers actually looking.',
     url: `${SITE_URL}${PATH}`,
     type: 'website',
   },
@@ -131,8 +131,8 @@ export default function ListYourSpacePage() {
                   List your space with CRECO.
                 </h1>
                 <p className="mt-5 max-w-xl text-body-lg leading-relaxed text-white/80">
-                  Retail, office, industrial, flex or land — put a broker on it who works the deal
-                  himself and gets it in front of the tenants and tenant-rep brokers actually looking.
+                  Retail, office, industrial, flex or land — put a team on it that works the deal
+                  directly and gets it in front of the tenants and tenant-rep brokers actually looking.
                 </p>
                 <div className="mt-7">
                   <PhoneCallText variant="inline" tone="dark" surface="list-your-space-hero" />

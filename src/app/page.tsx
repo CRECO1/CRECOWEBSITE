@@ -127,7 +127,7 @@ const FAQS = [
   },
   {
     q: 'What makes CRECO different from CBRE, JLL, or Cushman & Wakefield?',
-    a: 'The big national firms are great for institutional clients with $100M+ deals. CRECO serves the broad middle of the Texas market — entrepreneurs, family offices, multi-property owners with $1M to $50M assets, and growing tenants — with principal-level attention on every engagement. Every client works directly with a senior broker, not a junior associate handed off from someone you met at the pitch.',
+    a: 'The big national firms are great for institutional clients with $100M+ deals. CRECO serves the broad middle of the Texas market — entrepreneurs, family offices, multi-property owners with $1M to $50M assets, and growing tenants — with principal-level attention on every engagement. Every client works directly with the people doing the deal, not a junior associate handed off from someone you met at the pitch.',
   },
 ];
 
@@ -138,7 +138,7 @@ const DEFAULT_SETTINGS = {
   about_headline: 'A trailblazing approach to Texas commercial real estate.',
   about_text: 'CRECO is built on innovation, expertise, and a relentless commitment to client outcomes. We blend deep Texas market knowledge with the analytical rigor you would expect from a national firm — and we keep our roster small enough that every client works directly with a principal. From single-asset tenants to multi-property portfolio owners, we treat your assignment like our name is on the building.',
   cta_headline: 'Need space — or have space to fill?',
-  cta_subheadline: 'Submit your tenant requirements or list your property in 2 minutes. A CRECO principal responds personally with vetted options or a no-obligation property opinion.',
+  cta_subheadline: 'Submit your tenant requirements or list your property in 2 minutes. Our team responds personally with vetted options or a no-obligation property opinion.',
   phone: '(210) 817-3443',
   email: 'info@crecotx.com',
   address: '8000 Fair Oaks Pkwy, Suite 100\nFair Oaks Ranch, TX 78015',
@@ -364,7 +364,7 @@ export default async function HomePage() {
               <p className="overline mb-3">Hand-Picked Texas Properties</p>
               <h2 className="font-heading text-display font-bold text-primary gold-line gold-line-center inline-block pb-4">Featured Properties</h2>
               <p className="mx-auto mt-6 max-w-xl text-body text-foreground-muted">
-                Retail, industrial, and office properties currently available across Texas — vetted by CRECO principals.
+                Retail, industrial, and office properties currently available across Texas — vetted by the CRECO team.
               </p>
             </div>
           </RevealOnScroll>
@@ -488,7 +488,7 @@ export default async function HomePage() {
               <p className="overline mb-3">What We Do</p>
               <h2 className="font-heading text-display font-bold text-primary gold-line gold-line-center inline-block pb-4">Texas Commercial Real Estate Services</h2>
               <p className="mx-auto mt-6 max-w-2xl text-body text-foreground-muted">
-                Whether you&apos;re leasing your first office, repositioning a portfolio, or underwriting your tenth deal, the work below is handled by the same broker start to finish.
+                Whether you&apos;re leasing your first office, repositioning a portfolio, or underwriting your tenth deal, the work below is handled by the same team start to finish.
               </p>
             </div>
           </RevealOnScroll>
@@ -591,7 +591,7 @@ export default async function HomePage() {
                 {[
                   'Statewide Texas market knowledge with deep San Antonio roots',
                   'Principal-level service on every engagement — never handed off',
-                  'One broker on your file from first tour to closing — the same person who signs off on it',
+                  'The same team on your file from first tour to closing — no handoff to a call center',
                   'Portfolio-level reporting and strategy for multi-property owners',
                 ].map(item => (
                   <li key={item} className="flex items-start gap-3 text-body text-foreground-muted">

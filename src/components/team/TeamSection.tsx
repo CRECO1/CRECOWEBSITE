@@ -68,7 +68,7 @@ interface TeamSectionProps {
 export function TeamSection({
   eyebrow = 'Your Commercial Real Estate Partners',
   heading = 'Meet the CRECO Team',
-  description = 'Principal-level brokers who live and work in San Antonio — and who treat every assignment like our name is on the building.',
+  description = 'The people who actually do the deals — based in San Antonio, and treating every assignment like our name is on the building.',
   className = 'section-luxury bg-white',
   initialAgents,
 }: TeamSectionProps = {}) {

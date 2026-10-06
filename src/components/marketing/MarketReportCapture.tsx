@@ -8,9 +8,10 @@
  * read. Sits at the bottom of property landing pages, on /insights, and as a
  * side anchor on /listings.
  *
- * Note it posts to /api/leads, NOT /api/subscribe: a market-report request is
- * treated as a lead the broker can work, and that has been true since it
- * launched. The endpoint stays where it is.
+ * Note it posts to /api/leads, NOT /api/subscribe: the contact is saved to the
+ * CRM like a lead. 'market-report' is a subscription source (see
+ * isSubscriptionSource in lib/crm), so /api/leads skips the team's "new lead"
+ * alert for it — a newsletter opt-in is not an inquiry to call back.
  *
  * Single field by design — no name, no phone. The card, submit path and
  * success panel come from EmailCaptureCard, shared with the inline property

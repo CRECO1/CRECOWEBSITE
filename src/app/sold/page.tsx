@@ -83,7 +83,7 @@ export default async function SoldPage() {
             {properties.length === 0 && (
               <NoListingsCTA
                 heading="Ask us about the deals we’ve closed"
-                body="Recent closings aren't published on this page at the moment. A CRECO principal will walk you through comparable deals we've closed in your submarket — including the ones we can only discuss directly."
+                body="Recent closings aren't published on this page at the moment. Someone from our team will walk you through comparable deals we've closed in your submarket — including the ones we can only discuss directly."
                 surface="sold-empty"
                 action={{ href: '/listings', label: 'See what’s available now' }}
                 needsHref="/contact"
@@ -140,7 +140,7 @@ export default async function SoldPage() {
                 Have a property to sell or lease?
               </h2>
               <p className="text-body text-white/60 mb-8">
-                Get a no-obligation Broker Opinion of Value or leasing strategy from a CRECO principal.
+                Get a no-obligation Broker Opinion of Value or leasing strategy from CRECO.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button size="lg" asChild>

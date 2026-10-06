@@ -347,7 +347,7 @@ export default async function OwnerServicesPage() {
             <div className="flex flex-col items-center justify-between gap-8 text-center lg:flex-row lg:text-left">
               <div>
                 <h2 className="font-heading text-display-sm font-bold text-primary">Schedule a no-obligation portfolio review.</h2>
-                <p className="mt-2 text-body text-primary/70">A CRECO principal will tour your assets, review your rent rolls, and deliver a written strategic recommendation within two weeks.</p>
+                <p className="mt-2 text-body text-primary/70">Our team will tour your assets, review your rent rolls, and deliver a written strategic recommendation within two weeks.</p>
               </div>
               <Button size="xl" className="shrink-0 bg-primary text-white hover:bg-primary/90 shadow-lg font-bold" asChild>
                 <Link href="#portfolio-review">Schedule a portfolio review <ArrowRight className="ml-2 h-5 w-5" /></Link>

@@ -74,16 +74,16 @@ export function SellInquiryForm() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <Honeypot />
             <div className="grid grid-cols-2 gap-4">
-              <input name="name" required placeholder="Your Name" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
-              <input name="company" placeholder="Company / Entity" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
+              <input name="name" aria-label="Your name" required placeholder="Your Name" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
+              <input name="company" aria-label="Company or entity" placeholder="Company / Entity" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <input name="phone" type="tel" placeholder="Phone Number (optional)" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
-              <input name="email" type="email" required placeholder="Email Address" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
+              <input name="phone" aria-label="Phone number (optional)" type="tel" placeholder="Phone Number (optional)" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
+              <input name="email" aria-label="Email address" type="email" required placeholder="Email Address" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
             </div>
-            <input name="address" required placeholder="Property Address" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
+            <input name="address" aria-label="Property address" required placeholder="Property Address" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
             <div className="grid grid-cols-2 gap-4">
-              <select name="property_type" required className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark">
+              <select name="property_type" aria-label="Property type" required className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark">
                 <option value="">Property type…</option>
                 <option>Office</option>
                 <option>Warehouse / Industrial</option>
@@ -94,14 +94,14 @@ export function SellInquiryForm() {
                 <option>Mixed-Use</option>
                 <option>Other</option>
               </select>
-              <select name="goal" required className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark">
+              <select name="goal" aria-label="Your goal" required className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark">
                 <option value="">My goal…</option>
                 <option>Sell</option>
                 <option>Either sell or lease</option>
                 <option>Just want a valuation</option>
               </select>
             </div>
-            <select name="timeline" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark">
+            <select name="timeline" aria-label="Timeline" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark">
               <option value="">Timeline…</option>
               <option>ASAP (within 30 days)</option>
               <option>1–3 months</option>
@@ -109,7 +109,7 @@ export function SellInquiryForm() {
               <option>6–12 months</option>
               <option>Just exploring</option>
             </select>
-            <textarea name="notes" rows={3} placeholder="Anything else we should know? (occupancy, rent roll, deferred maintenance, etc.)" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark resize-none" />
+            <textarea name="notes" aria-label="Anything else we should know" rows={3} placeholder="Anything else we should know? (occupancy, rent roll, deferred maintenance, etc.)" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark resize-none" />
             <Button type="submit" size="lg" fullWidth loading={loading}>
               Request a Property Opinion
               <ArrowRight className="ml-2 h-5 w-5" />

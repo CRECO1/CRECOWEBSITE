@@ -22,7 +22,7 @@
  *   formData.get('form_rendered_at')   // ms epoch, checked server-side
  */
 
-import { useRef } from 'react';
+import { useId, useRef } from 'react';
 
 interface Props {
   /** Field name. Use something innocuous-sounding that bots will fill. */
@@ -34,6 +34,9 @@ export function Honeypot({ name = 'website' }: Props) {
   // (typing in a controlled input) cannot reset the clock and make a slow,
   // genuine fill look instant.
   const renderedAt = useRef(Date.now());
+  // useId, not a fixed `hp-${name}`: a page with two forms (e.g. a lead form
+  // plus the footer newsletter) would otherwise render duplicate ids.
+  const id = `hp-${name}-${useId()}`;
   return (
     <div
       aria-hidden="true"
@@ -53,13 +56,13 @@ export function Honeypot({ name = 'website' }: Props) {
         border: 0,
       }}
     >
-      <label htmlFor={`hp-${name}`}>
+      <label htmlFor={id}>
         {/* Real screen-reader users would never tab here because of aria-hidden */}
         Don&apos;t fill this in if you&apos;re human:
       </label>
       <input
         type="text"
-        id={`hp-${name}`}
+        id={id}
         name={name}
         tabIndex={-1}
         autoComplete="off"

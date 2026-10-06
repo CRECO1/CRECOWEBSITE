@@ -173,7 +173,7 @@ export function RetailLeasingInquiryForm() {
     return (
       <InquirySuccessCard
         propertyName="8923 Dietz Elkhorn"
-        customMessage="A CRECO principal will follow up about 8923 Dietz Elkhorn with current availability, a recommended footprint, and a proposed tour time. If you're a great fit for an end-cap position, we'll flag that right away."
+        customMessage="Someone from our team will follow up about 8923 Dietz Elkhorn with current availability, a recommended footprint, and a proposed tour time. If you're a great fit for an end-cap position, we'll flag that right away."
       />
     );
   }

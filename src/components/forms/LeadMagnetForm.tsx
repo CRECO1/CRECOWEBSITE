@@ -101,6 +101,7 @@ export function LeadMagnetForm({
             value={email}
             onChange={e => setEmail(e.target.value)}
             placeholder="you@company.com"
+            aria-label="Email address"
             className="rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:outline-none focus:border-gold-dark"
           />
           <input
@@ -109,6 +110,7 @@ export function LeadMagnetForm({
             value={name}
             onChange={e => setName(e.target.value)}
             placeholder="Your name (optional)"
+            aria-label="Your name (optional)"
             className="rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:outline-none focus:border-gold-dark"
           />
         </div>
@@ -117,6 +119,7 @@ export function LeadMagnetForm({
           value={company}
           onChange={e => setCompany(e.target.value)}
           placeholder="Company (optional)"
+          aria-label="Company (optional)"
           className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary placeholder:text-foreground-muted/60 focus:outline-none focus:border-gold-dark"
         />
         {error && <p role="alert" className="text-body-sm text-destructive">{error}</p>}

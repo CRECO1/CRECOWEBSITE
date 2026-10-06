@@ -131,7 +131,7 @@ export default function SanAntonioPage() {
         ],
         whyBullets: [
           'CRECO is headquartered in San Antonio — building-level market knowledge, not Texas-generic coverage',
-          'Senior broker leads every engagement — no junior handoff after the pitch',
+          'You work directly with the people doing the deal — no junior handoff after the pitch',
           'Off-market deal flow across Stone Oak, the Medical Center, Westover Hills, the South Side, and Schertz/Cibolo',
           'Represents tenants, landlords/owners, and investors — including tenant rep for San Antonio businesses (typically paid by the landlord)',
           'Owner services for multi-property San Antonio investors with institutional-quality reporting',

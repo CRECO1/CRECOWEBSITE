@@ -105,7 +105,7 @@ export function NoListingsCTA({
       {/* Call · Text · Email — one tap each on a phone. */}
       <div className="mt-5 border-t border-border pt-5">
         <p className="text-caption font-semibold uppercase tracking-wider text-foreground-muted">
-          Or reach a broker directly
+          Or reach our team directly
         </p>
         <PhoneCallText variant="stacked" surface={surface} className="mt-3" />
         <a

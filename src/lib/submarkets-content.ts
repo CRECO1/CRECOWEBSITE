@@ -256,7 +256,7 @@ export const SUBMARKETS: SubmarketEntry[] = [
     tagline: 'DFW\'s premier corporate-relocation submarket',
     metaTitle: 'Frisco Commercial Real Estate | Class A Office, Retail, Industrial | CRECO',
     metaDescription:
-      'Frisco commercial real estate — DFW\'s premier corporate-relocation submarket and home to The Star, the PGA, Toyota North America, and dozens of corporate HQ relocations. Class A office, retail, and industrial leasing + investment sales from CRECO.',
+      'Frisco commercial real estate — DFW\'s premier corporate-relocation submarket and home to The Star, the PGA, and dozens of corporate HQ relocations. Class A office, retail, and industrial leasing + investment sales from CRECO.',
     keywords: [
       'frisco commercial real estate',
       'frisco office space',
@@ -275,7 +275,7 @@ export const SUBMARKETS: SubmarketEntry[] = [
       heroEyebrow: 'Dallas–Fort Worth · Collin County',
       heroTitle: 'Frisco commercial real estate — DFW\'s corporate-relocation magnet and one of America\'s strongest suburban CRE markets.',
       heroSubhead:
-        'Class A office, lifestyle retail, mixed-use, and flex space across Frisco — anchored by The Star (Cowboys HQ), the PGA of America\'s national headquarters, Toyota North America, and a continuous pipeline of corporate relocations. CRECO covers tenant representation, owner services, and investment sales across Collin County.',
+        'Class A office, lifestyle retail, mixed-use, and flex space across Frisco — anchored by The Star (Cowboys HQ), the PGA of America\'s national headquarters, and a continuous pipeline of corporate relocations. CRECO covers tenant representation, owner services, and investment sales across Collin County.',
       marketStats: [
         { label: 'Class A office rents',         value: '$36–44/SF',  context: 'gross, premium suburban' },
         { label: 'Office vacancy (Frisco core)', value: '~12%',       context: 'tightest in the DFW suburban submarket' },
@@ -283,7 +283,7 @@ export const SUBMARKETS: SubmarketEntry[] = [
         { label: 'Corporate HQ relocations',     value: 'Top 3',      context: 'US cities since 2018' },
       ],
       marketIntro: [
-        'Frisco is the most concentrated story of Texas\'s corporate-relocation decade. Toyota North America moved its HQ here. Keurig Dr Pepper, FedEx Office, Jamba, Tenet Healthcare — Frisco accumulated more Fortune 500 HQ presence in 10 years than most major cities accumulate in 50. The Cowboys built The Star here. The PGA of America moved its national headquarters here. The relocations aren\'t over — Frisco\'s 2026 pipeline of announced corporate moves rivals 2018-19 peaks.',
+        'Frisco is the most concentrated story of Texas\'s corporate-relocation decade. Toyota North America\'s 2017 move to neighboring Plano set the tone for the corridor. Keurig Dr Pepper, FedEx Office, Jamba, Tenet Healthcare — Frisco accumulated more Fortune 500 HQ presence in 10 years than most major cities accumulate in 50. The Cowboys built The Star here. The PGA of America moved its national headquarters here. The relocations aren\'t over — Frisco\'s 2026 pipeline of announced corporate moves rivals 2018-19 peaks.',
         'The CRE consequence: Frisco Class A office is one of the few US suburban office submarkets that\'s actually tightening, not softening. New trophy buildings deliver and lease within 18 months. Tenants pay $36–44/SF gross for the corporate-relocation premium. Retail — particularly in the Frisco Square and Stonebriar corridor — runs at sub-5% vacancy with premium rents in every category from grocery-anchored to restaurant pad sites.',
         'Industrial is the smaller story but real. The DFW logistics network extends north into Frisco/Plano, with small-bay and last-mile distribution serving the explosive Collin County population. Most of the bulk industrial sits further south (Alliance, South Dallas) but the small-bay 20K–60K SF segment is genuinely tight in Collin County and trades at premium per-SF prices.',
       ],

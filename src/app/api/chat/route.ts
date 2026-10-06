@@ -207,7 +207,7 @@ export async function POST(req: NextRequest) {
         const isCreditIssue = rawMsg.toLowerCase().includes('credit balance');
         const isRateLimit = status === 429;
         const msg = isCreditIssue || isRateLimit
-          ? "Chat is temporarily unavailable. Please call (210) 817-3443 or use the contact form and a CRECO principal will get right back to you."
+          ? "Chat is temporarily unavailable. Please call (210) 817-3443 or use the contact form and someone from our team will get right back to you."
           : status
             ? `Chat is having trouble (${status}). Try again, or call (210) 817-3443.`
             : 'Chat hit an error. Try again, or call (210) 817-3443.';

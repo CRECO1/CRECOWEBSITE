@@ -659,7 +659,7 @@ export const GUIDES: Guide[] = [
     slug: 'q3-2026-texas-investment-outlook-report',
     previewSections: 1,
     title: 'Q3 2026 Texas CRE Investment Outlook',
-    metaTitle: 'Q3 2026 Texas Commercial Real Estate Investment Outlook | CRECO',
+    metaTitle: 'Q3 2026 Texas CRE Investment Outlook | CRECO',
     metaDescription:
       "CRECO's Q3 2026 cross-asset investment outlook for Texas commercial real estate — where capital is actually deploying, current cap rate spreads, deal flow commentary, 1031 demand, and our high-conviction calls across industrial, retail, office, multifamily, and land.",
     keywords: [
@@ -1103,7 +1103,7 @@ export const GUIDES: Guide[] = [
     slug: 'q2-2026-texas-investment-outlook-report',
     previewSections: 1,
     title: 'Q2 2026 Texas CRE Investment Outlook',
-    metaTitle: 'Q2 2026 Texas Commercial Real Estate Investment Outlook | CRECO',
+    metaTitle: 'Q2 2026 Texas CRE Investment Outlook | CRECO',
     metaDescription:
       "CRECO's Q2 2026 cross-asset investment outlook for Texas commercial real estate — where capital is actually deploying, current cap rate spreads, deal flow commentary, 1031 demand, and our high-conviction calls across industrial, retail, office, multifamily, and land.",
     keywords: [

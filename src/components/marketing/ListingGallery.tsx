@@ -5,6 +5,7 @@
  *
  * - Static grid: 1 hero image + 2 thumbnails (matches the legacy crecotx.com layout)
  * - If more than 3 photos, the third tile shows "+N" overlay and a "View all X photos" button appears below
+ * - Below md only the hero shows (thumbnails hidden); "View all" appears whenever there is >1 photo
  * - Click any image → fullscreen lightbox
  * - Lightbox supports: keyboard arrows, ESC to close, swipe on mobile,
  *   thumbnail strip, photo counter, prev/next buttons
@@ -125,8 +126,11 @@ export function ListingGallery({ images, altPrefix }: Props) {
               </div>
             </button>
 
-            {/* Two thumbnails (positions 2 + 3) */}
-            <div className="grid grid-rows-2 gap-3">
+            {/* Two thumbnails (positions 2 + 3). Hidden below md: stacked
+                full-width they pushed the title, price and specs ~1,000px
+                down on a phone. The hero + "View all" button below still
+                open every photo there. */}
+            <div className="hidden md:grid grid-rows-2 gap-3">
               {[1, 2].map(i => {
                 const hasImg = !!images[i];
                 const showPlusOverlay = i === 2 && remaining > 0;
@@ -168,8 +172,11 @@ export function ListingGallery({ images, altPrefix }: Props) {
             </div>
           </div>
 
-          {total > 3 && (
-            <div className="mt-3">
+          {/* On phones the thumbnails are hidden, so the button shows whenever
+              there is more than one photo; from md up only when photos
+              overflow the 3-up grid. */}
+          {total > 1 && (
+            <div className={`mt-3 ${total > 3 ? '' : 'md:hidden'}`}>
               <button
                 type="button"
                 onClick={() => setLightboxIdx(0)}

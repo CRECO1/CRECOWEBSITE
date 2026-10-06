@@ -25,7 +25,8 @@ export function formatAcres(n: number | null | undefined): string {
 
 export function formatLeaseRate(rate: number | null | undefined, basis: string | null | undefined): string {
   if (rate == null) return '—';
-  return `$${rate.toLocaleString(undefined, { maximumFractionDigits: 2 })}/SF/yr${basis ? ` ${basis}` : ''}`;
+  // Always two decimals: "$7.50/SF/yr", never "$7.5/SF/yr".
+  return `$${rate.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/SF/yr${basis ? ` ${basis}` : ''}`;
 }
 
 /**

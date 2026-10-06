@@ -70,7 +70,7 @@ export default function DallasPage() {
           {
             name: 'Frisco',
             characterization: 'Corporate-relocation magnet',
-            description: "DFW's premier corporate-relocation suburb. The Star, PGA HQ, Toyota North America. Class A office holds value, retail premium across Stonebriar and Frisco Square.",
+            description: "DFW's premier corporate-relocation suburb. The Star and PGA HQ. Class A office holds value, retail premium across Stonebriar and Frisco Square.",
             href: '/markets/frisco',
           },
           {

@@ -111,7 +111,7 @@ export default function SanAntonioOfficeSpacePage() {
         ],
         whyBullets: [
           "CRECO is headquartered in San Antonio — we know the buildings and the landlords by name",
-          "Senior broker leads every engagement, from a 2,000 SF medical practice to a 50,000 SF HQ",
+          "You work directly with the people doing the deal, from a 2,000 SF medical practice to a 50,000 SF HQ",
           "Off-market floor-plate inventory across Stone Oak, the Medical Center, Westover Hills, the Pearl, and downtown",
           "Full-service representation — tenants, landlords/owners, and investors; tenant rep is typically paid by the landlord",
           "Direct relationships with the Class A landlord rep teams across the major San Antonio office assets",

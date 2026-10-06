@@ -8,7 +8,7 @@ import { screenSubmission } from '@/lib/bot-filter';
 import { buildSignupContext } from '@/lib/signup-context';
 import { leadSourceLabel } from '@/lib/lead-source-label';
 import { checkEmailQuality } from '@/lib/email-quality';
-import { pushToCrm } from '@/lib/crm';
+import { pushToCrm, isSubscriptionSource } from '@/lib/crm';
 import { enforceRateLimit } from '@/lib/rate-limit';
 import { scoreLead, tierSubjectLabel, tierColor } from '@/lib/lead-score';
 import { leadAlertRecipients, leadCrmOwners } from '@/lib/lead-owner';
@@ -81,8 +81,8 @@ function valuationConfirmationHtml(name: string): string {
 function genericConfirmationHtml(name: string, propertyInterest: string | null): string {
   const safeName = escapeHtml(name || 'there');
   const interestLine = propertyInterest
-    ? `<p style="line-height:1.6;margin:0 0 14px">You reached out about <strong>${escapeHtml(propertyInterest)}</strong> &mdash; we&#39;ve got that on the queue and a CRECO principal will pick it up personally.</p>`
-    : `<p style="line-height:1.6;margin:0 0 14px">A CRECO principal will pick this up personally &mdash; not a junior or an auto-router.</p>`;
+    ? `<p style="line-height:1.6;margin:0 0 14px">You reached out about <strong>${escapeHtml(propertyInterest)}</strong> &mdash; we&#39;ve got that on the queue and someone from our team will pick it up personally.</p>`
+    : `<p style="line-height:1.6;margin:0 0 14px">Someone from our team will pick this up personally &mdash; a real person, not an auto-router.</p>`;
   return `
     <div style="font-family:Helvetica,Arial,sans-serif;max-width:600px;color:#1A1A1A">
       <div style="margin:0 0 20px;padding:0 0 18px;border-bottom:2px solid #C9A962">
@@ -218,6 +218,10 @@ export async function POST(req: NextRequest) {
     // glance whether someone wants to lease, sell, or talk about a site.
     const isDisposition = source === 'disposition-inquiry';
     const isDevelopment = source === 'development-inquiry';
+    // Subscription-shaped sources (e.g. the 'market-report' card, which posts
+    // here with a placeholder name) are newsletter opt-ins, not inquiries: the
+    // contact is still saved below, but no "new lead" alert goes to the team.
+    const isSubscription = isSubscriptionSource(source);
 
     // Clamp every attribution field to a safe length. These are user-
     // controllable (anyone can hand-craft utm_*), so we treat them as
@@ -407,7 +411,7 @@ export async function POST(req: NextRequest) {
       // recipient of the notification, we don't want a malicious submission
       // to be able to inject markup into the inbox view. replyTo=lead's email
       // so the broker can just hit Reply to respond to the prospect directly.
-      await resend.emails.send({
+      if (!isSubscription) await resend.emails.send({
         from: getFromEmail(),
         to: leadAlertRecipients(owner),
         replyTo: email,

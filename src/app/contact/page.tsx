@@ -175,7 +175,7 @@ export default function ContactPage() {
                   <Calendar className="mb-3 h-6 w-6 text-gold-dark" />
                   <h3 className="mb-2 font-heading text-heading-sm font-bold text-primary">Schedule a Consultation</h3>
                   <p className="mb-4 text-body-sm text-foreground-muted">
-                    Prefer to pick a time? Use the form to request your preferred date and time, or call or text us directly.
+                    Prefer to pick a time? Mention a few days and times that work in your message, or call or text us directly.
                   </p>
                   <PhoneCallText variant="stacked" surface="contact_page_schedule" />
                 </div>

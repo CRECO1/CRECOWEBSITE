@@ -76,7 +76,7 @@ export function EmailCaptureCard({
   const headingClasses = tone === 'dark' ? 'text-white' : 'text-primary';
   const bodyClasses = tone === 'dark' ? 'text-white/70' : 'text-foreground-muted';
   const inputClasses = tone === 'dark'
-    ? 'border-white/15 bg-white/10 text-white placeholder:text-white/40'
+    ? 'border-white/15 bg-white/10 text-white placeholder:text-white/60'
     : 'border-border bg-white text-primary placeholder:text-foreground-muted/60';
 
   if (state.submitted) {

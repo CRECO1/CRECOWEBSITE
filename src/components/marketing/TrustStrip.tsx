@@ -101,7 +101,7 @@ export async function TrustStrip() {
             icon={<Clock className="h-5 w-5 text-gold" />}
             value="Direct"
             label="Principal-led"
-            sublabel="You deal with a broker, not a queue"
+            sublabel="You work with the people doing the deal — no call center"
           />
           <TrustCell
             icon={<MapPin className="h-5 w-5 text-gold" />}

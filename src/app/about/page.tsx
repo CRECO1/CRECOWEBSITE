@@ -46,7 +46,7 @@ const ABOUT_FAQS = [
   },
   {
     q: 'Who runs CRECO?',
-    a: 'CRECO was founded by Zachary A. Stovall, a San Antonio native and Texas broker (TREC #691174). The team includes Brian Blanco, Director of Leasing (TREC #848449), who spent four-plus years at Amazon as part of its delivery-station site-selection process. Every engagement is handled by a senior broker.',
+    a: 'CRECO was founded by Zachary A. Stovall, a San Antonio native and Texas broker (TREC #691174). The team includes Brian Blanco, Director of Leasing (TREC #848449), who spent four-plus years at Amazon as part of its delivery-station site-selection process. Clients work directly with the people doing the deal — no call center, no junior handoff.',
   },
   {
     q: 'How do I contact CRECO?',
@@ -88,7 +88,7 @@ export const metadata: Metadata = {
 
 const VALUES = [
   { icon: Award, title: 'Expertise', description: 'Deep San Antonio market knowledge with the analytical rigor of a national firm.' },
-  { icon: Users, title: 'Principal Service', description: 'Every client works directly with a principal — not a junior broker on commission.' },
+  { icon: Users, title: 'Direct Service', description: 'Every client works directly with the people doing the deal — no call center, no handoff.' },
   { icon: Building2, title: 'Trailblazing', description: 'We set new standards for what clients should expect from their commercial brokers.' },
   { icon: CheckCircle, title: 'Transparency', description: 'Clear underwriting, honest counsel, and no surprises in the close.' },
 ];

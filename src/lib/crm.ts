@@ -61,7 +61,7 @@ const OPEN_DEAL_STAGES = '("Closed","Lost")';
 /** How far back to look for an existing Prospect deal for the same person. */
 const DUPLICATE_DEAL_WINDOW_MS = 24 * 60 * 60 * 1000;
 
-function isSubscriptionSource(source: string): boolean {
+export function isSubscriptionSource(source: string): boolean {
   const s = source.trim().toLowerCase();
   return SUBSCRIPTION_SOURCE_PREFIXES.some(prefix => s === prefix || s.startsWith(`${prefix}-`) || s.startsWith(`${prefix}_`));
 }

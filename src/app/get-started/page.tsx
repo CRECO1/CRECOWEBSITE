@@ -128,7 +128,7 @@ const PATHS: Record<Path, PathConfig> = {
     icon: ShoppingBag,
     finishHeading: 'Who should we call about your search?',
     ctaCopy: 'Send my buyer profile',
-    successCopy: 'A CRECO investment principal will reach out personally with opportunities that match — including off-market deals.',
+    successCopy: 'Someone from our team will reach out personally with opportunities that match — including off-market deals.',
     steps: [
       {
         id: 'purchase_type',
@@ -172,7 +172,7 @@ const PATHS: Record<Path, PathConfig> = {
     icon: LineChart,
     finishHeading: 'Who should we call about your property?',
     ctaCopy: 'Send to CRECO',
-    successCopy: 'A CRECO principal will reach out personally to talk through your property and the right next step. No obligation.',
+    successCopy: 'Someone from our team will reach out personally to talk through your property and the right next step. No obligation.',
     steps: [
       {
         id: 'owner_goal',
@@ -206,7 +206,7 @@ const PATHS: Record<Path, PathConfig> = {
     icon: Wrench,
     finishHeading: 'Who should we call about your portfolio?',
     ctaCopy: 'Request a portfolio review',
-    successCopy: 'A CRECO principal will reach out personally to set up a portfolio review. No obligation.',
+    successCopy: 'Someone from our team will reach out personally to set up a portfolio review. No obligation.',
     steps: [
       {
         id: 'portfolio_size',
@@ -255,7 +255,7 @@ const PATHS: Record<Path, PathConfig> = {
     icon: Compass,
     finishHeading: 'How can we reach you?',
     ctaCopy: 'Connect me with CRECO',
-    successCopy: 'A CRECO principal will reach out personally to learn more about your situation and recommend an approach.',
+    successCopy: 'Someone from our team will reach out personally to learn more about your situation and recommend an approach.',
     // No questions: straight to the finish screen, which carries one optional line.
     steps: [],
   },

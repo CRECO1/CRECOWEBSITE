@@ -56,7 +56,7 @@ export function NewsletterSignup() {
             onChange={e => setEmail(e.target.value)}
             placeholder="you@company.com"
             disabled={submitting}
-            className="w-full rounded-lg border border-white/15 bg-white/5 pl-9 pr-3 py-2.5 text-body-sm text-white placeholder:text-white/40 focus:outline-none focus:border-gold-dark focus:bg-white/10 disabled:opacity-60"
+            className="w-full rounded-lg border border-white/15 bg-white/5 pl-9 pr-3 py-2.5 text-body-sm text-white placeholder:text-white/60 focus:outline-none focus:border-gold-dark focus:bg-white/10 disabled:opacity-60"
           />
         </div>
         <button

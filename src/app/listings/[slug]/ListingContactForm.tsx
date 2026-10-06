@@ -89,7 +89,7 @@ export function ListingContactForm({
       <InquirySuccessCard
         broker={broker}
         propertyName={listingTitle}
-        customMessage={`${broker?.name ?? 'A CRECO principal'} will follow up about ${listingTitle} with current availability, full property details, and a proposed tour time.`}
+        customMessage={`${broker?.name ?? 'Someone from our team'} will follow up about ${listingTitle} with current availability, full property details, and a proposed tour time.`}
         onReset={() => setSubmitted(false)}
         showBrowseProperties={false}
       />
@@ -101,17 +101,20 @@ export function ListingContactForm({
       <Honeypot />
       <input
         name="name"
+        aria-label="Your name"
         required
         placeholder="Your Name"
         className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark"
       />
       <input
         name="company"
+        aria-label="Company (optional)"
         placeholder="Company (optional)"
         className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark"
       />
       <input
         name="email"
+        aria-label="Email address"
         type="email"
         required
         placeholder="Email Address"
@@ -119,12 +122,14 @@ export function ListingContactForm({
       />
       <input
         name="phone"
+        aria-label="Phone (optional)"
         type="tel"
         placeholder="Phone (optional)"
         className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark"
       />
       <textarea
         name="message"
+        aria-label="Message"
         rows={3}
         placeholder={`I'd like more info on ${listingTitle}`}
         className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark resize-none"

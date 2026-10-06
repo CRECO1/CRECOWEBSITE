@@ -76,6 +76,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/landlord-representation`,        lastModified: CONTENT_REVISED, changeFrequency: 'monthly', priority: 0.9  },
     { url: `${BASE_URL}/seller-investor-representation`, lastModified: CONTENT_REVISED, changeFrequency: 'monthly', priority: 0.9  },
     { url: `${BASE_URL}/owner-services`,              lastModified: CONTENT_REVISED, changeFrequency: 'monthly', priority: 0.9  },
+    { url: `${BASE_URL}/list-your-space`,             lastModified: CONTENT_REVISED, changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${BASE_URL}/development-opportunities`,   lastModified: CONTENT_REVISED, changeFrequency: 'monthly', priority: 0.85 },
     // Standard pages
     { url: `${BASE_URL}/services`,                    lastModified: CONTENT_REVISED, changeFrequency: 'monthly', priority: 0.9  },
     { url: `${BASE_URL}/sell`,                        lastModified: CONTENT_REVISED, changeFrequency: 'monthly', priority: 0.9  },

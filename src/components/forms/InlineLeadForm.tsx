@@ -129,9 +129,11 @@ export function InlineLeadForm({
   return (
     <div className={`rounded-2xl p-6 sm:p-8 ${card} ${className}`}>
       {eyebrow && <p className={`overline mb-2 ${dark ? 'text-gold' : ''}`}>{eyebrow}</p>}
-      <h3 className={`font-heading text-heading-sm font-bold ${dark ? 'text-white' : 'text-primary'}`}>
+      {/* h2, not h3: this card sits directly under page H1s. Visual size is
+          set by the class, so the level change doesn't move anything. */}
+      <h2 className={`font-heading text-heading-sm font-bold ${dark ? 'text-white' : 'text-primary'}`}>
         {heading}
-      </h3>
+      </h2>
       {body && (
         <p className={`mt-2 text-body-sm leading-relaxed ${dark ? 'text-white/70' : 'text-foreground-muted'}`}>
           {body}

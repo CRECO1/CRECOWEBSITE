@@ -65,7 +65,7 @@ export const SEARCH_LISTINGS_TOOL = {
 export const CAPTURE_LEAD_TOOL = {
   name: 'capture_lead',
   description:
-    'Record a lead in the CRECO CRM so a broker follows up personally. Use this only when the visitor has explicitly agreed to be contacted and has shared their name AND email. If they only share a first name or only an email, ask for the missing piece before calling. Do not call this speculatively — capturing a lead without consent is a bad experience. After a successful call, tell the visitor a CRECO principal will follow up personally. Never promise a specific response time.',
+    'Record a lead in the CRECO CRM so our team follows up personally. Use this only when the visitor has explicitly agreed to be contacted and has shared their name AND email. If they only share a first name or only an email, ask for the missing piece before calling. Do not call this speculatively — capturing a lead without consent is a bad experience. After a successful call, tell the visitor someone from our team will follow up personally. Never promise a specific response time.',
   input_schema: {
     type: 'object' as const,
     properties: {
@@ -230,7 +230,7 @@ export async function executeCaptureLead(input: CaptureLeadInput) {
   const nameVerdict = looksLikeGibberishName(name);
   if (nameVerdict.gibberish) {
     console.warn('[chat] capture_lead rejected on gibberish name', { reason: nameVerdict.reason, sample: name.slice(0, 24) });
-    return { success: true, message: 'Lead recorded. A CRECO principal will follow up personally by phone or email. Confirm this to the visitor without promising a specific response time.' };
+    return { success: true, message: 'Lead recorded. Someone from our team will follow up personally by phone or email. Confirm this to the visitor without promising a specific response time.' };
   }
 
   const { data, error } = await supabase
@@ -265,7 +265,7 @@ export async function executeCaptureLead(input: CaptureLeadInput) {
   return {
     success: true,
     lead_id: data?.id,
-    message: 'Lead recorded. A CRECO principal will follow up personally by phone or email. Confirm this to the visitor without promising a specific response time.',
+    message: 'Lead recorded. Someone from our team will follow up personally by phone or email. Confirm this to the visitor without promising a specific response time.',
   };
 }
 

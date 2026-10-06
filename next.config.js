@@ -213,6 +213,12 @@ const nextConfig = {
   // Don't advertise the framework. x-powered-by told every scanner exactly
   // what stack and to go looking for its CVEs; it buys us nothing.
   poweredByHeader: false,
+  // Next 15.2+ streams generateMetadata output (title, canonical, OG) into
+  // <body> on dynamic pages for any UA not on its built-in "HTML-limited bot"
+  // list, so crawlers outside that list (Googlebot among them) can read a
+  // <head> with no title/canonical. Matching every UA keeps metadata blocking
+  // and in <head> for all visitors.
+  htmlLimitedBots: /.*/,
   reactStrictMode: true, // Enable for better security and debugging
   experimental: {
     reactCompiler: false,

@@ -7,6 +7,7 @@ import { Container } from '@/components/ui/Container';
 import { CapRateTable } from '@/components/marketing/CapRateTable';
 import { PropertyValuationForm } from '@/components/forms/PropertyValuationForm';
 import { BrokerTrustLine } from '@/components/marketing/BrokerCard';
+import { PRIMARY_BROKER } from '@/lib/broker';
 import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 import { TrustStrip } from '@/components/marketing/TrustStrip';
 import { Testimonials } from '@/components/marketing/Testimonials';
@@ -150,7 +151,8 @@ export default function PropertyValuationPage() {
                   <p className="text-body text-foreground-muted mb-5">
                     No financials needed. Two quick steps, then Zack takes it from there.
                   </p>
-                  <BrokerTrustLine className="mb-8" />
+                  {/* Explicitly Zack: he prepares the BOV and valuation leads route to him. */}
+                  <BrokerTrustLine broker={PRIMARY_BROKER} className="mb-8" />
                   <PropertyValuationForm />
                 </div>
               </div>

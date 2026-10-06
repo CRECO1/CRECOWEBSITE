@@ -178,7 +178,7 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
     return (
       <InquirySuccessCard
         propertyName="8000 Fair Oaks Plaza"
-        customMessage={`A CRECO principal will follow up about your ${interest === 'suite' ? 'executive office suite' : interest === 'retail' ? 'retail bay' : '8000 Fair Oaks Pkwy'} inquiry with current availability, the right space recommendation, and a proposed tour time.`}
+        customMessage={`Someone from our team will follow up about your ${interest === 'suite' ? 'executive office suite' : interest === 'retail' ? 'retail bay' : '8000 Fair Oaks Pkwy'} inquiry with current availability, the right space recommendation, and a proposed tour time.`}
       />
     );
   }

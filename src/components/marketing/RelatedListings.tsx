@@ -36,7 +36,7 @@ export async function RelatedListings({
   currentSubmarket,
   limit = 3,
   title = 'More Available Properties',
-  subtitle = 'Other Texas commercial real estate currently available — vetted by CRECO principals.',
+  subtitle = 'Other Texas commercial real estate currently available — vetted by the CRECO team.',
 }: Props) {
   const all = await getListings('active').catch(() => [] as Listing[]);
 
