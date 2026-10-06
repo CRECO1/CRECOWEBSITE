@@ -17,7 +17,7 @@ import { breadcrumbList } from '@/lib/schema';
 export const metadata: Metadata = {
   title: "What's My Commercial Property Worth? | CRECO",
   description:
-    "Get an instant cap-rate value range for your Texas commercial property — free, no email, ~60 seconds. Then CRECO sends the full opinion of value.",
+    "What's your commercial property worth? Tell us about it in 20 seconds and get a free Broker Opinion of Value from CRECO's broker — San Antonio & the Texas Hill Country.",
   keywords: [
     'commercial property valuation texas',
     'what is my commercial property worth',
@@ -44,18 +44,18 @@ export const metadata: Metadata = {
 const HOW_IT_WORKS = [
   {
     icon: Calculator,
-    title: 'Fill in what you know',
-    body: "Property type, submarket, and either your NOI, gross income, or square footage with rough rent — whichever you have. Takes about 60 seconds.",
+    title: 'Tell us about the property',
+    body: "Address, type, size and how it's used — no financials needed. If it's leased, add the annual rent for an instant range. About 20 seconds.",
   },
   {
     icon: TrendingUp,
-    title: 'Get an instant range',
-    body: "We apply current Texas cap rates by property type and submarket tier to produce a preliminary value range. Not a point estimate — Texas CRE doesn't work that way.",
+    title: 'See where you stand',
+    body: "Leased properties get an instant cap-rate range on the spot. Owner-occupied, vacant and land get the value drivers for their market.",
   },
   {
     icon: Building2,
-    title: 'CRECO follows up',
-    body: "A senior broker reviews your inputs and (if you want) tours the property to deliver a full broker valuation — comps, lease analysis, condition adjustments, market timing. No charge, no obligation.",
+    title: 'Zack sends the real number',
+    body: "Zachary A. Stovall, CRECO's broker/owner, prepares your Broker Opinion of Value from actual comparable sales — usually the same business day. No charge, no obligation.",
   },
 ];
 
@@ -100,7 +100,7 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: 'Is the valuation free, and what happens after?',
-    a: "Yes — the instant range is free and requires no contact information to see the number. If you'd like a full broker valuation (a property walkthrough, comps, lease and condition analysis, and market-timing guidance), a senior CRECO broker follows up at no charge and no obligation — useful if you're weighing a sale or a 1031 exchange.",
+    a: "Yes — completely free, with no obligation. Tell us about the property and where to send it; Zachary A. Stovall, CRECO's broker/owner, prepares a Broker Opinion of Value from comparable sales (and, if you want, a walkthrough). Leased properties also get an instant preliminary range on the spot.",
   },
 ];
 
@@ -130,19 +130,14 @@ export default function PropertyValuationPage() {
                 What's your Texas commercial property worth?
               </h1>
               <p className="text-body-lg text-white/70 leading-relaxed mb-4 max-w-2xl">
-                Get an instant, cap-rate-based value range for your property in about 60 seconds. The number is free and nothing is gated — no email, no phone, no account.
+                Tell us about your property in about 20 seconds and get a free Broker Opinion of Value — real comparable sales, not a tax-roll guess.
               </p>
               <p className="text-body text-white/60 leading-relaxed max-w-2xl">
-                Then, if you want the real analysis, request a Broker Opinion of Value — prepared personally by Zachary A. Stovall, CRECO&apos;s broker/owner.
+                Prepared personally by Zachary A. Stovall, CRECO&apos;s broker/owner. Free, no obligation.
               </p>
             </div>
           </Container>
         </section>
-
-        {/* Real, operator-set proof signals right under the hero (mirrors the
-            homepage placement). Server component — live counts at paint, and
-            reads the same site_settings stats the homepage does. */}
-        <TrustStrip />
 
         {/* Form + sidebar */}
         <section className="section-luxury bg-background-cream">
@@ -153,7 +148,7 @@ export default function PropertyValuationPage() {
                   <p className="overline mb-3">Your property</p>
                   <h2 className="font-heading text-heading-xl font-bold text-primary mb-2">Tell us about it.</h2>
                   <p className="text-body text-foreground-muted mb-5">
-                    We need property type and submarket. The other fields make the range tighter — fill in what you know, skip what you don't.
+                    No financials needed. Two quick steps, then Zack takes it from there.
                   </p>
                   <BrokerTrustLine className="mb-8" />
                   <PropertyValuationForm />
@@ -186,12 +181,17 @@ export default function PropertyValuationPage() {
           </Container>
         </section>
 
+        {/* Proof signals — below the form so the form is the first thing
+            an owner reaches (the valuation funnel lost most visitors before
+            they touched it). */}
+        <TrustStrip />
+
         {/* How it works */}
         <section className="section-luxury bg-white">
           <Container>
             <div className="max-w-3xl mx-auto text-center mb-12">
               <p className="overline mb-3">How it works</p>
-              <h2 className="font-heading text-display-sm font-bold text-primary">A real preliminary number in 60 seconds.</h2>
+              <h2 className="font-heading text-display-sm font-bold text-primary">A real number, not a tax-roll guess.</h2>
               <p className="mt-3 text-body text-foreground-muted">
                 We don't pretend to give you a final appraisal — that takes a full broker walkthrough. But the preliminary range is calibrated against actual Texas market activity and tells you whether your asset is roughly where you think it is.
               </p>

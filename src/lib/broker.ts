@@ -154,6 +154,7 @@ const SOURCE_BROKER_PREFIXES: Array<[string, Broker]> = [
   ['8923-dietz-elkhorn', PRIMARY_BROKER], // Elkhorn Point leasing page
   ['8000-fair-oaks-pkwy', PRIMARY_BROKER], // 8000 Fair Oaks Pkwy plaza page
   ['owner-report', PRIMARY_BROKER],        // owner property reports — Zack prepares the BOV
+  ['valuation-request', PRIMARY_BROKER],   // /property-valuation — Zack prepares the BOV
 ];
 
 /**
