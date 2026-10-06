@@ -14,9 +14,14 @@ export const BRAND_SHORT_NAME = 'CRECO';
 export const BRAND_LEGAL_NAME = 'CRECO LLC';
 export const BRAND_TREC_LICENSE = '9014367';
 
-/** THE positioning line — repeated verbatim wherever the firm is described. */
+/**
+ * THE positioning line — repeated verbatim wherever the firm is described.
+ * Refocused Oct 2026 from "throughout Texas, with deep local coverage of San
+ * Antonio…" to San Antonio & the Hill Country; the city pages that quote it
+ * verbatim (san-antonio-, fair-oaks-ranch-commercial-real-estate) match.
+ */
 export const CANONICAL_DESCRIPTION =
-  'CRECO - Commercial Real Estate Company is a full-service commercial real estate brokerage representing tenants, landlords, owners, and investors across retail, office, industrial, flex, and land — for lease and for sale — throughout Texas, with deep local coverage of San Antonio and the Hill Country.';
+  'CRECO - Commercial Real Estate Company is a full-service commercial real estate brokerage representing tenants, landlords, owners, and investors across retail, office, industrial, flex, and land — for lease and for sale — in San Antonio and the Texas Hill Country.';
 
 /**
  * The hero's short form of the positioning.
@@ -24,7 +29,7 @@ export const CANONICAL_DESCRIPTION =
  * The homepage used to stack CANONICAL_DESCRIPTION and REPRESENTATION_STATEMENT
  * one under the other, which said the same thing twice and read as a wall of
  * text on a phone. This blends them into one line: full-service, who we
- * represent, lease and sale, Texas with local depth.
+ * represent, lease and sale, San Antonio & the Hill Country.
  *
  * Stated positively on purpose. The correction this exists to make — that
  * CRECO is not tenant-only — is carried by naming landlords, owners and
@@ -34,7 +39,7 @@ export const CANONICAL_DESCRIPTION =
  * feeds, which is where it was ever doing search work.
  */
 export const HERO_POSITIONING =
-  'A full-service Texas commercial brokerage representing tenants, landlords, owners and investors on both leasing and sales — statewide, with deep coverage of San Antonio and the Hill Country.';
+  'A full-service commercial brokerage representing tenants, landlords, owners and investors on both leasing and sales — in San Antonio and the Texas Hill Country.';
 
 /** One-line DBA / license disclosure. */
 export const DBA_STATEMENT = `${BRAND_NAME} is a d/b/a of ${BRAND_LEGAL_NAME}, a licensed Texas real estate brokerage (TREC license #${BRAND_TREC_LICENSE}).`;

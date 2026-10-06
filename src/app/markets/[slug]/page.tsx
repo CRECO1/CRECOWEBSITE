@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import { DEFAULT_OG_IMAGE } from '@/lib/og';
-import { metaTitle, metaDescription } from '@/lib/seo-meta';
+import { metaTitle, metaDescription, OUT_OF_MARKET_ROBOTS } from '@/lib/seo-meta';
 import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
 import { CityHubPage } from '@/components/marketing/CityHubPage';
 import {
-  findSubmarket, SUBMARKETS, PARENT_METRO_LABELS,
+  findSubmarket, isInMarket, SUBMARKETS, PARENT_METRO_LABELS,
 } from '@/lib/submarkets-content';
 import { BUSINESS_ID } from '@/lib/schema';
 
@@ -36,6 +36,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: metaTitle(entry.metaTitle),
     description: metaDescription(entry.metaDescription),
     keywords: entry.keywords,
+    // Austin / Houston / DFW submarkets: still served, but noindex,follow.
+    ...(isInMarket(entry) ? {} : { robots: OUT_OF_MARKET_ROBOTS }),
     alternates: { canonical: `https://www.crecotx.com/markets/${entry.slug}` },
     openGraph: {
       images: [DEFAULT_OG_IMAGE],

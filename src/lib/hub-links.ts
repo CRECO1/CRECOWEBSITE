@@ -18,13 +18,13 @@ export interface HubLink {
   label: string;
 }
 
-/** Cities that have a /<city>-commercial-real-estate hub. */
+/**
+ * Cities that have an indexable /<city>-commercial-real-estate hub. The
+ * Austin / Houston / DFW hubs still exist but are noindex (outside the San
+ * Antonio & Hill Country focus), so they are deliberately not linked here.
+ */
 const CITY_HUBS: Record<string, { path: string; label: string }> = {
   'san antonio':     { path: '/san-antonio-commercial-real-estate',     label: 'San Antonio' },
-  'austin':          { path: '/austin-commercial-real-estate',          label: 'Austin' },
-  'houston':         { path: '/houston-commercial-real-estate',         label: 'Houston' },
-  'dallas':          { path: '/dallas-commercial-real-estate',          label: 'Dallas–Fort Worth' },
-  'fort worth':      { path: '/dallas-commercial-real-estate',          label: 'Dallas–Fort Worth' },
   'boerne':          { path: '/boerne-commercial-real-estate',          label: 'Boerne' },
   'fair oaks ranch': { path: '/fair-oaks-ranch-commercial-real-estate', label: 'Fair Oaks Ranch' },
 };
@@ -32,10 +32,6 @@ const CITY_HUBS: Record<string, { path: string; label: string }> = {
 /** Cities that additionally have per-asset hubs (/<city>-<asset>-space). */
 const ASSET_HUB_CITIES: Record<string, string> = {
   'san antonio': 'san-antonio',
-  'austin': 'austin',
-  'houston': 'houston',
-  'dallas': 'dallas',
-  'fort worth': 'dallas',
 };
 
 /** Our property_type values collapsed onto the three asset hubs we publish. */
@@ -94,12 +90,12 @@ export function hubLinksForListing(l: {
   return links.filter(x => (seen.has(x.href) ? false : (seen.add(x.href), true)));
 }
 
-/** Markets a service page should point at — the four metros plus the home market. */
+/** Markets a service page should point at — San Antonio & the Hill Country. */
 export const SERVICE_MARKET_LINKS: HubLink[] = [
   { href: '/san-antonio-commercial-real-estate',     label: 'San Antonio' },
-  { href: '/austin-commercial-real-estate',          label: 'Austin' },
-  { href: '/houston-commercial-real-estate',         label: 'Houston' },
-  { href: '/dallas-commercial-real-estate',          label: 'Dallas–Fort Worth' },
   { href: '/fair-oaks-ranch-commercial-real-estate', label: 'Fair Oaks Ranch' },
   { href: '/boerne-commercial-real-estate',          label: 'Boerne' },
+  { href: '/markets/stone-oak',                      label: 'Stone Oak' },
+  { href: '/markets/northwest-san-antonio',          label: 'Northwest San Antonio' },
+  { href: '/markets/new-braunfels',                  label: 'New Braunfels' },
 ];

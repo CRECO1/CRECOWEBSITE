@@ -9,42 +9,35 @@ import { Container } from '@/components/ui/Container';
 import { SORTED_GUIDES, type Guide } from '@/lib/guides';
 
 export const metadata: Metadata = {
-  title: 'Texas Commercial Real Estate Guides & Reports | CRECO',
+  title: 'Commercial Real Estate Guides & Playbooks | CRECO',
   description:
-    "Free Texas commercial real estate guides and quarterly market reports — lease negotiation, disposition strategy, and industrial, retail, office, and investment.",
+    "Free commercial real estate playbooks from CRECO — tenant lease negotiation and owner disposition strategy, written by the brokers who do the deals.",
   keywords: [
     'texas commercial real estate guide',
     'commercial lease negotiation guide texas',
     'commercial property owner guide texas',
     'texas commercial real estate playbook',
-    'texas commercial real estate market report',
-    'q3 2026 texas market report',
     'creco guides',
   ],
   alternates: { canonical: 'https://www.crecotx.com/guides' },
 };
 
 /**
- * Market reports are identified by slug — every quarterly report uses the
- * `qN-YYYY-` prefix. Everything else is a strategy playbook. The current
- * quarter is featured; earlier quarters are surfaced separately as archive.
+ * Strategy playbooks only. The statewide quarterly market reports that used
+ * to lead this page were pulled (Oct 2026) — SORTED_GUIDES already excludes
+ * them, and the market-data slot now points at the San Antonio & Hill Country
+ * brief (/market-brief).
  */
-const isMarketReport = (g: Guide) => /^q\d-\d{4}-/.test(g.slug);
-const CURRENT_QUARTER_PREFIX = 'q3-2026-';
-const isCurrentReport = (g: Guide) => g.slug.startsWith(CURRENT_QUARTER_PREFIX);
-
 export default function GuidesIndex() {
-  const marketReports = SORTED_GUIDES.filter(g => isMarketReport(g) && isCurrentReport(g));
-  const earlierReports = SORTED_GUIDES.filter(g => isMarketReport(g) && !isCurrentReport(g));
-  const playbooks = SORTED_GUIDES.filter(g => !isMarketReport(g));
+  const playbooks = SORTED_GUIDES;
 
   // CollectionPage + ItemList schema so Google sees this page as a hub
   // and can surface our guides in rich results.
   const collectionSchema = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: 'Texas Commercial Real Estate Guides & Market Reports',
-    description: "CRECO's free guides and quarterly market reports for Texas commercial real estate.",
+    name: 'Commercial Real Estate Guides & Playbooks',
+    description: "CRECO's free commercial real estate playbooks for tenants and property owners.",
     url: 'https://www.crecotx.com/guides',
     breadcrumb: {
       '@type': 'BreadcrumbList',
@@ -69,8 +62,8 @@ export default function GuidesIndex() {
     <>
       <JsonLd
         data={[
-          webPage('CollectionPage', '/guides', 'Texas Commercial Real Estate Guides & Reports | CRECO', 'Free Texas commercial real estate guides and quarterly market reports — lease negotiation, disposition strategy, and industrial, retail, office, and investment.'),
-          breadcrumbList([{ name: 'Guides & Reports', path: '/guides' }]),
+          webPage('CollectionPage', '/guides', 'Commercial Real Estate Guides & Playbooks | CRECO', 'Free commercial real estate playbooks from CRECO — tenant lease negotiation and owner disposition strategy.'),
+          breadcrumbList([{ name: 'Guides', path: '/guides' }]),
         ]}
       />
       <script
@@ -82,74 +75,41 @@ export default function GuidesIndex() {
         {/* Hero */}
         <section className="bg-primary py-16 sm:py-20 text-white">
           <Container>
-            <p className="overline mb-3 text-gold">Texas Commercial Real Estate · Free Guides & Market Reports</p>
+            <p className="overline mb-3 text-gold">Commercial Real Estate · Free Guides</p>
             <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-4">
               In-depth analysis for the decisions that matter.
             </h1>
             <p className="text-body-lg text-white/70 max-w-3xl leading-relaxed">
-              Market reports and strategy playbooks from CRECO's broker team — the analysis we'd hand a client before the first conversation.
+              Strategy playbooks from CRECO's broker team — the analysis we'd hand a client before the first conversation.
             </p>
           </Container>
         </section>
 
-        {/* Market Reports */}
-        {marketReports.length > 0 && (
-          <section className="section-luxury bg-background-cream">
-            <Container>
-              <div className="mb-10 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        {/* Market data — the San Antonio & Hill Country brief */}
+        <section className="py-10 sm:py-12 bg-background-cream border-b border-border/40">
+          <Container>
+            <Link
+              href="/market-brief"
+              className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl bg-white border border-border/40 shadow-card hover:shadow-card-hover transition-all p-6 sm:p-8"
+            >
+              <div className="flex items-start gap-4">
+                <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gold/10 text-gold">
+                  <BarChart3 className="h-5 w-5" />
+                </div>
                 <div>
-                  <p className="overline mb-2 flex items-center gap-2">
-                    <BarChart3 className="h-4 w-4" /> Quarterly Market Reports
-                  </p>
-                  <h2 className="font-heading text-display-sm font-bold text-primary">Q3 2026 Texas CRE market data.</h2>
-                  <p className="mt-3 text-body text-foreground-muted max-w-2xl">
-                    Rents, cap rates, vacancy, absorption, and deal-flow commentary across the four major Texas metros, broken down by asset class.
+                  <p className="overline mb-1">Market data</p>
+                  <h2 className="font-heading text-heading-lg font-bold text-primary group-hover:text-gold transition-colors">
+                    San Antonio &amp; Hill Country Market Brief
+                  </h2>
+                  <p className="mt-1 text-body-sm text-foreground-muted">
+                    Our quarterly brief, with cited sources. First edition this quarter — get it by email.
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {marketReports.map(guide => (
-                  <GuideCard key={guide.slug} guide={guide} accent="report" />
-                ))}
-              </div>
-            </Container>
-          </section>
-        )}
-
-        {/* Earlier Reports — previous quarters kept live for reference */}
-        {earlierReports.length > 0 && (
-          <section className="py-12 sm:py-16 bg-white border-t border-border/40">
-            <Container>
-              <div className="mb-6">
-                <p className="overline mb-2 text-foreground-muted">← Earlier reports</p>
-                <h2 className="font-heading text-heading-lg font-bold text-primary">Previous quarterly reports</h2>
-                <p className="mt-2 text-body-sm text-foreground-muted max-w-2xl">
-                  Historical reference — still-useful reads on how the Texas market looked in prior quarters.
-                </p>
-              </div>
-              <ul className="divide-y divide-border/50 border-y border-border/50">
-                {earlierReports.map(guide => (
-                  <li key={guide.slug}>
-                    <Link
-                      href={`/guides/${guide.slug}`}
-                      className="flex items-center justify-between gap-4 py-4 group"
-                    >
-                      <div className="min-w-0">
-                        <h3 className="font-heading text-body font-semibold text-primary group-hover:text-gold transition-colors truncate">
-                          {guide.title}
-                        </h3>
-                        <p className="text-caption text-foreground-muted mt-0.5">
-                          {guide.pageCount} pages · {guide.readingMinutes} min read
-                        </p>
-                      </div>
-                      <ArrowRight className="h-4 w-4 text-gold flex-shrink-0 transition-transform group-hover:translate-x-1" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </Container>
-          </section>
-        )}
+              <ArrowRight className="h-5 w-5 shrink-0 text-gold transition-transform group-hover:translate-x-1" />
+            </Link>
+          </Container>
+        </section>
 
         {/* Strategy Playbooks */}
         {playbooks.length > 0 && (

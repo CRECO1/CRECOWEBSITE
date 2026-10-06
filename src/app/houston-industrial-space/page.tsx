@@ -4,9 +4,12 @@ export const revalidate = 1800;
 
 import type { Metadata } from 'next';
 import { DEFAULT_OG_IMAGE } from '@/lib/og';
+import { OUT_OF_MARKET_ROBOTS } from '@/lib/seo-meta';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
 export const metadata: Metadata = {
+  // Outside CRECO's San Antonio / Hill Country focus: live, but noindex.
+  robots: OUT_OF_MARKET_ROBOTS,
   title: 'Houston Industrial Space for Lease | CRECO',
   description:
     'Houston industrial space for lease — modern bulk distribution along Northwest 290, Ship Channel logistics, Southwest fulfillment, and Energy Corridor flex.',

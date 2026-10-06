@@ -96,7 +96,7 @@ export const BUSINESS = {
   trecLicense: BRAND_TREC_LICENSE,
   trecLicenseDisplay: `TREC #${BRAND_TREC_LICENSE}`,
   hours: 'Monday–Friday, 9:00 AM–6:00 PM Central',
-  markets: ['San Antonio', 'Austin', 'Houston', 'Dallas–Fort Worth'],
+  markets: ['San Antonio', 'Texas Hill Country'],
   /** Third-party profiles verified to exist and belong to CRECO. Only add a
    *  URL once it's confirmed — never guess one. */
   sameAs: [
@@ -224,7 +224,7 @@ export function siteGraph() {
           { '@type': 'AdministrativeArea', name: 'Greater San Antonio (San Antonio–New Braunfels metro)' },
           ...['Bexar County', 'Kendall County', 'Comal County', 'Guadalupe County', 'Atascosa County']
             .map(name => ({ '@type': 'AdministrativeArea', name: `${name}, Texas` })),
-          ...['Fair Oaks Ranch', 'San Antonio', 'Boerne', 'Helotes', 'Bulverde', 'New Braunfels', 'Schertz', 'Lytle', 'Comfort', 'Austin', 'Houston', 'Dallas', 'Fort Worth']
+          ...['Fair Oaks Ranch', 'San Antonio', 'Boerne', 'Helotes', 'Bulverde', 'New Braunfels', 'Schertz', 'Lytle', 'Comfort']
             .map(name => ({ '@type': 'City', name, containedInPlace: { '@type': 'State', name: 'Texas' } })),
         ],
         // Enumerated, discrete capabilities: representation sides, transaction

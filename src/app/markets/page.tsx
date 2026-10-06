@@ -8,18 +8,16 @@ import { ArrowRight, MapPin, Building2 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import {
-  submarketsByMetro, PARENT_METRO_LABELS,
+  submarketsByMetro, isInMarket, PARENT_METRO_LABELS,
   type ParentMetro,
 } from '@/lib/submarkets-content';
 
 /**
- * /markets — Texas commercial real estate submarket hub.
+ * /markets — San Antonio & Hill Country submarket hub.
  *
- * Index of every submarket page on the site, grouped by parent metro.
- * Designed as the canonical "explore Texas CRE by geography" landing —
- * complements the four existing city-level pages (Austin, Houston,
- * Dallas, Fair Oaks Ranch, Boerne) by giving the deeper submarkets
- * their own first-class home.
+ * Index of the in-market submarket pages, grouped by parent metro. The
+ * Austin / Houston / DFW submarket pages still exist (noindex) but are no
+ * longer listed here — CRECO's focus is San Antonio and the Hill Country.
  *
  * SEO-wise this is the index that links out to every submarket page,
  * with rich CollectionPage + ItemList structured data so Google sees
@@ -27,53 +25,50 @@ import {
  */
 
 export const metadata: Metadata = {
-  title: 'Texas Commercial Real Estate Markets | CRECO',
+  title: 'San Antonio & Hill Country Commercial Markets | CRECO',
   description:
-    "Submarket-level guide to Texas commercial real estate — Austin, Houston, Dallas–Fort Worth, San Antonio, and Hill Country.",
+    "Submarket-level guide to commercial real estate in San Antonio and the Texas Hill Country — Stone Oak, Northwest San Antonio, New Braunfels, Boerne, Fair Oaks Ranch and more.",
   keywords: [
-    'texas commercial real estate markets',
-    'texas commercial submarkets',
-    'austin metro commercial real estate',
-    'dfw commercial real estate',
-    'houston commercial submarkets',
+    'san antonio commercial real estate markets',
+    'san antonio commercial submarkets',
     'san antonio commercial real estate',
-    'texas hill country commercial',
-    'texas cre by market',
+    'texas hill country commercial real estate',
+    'boerne commercial real estate',
+    'fair oaks ranch commercial real estate',
+    'new braunfels commercial real estate',
   ],
   alternates: { canonical: 'https://www.crecotx.com/markets' },
   openGraph: {
     images: [DEFAULT_OG_IMAGE],
-    title: 'Texas Commercial Real Estate Markets | CRECO',
+    title: 'San Antonio & Hill Country Commercial Markets | CRECO',
     description:
-      'Submarket-level guide to Texas commercial real estate — Austin, Houston, DFW, San Antonio, Hill Country. Local market data + direct CRECO contacts.',
+      'Submarket-level guide to commercial real estate in San Antonio and the Texas Hill Country. Local market context + direct CRECO contacts.',
     url: 'https://www.crecotx.com/markets',
     type: 'website',
   },
 };
 
-// Major-metro hub pages already in the site — surfaced alongside the
-// new submarket pages so the index doubles as a one-stop "by-geography"
-// browser.
-const METRO_HUB_PAGES: Record<ParentMetro, { href: string; label: string } | null> = {
-  'austin':            { href: '/austin-commercial-real-estate',  label: 'Austin metro overview' },
-  'dallas-fort-worth': { href: '/dallas-commercial-real-estate',  label: 'Dallas–Fort Worth overview' },
-  'houston':           { href: '/houston-commercial-real-estate', label: 'Houston metro overview' },
-  'san-antonio':       null,   // dedicated SA page lives at /submarkets — covered below
-  'hill-country':      null,
+// Metro hub pages surfaced beside each group's submarket cards.
+const METRO_HUB_PAGES: Partial<Record<ParentMetro, { href: string; label: string }>> = {
+  'san-antonio': { href: '/san-antonio-commercial-real-estate', label: 'San Antonio overview' },
 };
 
-const METRO_ORDER: ParentMetro[] = ['austin', 'dallas-fort-worth', 'houston', 'san-antonio', 'hill-country'];
+// In-market metros only (see OUT_OF_MARKET_METROS).
+const METRO_ORDER: ParentMetro[] = ['san-antonio', 'hill-country'];
 
 export default function MarketsHubPage() {
-  const byMetro = submarketsByMetro();
+  const all = submarketsByMetro();
+  const byMetro = Object.fromEntries(
+    METRO_ORDER.map(m => [m, all[m].filter(isInMarket)]),
+  ) as Record<ParentMetro, typeof all[ParentMetro]>;
   const totalSubmarkets = Object.values(byMetro).reduce((s, arr) => s + arr.length, 0);
 
   // JSON-LD: CollectionPage + BreadcrumbList + ItemList of every submarket
   const itemListSchema = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: 'Texas Commercial Real Estate Markets',
-    description: 'Submarket-level guide to Texas commercial real estate across Austin, Houston, DFW, San Antonio, and Hill Country.',
+    name: 'San Antonio & Hill Country Commercial Real Estate Markets',
+    description: 'Submarket-level guide to commercial real estate in San Antonio and the Texas Hill Country.',
     url: 'https://www.crecotx.com/markets',
     breadcrumb: {
       '@type': 'BreadcrumbList',
@@ -100,7 +95,7 @@ export default function MarketsHubPage() {
     <>
       <JsonLd
         data={[
-          webPage('CollectionPage', '/markets', 'Texas Commercial Real Estate Markets | CRECO', 'Submarket-level guide to Texas commercial real estate — Austin, Houston, Dallas–Fort Worth, San Antonio, and Hill Country.'),
+          webPage('CollectionPage', '/markets', 'San Antonio & Hill Country Commercial Markets | CRECO', 'Submarket-level guide to commercial real estate in San Antonio and the Texas Hill Country.'),
           breadcrumbList([{ name: 'Markets', path: '/markets' }]),
         ]}
       />
@@ -114,13 +109,13 @@ export default function MarketsHubPage() {
         <section className="bg-primary py-16 sm:py-20 text-white">
           <Container>
             <p className="overline mb-3 text-gold flex items-center gap-2">
-              <MapPin className="h-3.5 w-3.5" /> Texas Commercial Real Estate · Submarket Guide
+              <MapPin className="h-3.5 w-3.5" /> San Antonio · Texas Hill Country · Submarket Guide
             </p>
             <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-5 leading-tight max-w-3xl">
-              Texas commercial real estate, mapped by where the deals actually live.
+              San Antonio &amp; Hill Country commercial real estate, mapped by submarket.
             </h1>
             <p className="text-body-lg text-white/70 leading-relaxed max-w-2xl">
-              Texas CRE isn't one market — it's thirty. Every submarket has its own rent dynamics, tenant base, supply pipeline, and broker network. This is the guide to the submarkets that matter. Pick a metro, then a submarket; each page has current data and a way to talk to the people who actually work there.
+              Every submarket has its own rent dynamics, tenant base and supply pipeline. These are the ones around our home base in Fair Oaks Ranch — each page has local context and a way to talk to the people who work there.
             </p>
           </Container>
         </section>
@@ -128,11 +123,10 @@ export default function MarketsHubPage() {
         {/* Existing major-city pages strip */}
         <section className="bg-gold py-6 sm:py-8 text-primary">
           <Container>
-            <p className="text-caption uppercase tracking-widest mb-3 font-semibold">Major Metros</p>
+            <p className="text-caption uppercase tracking-widest mb-3 font-semibold">Market Overviews</p>
             <div className="flex flex-wrap gap-3">
-              <Link href="/austin-commercial-real-estate" className="rounded-full bg-primary text-white px-5 py-2 text-body-sm font-semibold hover:bg-primary/90">Austin</Link>
-              <Link href="/dallas-commercial-real-estate" className="rounded-full bg-primary text-white px-5 py-2 text-body-sm font-semibold hover:bg-primary/90">Dallas–Fort Worth</Link>
-              <Link href="/houston-commercial-real-estate" className="rounded-full bg-primary text-white px-5 py-2 text-body-sm font-semibold hover:bg-primary/90">Houston</Link>
+              <Link href="/san-antonio-commercial-real-estate" className="rounded-full bg-primary text-white px-5 py-2 text-body-sm font-semibold hover:bg-primary/90">San Antonio</Link>
+              <Link href="/submarkets" className="rounded-full bg-primary text-white px-5 py-2 text-body-sm font-semibold hover:bg-primary/90">San Antonio submarkets</Link>
               <Link href="/fair-oaks-ranch-commercial-real-estate" className="rounded-full bg-primary text-white px-5 py-2 text-body-sm font-semibold hover:bg-primary/90">Fair Oaks Ranch</Link>
               <Link href="/boerne-commercial-real-estate" className="rounded-full bg-primary text-white px-5 py-2 text-body-sm font-semibold hover:bg-primary/90">Boerne</Link>
             </div>
@@ -210,7 +204,7 @@ export default function MarketsHubPage() {
                 Don't see your submarket?
               </h2>
               <p className="text-body-lg text-white/70 leading-relaxed mb-8">
-                CRECO covers commercial real estate across all of Texas, not just the markets we've published deep pages on. Tell us what you're looking for and we'll point you at the right broker on our team.
+                Our focus is San Antonio and the Hill Country, but if you're a tenant with a requirement elsewhere in Texas, we help there too. Tell us what you're looking for.
               </p>
               <Link
                 href="/get-started"

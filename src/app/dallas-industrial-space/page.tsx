@@ -4,9 +4,12 @@ export const revalidate = 1800;
 
 import type { Metadata } from 'next';
 import { DEFAULT_OG_IMAGE } from '@/lib/og';
+import { OUT_OF_MARKET_ROBOTS } from '@/lib/seo-meta';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
 export const metadata: Metadata = {
+  // Outside CRECO's San Antonio / Hill Country focus: live, but noindex.
+  robots: OUT_OF_MARKET_ROBOTS,
   title: 'DFW Industrial Space for Lease | CRECO',
   description:
     'Dallas–Fort Worth industrial space for lease — bulk distribution in South Dallas, AllianceTexas, the Great Southwest district, and DFW Airport infill.',

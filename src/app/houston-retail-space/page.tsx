@@ -4,9 +4,12 @@ export const revalidate = 1800;
 
 import type { Metadata } from 'next';
 import { DEFAULT_OG_IMAGE } from '@/lib/og';
+import { OUT_OF_MARKET_ROBOTS } from '@/lib/seo-meta';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
 export const metadata: Metadata = {
+  // Outside CRECO's San Antonio / Hill Country focus: live, but noindex.
+  robots: OUT_OF_MARKET_ROBOTS,
   title: 'Houston Retail Space for Lease | CRECO',
   description:
     'Houston retail space for lease — grocery-anchored and power centers on the Grand Parkway, Katy, The Woodlands, Sugar Land, plus Heights street retail.',

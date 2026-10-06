@@ -5,8 +5,9 @@
  *
  * A calm in-content email capture for visitors who are not ready to inquire
  * about a specific property but will trade an email for a quarterly market
- * read. Sits at the bottom of property landing pages, on /insights, and as a
- * side anchor on /listings.
+ * read — the San Antonio & Hill Country Market Brief (/market-brief). Sits on
+ * /market-brief, at the bottom of property landing pages, on /insights, and
+ * as a side anchor on /listings.
  *
  * Note it posts to /api/leads, NOT /api/subscribe: the contact is saved to the
  * CRM like a lead. 'market-report' is a subscription source (see
@@ -47,12 +48,12 @@ export function MarketReportCapture({
         ? 'bg-primary text-white border border-white/10'
         : 'bg-background-cream border border-border'}
       errorClassName="text-red-400"
-      heading="Quarterly Texas commercial market report"
-      body="Cap rates, vacancy, and active deal flow across San Antonio, Austin, Houston, and DFW. Free. No call."
-      submitLabel="Send me the report"
+      heading="San Antonio & Hill Country Market Brief"
+      body="Our quarterly read on local commercial real estate, with every figure sourced. First edition this quarter. Free. No call."
+      submitLabel="Send me the brief"
       success={{
         heading: "You're on the list.",
-        body: 'The next quarterly report goes out within two weeks. Watch your inbox.',
+        body: "We'll email you the first edition as soon as it's published.",
       }}
       email={email}
       onEmailChange={setEmail}
@@ -66,10 +67,13 @@ export function MarketReportCapture({
           props: { surface },
         },
         buildPayload: ({ recaptchaToken }) => ({
-          name: email.split('@')[0]?.slice(0, 40) || 'Market Report Subscriber',
+          name: email.split('@')[0]?.slice(0, 40) || 'Market Brief Subscriber',
           email,
+          // Keep 'market-report': it's a subscription source (no "new lead"
+          // alert) and it drives the CRM "Market Report" tag the quarterly
+          // send targets.
           source: 'market-report',
-          message: `Subscribed to the quarterly Texas commercial market report from ${surface}.`,
+          message: `Subscribed to the San Antonio & Hill Country Market Brief from ${surface}.`,
           recaptchaToken,
           ...leadPayloadFields(),
         }),

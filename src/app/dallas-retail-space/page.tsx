@@ -4,9 +4,12 @@ export const revalidate = 1800;
 
 import type { Metadata } from 'next';
 import { DEFAULT_OG_IMAGE } from '@/lib/og';
+import { OUT_OF_MARKET_ROBOTS } from '@/lib/seo-meta';
 import { CityAssetPage } from '@/components/marketing/CityAssetPage';
 
 export const metadata: Metadata = {
+  // Outside CRECO's San Antonio / Hill Country focus: live, but noindex.
+  robots: OUT_OF_MARKET_ROBOTS,
   title: 'Dallas–Fort Worth Retail Space for Lease | CRECO',
   description:
     'Dallas–Fort Worth retail space for lease — power and mixed-use centers in Frisco and Plano, lifestyle retail in Southlake, street retail in Bishop Arts.',

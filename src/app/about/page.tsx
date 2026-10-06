@@ -10,6 +10,7 @@ import { TeamSection, type Agent } from '@/components/team/TeamSection';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { FaqSection } from '@/components/marketing/FaqSection';
 import { supabase } from '@/lib/supabase';
+import { PUBLIC_AGENT_COLUMNS } from '@/lib/broker';
 import { HERO_POSITIONING } from '@/lib/brand';
 import { ASSET_CLASSES, BUSINESS, CANONICAL_DESCRIPTION, CAPABILITIES, DIRECTOR_OF_LEASING, FOUNDER_ID, REPRESENTATION_STATEMENT, SITE_URL, breadcrumbList, businessRef, webPage } from '@/lib/schema';
 
@@ -23,7 +24,7 @@ const AT_A_GLANCE: { label: string; value: string }[] = [
   { label: 'Headquarters', value: BUSINESS.fullAddress },
   { label: 'Phone / email', value: `${BUSINESS.phoneDisplay} · ${BUSINESS.email}` },
   { label: 'Office hours', value: BUSINESS.hours },
-  { label: 'Markets', value: 'Fair Oaks Ranch (HQ) and the Texas Hill Country (Boerne, Comfort, Bulverde), Greater San Antonio (incl. Lytle and the I-35 corridor), plus Austin, Houston, Dallas–Fort Worth, and statewide Texas' },
+  { label: 'Markets', value: 'San Antonio and the Texas Hill Country — Fair Oaks Ranch (HQ), Boerne, Comfort, Bulverde and New Braunfels, plus Greater San Antonio (incl. Lytle and the I-35 corridor). Tenants with requirements elsewhere in Texas, too' },
   { label: 'Property types (lease & sale)', value: ASSET_CLASSES.join(' · ') },
   { label: 'Clients represented', value: 'Tenants, buyers, landlords, owners, sellers, and investors — across leasing and sales; intermediary when both parties authorize in writing' },
   { label: 'Services', value: CAPABILITIES.map(c => c.name).join(' · ') },
@@ -94,7 +95,7 @@ const VALUES = [
 ];
 
 export default async function AboutPage() {
-  const { data } = await supabase.from('agents').select('*').order('order', { ascending: true });
+  const { data } = await supabase.from('agents').select(PUBLIC_AGENT_COLUMNS).order('order', { ascending: true });
   const agents = (data ?? []) as Agent[];
 
   return (
@@ -112,7 +113,8 @@ export default async function AboutPage() {
             name: a.name,
             jobTitle: a.title,
             email: a.email,
-            telephone: a.phone ?? undefined,
+            // Office line for everyone — never agents.phone (personal cells).
+            telephone: BUSINESS.phoneE164,
             image: a.image_url ?? undefined,
             worksFor: businessRef,
             knowsAbout: a.specialties ?? undefined,

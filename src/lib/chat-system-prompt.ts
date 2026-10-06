@@ -86,7 +86,8 @@ Active listings: /listings
 - Texas industrial / warehouse for lease: /texas-industrial-property-for-lease
 - Texas office space for lease: /texas-office-space-for-lease
 - Texas commercial property for sale: /texas-commercial-property-for-sale
-- City hubs: /austin-commercial-real-estate, /houston-commercial-real-estate, /dallas-commercial-real-estate, /fair-oaks-ranch-commercial-real-estate, /boerne-commercial-real-estate
+- City hubs (San Antonio & Hill Country): /san-antonio-commercial-real-estate, /fair-oaks-ranch-commercial-real-estate, /boerne-commercial-real-estate, /markets (Stone Oak, NW San Antonio, New Braunfels and more)
+- San Antonio & Hill Country Market Brief (quarterly, first edition coming this quarter — email signup): /market-brief
 - Get started (multi-path inquiry): /get-started
 - Sell a property: /sell
 

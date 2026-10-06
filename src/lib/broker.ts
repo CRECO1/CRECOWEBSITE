@@ -70,6 +70,16 @@ export interface Broker {
   calendar_url?: string;
 }
 
+/**
+ * Columns public pages read from the Supabase `agents` table. Deliberately
+ * excludes `agents.phone` — that column has held a personal cell, and a
+ * select('*') shipped it into /about's Person JSON-LD and the team-profile
+ * Call/Text buttons. Every team-member phone surface uses the office line
+ * (BUSINESS.phoneE164) instead, for every agent.
+ */
+export const PUBLIC_AGENT_COLUMNS =
+  'id, name, slug, title, email, image_url, license_number, years_experience, featured, order, specialties, bio';
+
 export const PRIMARY_BROKER: Broker = {
   // Full legal first name, matching the agents table ("Zachary A. Stovall"),
   // the TREC license and every syndication feed. The site used to render the

@@ -25,6 +25,11 @@ import { Container } from '@/components/ui/Container';
 import { Honeypot } from '@/components/forms/Honeypot';
 import { supabase } from '@/lib/supabase';
 import { trackEvent, leadPayloadFields } from '@/lib/analytics';
+import { BUSINESS } from '@/lib/schema';
+import { PUBLIC_AGENT_COLUMNS } from '@/lib/broker';
+
+// Call/Text on every profile reach the office line, never `agents.phone`.
+const OFFICE_DIGITS = BUSINESS.phoneE164.replace(/\D/g, '');
 
 /**
  * Shape of a row in the `agents` table. This used to be derived from a
@@ -39,7 +44,6 @@ export interface Agent {
   slug: string;
   title: string;
   email: string;
-  phone: string | null;
   image_url: string | null;
   license_number: string | null;
   years_experience: number | null;
@@ -90,7 +94,7 @@ export function TeamSection({
     if (initialAgents && initialAgents.length > 0) return;
     supabase
       .from('agents')
-      .select('*')
+      .select(PUBLIC_AGENT_COLUMNS)
       .order('order', { ascending: true })
       .then(({ data, error }) => {
         // No placeholder fallback — an empty or failed query leaves the
@@ -273,16 +277,17 @@ export function TeamSection({
                   scrolling past the bio (where the message form lives, and where
                   17 profile-viewers produced 0 messages). Call/Text are the
                   lowest-friction path for a form-averse audience. */}
-              {selected.phone && !msgSubmitted && (
+              {/* Both go to the office line, never an agent's own number. */}
+              {!msgSubmitted && (
                 <div className="grid grid-cols-2 gap-2 mb-4">
                   <a
-                    href={`tel:${(selected.phone as string).replace(/\D/g, '')}`}
+                    href={`tel:+${OFFICE_DIGITS}`}
                     className="flex items-center justify-center gap-2 rounded-lg border border-gold px-3 py-2.5 text-caption font-semibold text-gold-dark hover:bg-gold/10 transition-colors"
                   >
                     <Phone className="h-3.5 w-3.5" /> Call {selected.name.split(' ')[0]}
                   </a>
                   <a
-                    href={`sms:${(selected.phone as string).replace(/\D/g, '')}`}
+                    href={`sms:+${OFFICE_DIGITS}`}
                     className="flex items-center justify-center gap-2 rounded-lg border border-gold px-3 py-2.5 text-caption font-semibold text-gold-dark hover:bg-gold/10 transition-colors"
                   >
                     <MessageSquare className="h-3.5 w-3.5" /> Text

@@ -8,35 +8,29 @@ import type { Metadata } from 'next';
 import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { jsonLd } from '@/lib/jsonLd';
 import { CANONICAL_DESCRIPTION, listingSummary } from '@/lib/schema';
-import { HERO_POSITIONING } from '@/lib/brand';
 
 export const metadata: Metadata = {
-  title: 'Texas Commercial Real Estate Brokerage | CRECO',
-  // The full CANONICAL_DESCRIPTION runs ~300 characters; this is the search-result length.
-  description: 'Full-service Texas commercial real estate brokerage for tenants, landlords, owners, and investors — retail, office, industrial, flex, and land.',
+  title: 'San Antonio & Hill Country Commercial Real Estate | CRECO',
+  // The full CANONICAL_DESCRIPTION runs ~250 characters; this is the search-result length.
+  description: 'Commercial real estate for San Antonio & the Texas Hill Country — leasing, sales and owner representation from the team that owns Fair Oaks Plaza.',
   keywords: [
-    'Texas commercial real estate',
-    'commercial real estate Texas',
-    'commercial property Texas',
-    'retail space for lease Texas',
-    'industrial property for lease Texas',
-    'office space for lease Texas',
-    'commercial property for sale Texas',
-    'tenant representation Texas',
-    'landlord representation Texas',
-    'investment sales Texas',
-    'Fair Oaks Ranch commercial real estate',
-    'commercial property owner services Texas',
-    'portfolio commercial real estate Texas',
-    'commercial real estate broker Texas',
     'San Antonio commercial real estate',
-    'Austin commercial real estate',
-    'Houston commercial real estate',
-    'Dallas Fort Worth commercial real estate',
+    'Texas Hill Country commercial real estate',
+    'Fair Oaks Ranch commercial real estate',
+    'Boerne commercial real estate',
+    'commercial real estate broker San Antonio',
+    'retail space for lease San Antonio',
+    'office space for lease San Antonio',
+    'industrial property for lease San Antonio',
+    'commercial property for sale San Antonio',
+    'tenant representation San Antonio',
+    'landlord representation San Antonio',
+    'Stone Oak commercial real estate',
+    'New Braunfels commercial real estate',
   ],
   openGraph: {
     images: [DEFAULT_OG_IMAGE],
-    title: 'CRECO - Commercial Real Estate Company | Full-Service Commercial Real Estate Brokerage in Texas',
+    title: 'CRECO - Commercial Real Estate Company | San Antonio & Texas Hill Country Commercial Real Estate',
     description: CANONICAL_DESCRIPTION,
     url: 'https://www.crecotx.com',
     type: 'website',
@@ -83,13 +77,16 @@ const PROPERTY_TYPES = [
   { icon: MapPin, label: 'Land', href: '/listings?type=land', description: 'Raw or improved land for commercial development' },
 ];
 
-// Texas markets we serve — homepage geo grid for SEO
-const TEXAS_MARKETS = [
-  { city: 'San Antonio', headline: 'HQ', tagline: 'Northwest, North Central, Northeast, Downtown, Far West' },
-  { city: 'Austin', headline: '', tagline: 'CBD, Northwest, Round Rock, Cedar Park' },
-  { city: 'Houston', headline: '', tagline: 'Galleria, Energy Corridor, Northwest, Sugar Land' },
-  { city: 'Dallas–Fort Worth', headline: '', tagline: 'Uptown, Las Colinas, Plano, Frisco, Arlington' },
-  { city: 'New Braunfels', headline: '', tagline: 'I-35 corridor between Austin & San Antonio' },
+// San Antonio & Hill Country markets — homepage geo grid. Every card links to
+// an existing, indexable in-market page (Austin / Houston / DFW pages are
+// noindex and deliberately not linked from here).
+const LOCAL_MARKETS = [
+  { name: 'Fair Oaks Ranch', badge: 'HQ', href: '/fair-oaks-ranch-commercial-real-estate', tagline: 'Our home base — Fair Oaks Plaza and the Elkhorn Point development' },
+  { name: 'Boerne', badge: '', href: '/boerne-commercial-real-estate', tagline: 'Hill Country gateway on I-10 — retail, medical and service space' },
+  { name: 'Leon Springs & the I-10 corridor', badge: '', href: '/submarkets/northwest', tagline: 'I-10 from La Cantera out to Leon Springs and the Loop 1604 interchange' },
+  { name: 'Stone Oak', badge: '', href: '/markets/stone-oak', tagline: 'North Central San Antonio\'s suburban-growth corridor' },
+  { name: 'Medical Center & NW San Antonio', badge: '', href: '/markets/northwest-san-antonio', tagline: 'USAA, UTSA and the South Texas Medical Center' },
+  { name: 'New Braunfels', badge: '', href: '/markets/new-braunfels', tagline: 'The I-35 corridor\'s fastest-growing Hill Country market' },
 ];
 
 const FAQS = [
@@ -107,7 +104,7 @@ const FAQS = [
   },
   {
     q: 'Where in Texas do you work?',
-    a: 'We are headquartered at 8000 Fair Oaks Pkwy in Fair Oaks Ranch, with active brokerage and advisory work across the major Texas commercial markets — San Antonio, Austin, Houston, Dallas–Fort Worth, El Paso, New Braunfels, Boerne, and the Hill Country. If your property or search is in Texas, we cover it.',
+    a: 'San Antonio and the Texas Hill Country. We are headquartered at 8000 Fair Oaks Pkwy in Fair Oaks Ranch, where we own and operate Fair Oaks Plaza, and our work centers on Fair Oaks Ranch, Boerne, Leon Springs and the I-10 corridor, Stone Oak, the Medical Center and Northwest San Antonio, and New Braunfels. If you are a tenant with a requirement elsewhere in Texas, we help there too.',
   },
   {
     q: 'Do you work with multi-property owners and investors?',
@@ -132,8 +129,8 @@ const FAQS = [
 ];
 
 const DEFAULT_SETTINGS = {
-  hero_headline: 'Full-Service Commercial Real Estate',
-  hero_subheadline: HERO_POSITIONING,
+  hero_headline: 'Commercial real estate for San Antonio & the Texas Hill Country',
+  hero_subheadline: 'Leasing, sales and owner representation from a team that owns and operates commercial property here — Fair Oaks Plaza, our Lytle center and the Elkhorn Point development.',
   hero_image_url: '/images/sa-hero.jpg' as string | null,
   about_headline: 'A trailblazing approach to Texas commercial real estate.',
   about_text: 'CRECO is built on innovation, expertise, and a relentless commitment to client outcomes. We blend deep Texas market knowledge with the analytical rigor you would expect from a national firm — and we keep our roster small enough that every client works directly with a principal. From single-asset tenants to multi-property portfolio owners, we treat your assignment like our name is on the building.',
@@ -235,10 +232,13 @@ export default async function HomePage() {
   // homepage to error.tsx. Fall back to the defaults instead.
   // Hero H1 + intro are code-controlled positioning, NOT the site_settings CMS
   // row: AI assistants were describing CRECO as tenant-only, so the first
-  // heading and paragraph must state full-service representation. The hero now
-  // carries the short blend (HERO_POSITIONING); the verbatim long statements
-  // still render server-side in the FAQ below, the organization schema, the
-  // representation pages and the llms feeds. The CMS hero fields are ignored.
+  // heading and paragraph must state full-service representation. Since Oct
+  // 2026 the hero leads with the San Antonio & Hill Country focus (subhead
+  // names leasing, sales and owner representation) and the two primary paths
+  // (need space → tenant funnel, own property → valuation); the verbatim long
+  // statements still render server-side in the FAQ below, the organization
+  // schema, the representation pages and the llms feeds. The CMS hero fields
+  // are ignored.
   const heroHeadline = DEFAULT_SETTINGS.hero_headline;
   const heroSubheadline = DEFAULT_SETTINGS.hero_subheadline;
 
@@ -283,7 +283,7 @@ export default async function HomePage() {
         {s.hero_image_url ? (
           <Image
             src={s.hero_image_url}
-            alt="Texas commercial real estate — office, industrial, and retail property across San Antonio, Austin, Houston, and Dallas–Fort Worth"
+            alt="Commercial real estate in San Antonio and the Texas Hill Country"
             fill
             sizes="100vw"
             className="object-cover opacity-40"
@@ -296,7 +296,7 @@ export default async function HomePage() {
         <div className="hero-overlay-luxury absolute inset-0" />
 
         <Container className="relative z-10 text-center text-white">
-          <p className="overline mb-6 animate-fade-in-down text-gold">Tenants · Landlords · Owners · Investors — Lease &amp; Sale</p>
+          <p className="overline mb-6 animate-fade-in-down text-gold">San Antonio · Boerne · Texas Hill Country</p>
           <h1 className="mb-6 animate-fade-in-up font-heading text-display-xl font-bold text-white text-shadow-hero fill-both">
             {heroHeadline.includes('\n')
               ? heroHeadline.split('\n').map((line: string, i: number) => (
@@ -311,12 +311,18 @@ export default async function HomePage() {
 
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center animate-fade-in delay-300 fill-both">
             <Button size="lg" asChild>
-              <Link href="/listings">Browse Texas Properties <ArrowRight className="ml-2 h-5 w-5" /></Link>
+              <Link href="/get-started?path=tenant">I need space <ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary" asChild>
-              <Link href="/get-started"><Building2 className="mr-2 h-5 w-5" />Tell us what you need</Link>
+              <Link href="/property-valuation"><Building2 className="mr-2 h-5 w-5" />I own property</Link>
             </Button>
           </div>
+          <Link
+            href="/listings"
+            className="mt-5 inline-flex min-h-[44px] items-center gap-1.5 text-body-sm font-semibold text-white/75 underline-offset-4 hover:text-gold hover:underline animate-fade-in delay-300 fill-both"
+          >
+            Browse properties <ArrowRight className="h-4 w-4" />
+          </Link>
 
         </Container>
 
@@ -364,7 +370,7 @@ export default async function HomePage() {
               <p className="overline mb-3">Hand-Picked Texas Properties</p>
               <h2 className="font-heading text-display font-bold text-primary gold-line gold-line-center inline-block pb-4">Featured Properties</h2>
               <p className="mx-auto mt-6 max-w-xl text-body text-foreground-muted">
-                Retail, industrial, and office properties currently available across Texas — vetted by the CRECO team.
+                Retail, industrial, and office properties currently available in San Antonio and the Hill Country — vetted by the CRECO team.
               </p>
             </div>
           </RevealOnScroll>
@@ -445,38 +451,42 @@ export default async function HomePage() {
           high on the page right after the featured properties. ─────────── */}
       <LeadMagnetBand surface="homepage-featured" />
 
-      {/* ── Texas Markets We Serve ──────────────────────────────────── */}
+      {/* ── San Antonio & Hill Country Markets ──────────────────────── */}
       <section className="section-luxury bg-white">
         <Container>
           <RevealOnScroll>
             <div className="mb-14 text-center">
-              <p className="overline mb-3">Statewide Coverage</p>
-              <h2 className="font-heading text-display font-bold text-primary gold-line gold-line-center inline-block pb-4">Texas Markets We Serve</h2>
+              <p className="overline mb-3">Where We Work</p>
+              <h2 className="font-heading text-display font-bold text-primary gold-line gold-line-center inline-block pb-4">San Antonio &amp; the Hill Country</h2>
               <p className="mx-auto mt-6 max-w-2xl text-body text-foreground-muted">
-                Headquartered in San Antonio with active brokerage and advisory across the major Texas commercial real estate markets. If your deal is in Texas, we cover it.
+                Headquartered in Fair Oaks Ranch, where we own and operate Fair Oaks Plaza. Our work is focused on San Antonio and the Texas Hill Country — the markets we know street by street.
               </p>
             </div>
           </RevealOnScroll>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {TEXAS_MARKETS.map((m, i) => (
-              <RevealOnScroll key={m.city} delay={i * 80}>
-                <div className="rounded-xl border border-border bg-white p-6 hover:border-gold hover:shadow-card-hover transition-all h-full">
+            {LOCAL_MARKETS.map((m, i) => (
+              <RevealOnScroll key={m.href} delay={i * 80}>
+                <Link href={m.href} className="group block rounded-xl border border-border bg-white p-6 hover:border-gold hover:shadow-card-hover transition-all h-full">
                   <div className="flex items-start gap-3">
                     <MapPin className="mt-1 h-5 w-5 text-gold shrink-0" />
                     <div className="flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-heading text-heading-sm font-bold text-primary">{m.city}, TX</h3>
-                        {m.headline && (
-                          <span className="rounded-full bg-gold/15 px-2 py-0.5 text-caption font-semibold text-gold-dark">{m.headline}</span>
+                        <h3 className="font-heading text-heading-sm font-bold text-primary group-hover:text-gold-dark transition-colors">{m.name}</h3>
+                        {m.badge && (
+                          <span className="rounded-full bg-gold/15 px-2 py-0.5 text-caption font-semibold text-gold-dark">{m.badge}</span>
                         )}
                       </div>
                       <p className="mt-1 text-caption text-foreground-muted">{m.tagline}</p>
                     </div>
                   </div>
-                </div>
+                </Link>
               </RevealOnScroll>
             ))}
           </div>
+          <p className="mt-10 text-center text-body-sm text-foreground-muted">
+            Representing tenants elsewhere in Texas?{' '}
+            <Link href="/get-started?path=tenant" className="font-semibold text-gold-dark hover:underline">We help there too.</Link>
+          </p>
         </Container>
       </section>
 
@@ -539,37 +549,37 @@ export default async function HomePage() {
         </Container>
       </section>
 
-      {/* ── Free Tools: Market Reports ───────────────────────────────── */}
+      {/* ── Market Brief ─────────────────────────────────────────────── */}
       <section className="section-luxury bg-background-cream">
         <Container>
           <RevealOnScroll>
             <div className="mb-12 text-center">
-              <p className="overline mb-3">Free for Texas Commercial Owners & Investors</p>
+              <p className="overline mb-3">Free for Owners, Tenants &amp; Investors</p>
               <h2 className="font-heading text-display-sm font-bold text-primary gold-line gold-line-center inline-block pb-3">
-                Texas market data, no obligation.
+                Local market data, no obligation.
               </h2>
               <p className="mx-auto mt-6 max-w-2xl text-body text-foreground-muted">
-                We publish what we know about Texas commercial real estate — quarterly market reports and strategy playbooks. Use them whether you ever talk to us or not.
+                A quarterly read on San Antonio and Hill Country commercial real estate, with every figure sourced. Use it whether you ever talk to us or not.
               </p>
             </div>
           </RevealOnScroll>
           <div className="mx-auto max-w-2xl">
             <RevealOnScroll>
               <Link
-                href="/guides"
+                href="/market-brief"
                 className="group h-full block rounded-2xl bg-white p-8 shadow-card hover:shadow-card-hover transition-all border border-border/40"
               >
                 <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gold/10 text-gold">
                   <BarChart3 className="h-6 w-6" />
                 </div>
                 <h3 className="mb-3 font-heading text-heading-lg font-bold text-primary group-hover:text-gold transition-colors">
-                  Q2 2026 Texas market reports
+                  San Antonio &amp; Hill Country Market Brief
                 </h3>
                 <p className="mb-5 text-body-sm text-foreground-muted leading-relaxed">
-                  Industrial, retail, office, and a cross-asset investment outlook. Rents, cap rates, vacancy, and deal flow across the four major Texas metros. Free with email.
+                  Written by Zachary A. Stovall, with cited sources. The first edition is coming this quarter — sign up to get it by email.
                 </p>
                 <span className="inline-flex items-center gap-2 text-body-sm font-semibold text-gold-dark group-hover:text-gold transition-colors">
-                  Read the reports <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  Get the brief <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </span>
               </Link>
             </RevealOnScroll>
@@ -589,7 +599,7 @@ export default async function HomePage() {
               <p className="mb-8 text-body-lg text-foreground-muted">{s.about_text}</p>
               <ul className="space-y-4 mb-10">
                 {[
-                  'Statewide Texas market knowledge with deep San Antonio roots',
+                  'Deep San Antonio and Hill Country market knowledge — we own and operate property here',
                   'Principal-level service on every engagement — never handed off',
                   'The same team on your file from first tour to closing — no handoff to a call center',
                   'Portfolio-level reporting and strategy for multi-property owners',

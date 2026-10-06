@@ -9,7 +9,7 @@ import { Clock, FileText, ArrowRight } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
-import { findGuide, GUIDES } from '@/lib/guides';
+import { findGuide, PUBLISHED_GUIDES } from '@/lib/guides';
 import { BUSINESS_ID } from '@/lib/schema';
 import { GuideReader } from './GuideReader';
 
@@ -18,7 +18,7 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  return GUIDES.map(g => ({ slug: g.slug }));
+  return PUBLISHED_GUIDES.map(g => ({ slug: g.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -45,14 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 const GUIDE_AS_OF: Record<string, string> = {
   'texas-tenant-lease-negotiation-playbook': 'May 2026',
   'texas-owner-disposition-strategy-guide': 'May 2026',
-  'q2-2026-texas-industrial-market-report': 'May 2026',
-  'q2-2026-texas-investment-outlook-report': 'May 2026',
-  'q2-2026-texas-office-market-report': 'May 2026',
-  'q2-2026-texas-retail-market-report': 'May 2026',
-  'q3-2026-texas-industrial-market-report': 'July 2026',
-  'q3-2026-texas-investment-outlook-report': 'July 2026',
-  'q3-2026-texas-office-market-report': 'July 2026',
-  'q3-2026-texas-retail-market-report': 'July 2026',
+  // The qN-2026 statewide market reports were pulled (they 308 to /market-brief).
 };
 
 export default async function GuidePage({ params }: PageProps) {

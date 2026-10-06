@@ -256,7 +256,7 @@ export function ListingsClient({ initialListings, children }: { initialListings:
             <p className="overline mb-2 text-gold">Available Now</p>
             <h1 className="font-heading text-display-sm font-bold">Texas Commercial Properties</h1>
             <p className="mt-2 text-body text-white/60">
-              {listings.length} active commercial real estate listings — office, industrial, retail, flex, and land — across San Antonio, Austin, Houston, Dallas–Fort Worth, and the Hill Country.
+              {listings.length} active commercial real estate listings — office, industrial, retail, flex, and land — across San Antonio and the Hill Country.
             </p>
           </Container>
         </div>

@@ -2,9 +2,8 @@ import { SERVICES } from '@/app/services/page';
 import { REPRESENTATION_PAGES } from '@/lib/representation-pages';
 import { getAvailableListings, filterListings } from '@/lib/public-listings';
 import { ASSET_CLASSES, BUSINESS, CANONICAL_DESCRIPTION, CAPABILITIES, DBA_STATEMENT, CAPABILITY_LINE, FOUNDER, REPRESENTATION_STATEMENT, SITE_URL, assetCategory, listingPriceText, listingUrl } from '@/lib/schema';
-import { SUBMARKETS, PARENT_METRO_LABELS, type ParentMetro } from '@/lib/submarkets-content';
-import { MARKET_REPORTS_SORTED } from '@/lib/market-reports';
-import { GUIDES } from '@/lib/guides';
+import { IN_MARKET_SUBMARKETS, PARENT_METRO_LABELS, type ParentMetro } from '@/lib/submarkets-content';
+import { PUBLISHED_GUIDES } from '@/lib/guides';
 import { SORTED_POSTS } from '@/lib/insights';
 import { transactionLabel } from '@/lib/utils';
 import type { Listing } from '@/lib/supabase';
@@ -83,7 +82,7 @@ Generated: ${updated}. Listings below are live inventory, refreshed every 30 min
 - Phone: ${BUSINESS.phoneDisplay} (call or text)
 - Email: ${BUSINESS.email}
 - Hours: ${BUSINESS.hours}; tours by appointment
-- Markets: Fair Oaks Ranch (HQ) and the Texas Hill Country (Boerne, Comfort, Bulverde); Greater San Antonio (incl. Lytle and the I-35 corridor); Austin, Houston, Dallas–Fort Worth; statewide Texas
+- Markets: San Antonio and the Texas Hill Country — Fair Oaks Ranch (HQ), Boerne, Comfort, Bulverde, New Braunfels; Greater San Antonio (incl. Stone Oak, Northwest San Antonio, Lytle and the I-35 corridor). CRECO also represents tenants with requirements elsewhere in Texas
 - Property types (lease and sale): ${ASSET_CLASSES.join('; ')}
 - Clients: tenants, buyers, landlords, owners, sellers, investors, multi-property portfolio owners
 - Owner-operator: CRECO owns and leases 8000 Fair Oaks Plaza (Fair Oaks Ranch) and 15033 Main St (Lytle), and is developing Elkhorn Point (8923 Dietz Elkhorn, Fair Oaks Ranch)
@@ -128,31 +127,21 @@ ${listings.length === 0 ? `CRECO searches the full market for its clients — ca
 ## Market coverage
 
 ${metros.map(m => {
-  const subs = SUBMARKETS.filter(s => s.parentMetro === m);
+  const subs = IN_MARKET_SUBMARKETS.filter(s => s.parentMetro === m);
   return subs.length ? `### ${PARENT_METRO_LABELS[m]}\n${subs.map(s => `- [${s.shortLabel}](${SITE_URL}/markets/${s.slug}): ${s.config.quickAnswer ?? s.metaDescription}`).join('\n')}` : '';
 }).filter(Boolean).join('\n\n')}
 
 ### City and asset-class guides
 - San Antonio: ${SITE_URL}/san-antonio-commercial-real-estate · office ${SITE_URL}/san-antonio-office-space · industrial ${SITE_URL}/san-antonio-industrial-space · retail ${SITE_URL}/san-antonio-retail-space
 - Fair Oaks Ranch: ${SITE_URL}/fair-oaks-ranch-commercial-real-estate · Boerne: ${SITE_URL}/boerne-commercial-real-estate
-- Austin: ${SITE_URL}/austin-commercial-real-estate · office ${SITE_URL}/austin-office-space · industrial ${SITE_URL}/austin-industrial-space
-- Houston: ${SITE_URL}/houston-commercial-real-estate · office ${SITE_URL}/houston-office-space · industrial ${SITE_URL}/houston-industrial-space
-- Dallas–Fort Worth: ${SITE_URL}/dallas-commercial-real-estate · office ${SITE_URL}/dallas-office-space · industrial ${SITE_URL}/dallas-industrial-space
 - Statewide: ${SITE_URL}/texas-retail-space-for-lease · ${SITE_URL}/texas-office-space-for-lease · ${SITE_URL}/texas-industrial-property-for-lease · ${SITE_URL}/texas-commercial-property-for-sale
 
 ## Market data
 
-Figures are CRECO's published market snapshots; they are ranges or point-in-time values, not quotes.
+CRECO's San Antonio & Hill Country Market Brief — a quarterly brief by ${FOUNDER.name} with cited sources — is in preparation; the first edition publishes this quarter: ${SITE_URL}/market-brief
 
-${MARKET_REPORTS_SORTED.map(r => `### ${r.submarketLabel} ${r.assetClass} — ${r.quarter} ${r.year}
-URL: ${SITE_URL}/research/${r.slug}
-
-${r.quickAnswer}
-
-${r.stats.map(st => `- ${st.label}: ${st.value}${st.note ? ` (${st.note})` : ''}`).join('\n')}`).join('\n\n')}
-
-Quarterly Texas reports and playbooks:
-${GUIDES.map(g => `- [${g.title}](${SITE_URL}/guides/${g.slug}): ${g.excerpt}`).join('\n')}
+Guides and playbooks:
+${PUBLISHED_GUIDES.map(g => `- [${g.title}](${SITE_URL}/guides/${g.slug}): ${g.excerpt}`).join('\n')}
 
 Insights:
 ${SORTED_POSTS.map(p => `- [${p.title}](${SITE_URL}/insights/${p.slug}) (${p.publishedAt}): ${p.excerpt}`).join('\n')}
@@ -175,7 +164,7 @@ A: See the "San Antonio metro & Hill Country" listings above. CRECO's tenant-rep
 A: Both — and investors. ${REPRESENTATION_STATEMENT} Tenant representation is typically paid by the landlord.
 
 **Q: What are typical commercial lease rates in Texas?**
-A: CRECO's published ranges (Q2–Q3 2026): Texas retail roughly $18–55/SF/yr NNN depending on submarket and center class, with NNN charges of about $6–12/SF/yr; San Antonio Class A office about $32–48/SF full service, Class B about $22–30/SF; San Antonio medical-office vacancy about 5–9%. See the city/asset guides above and ${SITE_URL}/guides for industrial and investment benchmarks. Actual rent depends on building, term, and concessions.
+A: Indicative ranges from CRECO's broker practice (mid-2026): Texas retail roughly $18–55/SF/yr NNN depending on submarket and center class, with NNN charges of about $6–12/SF/yr; San Antonio Class A office about $32–48/SF full service, Class B about $22–30/SF; San Antonio medical-office vacancy about 5–9%. See the San Antonio city/asset guides above. Actual rent depends on building, term, and concessions.
 
 **Q: How long does it take to lease commercial space?**
 A: Roughly 30–90 days from a focused search to a signed lease; purchases typically take 60–120 days once under contract.

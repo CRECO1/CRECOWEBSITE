@@ -21,7 +21,7 @@ const SELL_FAQS = [
   },
   {
     q: 'What types of commercial property does CRECO sell and lease for owners?',
-    a: 'Retail centers and freestanding retail, office and medical office, industrial and warehouse, flex, land, and investment property anywhere in Texas, with the deepest coverage in San Antonio, Austin, Houston, and Dallas–Fort Worth.',
+    a: 'Retail centers and freestanding retail, office and medical office, industrial and warehouse, flex, land, and investment property across San Antonio and the Texas Hill Country.',
   },
   {
     q: 'Can CRECO help me with a 1031 exchange when I sell?',

@@ -38,3 +38,12 @@ export function metaDescription(text: string): string {
   const end = clause >= 90 ? clause : cut.lastIndexOf(' ');
   return `${cut.slice(0, end).replace(/[\s,;:—–-]+$/, '')}…`;
 }
+
+// Robots for pages whose subject is outside CRECO's market (Austin, Houston,
+// Dallas–Fort Worth). They stay live — links keep working and earned signal
+// flows through — but drop out of the index and the sitemap.
+export const OUT_OF_MARKET_ROBOTS = {
+  index: false,
+  follow: true,
+  googleBot: { index: false, follow: true },
+} as const;

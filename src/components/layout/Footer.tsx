@@ -33,7 +33,8 @@ const footerLinks = {
     { href: '/services/property-management', label: 'Property Management' },
     { href: '/services/development', label: 'Property Development' },
     { href: '/property-valuation', label: "What's My Property Worth?" },
-    { href: '/guides', label: 'Free Guides & Market Reports' },
+    { href: '/guides', label: 'Free Guides' },
+    { href: '/market-brief', label: 'Market Brief' },
     { href: '/insights', label: 'Insights' },
     { href: '/careers', label: 'Careers' },
   ],
@@ -207,7 +208,7 @@ export function Footer() {
       <div className="border-t border-white/10 py-7 bg-primary/80">
         <Container>
           <div className="flex items-center justify-between flex-wrap gap-2 mb-3">
-            <p className="text-caption uppercase tracking-widest text-gold text-center md:text-left">Texas Markets We Serve</p>
+            <p className="text-caption uppercase tracking-widest text-gold text-center md:text-left">San Antonio &amp; Hill Country Markets</p>
             <Link href="/markets" prefetch={false} className="inline-flex min-h-[44px] items-center text-caption text-gold/80 hover:text-gold font-semibold md:min-h-0">
               See all submarkets →
             </Link>
@@ -216,15 +217,12 @@ export function Footer() {
             {[
               { href: '/fair-oaks-ranch-commercial-real-estate', label: 'Fair Oaks Ranch' },
               { href: '/boerne-commercial-real-estate', label: 'Boerne' },
-              { href: '/submarkets', label: 'San Antonio' },
-              { href: '/austin-commercial-real-estate', label: 'Austin' },
-              { href: '/houston-commercial-real-estate', label: 'Houston' },
-              { href: '/dallas-commercial-real-estate', label: 'Dallas–Fort Worth' },
-              { href: '/markets/round-rock', label: 'Round Rock' },
-              { href: '/markets/frisco', label: 'Frisco' },
-              { href: '/markets/the-woodlands', label: 'The Woodlands' },
+              { href: '/san-antonio-commercial-real-estate', label: 'San Antonio' },
+              { href: '/submarkets', label: 'SA Submarkets' },
               { href: '/markets/stone-oak', label: 'Stone Oak' },
+              { href: '/markets/northwest-san-antonio', label: 'Northwest San Antonio' },
               { href: '/markets/new-braunfels', label: 'New Braunfels' },
+              { href: '/markets/bulverde-spring-branch', label: 'Bulverde & Spring Branch' },
               { href: '/8000-fair-oaks-pkwy', label: '8000 Fair Oaks Pkwy', highlight: true },
             ].map(m => (
               <Link

@@ -4,9 +4,12 @@ export const revalidate = 1800;
 
 import type { Metadata } from 'next';
 import { DEFAULT_OG_IMAGE } from '@/lib/og';
+import { OUT_OF_MARKET_ROBOTS } from '@/lib/seo-meta';
 import { CityHubPage } from '@/components/marketing/CityHubPage';
 
 export const metadata: Metadata = {
+  // Outside CRECO's San Antonio / Hill Country focus: live, but noindex.
+  robots: OUT_OF_MARKET_ROBOTS,
   title: 'Dallas–Fort Worth Commercial Real Estate | CRECO',
   description:
     'Dallas–Fort Worth commercial real estate — DFW office, industrial, retail, and flex space for lease and sale across the Metroplex.',

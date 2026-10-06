@@ -1,8 +1,8 @@
 import { MetadataRoute } from 'next';
 import { supabase } from '@/lib/supabase';
 import { SYNTHETIC_LISTINGS } from '@/lib/featured-properties';
-import { SUBMARKETS } from '@/lib/submarkets-content';
-import { GUIDES } from '@/lib/guides';
+import { IN_MARKET_SUBMARKETS } from '@/lib/submarkets-content';
+import { PUBLISHED_GUIDES } from '@/lib/guides';
 import { POSTS } from '@/lib/insights';
 
 const BASE_URL = 'https://www.crecotx.com';
@@ -18,10 +18,10 @@ const BASE_URL = 'https://www.crecotx.com';
  * signal outright once it stops being trustworthy.
  *
  * Bump this when the copy on the code-backed pages actually changes. Anything
- * with a genuine date of its own — listings, submarkets, research reports,
- * insight posts — uses that instead.
+ * with a genuine date of its own — listings, submarkets, insight posts —
+ * uses that instead.
  */
-const CONTENT_REVISED = new Date('2026-09-27T00:00:00.000Z');
+const CONTENT_REVISED = new Date('2026-10-06T00:00:00.000Z');
 
 // Rebuilt every 30 minutes (same cadence as /listings). Without this the sitemap was
 // frozen at deploy time, so a listing added between deploys was invisible to crawlers
@@ -41,11 +41,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/texas-office-space-for-lease`,        lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.95 },
     { url: `${BASE_URL}/texas-commercial-property-for-sale`,  lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.95 },
     // City hub pages — San Antonio first since it's CRECO's HQ city and
-    // the flagship geographic landing page on the site.
+    // the flagship geographic landing page on the site. The Austin / Houston /
+    // DFW hubs and their city × asset pages are noindex (outside the San
+    // Antonio & Hill Country focus) and deliberately absent from this file.
     { url: `${BASE_URL}/san-antonio-commercial-real-estate`,  lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.95 },
-    { url: `${BASE_URL}/austin-commercial-real-estate`,       lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.9  },
-    { url: `${BASE_URL}/houston-commercial-real-estate`,      lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.9  },
-    { url: `${BASE_URL}/dallas-commercial-real-estate`,       lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.9  },
     // Hill Country gateway submarkets — Fair Oaks Ranch + Boerne
     { url: `${BASE_URL}/fair-oaks-ranch-commercial-real-estate`, lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.95 },
     { url: `${BASE_URL}/boerne-commercial-real-estate`,        lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.9  },
@@ -56,15 +55,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/san-antonio-office-space`,             lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
     { url: `${BASE_URL}/san-antonio-industrial-space`,         lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
     { url: `${BASE_URL}/san-antonio-retail-space`,             lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
-    { url: `${BASE_URL}/houston-industrial-space`,             lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
-    { url: `${BASE_URL}/austin-office-space`,                  lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
-    { url: `${BASE_URL}/dallas-industrial-space`,              lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
-    { url: `${BASE_URL}/dallas-office-space`,                  lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
-    { url: `${BASE_URL}/houston-office-space`,                 lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
-    { url: `${BASE_URL}/austin-industrial-space`,             lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
-    { url: `${BASE_URL}/houston-retail-space`,                lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
-    { url: `${BASE_URL}/dallas-retail-space`,                 lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
-    { url: `${BASE_URL}/austin-retail-space`,                 lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
     // CRECO development — 8000 Fair Oaks Pkwy
     { url: `${BASE_URL}/8000-fair-oaks-pkwy`,                  lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.95 },
     // CRECO development — 8923 Dietz Elkhorn (Fair Oaks Ranch retail, pre-leasing)
@@ -94,7 +84,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/about`,                       lastModified: CONTENT_REVISED, changeFrequency: 'monthly', priority: 0.7  },
     { url: `${BASE_URL}/insights`,                    lastModified: CONTENT_REVISED, changeFrequency: 'weekly',  priority: 0.85 },
     { url: `${BASE_URL}/guides`,                      lastModified: CONTENT_REVISED, changeFrequency: 'monthly', priority: 0.85 },
-    { url: `${BASE_URL}/research`,                    lastModified: CONTENT_REVISED, changeFrequency: 'weekly',  priority: 0.9  },
+    // /research and the statewide quarterly reports were pulled (308 → here).
+    { url: `${BASE_URL}/market-brief`,                lastModified: CONTENT_REVISED, changeFrequency: 'monthly', priority: 0.85 },
     { url: `${BASE_URL}/property-alerts`,             lastModified: CONTENT_REVISED, changeFrequency: 'monthly', priority: 0.8  },
     { url: `${BASE_URL}/careers`,                     lastModified: CONTENT_REVISED, changeFrequency: 'monthly', priority: 0.7  },
     // /compare omitted — the route is noindex,nofollow because it's a
@@ -104,9 +95,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/terms`,                       lastModified: CONTENT_REVISED, changeFrequency: 'yearly',  priority: 0.3  },
   ];
 
-  // Straight from GUIDES — the hand-maintained slug list here could (and did)
-  // drift from the guides that actually exist.
-  const guidePages: MetadataRoute.Sitemap = GUIDES.map(g => ({
+  // Straight from PUBLISHED_GUIDES — the hand-maintained slug list here could
+  // (and did) drift from the guides that actually exist.
+  const guidePages: MetadataRoute.Sitemap = PUBLISHED_GUIDES.map(g => ({
     url: `${BASE_URL}/guides/${g.slug}`,
     lastModified: CONTENT_REVISED,
     changeFrequency: 'monthly',
@@ -170,27 +161,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   } catch {}
 
-  // Static submarket hub pages (file-backed in src/lib/submarkets-content.ts)
-  const marketHubPages: MetadataRoute.Sitemap = SUBMARKETS.map(s => ({
+  // Static submarket hub pages (file-backed in src/lib/submarkets-content.ts),
+  // San Antonio & Hill Country only — the rest are noindex.
+  const marketHubPages: MetadataRoute.Sitemap = IN_MARKET_SUBMARKETS.map(s => ({
     url: `${BASE_URL}/markets/${s.slug}`,
     lastModified: CONTENT_REVISED,
     changeFrequency: 'weekly' as const,
     priority: 0.85,
   }));
 
-  // Quarterly market reports — every report at /research/{slug} gets
-  // enumerated so search engines + LLM crawlers find them as they
-  // accumulate. Reports are static / file-backed so we can include them
-  // without a DB hit. lastModified comes from the report's publishedAt
-  // since reports are point-in-time snapshots — once published they
-  // don't get updated.
-  const { MARKET_REPORTS } = await import('@/lib/market-reports');
-  const reportPages: MetadataRoute.Sitemap = MARKET_REPORTS.map(r => ({
-    url: `${BASE_URL}/research/${r.slug}`,
-    lastModified: new Date(r.publishedAt),
-    changeFrequency: 'monthly' as const,
-    priority: 0.85,
-  }));
-
-  return [...staticPages, ...servicePages, ...insightPages, ...guidePages, ...marketHubPages, ...listingPages, ...submarketPages, ...reportPages];
+  return [...staticPages, ...servicePages, ...insightPages, ...guidePages, ...marketHubPages, ...listingPages, ...submarketPages];
 }

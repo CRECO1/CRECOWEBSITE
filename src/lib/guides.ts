@@ -1205,8 +1205,21 @@ export const GUIDES: Guide[] = [
   },
 ];
 
-export const SORTED_GUIDES = [...GUIDES];
+/**
+ * The statewide quarterly Texas market reports (every `qN-YYYY-` slug) were
+ * pulled in Oct 2026: their statewide figures contradicted the site's own San
+ * Antonio numbers, and CRECO now publishes a San Antonio & Hill Country brief
+ * instead (/market-brief). The entries stay in GUIDES for history, but nothing
+ * renders, lists, emails or sitemaps them — every URL 308s to /market-brief
+ * (next.config.js). Read guides through PUBLISHED_GUIDES / findGuide only.
+ */
+export const isStatewideMarketReport = (g: Pick<Guide, 'slug'>) => /^q\d-\d{4}-/.test(g.slug);
+
+/** Guides that are live on the site — the strategy playbooks. */
+export const PUBLISHED_GUIDES: Guide[] = GUIDES.filter(g => !isStatewideMarketReport(g));
+
+export const SORTED_GUIDES = [...PUBLISHED_GUIDES];
 
 export function findGuide(slug: string): Guide | undefined {
-  return GUIDES.find(g => g.slug === slug);
+  return PUBLISHED_GUIDES.find(g => g.slug === slug);
 }

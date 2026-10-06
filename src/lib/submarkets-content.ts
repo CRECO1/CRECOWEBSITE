@@ -1228,6 +1228,21 @@ export const SUBMARKETS: SubmarketEntry[] = [
   },
 ];
 
+/**
+ * CRECO's market is San Antonio & the Texas Hill Country (Oct 2026 refocus).
+ * Submarket pages under these parent metros stay live (no 404s, links keep
+ * working) but are noindex,follow and are left out of the sitemap, the
+ * /markets index, the footer and the llms feeds.
+ */
+export const OUT_OF_MARKET_METROS: readonly ParentMetro[] = ['austin', 'dallas-fort-worth', 'houston'];
+
+export function isInMarket(s: SubmarketEntry): boolean {
+  return !OUT_OF_MARKET_METROS.includes(s.parentMetro);
+}
+
+/** The San Antonio / Hill Country submarkets — what gets indexed and listed. */
+export const IN_MARKET_SUBMARKETS: SubmarketEntry[] = SUBMARKETS.filter(isInMarket);
+
 export function findSubmarket(slug: string): SubmarketEntry | undefined {
   return SUBMARKETS.find(s => s.slug === slug);
 }

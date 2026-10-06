@@ -247,6 +247,22 @@ const nextConfig = {
         destination: '/8923-dietz-elkhorn',
         permanent: true,
       },
+      // Statewide quarterly market reports pulled 2026-10 — their figures
+      // contradicted the site's own San Antonio numbers. Every report URL and
+      // the /research section consolidate onto the San Antonio & Hill Country
+      // brief rather than 404ing.
+      ...[
+        'q2-2026-texas-industrial-market-report',
+        'q2-2026-texas-retail-market-report',
+        'q2-2026-texas-office-market-report',
+        'q2-2026-texas-investment-outlook-report',
+        'q3-2026-texas-industrial-market-report',
+        'q3-2026-texas-retail-market-report',
+        'q3-2026-texas-office-market-report',
+        'q3-2026-texas-investment-outlook-report',
+      ].map(slug => ({ source: `/guides/${slug}`, destination: '/market-brief', permanent: true })),
+      { source: '/research', destination: '/market-brief', permanent: true },
+      { source: '/research/:path*', destination: '/market-brief', permanent: true },
     ];
   },
 
