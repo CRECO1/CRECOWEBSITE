@@ -51,7 +51,7 @@ const SURFACE_LABELS: Record<string, string> = {
   'listings-bottom': 'Listings index — bottom of page',
   'homepage-featured': 'Homepage — below featured properties',
   '8000-fair-oaks-pkwy-bottom': '8000 Fair Oaks Plaza — property page',
-  '8923-dietz-elkhorn-bottom': 'Elkhorn Pointe — property page',
+  '8923-dietz-elkhorn-bottom': 'Elkhorn Point — property page',
   '15033-main-st-lytle-bottom': '15033 Main St, Lytle — property page',
 };
 

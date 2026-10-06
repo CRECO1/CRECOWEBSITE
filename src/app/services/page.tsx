@@ -424,7 +424,7 @@ export const SERVICES: ServiceContent[] = [
     intro: [
       'Texas commercial real estate development is a long, capital-intensive game with dozens of fail points along the way: site selection mistakes, entitlement delays, construction cost overruns, leasing risk, capital stack misalignment. Most owners who attempt development without an experienced advisor learn expensive lessons.',
       'CRECO\'s development practice provides advisory and coordination services across the full development lifecycle. We work with first-time developers (often owner-operators expanding their own businesses) and sophisticated repeat developers who need expanded capacity. We are not a general contractor or design firm — we are the owner\'s advocate sitting alongside the GC, architect, lender, and city, making sure the project hits pro forma.',
-      'Our development work is centered on San Antonio and the Texas Hill Country — including CRECO\'s own Elkhorn Pointe retail center in Fair Oaks Ranch — and spans retail, mixed-use, flex, and land. The playbook is consistent: rigorous site selection, conservative pro forma, fast entitlements, controlled construction costs, and pre-leasing to de-risk the lease-up.',
+      'Our development work is centered on San Antonio and the Texas Hill Country — including CRECO\'s own Elkhorn Point retail center in Fair Oaks Ranch — and spans retail, mixed-use, flex, and land. The playbook is consistent: rigorous site selection, conservative pro forma, fast entitlements, controlled construction costs, and pre-leasing to de-risk the lease-up.',
     ],
     body: [
       'Site identification and acquisition advisory in San Antonio and the Hill Country',

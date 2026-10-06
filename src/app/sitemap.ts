@@ -135,7 +135,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   } catch {}
 
   // Synthetic listings that own a real detail page here (no landing_url) — e.g.
-  // the Elkhorn Pointe ±2-acre pad. Not in the DB, so enumerate them explicitly.
+  // the Elkhorn Point ±2-acre pad. Not in the DB, so enumerate them explicitly.
   for (const l of SYNTHETIC_LISTINGS) {
     if (!l.landing_url) {
       listingPages.push({

@@ -40,7 +40,7 @@ const ABOUT_FAQS = [
   },
   {
     q: 'Does CRECO represent tenants or landlords?',
-    a: `Both — and investors. ${REPRESENTATION_STATEMENT} Tenant representation is typically paid by the landlord, so it is usually free to the tenant. CRECO also owns and leases its own centers in Fair Oaks Ranch and Lytle and is developing Elkhorn Pointe in Fair Oaks Ranch.`,
+    a: `Both — and investors. ${REPRESENTATION_STATEMENT} Tenant representation is typically paid by the landlord, so it is usually free to the tenant. CRECO also owns and leases its own centers in Fair Oaks Ranch and Lytle and is developing Elkhorn Point in Fair Oaks Ranch.`,
   },
   {
     q: 'What property types does CRECO handle?',

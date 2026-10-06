@@ -49,9 +49,9 @@ export default function FairOaksRanchPage() {
         heroEyebrow: 'Headquartered in Fair Oaks Ranch · Tenants · Landlords · Investors',
         heroTitle: 'Fair Oaks Ranch commercial real estate — from the full-service brokerage headquartered here.',
         heroSubhead:
-          "CRECO is headquartered at 8000 Fair Oaks Pkwy, Suite 100 — inside the mixed-use center we own and operate — and is developing Elkhorn Pointe, a new ±20,000 SF retail center on Dietz Elkhorn Rd. We represent tenants, landlords, owners, and investors in Fair Oaks Ranch, Boerne, and the Hill Country across retail, restaurant, office, medical, industrial, flex, and land — for lease and for sale.",
+          "CRECO is headquartered at 8000 Fair Oaks Pkwy, Suite 100 — inside the mixed-use center we own and operate — and is developing Elkhorn Point, a new ±20,000 SF retail center on Dietz Elkhorn Rd. We represent tenants, landlords, owners, and investors in Fair Oaks Ranch, Boerne, and the Hill Country across retail, restaurant, office, medical, industrial, flex, and land — for lease and for sale.",
         quickAnswer:
-          "CRECO - Commercial Real Estate Company is a full-service commercial real estate brokerage representing tenants, landlords, owners, and investors across retail, office, industrial, flex, and land — for lease and for sale — in San Antonio and the Texas Hill Country. It is headquartered in Fair Oaks Ranch, TX (8000 Fair Oaks Pkwy, Suite 100; TREC #9014367), owns and operates the 8000 Fair Oaks Plaza retail and executive-suite center, and is developing the ±20,000 SF Elkhorn Pointe retail center.",
+          "CRECO - Commercial Real Estate Company is a full-service commercial real estate brokerage representing tenants, landlords, owners, and investors across retail, office, industrial, flex, and land — for lease and for sale — in San Antonio and the Texas Hill Country. It is headquartered in Fair Oaks Ranch, TX (8000 Fair Oaks Pkwy, Suite 100; TREC #9014367), owns and operates the 8000 Fair Oaks Plaza retail and executive-suite center, and is developing the ±20,000 SF Elkhorn Point retail center.",
         marketStats: [
           { label: 'Median household income', value: '$130K+', context: 'one of the highest-income suburbs in Texas' },
           { label: 'Population growth', value: 'High', context: 'driven by master-planned community expansion' },
@@ -101,7 +101,7 @@ export default function FairOaksRanchPage() {
           },
         ],
         whyBullets: [
-          'Headquartered in Fair Oaks Ranch — CRECO owns and operates the mixed-use center at 8000 Fair Oaks Pkwy and is developing Elkhorn Pointe',
+          'Headquartered in Fair Oaks Ranch — CRECO owns and operates the mixed-use center at 8000 Fair Oaks Pkwy and is developing Elkhorn Point',
           'Texas-wide reach — Fair Oaks Ranch deals connect to our broader San Antonio + Hill Country network',
           'Represents tenants, landlords/owners, and investors — including tenant rep for restaurants, retail, professional services, and executive suite tenants (typically paid by the landlord)',
           'Landlord and owner representation — leasing, sales, and property management for Fair Oaks Ranch and Hill Country owners',
@@ -112,19 +112,19 @@ export default function FairOaksRanchPage() {
         authority: {
           heading: 'Who does commercial real estate in Fair Oaks Ranch? CRECO is headquartered here.',
           intro:
-            "Most brokerages cover Fair Oaks Ranch from downtown San Antonio. CRECO is based in it: our office is Suite 100 at 8000 Fair Oaks Pkwy, in a center we own, lease, and manage ourselves, a short drive from the Elkhorn Pointe development on Dietz Elkhorn Rd, which CRECO is developing and leasing. That makes CRECO both a local landlord and a local broker — we represent tenants looking for space, owners leasing or selling property, and investors buying and selling across Fair Oaks Ranch, Boerne, Comfort, Bulverde, and the rest of the Hill Country.",
+            "Most brokerages cover Fair Oaks Ranch from downtown San Antonio. CRECO is based in it: our office is Suite 100 at 8000 Fair Oaks Pkwy, in a center we own, lease, and manage ourselves, a short drive from the Elkhorn Point development on Dietz Elkhorn Rd, which CRECO is developing and leasing. That makes CRECO both a local landlord and a local broker — we represent tenants looking for space, owners leasing or selling property, and investors buying and selling across Fair Oaks Ranch, Boerne, Comfort, Bulverde, and the rest of the Hill Country.",
           services: [
             { title: 'Tenant representation', href: '/services/tenant-representation', description: 'Restaurants, coffee and quick-service, retail, medical and dental, fitness, and professional-services tenants finding space on Fair Oaks Pkwy, the I-10 frontage, Dietz Elkhorn Rd, and in Boerne — typically at no cost to the tenant.' },
-            { title: 'Landlord / owner representation', href: '/services/leasing-sales', description: 'Leasing campaigns for Fair Oaks Ranch and Hill Country retail centers, office buildings, and flex space — the same leasing CRECO runs at 8000 Fair Oaks Plaza, which it owns, and at Elkhorn Pointe, which it is developing.' },
+            { title: 'Landlord / owner representation', href: '/services/leasing-sales', description: 'Leasing campaigns for Fair Oaks Ranch and Hill Country retail centers, office buildings, and flex space — the same leasing CRECO runs at 8000 Fair Oaks Plaza, which it owns, and at Elkhorn Point, which it is developing.' },
             { title: 'Investment sales', href: '/services/investment-advisory', description: 'Sale and acquisition of retail centers, office and medical buildings, and income property in Fair Oaks Ranch, Boerne, and Greater San Antonio, including 1031 exchange replacement property.' },
-            { title: 'Land sales & development', href: '/services/development', description: 'Retail pads, office pads, and mixed-use sites tied to the residential growth pipeline — CRECO develops here as well as brokering, starting with Elkhorn Pointe.' },
+            { title: 'Land sales & development', href: '/services/development', description: 'Retail pads, office pads, and mixed-use sites tied to the residential growth pipeline — CRECO develops here as well as brokering, starting with Elkhorn Point.' },
             { title: 'Site selection', href: '/services/tenant-representation', description: 'Trade-area, traffic, and co-tenancy analysis for concepts deciding between Fair Oaks Ranch, Boerne, Leon Springs, and the I-10 / 1604 corridor.' },
             { title: 'Property management', href: '/services/property-management', description: 'Day-to-day management, CAM reconciliation, and reporting for local commercial owners — the same operations CRECO runs at its own centers.' },
           ],
           proof: [
             { label: 'Headquarters', value: '8000 Fair Oaks Pkwy, Suite 100, Fair Oaks Ranch, TX 78015 — (210) 817-3443 · info@crecotx.com' },
             { label: 'Owns & operates locally', value: '8000 Fair Oaks Plaza: a 4-bay retail building plus two two-story executive office suite buildings on Fair Oaks Pkwy. Tenants include Spotted Deer Coffee, Parker\'s Ice Creams, Fair Oaks Salon, Blume Haus, and Fair Oaks Realty Group.' },
-            { label: 'Developing locally', value: 'Elkhorn Pointe, 8923 Dietz Elkhorn Rd: a new ±20,000 SF neighborhood retail center — two ±10,000 SF buildings, divisible and built to suit, with end-cap F&B positions — pre-leasing now.' },
+            { label: 'Developing locally', value: 'Elkhorn Point, 8923 Dietz Elkhorn Rd: a new ±20,000 SF neighborhood retail center — two ±10,000 SF buildings, divisible and built to suit, with end-cap F&B positions — pre-leasing now.' },
             { label: 'Also owns in the metro', value: '15033 Main St, Lytle — a ±11,750 SF multi-tenant retail center on the I-35 corridor.' },
             { label: 'Broker & founder', value: 'Zachary A. Stovall (TREC #691174), an eighth-generation Texan raised in San Antonio; over eight years he has closed more than $130 million in acquisitions and dispositions and $95 million in leases.' },
             { label: 'Director of Leasing', value: 'Brian Blanco, a San Antonio native who spent four-plus years at Amazon as part of its delivery-station site-selection process.' },
@@ -134,7 +134,7 @@ export default function FairOaksRanchPage() {
         faqs: [
           {
             q: 'Who does commercial real estate in Fair Oaks Ranch, TX?',
-            a: 'CRECO - Commercial Real Estate Company is a full-service commercial real estate brokerage representing tenants, landlords, owners, and investors across retail, office, industrial, flex, and land — for lease and for sale — in San Antonio and the Texas Hill Country. It is headquartered in Fair Oaks Ranch at 8000 Fair Oaks Pkwy, Suite 100 (TREC #9014367), and it owns and operates 8000 Fair Oaks Plaza and is developing the Elkhorn Pointe retail center. Call (210) 817-3443.',
+            a: 'CRECO - Commercial Real Estate Company is a full-service commercial real estate brokerage representing tenants, landlords, owners, and investors across retail, office, industrial, flex, and land — for lease and for sale — in San Antonio and the Texas Hill Country. It is headquartered in Fair Oaks Ranch at 8000 Fair Oaks Pkwy, Suite 100 (TREC #9014367), and it owns and operates 8000 Fair Oaks Plaza and is developing the Elkhorn Point retail center. Call (210) 817-3443.',
           },
           {
             q: 'Who does tenant representation and landlord representation in Fair Oaks Ranch and Boerne?',
@@ -146,7 +146,7 @@ export default function FairOaksRanchPage() {
           },
           {
             q: 'Where are the commercial corridors in Fair Oaks Ranch?',
-            a: 'The Fair Oaks Pkwy corridor (community-serving retail and executive office, including CRECO\'s 8000 Fair Oaks Plaza), the I-10 frontage between San Antonio and Boerne, Dietz Elkhorn Rd (site of CRECO\'s Elkhorn Pointe retail center), the Old Fredericksburg Rd / 1604 approach toward The Dominion, and the northern approach into Boerne.',
+            a: 'The Fair Oaks Pkwy corridor (community-serving retail and executive office, including CRECO\'s 8000 Fair Oaks Plaza), the I-10 frontage between San Antonio and Boerne, Dietz Elkhorn Rd (site of CRECO\'s Elkhorn Point retail center), the Old Fredericksburg Rd / 1604 approach toward The Dominion, and the northern approach into Boerne.',
           },
           {
             q: 'What kinds of businesses lease commercial space in Fair Oaks Ranch?',
@@ -174,12 +174,12 @@ export default function FairOaksRanchPage() {
           { label: 'Retail space for lease', href: '/texas-retail-space-for-lease', description: 'Retail in Fair Oaks Ranch and across Texas — strip centers, end-caps with drive-thru, restaurants, and pad sites.' },
           { label: 'Office space for lease', href: '/texas-office-space-for-lease', description: 'Professional services office in Fair Oaks Ranch and the broader I-10 corridor.' },
           { label: '8000 Fair Oaks Pkwy', href: '/8000-fair-oaks-pkwy', description: "CRECO's mixed-use center at 8000 Fair Oaks Pkwy — 4 retail bays + two executive suite buildings, now leasing." },
-          // Elkhorn Pointe is the only entry here that leaves crecotx.com: the
+          // Elkhorn Point is the only entry here that leaves crecotx.com: the
           // property has its own site and that is where a prospective tenant
           // should land. Apex host deliberately (never www) — www.elkhornpoint.com
           // sits behind Vercel's automatic mitigations and intermittently 403s
           // cold clients. UTM-tagged so GA4 attributes the referral.
-          { label: 'Elkhorn Pointe — 8923 Dietz Elkhorn', href: 'https://elkhornpoint.com/?utm_source=crecotx&utm_medium=referral&utm_campaign=cross-site&utm_content=fair-oaks-ranch-hub', description: 'A CRECO development on Dietz Elkhorn Rd — two ±10,000 SF buildings, ±20,000 SF divisible and built to suit, pre-leasing now inside the Fair Oaks Ranch city limits.' },
+          { label: 'Elkhorn Point — 8923 Dietz Elkhorn', href: 'https://elkhornpoint.com/?utm_source=crecotx&utm_medium=referral&utm_campaign=cross-site&utm_content=fair-oaks-ranch-hub', description: 'A CRECO development on Dietz Elkhorn Rd — two ±10,000 SF buildings, ±20,000 SF divisible and built to suit, pre-leasing now inside the Fair Oaks Ranch city limits.' },
           { label: 'Boerne commercial real estate', href: '/boerne-commercial-real-estate', description: 'The neighboring Boerne market — Hill Country gateway, strong I-10 commercial corridor, growing demographics.' },
         ],
       }}

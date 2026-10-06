@@ -21,7 +21,7 @@ Your job is to answer commercial real estate questions clearly and directly, in 
 # About CRECO
 
 CRECO is a San Antonio & Texas Hill Country commercial real estate brokerage. Headquarters: 8000 Fair Oaks Pkwy, Suite 100, Fair Oaks Ranch, TX 78015 — the firm operates from the same mixed-use commercial center it owns and leases. Service area: San Antonio and the Texas Hill Country, with deep practices in:
-- The Hill Country gateway markets — Fair Oaks Ranch, Boerne, and Leon Springs along the I-10 corridor — where CRECO owns and operates the mixed-use commercial center at 8000 Fair Oaks Pkwy and is developing the Elkhorn Pointe retail center
+- The Hill Country gateway markets — Fair Oaks Ranch, Boerne, and Leon Springs along the I-10 corridor — where CRECO owns and operates the mixed-use commercial center at 8000 Fair Oaks Pkwy and is developing the Elkhorn Point retail center
 - San Antonio (every major submarket: Stone Oak / North Central, the Medical Center and Northwest, Northeast, Downtown, South Side, Far West, plus Schertz, Cibolo, Selma)
 - New Braunfels and Seguin along the I-35 corridor
 - Lytle, southwest of San Antonio, where CRECO owns the multi-tenant retail center at 15033 Main St
@@ -44,7 +44,7 @@ CRECO covers commercial real estate end-to-end. It is a full-service brokerage �
 
 5. **Property Management** — institutional-grade management for multi-tenant office, retail, and industrial. /services/property-management
 
-6. **Property Development** — CRECO operates its own mixed-use commercial center at 8000 Fair Oaks Pkwy, is developing Elkhorn Pointe (a new ±20,000 SF neighborhood retail center — two ±10,000 SF buildings, built to suit — at 8923 Dietz Elkhorn Rd in Fair Oaks Ranch, pre-leasing now: /8923-dietz-elkhorn), and advises on development projects in San Antonio and the Hill Country. /services/development
+6. **Property Development** — CRECO operates its own mixed-use commercial center at 8000 Fair Oaks Pkwy, is developing Elkhorn Point (a new ±20,000 SF neighborhood retail center — two ±10,000 SF buildings, built to suit — at 8923 Dietz Elkhorn Rd in Fair Oaks Ranch, pre-leasing now: /8923-dietz-elkhorn), and advises on development projects in San Antonio and the Hill Country. /services/development
 
 ## 8000 Fair Oaks Pkwy — CRECO's own asset
 

@@ -81,7 +81,7 @@ const PROPERTY_TYPES = [
 // an existing, indexable in-market page (Austin / Houston / DFW pages are
 // noindex and deliberately not linked from here).
 const LOCAL_MARKETS = [
-  { name: 'Fair Oaks Ranch', badge: 'HQ', href: '/fair-oaks-ranch-commercial-real-estate', tagline: 'Our home base — Fair Oaks Plaza and the Elkhorn Pointe development' },
+  { name: 'Fair Oaks Ranch', badge: 'HQ', href: '/fair-oaks-ranch-commercial-real-estate', tagline: 'Our home base — Fair Oaks Plaza and the Elkhorn Point development' },
   { name: 'Boerne', badge: '', href: '/boerne-commercial-real-estate', tagline: 'Hill Country gateway on I-10 — retail, medical and service space' },
   { name: 'Leon Springs & the I-10 corridor', badge: '', href: '/submarkets/northwest', tagline: 'I-10 from La Cantera out to Leon Springs and the Loop 1604 interchange' },
   { name: 'Stone Oak', badge: '', href: '/markets/stone-oak', tagline: 'North Central San Antonio\'s suburban-growth corridor' },
@@ -130,7 +130,7 @@ const FAQS = [
 
 const DEFAULT_SETTINGS = {
   hero_headline: 'Commercial real estate for San Antonio & the Texas Hill Country',
-  hero_subheadline: 'Leasing, sales and owner representation from a team that owns and operates commercial property here — Fair Oaks Plaza, our Lytle center and the Elkhorn Pointe development.',
+  hero_subheadline: 'Leasing, sales and owner representation from a team that owns and operates commercial property here — Fair Oaks Plaza, our Lytle center and the Elkhorn Point development.',
   hero_image_url: '/images/sa-hero.jpg' as string | null,
   about_headline: 'A trailblazing approach to Texas commercial real estate.',
   about_text: 'CRECO is built on innovation, expertise, and a relentless commitment to client outcomes. We blend deep Texas market knowledge with the analytical rigor you would expect from a national firm — and we keep our roster small enough that every client works directly with a principal. From single-asset tenants to multi-property portfolio owners, we treat your assignment like our name is on the building.',
