@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getListingBySlug } from '@/lib/supabase';
+import { SYNTHETIC_LISTINGS } from '@/lib/featured-properties';
 import { enforceRateLimit } from '@/lib/rate-limit';
 import { formatPrice, formatSqft, formatLeaseRate, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 
@@ -16,10 +17,17 @@ export async function GET(
 
   try {
     const { slug } = await params;
-    const listing = await getListingBySlug(slug);
+    // CRECO's own code-defined listings (e.g. the Elkhorn Point pad) aren't in the
+    // listings table, so fall back to them — the detail page does the same.
+    const listing = (await getListingBySlug(slug)) ?? SYNTHETIC_LISTINGS.find((l) => l.slug === slug) ?? null;
 
     if (!listing) {
       return NextResponse.json({ error: 'Listing not found' }, { status: 404 });
+    }
+
+    // A real marketing flyer beats the generated one-pager.
+    if (listing.brochure_url) {
+      return NextResponse.redirect(new URL(listing.brochure_url, req.url), 307);
     }
 
     const { jsPDF } = await import('jspdf');

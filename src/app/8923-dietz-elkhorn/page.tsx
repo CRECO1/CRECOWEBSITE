@@ -450,6 +450,14 @@ export default async function DietzElkhornPage() {
                   >
                     <FileText className="h-4 w-4" /> Download site plan <ExternalLink className="h-3 w-3" />
                   </a>
+                  <a
+                    href={DIETZ_ELKHORN_LISTING.brochure_url ?? '/brochures/elkhorn-point-lease-flyer.pdf'}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="inline-flex items-center gap-2 rounded-lg border border-primary px-5 py-2.5 text-body-sm font-semibold text-primary hover:bg-primary hover:text-white transition-colors"
+                  >
+                    <FileText className="h-4 w-4" /> Leasing flyer (PDF) <ExternalLink className="h-3 w-3" />
+                  </a>
                   {/* The property has its own site, which is where a prospective
                       tenant should end up — this page exists for search and direct
                       referrals. Apex host deliberately (never www): www.elkhornpoint.com
