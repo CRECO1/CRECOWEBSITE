@@ -110,7 +110,7 @@ export default function AustinIndustrialSpacePage() {
           'Texas-wide industrial practice — we compare Austin against San Antonio and DFW on total occupancy cost',
           'Fluent in the megaproject-and-supplier demand story that drives Austin industrial',
           'We navigate the competition with data centers for large, power-heavy sites',
-          'Senior broker leads every engagement, from a small flex bay to a build-to-suit requirement',
+          'Our team works every engagement directly, from a small flex bay to a build-to-suit requirement',
           'We qualify buildings on power, clear height, and location against your supply chain before you tour',
           'Full-service representation — tenants, landlords/owners, and investors; tenant rep is typically paid by the landlord',
           'Owner-side hold-vs-sell analysis with growth-oriented and 1031 buyer flow',

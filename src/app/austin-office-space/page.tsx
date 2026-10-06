@@ -120,7 +120,7 @@ export default function AustinOfficeSpacePage() {
           "Represents tenants, landlords/owners, and investors — including tenant rep for Austin businesses (typically paid by the landlord)",
           "Cold-eyed sublease evaluation — many subleases beat direct deals on economics, but term-remaining matters",
           "Texas-wide network for tenants with Austin + multi-city footprints",
-          "Senior broker leads every engagement",
+          "Our team works every engagement directly",
         ],
         listingsLink: {
           label: 'See Austin office listings →',

@@ -79,7 +79,7 @@ const FAQS = [
   },
   {
     q: "Is the application confidential?",
-    a: "Yes. We never contact your current brokerage or employer without your explicit say-so. Many of our hires are still actively producing somewhere else when they apply.",
+    a: "Yes. We never contact your current brokerage or employer without your explicit say-so. It's common to apply while you're still with another brokerage, and we treat it that way.",
   },
 ];
 

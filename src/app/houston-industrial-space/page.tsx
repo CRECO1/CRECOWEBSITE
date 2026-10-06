@@ -119,7 +119,7 @@ export default function HoustonIndustrialSpacePage() {
           "Represents tenants, landlords/owners, and investors — including tenant rep for Houston industrial users (typically paid by the landlord)",
           "Owner services for Houston industrial investors with institutional-quality reporting",
           "Cross-Texas 1031 buyer flow — Houston cap rates often outperform comparable Austin / San Antonio product",
-          "Senior broker leads every engagement",
+          "Our team works every engagement directly",
         ],
         listingsLink: {
           label: 'See Houston industrial listings →',

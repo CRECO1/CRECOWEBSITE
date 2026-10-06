@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import Link from 'next/link';
-import { CheckCircle, Award, Users, Building2 } from 'lucide-react';
+import { CheckCircle, Award, Users, Building2, ExternalLink, Newspaper, MapPin } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
@@ -11,6 +11,7 @@ import { JsonLd } from '@/components/seo/JsonLd';
 import { FaqSection } from '@/components/marketing/FaqSection';
 import { supabase } from '@/lib/supabase';
 import { PUBLIC_AGENT_COLUMNS } from '@/lib/broker';
+import { HEADWALL_TOBIN_HILL as HEADWALL } from '@/lib/press';
 import { HERO_POSITIONING } from '@/lib/brand';
 import { ASSET_CLASSES, BUSINESS, CANONICAL_DESCRIPTION, CAPABILITIES, DIRECTOR_OF_LEASING, FOUNDER_ID, REPRESENTATION_STATEMENT, SITE_URL, breadcrumbList, businessRef, webPage } from '@/lib/schema';
 
@@ -210,6 +211,62 @@ export default async function AboutPage() {
                 <Link href="/seller-investor-representation" className="font-semibold text-gold-dark hover:underline">seller &amp; investor representation</Link>, and{' '}
                 <Link href="/services/tenant-representation" className="font-semibold text-gold-dark hover:underline">tenant representation</Link>.
               </p>
+            </div>
+          </Container>
+        </section>
+
+        {/* Representative work + press. A static section rather than a /sold
+            row: /sold lists closed deals from Supabase, and this transaction
+            was reported under contract — its closing is unconfirmed, so it is
+            described as representation only (see lib/press.ts). */}
+        <section className="section-luxury bg-white border-t border-border" aria-labelledby="work-heading">
+          <Container>
+            <div className="mx-auto max-w-4xl">
+              <p className="overline mb-3">Representative Work</p>
+              <h2 id="work-heading" className="mb-8 font-heading text-display-sm font-bold text-primary">Work we&apos;ve done, and where it was covered</h2>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-5">
+                <article className="rounded-xl border border-border bg-background-cream p-6 sm:p-7 md:col-span-3">
+                  <p className="mb-2 flex items-center gap-1.5 text-caption uppercase tracking-widest text-foreground-muted">
+                    <MapPin className="h-3.5 w-3.5 text-gold" /> Tobin Hill, San Antonio
+                  </p>
+                  <h3 className="font-heading text-heading-lg font-bold text-primary">St. Mary&apos;s Strip assemblage — Tobin Hill</h3>
+                  <dl className="mt-4 grid grid-cols-1 gap-x-6 gap-y-2 text-body-sm sm:grid-cols-3">
+                    <div><dt className="font-semibold text-primary">Site</dt><dd className="text-foreground-muted">~3.1 acres</dd></div>
+                    <div><dt className="font-semibold text-primary">Role</dt><dd className="text-foreground-muted">Seller representation (family ownership)</dd></div>
+                    <div><dt className="font-semibold text-primary">Buyer</dt><dd className="text-foreground-muted">Headwall Investments</dd></div>
+                  </dl>
+                  <p className="mt-4 text-body-sm text-foreground-muted leading-relaxed">
+                    Zachary A. Stovall represented the Stovall and Poole families in Headwall Investments&apos; contract to acquire most of a roughly 3.1-acre triangular block bounded by E. Park Ave, E. Euclid Ave and N. St. Mary&apos;s St, at the south end of the St. Mary&apos;s Strip near the Pearl. The block includes Janal Wholesale, the Stovall family&apos;s wholesale florist since 1964.
+                  </p>
+                  <a
+                    href={HEADWALL.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-4 inline-flex min-h-[44px] items-center gap-1.5 text-body-sm font-semibold text-gold-dark hover:underline md:min-h-0"
+                  >
+                    Read the {HEADWALL.outlet} coverage <ExternalLink className="h-3.5 w-3.5" />
+                  </a>
+                </article>
+
+                <aside className="rounded-xl border border-border bg-white p-6 sm:p-7 md:col-span-2" aria-label="In the news">
+                  <p className="mb-3 flex items-center gap-1.5 overline">
+                    <Newspaper className="h-4 w-4" /> In the news
+                  </p>
+                  <p className="text-body-sm text-primary leading-relaxed">{HEADWALL.summary}</p>
+                  {HEADWALL.quote && (
+                    <blockquote className="mt-4 border-l-2 border-gold pl-3 text-body-sm italic text-foreground-muted">
+                      &ldquo;{HEADWALL.quote.text}&rdquo;
+                      <footer className="mt-1 not-italic text-caption">— {HEADWALL.quote.by}</footer>
+                    </blockquote>
+                  )}
+                  <p className="mt-4 text-caption text-foreground-muted">
+                    <a href={HEADWALL.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-gold-dark hover:underline">
+                      {HEADWALL.outlet}
+                    </a>
+                    , &ldquo;{HEADWALL.headline},&rdquo; {HEADWALL.author}, <time dateTime={HEADWALL.isoDate}>{HEADWALL.date}</time>
+                  </p>
+                </aside>
+              </div>
             </div>
           </Container>
         </section>

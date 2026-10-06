@@ -114,7 +114,7 @@ export default function DallasIndustrialSpacePage() {
         whyBullets: [
           'Texas-wide industrial practice — we compare DFW against Houston, San Antonio, and Austin on total occupancy cost',
           'We filter a billion-SF market to the handful of buildings that fit your specs before you tour',
-          'Senior broker leads every engagement, from shallow-bay flex to big-box bulk requirements',
+          'Our team works every engagement directly, from shallow-bay flex to big-box bulk requirements',
           'Concession benchmarking from deals actually being signed, not aggregated marketplace data',
           'We qualify buildings on clear height, power, dock/trailer, and distribution geography up front',
           'Full-service representation — tenants, landlords/owners, and investors; tenant rep is typically paid by the landlord',

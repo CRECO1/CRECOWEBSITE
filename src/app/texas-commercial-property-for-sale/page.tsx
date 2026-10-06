@@ -69,15 +69,14 @@ export default async function Page() {
             body: 'The best Texas commercial deals never hit LoopNet or CoStar. Family offices, generational owners, and institutional players move properties through broker relationships. CRECO\'s Texas network surfaces opportunities our clients see before the market does.',
           },
           {
-            title: '1031 exchanges and depreciation matter.',
-            body: 'Smart commercial investors structure acquisitions around 1031 exchange timing, cost segregation studies, bonus depreciation, and Opportunity Zone qualification. We coordinate with your CPA and qualified intermediary to time deals correctly.',
+            title: '1031 timing matters.',
+            body: 'Smart commercial investors structure acquisitions around 1031 exchange timing. We coordinate with your CPA and qualified intermediary on tax-driven decisions like 1031 timing, so deals close inside the windows.',
           },
         ],
         whyBullets: [
           'Underwriting and pro forma modeling on every deal we bring to you',
           'Off-market deal flow through our Texas owner and broker network',
           '1031 exchange identification with up- and down-leg coordination',
-          'Cost-segregation, depreciation, and Opportunity Zone strategy',
           'Owner-user and investor representation across all Texas markets',
         ],
         faqs: [

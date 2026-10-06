@@ -44,7 +44,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
   ArrowRight, Star, Building2, Award, Sparkles, MapPin,
-  Briefcase, Warehouse, Store, Layers, LineChart, Wrench, Leaf, BadgeCheck,
+  Briefcase, Warehouse, Store, Layers, LineChart, Wrench, BadgeCheck,
   BarChart3, Calculator,
 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
@@ -56,6 +56,7 @@ import { withSyntheticListings, listingLinkProps } from '@/lib/featured-properti
 import { TrustStrip } from '@/components/marketing/TrustStrip';
 import { LeadMagnetBand } from '@/components/marketing/LeadMagnetBand';
 import { GoogleReviews } from '@/components/marketing/GoogleReviews';
+import { HEADWALL_TOBIN_HILL } from '@/lib/press';
 
 
 // SERVICES — ordered by what brings owners and tenants in the door
@@ -65,7 +66,6 @@ const SERVICES = [
   { icon: LineChart, title: 'Investment Sales & Advisory', description: 'Acquisitions, dispositions, underwriting, 1031 exchanges, and portfolio strategy for investors and multi-property owners across Texas.' },
   { icon: Wrench, title: 'Property Management', description: 'Day-to-day operations and tenant relations for commercial assets — built for owners with multiple Texas properties.' },
   { icon: Layers, title: 'Property Development', description: 'Site selection, entitlements, pro forma, and construction coordination — concept through stabilization.' },
-  { icon: Leaf, title: 'Sustainability Consulting', description: 'Energy audits, ESG strategy, and retrofit ROI analysis for commercial owners and institutional investors.' },
 ];
 
 // PROPERTY_TYPES — retail first, then industrial, then office (per business priority)
@@ -108,7 +108,7 @@ const FAQS = [
   },
   {
     q: 'Do you work with multi-property owners and investors?',
-    a: 'Yes — multi-property owners are core to our practice. We provide portfolio strategy, hold/sell analysis, repositioning, 1031 exchange identification, tenant mix optimization, and ongoing property management for owners with 5 to 100+ commercial Texas properties. Our owner services are built for institutional-quality reporting at boutique-firm responsiveness.',
+    a: 'Yes. We provide portfolio strategy, hold/sell analysis, repositioning, 1031 exchange identification, tenant mix optimization, and ongoing property management. We manage our own centers — Fair Oaks Plaza and our Lytle center — and take on a select number of owners who want the same hands-on attention.',
   },
   {
     q: 'How does tenant representation work at CRECO?',
@@ -597,7 +597,7 @@ export default async function HomePage() {
                 {s.about_headline}
               </h2>
               <p className="mb-8 text-body-lg text-foreground-muted">{s.about_text}</p>
-              <ul className="space-y-4 mb-10">
+              <ul className="space-y-4 mb-6">
                 {[
                   'Deep San Antonio and Hill Country market knowledge — we own and operate property here',
                   'Principal-level service on every engagement — never handed off',
@@ -610,6 +610,12 @@ export default async function HomePage() {
                   </li>
                 ))}
               </ul>
+              <p className="mb-10 border-l-2 border-gold pl-4 text-body-sm text-foreground-muted">
+                <span className="font-semibold text-primary">In the news:</span> {HEADWALL_TOBIN_HILL.summary}{' '}
+                <a href={HEADWALL_TOBIN_HILL.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-gold-dark hover:underline">
+                  — {HEADWALL_TOBIN_HILL.outlet}
+                </a>
+              </p>
               <div className="flex gap-4">
                 <Button size="lg" asChild><Link href="/about#team">Meet the Team</Link></Button>
                 <Button size="lg" variant="outline" asChild>

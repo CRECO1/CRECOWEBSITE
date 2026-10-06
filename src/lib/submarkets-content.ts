@@ -51,11 +51,11 @@ const STANDARD_PROPERTY_LINKS = [
 ];
 
 const STANDARD_WHY_BULLETS = [
-  'Texas-wide network with on-the-ground broker presence',
+  'Owner-operator perspective — we own and operate commercial property in the San Antonio area',
   'Off-market deal flow across all major property types',
   'Full-service representation — tenants, landlords/owners, and investors, for lease and for sale',
   'Owner services for landlords and multi-property investors',
-  'Direct broker access — no junior-handoff, every engagement led by a senior',
+  'Direct access to the people doing the deal — no junior handoff',
   'Lease + investment-sale fluency across office, industrial, retail, and land',
 ];
 

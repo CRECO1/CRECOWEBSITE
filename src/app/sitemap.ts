@@ -112,7 +112,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  const serviceSlugs = ['tenant-representation', 'investment-advisory', 'leasing-sales', 'property-management', 'development', 'sustainability'];
+  const serviceSlugs = ['tenant-representation', 'investment-advisory', 'leasing-sales', 'property-management', 'development'];
   const servicePages: MetadataRoute.Sitemap = serviceSlugs.map(slug => ({
     url: `${BASE_URL}/services/${slug}`,
     lastModified: CONTENT_REVISED,

@@ -80,19 +80,19 @@ const SERVICES = [
   },
   {
     icon: Layers,
-    title: '1031 Exchanges & Tax Strategy',
-    desc: 'Identification of replacement property within the 45-day window. Coordination with your CPA, qualified intermediary, and lender. Cost segregation studies, bonus depreciation, Opportunity Zone qualification on eligible properties.',
+    title: '1031 Exchange Coordination',
+    desc: 'Identification of replacement property within the 45-day window, coordinated with your qualified intermediary and lender. We coordinate with your CPA on tax-driven decisions like 1031 timing.',
   },
 ];
 
 const FAQS = [
   {
     q: 'How is CRECO different from a national property management firm?',
-    a: 'National firms typically excel at managing single large institutional assets. CRECO is built for the multi-property Texas owner — entrepreneurs, family offices, and private investors with 5 to 100 commercial properties. You get principal-level attention on strategy and a tight property-management team that knows every asset, instead of being one of 10,000 buildings on a national platform.',
+    a: 'National firms typically excel at managing large institutional assets. CRECO is a small, principal-led team built for private owners — entrepreneurs, families, and investors. You get direct attention on strategy from people who know every asset, instead of being one of thousands of buildings on a national platform.',
   },
   {
     q: 'What size portfolio does CRECO work with?',
-    a: 'We work with Texas commercial property owners ranging from 3 properties to 75+. Our sweet spot is 10-50 property portfolios with mixed asset types (retail, industrial, office, mixed-use) where strategy across the portfolio matters as much as managing any single building. Smaller owners (1-5 properties) often engage us for advisory + leasing rather than full management.',
+    a: 'We manage our own centers — Fair Oaks Plaza and our Lytle center — and take on a select number of owners who want the same hands-on attention. Some owners engage us for full management; others for leasing and advisory only.',
   },
   {
     q: 'What does CRECO charge for owner services?',
@@ -100,15 +100,15 @@ const FAQS = [
   },
   {
     q: 'Do you handle properties outside San Antonio?',
-    a: 'Yes — CRECO is a Texas-wide owner services firm. We actively manage and advise on properties across San Antonio, Austin, Houston, DFW, El Paso, and the Hill Country. For owners with multi-market Texas portfolios, having one firm coordinating across all of them simplifies reporting, leasing strategy, and disposition timing.',
+    a: "Our focus is San Antonio and the Texas Hill Country, where we own and operate property ourselves. If you have a property elsewhere in Texas, ask — we'll tell you honestly whether we're the right fit.",
   },
   {
     q: 'Can I keep my existing property manager and just engage CRECO for strategy?',
-    a: 'Absolutely. Many owners engage CRECO purely for strategic advisory — quarterly portfolio reviews, hold/sell calls on individual assets, tenant repositioning recommendations, disposition timing — while keeping their current PM in place for day-to-day operations. We work in whatever role the engagement requires.',
+    a: 'Yes. You can engage CRECO for strategic advisory only — portfolio reviews, hold/sell calls on individual assets, tenant repositioning recommendations, disposition timing — while keeping their current PM in place for day-to-day operations. We work in whatever role the engagement requires.',
   },
   {
     q: 'How quickly can you take over property management for an existing portfolio?',
-    a: 'Onboarding a new owner with an established Texas portfolio typically takes 30-60 days. We tour every asset, audit existing leases and rent rolls, transition vendor contracts, set up financial reporting in our system, and meet every tenant. The first 90 days post-onboarding includes a full portfolio review and a strategy memo recommending immediate wins.',
+    a: 'Onboarding a new owner with established properties typically takes 30-60 days. We tour every asset, audit existing leases and rent rolls, transition vendor contracts, set up financial reporting in our system, and meet every tenant. The first 90 days post-onboarding includes a full portfolio review and a strategy memo recommending immediate wins.',
   },
 ];
 
@@ -116,16 +116,16 @@ const FAQS = [
 const DEFAULTS = {
   eyebrow: 'Texas Commercial Real Estate · Owner Services',
   h1: 'Built for Texas commercial property owners with portfolios.',
-  subhead: 'Hold/sell analysis, repositioning, 1031 identification and tenant mix optimization — with property management built for portfolios of 5 to 100+ properties.',
+  subhead: 'Hold/sell analysis, repositioning, 1031 identification, leasing and property management — from a team that manages its own centers.',
   intro_paragraphs: [
-    'When you owned one or two properties, a basic management firm was enough. But once you cross 5 — and certainly by 10 — properties, you start needing strategy, not just operations. Which assets are dragging your portfolio? When should you sell vs reposition? Where can you push rents? Are your tenants the right ones? When does a 1031 make sense?',
+    'When you owned one property, a basic management firm was enough. As your holdings grow, you start needing strategy, not just operations. Which assets are dragging your portfolio? When should you sell vs reposition? Where can you push rents? Are your tenants the right ones? When does a 1031 make sense?',
     "These are not questions a property manager answers. They are questions a principal-level commercial real estate firm answers — and that's what CRECO is built to be.",
-    'We sit in your seat. Every quarter, we walk your full Texas portfolio and tell you: keep, reposition, or sell. We make the case with hard numbers — submarket comps, tenant credit analysis, mark-to-market upside — and we execute the recommendations through our leasing, sales, and management teams.',
+    'We manage our own centers — Fair Oaks Plaza and our Lytle center — and take on a select number of owners who want the same hands-on attention. We walk your properties with you and tell you: keep, reposition, or sell — with hard numbers (submarket comps, tenant credit analysis, mark-to-market upside) — and our team executes the plan.',
   ],
   why_bullets: [
     'Personal relationship — every engagement is handled directly by the CRECO team',
     'Quarterly portfolio strategy reviews with actionable recommendations',
-    'Texas-wide coverage: San Antonio, Austin, Houston, DFW, and beyond',
+    'Focused on San Antonio and the Texas Hill Country, where we own and operate property ourselves',
     'Institutional reporting (monthly financials, leasing pipeline, capex tracking)',
     'Off-market deal flow for acquisitions and 1031 up-legs',
     'Direct broker access — no junior-associate handoffs',
@@ -135,13 +135,18 @@ const DEFAULTS = {
 
 export default async function OwnerServicesPage() {
   const db = await getLandingPage('owner-services').catch(() => null);
+  // Capability-bearing copy (subhead, intro, why bullets, FAQs) is
+  // code-controlled, not read from the landing_pages CMS row: that row still
+  // carries the retired claims (5-100+ property portfolios, El Paso
+  // management, "senior broker" on every engagement). Eyebrow + H1 stay
+  // CMS-editable.
   const content = {
     eyebrow: db?.eyebrow || DEFAULTS.eyebrow,
     h1: db?.h1 || DEFAULTS.h1,
-    subhead: db?.subhead || DEFAULTS.subhead,
-    intro_paragraphs: (db?.intro_paragraphs && db.intro_paragraphs.length > 0) ? db.intro_paragraphs : DEFAULTS.intro_paragraphs,
-    why_bullets: (db?.why_bullets && db.why_bullets.length > 0) ? db.why_bullets : DEFAULTS.why_bullets,
-    faqs: (db?.faqs && db.faqs.length > 0) ? db.faqs : DEFAULTS.faqs,
+    subhead: DEFAULTS.subhead,
+    intro_paragraphs: DEFAULTS.intro_paragraphs,
+    why_bullets: DEFAULTS.why_bullets,
+    faqs: DEFAULTS.faqs,
   };
 
   return (
@@ -248,7 +253,7 @@ export default async function OwnerServicesPage() {
                   <p className="overline mb-2 text-gold">Free Tool · 60 Seconds</p>
                   <h2 className="font-heading text-display-sm font-bold mb-3">What's your Texas commercial property worth?</h2>
                   <p className="text-body text-white/70">
-                    Get an instant preliminary valuation range using current Texas cap rates by property type and submarket. No contact info required to see the number. Free, no obligation, and a senior CRECO broker follows up only if you want a full broker valuation.
+                    Get an instant preliminary valuation range using current Texas cap rates by property type and submarket. No contact info required to see the number. Free, no obligation, and our team follows up only if you want a full broker valuation.
                   </p>
                 </div>
               </div>

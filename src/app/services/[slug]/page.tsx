@@ -75,15 +75,6 @@ const SERVICE_FORMS: Record<string, ServiceForm> = {
     source: 'listing-inquiry',
     submitLabel: 'Talk through my project',
   },
-  'sustainability': {
-    cta: 'Request a sustainability consultation',
-    heading: 'Request a sustainability consultation',
-    body: 'Tell us about the building and what you are trying to achieve — lower operating cost, ESG reporting or a tenant requirement.',
-    contextLabel: 'About the property',
-    contextPlaceholder: 'e.g. 1990s office building, high utility costs, tenant asking for ESG data',
-    source: 'listing-inquiry',
-    submitLabel: 'Request a consultation',
-  },
 };
 
 interface Props { params: Promise<{ slug: string }> }

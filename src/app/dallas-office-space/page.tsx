@@ -114,7 +114,7 @@ export default function DallasOfficeSpacePage() {
         whyBullets: [
           'Texas-wide office practice — we compare DFW against Austin, Houston, and San Antonio on total occupancy cost',
           'Fluent in the trophy-vs-commodity bifurcation that defines DFW office leverage',
-          'Senior broker leads every engagement, from a 3,000 SF suite to a full-floor corporate requirement',
+          'Our team works every engagement directly, from a 3,000 SF suite to a full-floor corporate requirement',
           'Concession benchmarking from deals actually being signed across Uptown, Legacy, and Las Colinas',
           'We surface hidden contiguous blocks and quiet reposition/conversion stories before you commit',
           'Full-service representation — tenants, landlords/owners, and investors; tenant rep is typically paid by the landlord',

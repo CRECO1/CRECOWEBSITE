@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import Link from 'next/link';
-import { Briefcase, LineChart, Building2, Wrench, Layers, Leaf, ArrowRight } from 'lucide-react';
+import { Briefcase, LineChart, Building2, Wrench, Layers, ArrowRight } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { InlineLeadForm } from '@/components/forms/InlineLeadForm';
 import { PhoneCallText } from '@/components/marketing/PhoneCallText';
@@ -37,7 +37,7 @@ const SERVICES_FAQS = [
 export const metadata: Metadata = {
   title: 'Texas Commercial Real Estate Services | CRECO',
   description:
-    'Tenant representation, investment advisory, leasing and sales, property management, development, and sustainability consulting across Texas, from CRECO.',
+    'Tenant representation, investment advisory, leasing and sales, property management, and development from CRECO, in San Antonio and the Texas Hill Country.',
   keywords: [
     'commercial real estate services texas',
     'tenant representation texas',
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
     images: [DEFAULT_OG_IMAGE],
     title: 'Texas Commercial Real Estate Services | CRECO',
     description:
-      'Tenant representation, investment advisory, leasing & sales, property management, development, and sustainability consulting across Texas.',
+      'Tenant representation, investment advisory, leasing & sales, property management, and development in San Antonio and the Texas Hill Country.',
     url: 'https://www.crecotx.com/services',
     type: 'website',
   },
@@ -223,8 +223,7 @@ export const SERVICES: ServiceContent[] = [
       'Market and submarket comp analysis using current Texas transactions, not stale CoStar data',
       'Tenant credit and lease audit (rent roll review, mark-to-market analysis, expense recovery)',
       '1031 exchange identification within the 45-day window — including up-leg coordination',
-      'Cost segregation and bonus depreciation strategy with your CPA',
-      'Opportunity Zone qualification analysis on eligible Texas properties',
+      'Coordination with your CPA on tax-driven decisions like 1031 timing',
       'Hold/sell/reposition recommendations on existing portfolio assets',
       'Off-market deal sourcing through our Texas owner and broker network',
       'Disposition strategy: BOV, marketing, buyer targeting, negotiation to close',
@@ -385,7 +384,7 @@ export const SERVICES: ServiceContent[] = [
       },
       {
         q: 'How often do you tour the properties?',
-        a: 'We tour every property under management on a regular cadence — typically weekly for retail centers, bi-weekly for office, and monthly for industrial. We also do unscheduled spot checks. Senior brokers meet with key tenants quarterly. Owners receive a monthly property condition summary alongside the financial report.',
+        a: 'We tour every property under management on a regular cadence — typically weekly for retail centers, bi-weekly for office, and monthly for industrial. We also do unscheduled spot checks. Our team meets with key tenants regularly. Owners receive a monthly property condition summary alongside the financial report.',
       },
       {
         q: 'Do you handle eviction and tenant default?',
@@ -473,74 +472,8 @@ export const SERVICES: ServiceContent[] = [
     ],
     relatedSlugs: ['investment-advisory', 'leasing-sales', 'property-management'],
   },
-  {
-    slug: 'sustainability',
-    icon: Leaf,
-    title: 'Sustainability Consulting',
-    shortDescription: 'Energy audits, ESG strategy, and eco-friendly retrofit planning.',
-    metaDescription: 'Commercial real estate sustainability consulting in Texas. Energy audits, ESG strategy, LEED and ENERGY STAR pathway evaluation, retrofit ROI analysis, and tenant engagement on sustainability initiatives.',
-    keywords: [
-      'commercial real estate sustainability texas',
-      'leed certification texas',
-      'energy star commercial texas',
-      'esg commercial real estate texas',
-      'sustainable commercial buildings texas',
-      'energy audit commercial texas',
-      'green building texas',
-      'commercial retrofit texas',
-    ],
-    heroSubhead: 'Energy efficiency, ESG strategy, and sustainability advisory for Texas commercial real estate owners and tenants. Move from compliance to ROI.',
-    intro: [
-      'Sustainability in commercial real estate has graduated from "nice to have" to a real economic driver. Tenants — especially Fortune 1000s, public companies, and professional services — increasingly require LEED, ENERGY STAR, or similar certifications in their RFPs. Lenders price loans differently for energy-efficient buildings. Insurance underwrites more favorably. Tax credits are real money. Done right, sustainability is an NOI growth strategy, not a cost center.',
-      'CRECO\'s sustainability consulting practice helps Texas commercial real estate owners and tenants identify the highest-ROI initiatives for their specific building or portfolio. We are not a LEED certification consultant or an MEP engineering firm — we are the strategic advisor who tells you which 3 of the 30 possible interventions actually move the needle for your asset class, your submarket, and your tenant base.',
-      'Our work spans single-asset and portfolio-level engagements. For owners, we focus on retrofit ROI, certification pathway selection, ESG reporting frameworks for institutional capital, and tenant engagement on sustainability initiatives. For tenants, we evaluate landlord sustainability commitments before lease execution and structure green-lease provisions that align owner and tenant incentives.',
-    ],
-    body: [
-      'Building energy benchmarking and ENERGY STAR Portfolio Manager setup',
-      'LEED, BREEAM, and Fitwel pathway evaluation and certification project management',
-      'Retrofit ROI analysis: HVAC upgrades, lighting (LED retrofits), envelope improvements, controls/automation',
-      'ESG reporting frameworks (GRI, SASB, TCFD) for institutional commercial real estate owners',
-      'Green lease provisions and tenant engagement on sustainability initiatives',
-      'Solar / on-site generation feasibility (commercial PV viability in Texas)',
-      'Water conservation and stormwater management for Texas climate',
-      'Insurance and lender disclosure positioning around climate risk',
-    ],
-    process: [
-      { step: '01', title: 'Audit & Benchmark', description: 'Building-level energy audit. ENERGY STAR Portfolio Manager benchmarking against comparable Texas commercial properties. Climate risk assessment.' },
-      { step: '02', title: 'Opportunity Mapping', description: 'Inventory of every viable sustainability intervention for the asset, ranked by ROI: payback period, NOI impact, tenant value, certification points contributed.' },
-      { step: '03', title: 'Roadmap', description: 'Prioritized 1-year, 3-year, 5-year sustainability roadmap. Capex calendar tied to existing capex plan. Tenant communication strategy. Certification timeline if pursuing LEED/ENERGY STAR.' },
-      { step: '04', title: 'Execution & Reporting', description: 'Project management on selected initiatives. ESG reporting on annual cadence aligned with institutional capital requirements (if applicable). Year-over-year benchmarking to demonstrate progress.' },
-    ],
-    useCases: [
-      { title: 'Stabilized owner repositioning', description: 'You own a 1990s-era Texas office or retail center and want to reposition for tenant attraction. Sustainability upgrades + ENERGY STAR rating can move you up a tenant tier.' },
-      { title: 'Institutional capital owners', description: 'Your LP investors require ESG reporting (GRESB, GRI, TCFD). We set up the reporting framework and produce annual reports that meet investor disclosure requirements.' },
-      { title: 'Tenants evaluating green leases', description: 'You\'re a corporate tenant evaluating Texas office options. We analyze landlord sustainability commitments and structure green-lease provisions in your favor.' },
-      { title: 'Solar feasibility', description: 'Texas solar economics are excellent in many submarkets. We evaluate on-site PV viability for owner-user buildings and net-lease retail rooftops.' },
-    ],
-    faqs: [
-      {
-        q: 'Is sustainability really worth the investment for Texas commercial real estate?',
-        a: 'For some assets, yes — for others, no. The economics depend on tenant base, building age, energy cost structure, and submarket. A 1990s suburban Texas office building targeting professional services tenants almost certainly benefits from sustainability investment. A 1970s industrial warehouse in a secondary submarket usually doesn\'t. CRECO\'s job is to tell you which side of that line your asset is on — and not push initiatives that don\'t pay back.',
-      },
-      {
-        q: 'What\'s the ROI on a typical commercial LED lighting retrofit?',
-        a: 'LED retrofits in Texas commercial buildings typically deliver 2-4 year paybacks via energy savings alone, with an additional NOI lift from reduced maintenance (LEDs last 10-15 years vs 1-3 years for fluorescents). Lighting is the lowest-hanging sustainability fruit — almost always worth doing on any Texas commercial property built before 2015.',
-      },
-      {
-        q: 'Can I get tax credits for sustainability investments?',
-        a: 'Yes — multiple federal tax incentives apply to commercial real estate sustainability investments: Section 179D (energy-efficient commercial building deduction, up to $5+/SF), Section 48 (Investment Tax Credit for solar/energy storage, 30%+), and the IRA-enhanced bonus depreciation for qualified energy property. We coordinate with your CPA on quantifying these and documenting the basis.',
-      },
-      {
-        q: 'Should I pursue LEED certification?',
-        a: 'LEED makes economic sense when (a) your tenant base values it (e.g. corporate tenants, public companies, government leases), and (b) the certification cost is reasonable relative to building value. For trophy Class A office in major Texas markets, LEED is often baseline expected. For Class B suburban office or industrial, LEED is usually optional. ENERGY STAR is a lighter-touch certification that signals efficiency without LEED\'s full process — often a better fit for B/C assets.',
-      },
-      {
-        q: 'How does sustainability affect commercial real estate financing?',
-        a: 'Some lenders — particularly life insurance companies and Fannie Mae/Freddie Mac for commercial multifamily — offer better pricing or higher proceeds for energy-efficient or certified properties. CMBS and bank balance-sheet lenders are catching up. Climate-risk-adjusted underwriting is increasingly standard. We help you position the sustainability story to lenders to extract better terms.',
-      },
-    ],
-    relatedSlugs: ['investment-advisory', 'property-management', 'development'],
-  },
+  // Sustainability consulting was retired (Oct 2026) — not a service CRECO
+  // offers. /services/sustainability 308s to /services (next.config.js).
 ];
 
 export default function ServicesPage() {
@@ -549,7 +482,7 @@ export default function ServicesPage() {
       <JsonLd
         data={[
           webPage('CollectionPage', '/services', 'Texas Commercial Real Estate Services — CRECO',
-            'Tenant representation, leasing & sales, investment advisory, property management, development, and sustainability consulting.',
+            'Tenant representation, leasing & sales, investment advisory, property management, and development.',
             {
               mainEntity: {
                 '@type': 'ItemList',

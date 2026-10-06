@@ -263,6 +263,8 @@ const nextConfig = {
       ].map(slug => ({ source: `/guides/${slug}`, destination: '/market-brief', permanent: true })),
       { source: '/research', destination: '/market-brief', permanent: true },
       { source: '/research/:path*', destination: '/market-brief', permanent: true },
+      // Sustainability consulting was retired as a service line (2026-10).
+      { source: '/services/sustainability', destination: '/services', permanent: true },
     ];
   },
 

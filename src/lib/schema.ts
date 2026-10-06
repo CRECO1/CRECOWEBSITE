@@ -276,7 +276,7 @@ export function siteGraph() {
             {
               '@type': 'OfferCatalog',
               name: 'Advisory and operations',
-              itemListElement: ['Site selection', 'Property management', 'Development', 'Investment advisory & 1031 exchanges', 'Broker opinion of value', 'Sustainability consulting']
+              itemListElement: ['Site selection', 'Property management', 'Development', 'Investment advisory & 1031 exchanges', 'Broker opinion of value']
                 .map(name => ({ '@type': 'Offer', itemOffered: { '@type': 'Service', name, provider: businessRef } })),
             },
           ],
