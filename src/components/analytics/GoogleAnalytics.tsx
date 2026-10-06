@@ -72,7 +72,11 @@ export function GoogleAnalytics({ gaId }: { gaId: string }) {
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
-          gtag('config', '${gaId}');
+          // Referral exclusion in code: a return from Stripe checkout/billing
+          // keeps the visit's original source instead of crediting stripe.com.
+          var ref = '';
+          try { ref = new URL(document.referrer).hostname; } catch (e) {}
+          gtag('config', '${gaId}', /(^|\\.)stripe\\.com$/.test(ref) ? { ignore_referrer: true } : {});
         `}
       </Script>
     </>
