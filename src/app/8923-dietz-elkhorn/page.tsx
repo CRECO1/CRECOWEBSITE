@@ -507,9 +507,10 @@ export default async function DietzElkhornPage() {
                 Where everything sits.
               </h2>
               <p className="mt-3 text-body text-foreground-muted leading-relaxed">
-                The site is configured for a retail building with adjacent daycare and
-                pond, plus parking sized for F&B + fitness peak demand. Tap below for
-                the full engineered PDF.
+                Two 9,990 SF retail buildings on Lots 1 and 2, with frontage parking on
+                Dietz Elkhorn Rd and a drive-thru lane. Behind them, Lot 3 (±2.21 acres,
+                for sale) is planned for a future building of up to 20,000 SF with its own
+                parking off Elkhorn Rd.
               </p>
             </div>
 
@@ -521,13 +522,31 @@ export default async function DietzElkhornPage() {
                   by w-full + h-auto via className. */}
               <Image
                 src={SITE_PLAN_PNG}
-                alt="8923 Dietz Elkhorn site plan"
-                width={1687}
-                height={1133}
+                alt="Elkhorn Point site plan, 8923 Dietz Elkhorn Rd: Retail Buildings 1 and 2 (9,990 SF each) on Lots 1 and 2, and Lot 3 with a future 20,000 SF building"
+                width={1600}
+                height={1055}
                 sizes="(min-width: 1024px) 56rem, 100vw"
                 className="w-full h-auto object-contain mx-auto"
               />
             </div>
+
+            {/* Suite layout as drawn on the 10/1/2026 architect plans. */}
+            <figure className="max-w-4xl mx-auto mt-6">
+              <div className="rounded-2xl border border-border bg-background-cream overflow-hidden">
+                <Image
+                  src="/site-plans/8923-dietz-elkhorn-suite-plan.jpg"
+                  alt="Elkhorn Point retail building suite plan as drawn: three retail suites of 1,972, 2,037 and 1,972 SF and a 4,009 SF restaurant end cap"
+                  width={1030}
+                  height={510}
+                  sizes="(min-width: 1024px) 56rem, 100vw"
+                  className="w-full h-auto"
+                />
+              </div>
+              <figcaption className="mt-3 text-center text-body-sm text-foreground-muted">
+                Each building as currently drawn: three retail suites (1,972 – 2,037 SF) and a
+                4,009 SF restaurant end cap. Nothing is built yet, so demising changes to fit your plan.
+              </figcaption>
+            </figure>
           </Container>
         </section>
 
