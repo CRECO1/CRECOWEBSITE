@@ -208,19 +208,15 @@ export default async function ListingDetailPage({ params }: Props) {
           </Container>
         </div>
 
-        {/* Image Gallery — click to open lightbox */}
-        <ListingGallery
-          images={images}
-          altPrefix={`${listing!.title} – ${propertyTypeLabel(listing!.property_type)} property in ${listing!.city}, TX`}
-        />
-
-        {/* Detail Content */}
-        <Container className="py-10">
-          <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
-
-            {/* Main */}
+        {/* Title, price and a one-field ask ABOVE the gallery. The gallery is a
+            ~600px 4:3 hero, so with the title below it the first screen held
+            only photos and Clarity showed 53% of visitors leaving before the
+            10–15% scroll mark — most never saw the price or any way to respond.
+            Campaign clicks land here, so the ask has to be on the first screen. */}
+        <Container className="pt-6 pb-2">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:items-start">
             <div className="lg:col-span-2">
-              <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+              <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
                   <p className="text-caption text-foreground-muted mb-1">
                     <MapPin className="mr-1 inline h-3 w-3" />
@@ -242,11 +238,11 @@ export default async function ListingDetailPage({ params }: Props) {
                     <p className="mt-2 text-body text-foreground-muted">{listing!.headline}</p>
                   )}
                 </div>
-                <div className="text-right">
+                <div>
                   <p className="font-heading text-display-sm font-bold text-primary">
                     {priceDisplay}
                   </p>
-                  <div className="mt-2 flex flex-wrap justify-end gap-2">
+                  <div className="mt-2 flex flex-wrap gap-2">
                     {closed ? (
                       <span className="rounded-full bg-slate-700 px-3 py-0.5 text-caption font-semibold text-white uppercase">
                         {closed}
@@ -260,12 +256,42 @@ export default async function ListingDetailPage({ params }: Props) {
                       {propertyTypeLabel(listing!.property_type)}
                     </span>
                   </div>
-                  <div className="mt-3 flex justify-end">
+                  <div className="mt-3 flex">
                     <CompareToggle listingId={listing!.id} variant="full" />
                   </div>
                 </div>
               </div>
+            </div>
+            {!closed && (
+              <div className="lg:col-span-1">
+                <BrochureRequestForm
+                  listingSlug={listing!.slug}
+                  listingTitle={listing!.title}
+                  brochureUrl={listing!.brochure_url}
+                />
+                <a
+                  href="#inquiry-tour"
+                  className="mt-2 hidden items-center gap-1 text-body-sm font-semibold text-gold-dark hover:text-primary lg:inline-flex"
+                >
+                  Or schedule a tour →
+                </a>
+              </div>
+            )}
+          </div>
+        </Container>
 
+        {/* Image Gallery — click to open lightbox */}
+        <ListingGallery
+          images={images}
+          altPrefix={`${listing!.title} – ${propertyTypeLabel(listing!.property_type)} property in ${listing!.city}, TX`}
+        />
+
+        {/* Detail Content */}
+        <Container className="py-10">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
+
+            {/* Main */}
+            <div className="lg:col-span-2">
               {/* Key Stats */}
               <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
                 {[
@@ -377,20 +403,6 @@ export default async function ListingDetailPage({ params }: Props) {
                 </div>
               )}
 
-              {/* Brochure — one email, then the PDF. This was a free
-                  download link, so the most-read listing pages (email
-                  campaign traffic) handed out the brochure and captured
-                  nobody. Every listing has one: the uploaded PDF, or the
-                  generated one-pager at /api/brochure/[slug]. */}
-              {!closed && (
-                <div className="mb-8 max-w-xl">
-                  <BrochureRequestForm
-                    listingSlug={listing!.slug}
-                    listingTitle={listing!.title}
-                    brochureUrl={listing!.brochure_url}
-                  />
-                </div>
-              )}
             </div>
 
             {/* Sidebar — tabbed inquiry (Tour | Message). #inquiry anchor is
