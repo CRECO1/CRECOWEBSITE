@@ -18,7 +18,7 @@ import { useState } from 'react';
 import { BellRing } from 'lucide-react';
 import { EmailCaptureCard } from '@/components/forms/EmailCaptureCard';
 import { AssetTypePills } from '@/components/forms/AssetTypePills';
-import { readUtmsFromCookie } from '@/lib/analytics';
+import { leadPayloadFields } from '@/lib/analytics';
 
 interface PropertyAlertsInlineProps {
   variant?: 'light' | 'dark';
@@ -76,7 +76,7 @@ export function PropertyAlertsInline({
           // index from a property landing page.
           surface,
           recaptchaToken,
-          ...readUtmsFromCookie(),
+          ...leadPayloadFields(),
         }),
       }}
     />

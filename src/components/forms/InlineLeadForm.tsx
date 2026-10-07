@@ -25,7 +25,7 @@ import { useState } from 'react';
 import { ArrowRight, CheckCircle } from 'lucide-react';
 import { Honeypot } from './Honeypot';
 import { useCaptureSubmit } from '@/lib/use-capture-submit';
-import { readUtmsFromCookie } from '@/lib/analytics';
+import { leadPayloadFields } from '@/lib/analytics';
 import { BUSINESS } from '@/lib/schema';
 import { BrokerTrustLine } from '@/components/marketing/BrokerCard';
 
@@ -97,7 +97,7 @@ export function InlineLeadForm({
       message: f.context ? `${contextLabel}\n${f.context}` : null,
       recaptchaToken,
       website,
-      ...readUtmsFromCookie(),
+      ...leadPayloadFields(),
     }),
   });
 

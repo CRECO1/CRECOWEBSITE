@@ -15,7 +15,7 @@
 import { useState } from 'react';
 import { ArrowRight, CheckCircle, Briefcase } from 'lucide-react';
 import { getRecaptchaToken } from './Recaptcha';
-import { readUtmsFromCookie } from '@/lib/analytics';
+import { leadPayloadFields } from '@/lib/analytics';
 import { Honeypot } from './Honeypot';
 
 const LICENSE_STATUSES = [
@@ -109,7 +109,7 @@ export function CareerApplicationForm() {
           // Attribution from the creco_attr cookie UtmCapture writes on first
           // landing — same spread /api/leads callers use, so an application
           // carries where the applicant came from.
-          ...readUtmsFromCookie(),
+          ...leadPayloadFields(),
         }),
       });
       if (!res.ok) {

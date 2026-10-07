@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { ArrowRight, CheckCircle } from 'lucide-react';
 import { Honeypot } from './Honeypot';
 import { useCaptureSubmit } from '@/lib/use-capture-submit';
-import { readUtmsFromCookie } from '@/lib/analytics';
+import { leadPayloadFields } from '@/lib/analytics';
 import { DEVELOPMENT_PROPERTY_TYPES, DEVELOPMENT_ROLES } from '@/lib/owner-paths-copy';
 
 /**
@@ -48,7 +48,7 @@ export function DevelopmentOpportunityForm({ surface = 'development-opportunitie
       ].filter(Boolean).join('\n'),
       recaptchaToken,
       website,
-      ...readUtmsFromCookie(),
+      ...leadPayloadFields(),
     }),
   });
 

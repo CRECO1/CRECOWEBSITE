@@ -15,6 +15,8 @@
 import type { NextRequest } from 'next/server';
 
 export interface SignupContext {
+  /** v2 tracker fields to spread into the CRM payload (visitor_id, visit_count, first_touch, click_ids, env). */
+  tracker?: Record<string, unknown>;
   sourceLabel: string;
   rawSource: string | null;
   pagePath: string | null;
@@ -102,6 +104,44 @@ const str = (v: unknown, max = 300): string | null => {
   return t ? t.slice(0, max) : null;
 };
 
+const CLICK_KEYS = ['gclid', 'gbraid', 'wbraid', 'dclid', 'msclkid', 'fbclid', 'ttclid', 'li_fat_id', 'twclid'];
+const ID_RE = /^[A-Za-z0-9_-]{8,64}$/;
+
+function browserOs(ua: string): { browser?: string; os?: string } {
+  const m = /(edg|edge)\/(\d+)/i.exec(ua) ? ['Edge', /(?:edg|edge)\/(\d+)/i.exec(ua)![1]]
+    : /(crios|chrome)\/(\d+)/i.exec(ua) ? ['Chrome', /(?:crios|chrome)\/(\d+)/i.exec(ua)![1]]
+    : /(fxios|firefox)\/(\d+)/i.exec(ua) ? ['Firefox', /(?:fxios|firefox)\/(\d+)/i.exec(ua)![1]]
+    : /version\/(\d+).*safari/i.exec(ua) ? ['Safari', /version\/(\d+)/i.exec(ua)![1]] : null;
+  const os = /iPhone|iPad|iPod/i.test(ua) ? 'iOS' : /Android/i.test(ua) ? 'Android' : /Windows/i.test(ua) ? 'Windows'
+    : /Mac OS X|Macintosh/i.test(ua) ? 'macOS' : /Linux/i.test(ua) ? 'Linux' : undefined;
+  return { browser: m ? `${m[0]} ${m[1]}` : undefined, os };
+}
+
+/**
+ * The v2 tracker fields from the browser (persistent visitor id, visit count, first touch, ad click ids,
+ * environment) plus the visitor's browser/OS from THIS request's user-agent. Spread into the CRM payload so
+ * the lead carries its whole visitor story (see FairOaks lib/tracker.ts + lead-context.ts).
+ */
+function trackerFromBody(req: NextRequest, body: Record<string, unknown>): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  const vid = body.visitor_id;
+  if (typeof vid === 'string' && ID_RE.test(vid)) out.visitor_id = vid;
+  const vc = typeof body.visit_count === 'number' ? body.visit_count : NaN;
+  if (Number.isFinite(vc) && vc > 0) out.visit_count = Math.min(Math.round(vc), 100000);
+  if (body.first_touch && typeof body.first_touch === 'object' && !Array.isArray(body.first_touch)) out.first_touch = body.first_touch;
+  if (body.click_ids && typeof body.click_ids === 'object' && !Array.isArray(body.click_ids)) {
+    const ci: Record<string, string> = {};
+    for (const k of CLICK_KEYS) { const x = (body.click_ids as Record<string, unknown>)[k]; if (typeof x === 'string' && x) ci[k] = x.slice(0, 200); }
+    if (Object.keys(ci).length) out.click_ids = ci;
+  }
+  const env: Record<string, unknown> = (body.env && typeof body.env === 'object' && !Array.isArray(body.env)) ? { ...(body.env as Record<string, unknown>) } : {};
+  const { browser, os } = browserOs(req.headers.get('user-agent') ?? '');
+  if (browser) env.browser = browser;
+  if (os) env.os = os;
+  if (Object.keys(env).length) out.env = env;
+  return out;
+}
+
 export function buildSignupContext(req: NextRequest, body: Record<string, unknown>): SignupContext {
   const h = req.headers;
 
@@ -138,5 +178,6 @@ export function buildSignupContext(req: NextRequest, body: Record<string, unknow
       timeStyle: 'short',
     }) + ' CT',
     utm,
+    tracker: trackerFromBody(req, body),
   };
 }

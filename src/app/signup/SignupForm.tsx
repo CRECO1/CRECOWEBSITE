@@ -21,7 +21,7 @@
  */
 
 import { useState } from 'react';
-import { readUtmsFromCookie } from '@/lib/analytics';
+import { leadPayloadFields } from '@/lib/analytics';
 import { getRecaptchaToken } from '@/components/forms/Recaptcha';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -80,7 +80,7 @@ export function SignupForm() {
           // A signup is an inbound lead too — carry the same attribution a
           // /api/leads submission does so the channel that produced it is
           // knowable later.
-          ...readUtmsFromCookie(),
+          ...leadPayloadFields(),
         }),
       });
       const data = await res.json();

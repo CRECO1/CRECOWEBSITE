@@ -211,6 +211,7 @@ export async function POST(req: NextRequest) {
       geo: ctx.geo,
       device: ctx.device,
       surface: clampString((body as Record<string, unknown>).surface, MAX_LEN.shortField) || null,
+      ...ctx.tracker,
     });
 
     // Confirmation email to the subscriber

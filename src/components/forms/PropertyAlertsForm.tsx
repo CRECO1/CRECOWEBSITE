@@ -132,8 +132,8 @@ export function PropertyAlertsForm() {
     // This surface reports richer analytics than the shared track option
     // carries — the filter counts are only knowable at submit time.
     onSuccess: async () => {
-      const { trackEvent, readUtmsFromCookie } = await import('@/lib/analytics');
-      const attribution = readUtmsFromCookie();
+      const { trackEvent, leadPayloadFields } = await import('@/lib/analytics');
+      const attribution = leadPayloadFields();
       trackEvent('property_alerts_subscribed', {
         property_types_count: propertyTypes.length,
         submarkets_count: submarkets.length,

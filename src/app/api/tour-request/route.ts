@@ -283,6 +283,8 @@ export async function POST(req: NextRequest) {
       journey: (body as { journey?: Array<{ p: string; t: number }> }).journey ?? null,
       time_on_site_sec: (body as { time_on_site_sec?: number }).time_on_site_sec ?? null,
       page_views: (body as { page_views?: number }).page_views ?? null,
+      // v2 visitor story (visitor id, visit count, first touch, ad click ids, environment).
+      ...ctx.tracker,
     });
 
     // Build the calendar invite

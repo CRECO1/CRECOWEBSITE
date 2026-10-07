@@ -194,6 +194,12 @@ export interface CrmPayload {
   journey?: Array<{ p: string; t: number }> | null;
   time_on_site_sec?: number | null;
   page_views?: number | null;
+  // v2 tracker fields (see FairOaks lib/tracker.ts): persistent visitor id, visit count, first touch, ad click ids, environment.
+  visitor_id?: string | null;
+  visit_count?: number | null;
+  first_touch?: Record<string, unknown> | null;
+  click_ids?: Record<string, string> | null;
+  env?: Record<string, unknown> | null;
 }
 
 /** Service-role Supabase client for the CRM (FORG project). Prefers
@@ -283,16 +289,22 @@ function syntheticMessageId(p: CrmPayload): string {
  * channelFor (FairOaks-consolidate/src/lib/lead-context.ts) so the two CRM
  * writers bucket a lead the same way and first-party numbers stay comparable.
  */
-function channelFor(referrer: string | null, utmMedium: string | null, utmSource: string | null): string {
+function channelFor(referrer: string | null, utmMedium: string | null, utmSource: string | null, clickIds?: Record<string, string> | null): string {
   const m = (utmMedium ?? '').toLowerCase();
-  if (m.includes('cpc') || m.includes('ppc') || m.includes('paid')) return 'Paid Search';
+  const ci = clickIds ?? {};
+  // Ad-platform click ids are the surest paid signal — a Google/Bing ad click often arrives with no utm at all.
+  if (ci.gclid || ci.gbraid || ci.wbraid || ci.dclid || ci.msclkid) return 'Paid Search';
+  if (ci.ttclid || ci.li_fat_id || ci.twclid) return 'Paid Social';
+  if (m.includes('cpc') || m.includes('ppc') || m.includes('paid')) return m.includes('social') ? 'Paid Social' : 'Paid Search';
   if (m.includes('email')) return 'Email';
+  if (m.includes('sms') || m.includes('text')) return 'SMS';
   if (m.includes('social')) return 'Organic Social';
   if (m.includes('referral')) return 'Referral';
   const r = (referrer ?? '').toLowerCase();
   const s = (utmSource ?? '').toLowerCase();
   const hay = `${r} ${s}`;
-  if (!r && !s) return 'Direct';
+  if (!r && !s) return ci.fbclid ? 'Organic Social' : 'Direct';
+  if (/chatgpt|openai|perplexity|claude\.ai|gemini\.google|copilot\.microsoft|you\.com|phind|kagi/.test(hay)) return 'AI Assistant';
   if (/google|bing|yahoo|duckduckgo|ecosia/.test(hay)) return 'Organic Search';
   if (/facebook|instagram|linkedin|twitter|x\.com|tiktok|youtube|pinterest|nextdoor/.test(hay)) return 'Organic Social';
   if (/zillow|realtor\.com|redfin|har\.com|trulia|homes\.com|loopnet|crexi/.test(hay)) return 'Listing Portal';
@@ -352,8 +364,9 @@ function attributionFields(p: CrmPayload): Record<string, unknown> {
   }
   // Derive the channel only when there are signals, matching the webhook: a pure
   // Direct visit leaves channel null so a later campaign visit can still set it.
-  if (out.referrer || out.utm_medium || out.utm_source) {
-    out.channel = channelFor((out.referrer as string) ?? null, (out.utm_medium as string) ?? null, (out.utm_source as string) ?? null);
+  const clickIds = p.click_ids && typeof p.click_ids === 'object' ? p.click_ids : null;
+  if (out.referrer || out.utm_medium || out.utm_source || (clickIds && Object.keys(clickIds).length)) {
+    out.channel = channelFor((out.referrer as string) ?? null, (out.utm_medium as string) ?? null, (out.utm_source as string) ?? null, clickIds);
   }
   const journey = sanitizeJourney(p.journey);
   if (journey) out.journey = journey;
@@ -361,6 +374,12 @@ function attributionFields(p: CrmPayload): Record<string, unknown> {
   if (tos != null) out.time_on_site_sec = tos;
   const pv = intOrNull(p.page_views, 1000) ?? (journey ? journey.length : null);
   if (pv != null) out.page_views = pv;
+  // v2 visitor story — shapes already sanitised by the route's tracker helper; re-clip here as a backstop.
+  const vid = attrStr(p.visitor_id, 64); if (vid && /^[A-Za-z0-9_-]{8,64}$/.test(vid)) out.visitor_id = vid;
+  const vc = intOrNull(p.visit_count, 100000); if (vc != null) out.visit_count = vc;
+  if (p.first_touch && typeof p.first_touch === 'object') out.first_touch = p.first_touch;
+  if (clickIds && Object.keys(clickIds).length) out.click_ids = clickIds;
+  if (p.env && typeof p.env === 'object') out.env = p.env;
   return out;
 }
 
@@ -404,7 +423,7 @@ export async function pushToCrm(p: CrmPayload): Promise<boolean> {
 
     const { data: matches } = await supabase
       .from('crm_clients')
-      .select('id, tags, lead_source, prospect_status, agent_id, business_name, channel')
+      .select('id, tags, lead_source, prospect_status, agent_id, business_name, channel, visitor_id')
       .or(matchFilter)
       .limit(1);
     const existing = matches?.[0] ?? null;
@@ -425,6 +444,8 @@ export async function pushToCrm(p: CrmPayload): Promise<boolean> {
           // campaign/journey shouldn't lose it because we already knew the person,
           // but a later Direct visit must not overwrite the original acquisition.
           ...(existing.channel ? {} : attr),
+          // A returning contact keeps their original acquisition source, but we still learn this browser's identity.
+          ...(existing.visitor_id ? {} : { ...(attr.visitor_id ? { visitor_id: attr.visitor_id } : {}), ...(attr.env ? { env: attr.env } : {}) }),
           // Fill in a company we captured later; never blank an existing one.
           ...(company && !existing.business_name ? { business_name: company } : {}),
           // Re-surface to "new" if the broker had moved them elsewhere
@@ -503,6 +524,11 @@ export async function pushToCrm(p: CrmPayload): Promise<boolean> {
     if (!clientId) {
       console.error('[crm] could not resolve client_id; aborting prospect insert');
       return false;
+    }
+
+    // Tie this browser's anonymous visitor id to the contact so everything they do on our sites shows on the contact card.
+    if (attr.visitor_id) {
+      await supabase.from('site_visitor_links').upsert({ visitor_id: attr.visitor_id, client_id: clientId, source: 'lead_form' }, { onConflict: 'visitor_id' });
     }
 
     // 2. Insert into email_lead_imports — this is what the Prospects

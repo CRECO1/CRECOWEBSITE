@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { ArrowRight, CheckCircle } from 'lucide-react';
 import { Honeypot } from './Honeypot';
 import { useCaptureSubmit } from '@/lib/use-capture-submit';
-import { readUtmsFromCookie } from '@/lib/analytics';
+import { leadPayloadFields } from '@/lib/analytics';
 import { LISTING_PROPERTY_TYPES, LISTING_INTENT } from '@/lib/listing-copy';
 
 /**
@@ -49,7 +49,7 @@ export function ListYourSpaceForm({ surface = 'list-your-space' }: { surface?: s
       ].filter(Boolean).join('\n'),
       recaptchaToken,
       website,
-      ...readUtmsFromCookie(),
+      ...leadPayloadFields(),
     }),
   });
 

@@ -58,6 +58,12 @@ export interface CrmLeadPayload {
   time_on_site_sec?: number | null;
   /** Distinct pages in the visit. */
   page_views?: number | null;
+  /** v2 tracker fields — see FairOaks lib/tracker.ts (forwarded to the CRM webhook, which stores them). */
+  visitor_id?: string | null;
+  visit_count?: number | null;
+  first_touch?: Record<string, unknown> | null;
+  click_ids?: Record<string, string> | null;
+  env?: Record<string, unknown> | null;
 }
 
 export async function sendLeadToCrm(lead: CrmLeadPayload, opts?: { notify?: boolean }): Promise<{ ok: boolean; skipped?: boolean }> {
