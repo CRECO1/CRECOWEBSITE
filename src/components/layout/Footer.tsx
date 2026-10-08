@@ -170,6 +170,16 @@ export function Footer() {
                   </a>
                 </li>
                 <li>
+                  {/* The contact page + form existed but nothing linked to it. */}
+                  <Link
+                    href="/contact"
+                    prefetch={false}
+                    className="flex min-h-[44px] items-center gap-2 py-2.5 text-body-sm font-semibold text-gold transition-colors hover:text-gold-light md:min-h-0 md:py-0"
+                  >
+                    Contact us — send a message →
+                  </Link>
+                </li>
+                <li>
                   <a
                     href={googleMapsUrl(contact.address)}
                     target="_blank"

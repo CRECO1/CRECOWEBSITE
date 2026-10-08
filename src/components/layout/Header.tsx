@@ -17,6 +17,8 @@ const navLinks = [
   { href: '/property-valuation', label: 'Free Valuation' },
   { href: '/insights', label: 'Insights' },
   { href: '/about', label: 'About' },
+  // There was no Contact link anywhere in the header — the /contact page (and its form) existed but nobody could find it.
+  { href: '/contact', label: 'Contact' },
   { href: '/get-started', label: 'Get Started', isHighlight: true },
 ];
 
