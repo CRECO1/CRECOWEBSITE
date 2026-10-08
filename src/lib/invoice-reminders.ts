@@ -11,7 +11,7 @@
  */
 
 import { substituteTemplate } from './invoice-email';
-import type { Invoice } from './invoices';
+import { toIsoDay, type Invoice } from './invoices';
 
 export type ReminderStage =
   | 'due-soon'      // T-7
@@ -92,7 +92,7 @@ export const REMINDER_STAGES: StageDefinition[] = [
  */
 export function stageForToday(due_date: string, todayIso?: string): ReminderStage | null {
   const today = new Date((todayIso ?? new Date().toISOString().slice(0, 10)) + 'T12:00:00Z');
-  const due = new Date(due_date + 'T12:00:00Z');
+  const due = new Date((toIsoDay(due_date) ?? '') + 'T12:00:00Z');
   const msPerDay = 24 * 60 * 60 * 1000;
   const daysFromDue = Math.round((due.getTime() - today.getTime()) / msPerDay);
 

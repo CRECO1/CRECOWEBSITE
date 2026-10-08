@@ -16,7 +16,7 @@
  *     stepping by frequency. We honor end_date when set.
  */
 
-import type { Invoice } from '@/lib/invoices';
+import { toIsoDay, type Invoice } from '@/lib/invoices';
 
 interface RecurringTemplateLite {
   id: string;
@@ -63,7 +63,7 @@ export function forecastCashFlow(
   for (const inv of outstandingInvoices) {
     if (inv.paid_at) continue;
     if (inv.status === 'void' || inv.status === 'draft') continue;
-    const due = atMidnightUtc(new Date(inv.due_date + 'T12:00:00Z'));
+    const due = atMidnightUtc(new Date((toIsoDay(inv.due_date) ?? '') + 'T12:00:00Z'));
     const total = Number(inv.total);
     if (due <= day30) outstanding30 += total;
     if (due <= day60) outstanding60 += total;

@@ -149,11 +149,32 @@ export function formatMoney(n: number | null | undefined): string {
   return usdFmt.format(n);
 }
 
-/** "Apr 15, 2026" — used in lists and on the PDF. */
-export function formatDate(iso: string | null | undefined): string {
-  if (!iso) return '—';
-  return new Date(iso + 'T12:00:00Z').toLocaleDateString('en-US', {
-    year: 'numeric', month: 'short', day: 'numeric',
+/**
+ * Normalize whatever a DB/driver hands back for a date column to a
+ * YYYY-MM-DD string. Handles ISO date strings, full ISO timestamps,
+ * JS Date objects (pg returns these for `date` columns) and
+ * "YYYY-MM-DD HH:MM:SS". Returns null if unparseable.
+ */
+export function toIsoDay(v: unknown): string | null {
+  if (v == null || v === '') return null;
+  if (v instanceof Date) {
+    if (isNaN(v.getTime())) return null;
+    // pg builds `date` Dates at local midnight — use local parts.
+    const p = (n: number) => String(n).padStart(2, '0');
+    return `${v.getFullYear()}-${p(v.getMonth() + 1)}-${p(v.getDate())}`;
+  }
+  const m = String(v).trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return `${m[1]}-${m[2]}-${m[3]}`;
+  const d = new Date(String(v));
+  return isNaN(d.getTime()) ? null : toIsoDay(d);
+}
+
+/** "Apr 15, 2026" — used in lists, the PDF and invoice emails. */
+export function formatDate(iso: string | Date | null | undefined): string {
+  const day = toIsoDay(iso);
+  if (!day) return '—';
+  return new Date(day + 'T12:00:00Z').toLocaleDateString('en-US', {
+    year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC',
   });
 }
 
@@ -164,7 +185,7 @@ export function formatDate(iso: string | null | undefined): string {
  */
 export function effectiveStatus(invoice: Pick<Invoice, 'status' | 'due_date'>): InvoiceStatus {
   if (invoice.status === 'sent') {
-    const due = new Date(invoice.due_date + 'T23:59:59Z');
+    const due = new Date((toIsoDay(invoice.due_date) ?? '') + 'T23:59:59Z');
     if (Date.now() > due.getTime()) return 'overdue';
   }
   return invoice.status;

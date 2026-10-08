@@ -40,19 +40,24 @@ export function buildInvoiceEmailHtml({ invoice, message, viewUrl, copyOf }: Inv
     : '';
 
   const safeTotal = escapeHtml(formatMoney(invoice.total));
+  const safeIssue = escapeHtml(formatDate(invoice.issue_date));
   const safeDue = escapeHtml(formatDate(invoice.due_date));
   const safeNumber = escapeHtml(invoice.invoice_number);
 
   return `
     <div style="font-family:Helvetica,Arial,sans-serif;max-width:600px;color:#1A1A1A">
-      <div style="margin:0 0 20px;padding:0 0 18px;border-bottom:2px solid #C9A962">
-        <a href="https://www.crecotx.com" style="text-decoration:none;display:inline-block">
-          <img src="https://www.crecotx.com/images/creco-logo-light.png"
-               alt="CRECO"
-               width="180"
-               style="display:block;width:180px;max-width:180px;height:auto;border:0" />
-        </a>
-      </div>
+      <!-- Dark brand band with the WHITE knockout logo. bgcolor + inline background
+           keep it dark in Gmail dark mode, and the logo has no dark pixels to vanish. -->
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#1A1A1A" style="margin:0 0 20px;background:#1A1A1A;border-bottom:3px solid #C9A962">
+        <tr><td bgcolor="#1A1A1A" style="padding:18px 22px;background:#1A1A1A">
+          <a href="https://www.crecotx.com" style="text-decoration:none;display:inline-block">
+            <img src="https://www.crecotx.com/images/creco-logo-white.png"
+                 alt="CRECO - Commercial Real Estate Company"
+                 width="180"
+                 style="display:block;width:180px;max-width:180px;height:auto;border:0;color:#FFFFFF" />
+          </a>
+        </td></tr>
+      </table>
 
       ${copyBanner}
       <h2 style="margin:0 0 16px;color:#1A1A1A;font-size:20px">Invoice ${safeNumber}</h2>
@@ -62,6 +67,7 @@ export function buildInvoiceEmailHtml({ invoice, message, viewUrl, copyOf }: Inv
       <table style="width:100%;border-collapse:collapse;margin:0 0 20px">
         <tr><td style="padding:8px 12px;background:#FAFAF8;border:1px solid #E8E5E0"><strong>Invoice #</strong></td><td style="padding:8px 12px;border:1px solid #E8E5E0">${safeNumber}</td></tr>
         <tr><td style="padding:8px 12px;background:#FAFAF8;border:1px solid #E8E5E0"><strong>Amount due</strong></td><td style="padding:8px 12px;border:1px solid #E8E5E0;font-size:18px;color:#C9A962"><strong>${safeTotal}</strong></td></tr>
+        <tr><td style="padding:8px 12px;background:#FAFAF8;border:1px solid #E8E5E0"><strong>Issue date</strong></td><td style="padding:8px 12px;border:1px solid #E8E5E0">${safeIssue}</td></tr>
         <tr><td style="padding:8px 12px;background:#FAFAF8;border:1px solid #E8E5E0"><strong>Due date</strong></td><td style="padding:8px 12px;border:1px solid #E8E5E0">${safeDue}</td></tr>
       </table>
 

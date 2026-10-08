@@ -1,13 +1,13 @@
 /**
  * Shared CRECO logo loader for server-side PDF generation.
  *
- * Reads /public/images/creco-logo-light.png from the filesystem at first
+ * Reads /public/images/creco-logo-white.png from the filesystem at first
  * invocation, converts it to a base64 data URI, and caches it for the
  * lifetime of the process. Used by invoice-pdf.ts and statement-pdf.ts
  * so they share one source of branding.
  *
  * Why light: PDF headers paint a black background bar (CRECO_BLACK) and
- * the logo sits inside it — we need the white-on-transparent variant.
+ * the logo sits inside it — we need the white-knockout variant (dark artwork turned white, gold kept).
  *
  * Returns null if the file can't be read (e.g. dev environment with
  * the file missing). Callers fall back to the previous text-based
@@ -24,19 +24,19 @@ export async function getLogoLightDataUri(): Promise<string | null> {
   try {
     // process.cwd() is the project root in both `next dev` and Vercel
     // runtime. /public assets ship to the server filesystem unchanged.
-    const filePath = path.join(process.cwd(), 'public', 'images', 'creco-logo-light.png');
+    const filePath = path.join(process.cwd(), 'public', 'images', 'creco-logo-white.png');
     const bytes = await readFile(filePath);
     cachedDataUri = `data:image/png;base64,${bytes.toString('base64')}`;
     return cachedDataUri;
   } catch (err) {
-    console.warn('[pdf-logo] could not read creco-logo-light.png:', err);
+    console.warn('[pdf-logo] could not read creco-logo-white.png:', err);
     cachedDataUri = null;
     return null;
   }
 }
 
 /**
- * Native PNG dimensions of creco-logo-light.png. Used to preserve the
+ * Native PNG dimensions of creco-logo-white.png. Used to preserve the
  * aspect ratio when we pick a header height for the PDF without round-
  * tripping through Sharp on every render.
  *
