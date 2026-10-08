@@ -32,7 +32,7 @@ Thanks for working with us.`,
  * (and in this order) so the settings page can render a helper chip-row.
  */
 export const TEMPLATE_VARIABLES = [
-  { token: '{{first_name}}',     description: "Client's first name (first word of full name)" },
+  { token: '{{first_name}}',     description: "Greeting name: first word of the client name, or \"Dr. Smith\" style when the name starts with a title" },
   { token: '{{client_name}}',    description: "Client's full name" },
   { token: '{{company}}',        description: 'Client company (blank if not set)' },
   { token: '{{invoice_number}}', description: 'Invoice number (e.g. INV-2026-1001)' },
@@ -43,6 +43,26 @@ export const TEMPLATE_VARIABLES = [
   { token: '{{payment_terms}}',  description: 'Payment terms (e.g. Net 30)' },
 ] as const;
 
+const HONORIFICS = new Set(['dr', 'mr', 'mrs', 'ms', 'mx', 'miss', 'prof', 'rev', 'hon', 'judge', 'sir']);
+const NAME_SUFFIXES = new Set(['jr', 'sr', 'ii', 'iii', 'iv', 'md', 'dds', 'dmd', 'od', 'phd', 'esq', 'cpa']);
+
+/**
+ * What an email should call the client: "Hi {{first_name}},". Normally the first
+ * word ("Jane Smith" → "Jane"). When the name starts with a title, the first word
+ * alone ("Dr.") makes a bad greeting, so the title is kept with the surname:
+ * "Dr. Alan Baribeau" → "Dr. Baribeau". A name that is only a title is returned
+ * as-is rather than guessed at.
+ */
+export function greetingName(fullName: string | null | undefined): string {
+  const parts = (fullName || '').trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '';
+  const norm = (w: string) => w.replace(/[.,]/g, '').toLowerCase();
+  if (!HONORIFICS.has(norm(parts[0])) || parts.length === 1) return parts[0];
+  const rest = parts.slice(1).filter(w => !NAME_SUFFIXES.has(norm(w)));
+  const surname = rest[rest.length - 1];
+  return surname ? `${parts[0]} ${surname}` : parts[0];
+}
+
 /**
  * Replace {{tokens}} in a template string against an invoice. Unknown tokens
  * pass through untouched so the admin sees what they typed if they make a
@@ -50,7 +70,7 @@ export const TEMPLATE_VARIABLES = [
  */
 export function substituteTemplate(template: string, invoice: Invoice): string {
   if (!template) return '';
-  const firstName = (invoice.client_name || '').trim().split(/\s+/)[0] || '';
+  const firstName = greetingName(invoice.client_name);
   const replacements: Record<string, string> = {
     '{{first_name}}':     firstName,
     '{{client_name}}':    invoice.client_name || '',
