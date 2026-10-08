@@ -6,7 +6,9 @@
 -- Editor once. Re-running is safe (create or replace).
 --
 -- Reads (written by src/lib/tracker.ts + src/lib/conversion-signals.ts):
---   site_pageviews.env->>'ai_source'   AI assistant that sent the visit (chatgpt, perplexity, claude, gemini, copilot, grok …)
+--   site_events.meta->>'ai_source'     AI assistant that sent the visit (chatgpt, perplexity, claude, gemini, copilot, grok …).
+--                                      The ingest drops env.ai_source from pageview rows (verified live 2026-10-08), so the event meta is
+--                                      the stored label; env and utm/referrer are kept as fallbacks.
 --   site_events.type = 'home_click'    first three homepage clicks; label "<section>:<id>", value = seconds since load
 --   site_events.type = 'intent_reached' arrival on get-started / valuation / contact / list / sell …
 --   phone_tap / text_tap / phone_call / sms_click, lead_form_started, *_submitted / *_subscribed / *_requested
@@ -34,7 +36,8 @@ with landing as (
          bool_or(type in ('intent_reached', 'lead_form_started'))                            as intent,
          bool_or(type in ('phone_tap', 'text_tap', 'phone_call', 'sms_click'))               as call_text,
          bool_or(type ~ '_(submitted|subscribed|requested)$' or type = 'generate_lead')      as lead,
-         (array_agg(label order by created_at) filter (where type = 'home_click'))[1]        as first_home_click
+         (array_agg(label order by created_at) filter (where type = 'home_click'))[1]        as first_home_click,
+         max(meta->>'ai_source')                                                              as ev_ai
     from public.site_events
    where site in ('crecotx.com', 'www.crecotx.com')
      and created_at > now() - interval '30 days'
@@ -43,7 +46,7 @@ with landing as (
 select l.session_id,
        l.landing_path,
        l.created_at,
-       coalesce(l.env_ai, case
+       coalesce(l.env_ai, e.ev_ai, case
          when l.src ~ 'chatgpt|openai\.com'                       then 'chatgpt'
          when l.src ~ 'perplexity'                                then 'perplexity'
          when l.src ~ 'claude'                                    then 'claude'

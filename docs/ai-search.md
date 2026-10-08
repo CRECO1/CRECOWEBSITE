@@ -48,7 +48,7 @@ Request indexing for `/`, `/market-brief` and `/fair-oaks-ranch-commercial-real-
 
 Built on the first-party tracker (`src/lib/tracker.ts` → the CRM project's `site_pageviews` / `site_events`).
 
-- **ai_source** — each visit is labelled once per tab session from `utm_source` (ChatGPT adds `utm_source=chatgpt.com`) or the referrer: chatgpt, perplexity, claude, gemini, copilot, grok, meta_ai, deepseek, mistral, you, phind, poe, duckai. Stored in the pageview `env`, the first-touch snapshot, and every event's `meta`. AI visits that arrive with no referrer look like direct traffic and can't be labelled.
+- **ai_source** — each visit is labelled once per tab session from `utm_source` (ChatGPT adds `utm_source=chatgpt.com`) or the referrer: chatgpt, perplexity, claude, gemini, copilot, grok, meta_ai, deepseek, mistral, you, phind, poe, duckai. Stored in the first-touch snapshot and every event's `meta` (the ingest drops it from the pageview `env`; the SQL views fall back to utm/referrer). AI visits that arrive with no referrer look like direct traffic and can't be labelled.
 - **home_click** — first three homepage clicks (`label = "<section>:<id>"`, `value` = seconds since load, `meta.n` = 1–3). Sections are `data-track-section` attributes; ids are `data-track-id` or the destination path. No visitor text is read.
 - **intent_reached** — arrival on get-started / valuation / contact / list / sell / development / tenant-needs.
 - **Gate** — DNT / Global Privacy Control switch the tracker off entirely (no id, no storage, no beacons). Bots, datacenter visitors and team devices are rejected by `analytics-gate.shouldTrackVisitor`, same as GA and Clarity.
