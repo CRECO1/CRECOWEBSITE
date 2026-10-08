@@ -19,12 +19,15 @@
  *                        `surface`; those carry data-no-auto-track so they
  *                        are not counted twice.
  *
+ * The same listener also feeds the homepage first-click log (lib/conversion-signals).
+ *
  * No PII: only the destination path, a surface name and the page path are
  * sent. Never a field value, a name or an address.
  */
 
 import { useEffect } from 'react';
 import { trackEvent, trackFormStart } from '@/lib/analytics';
+import { onClick as recordClick } from '@/lib/conversion-signals';
 
 /** Destination → CTA name. Keyed on pathname, so query strings don't matter. */
 const CTA_DESTINATIONS: Record<string, string> = {
@@ -64,6 +67,7 @@ export function InteractionTracking() {
     };
 
     const onClick = (e: Event) => {
+      recordClick(e.target);
       const t = e.target as HTMLElement | null;
       if (!t || typeof t.closest !== 'function') return;
       const a = t.closest<HTMLAnchorElement>('a[href]');

@@ -58,6 +58,9 @@ import { LeadMagnetBand } from '@/components/marketing/LeadMagnetBand';
 import { GoogleReviews } from '@/components/marketing/GoogleReviews';
 import { HEADWALL_TOBIN_HILL } from '@/lib/press';
 import { CORE_ANSWERS } from '@/lib/answers';
+import { AiWelcome } from '@/components/marketing/AiWelcome';
+import { HeroTalkLine } from '@/components/marketing/HeroTalkLine';
+import { HeroCallback } from '@/components/marketing/HeroCallback';
 
 
 // SERVICES — ordered by what brings owners and tenants in the door
@@ -276,7 +279,7 @@ export default async function HomePage() {
           hidden height — so when the browser first loaded and the URL
           bar was visible, the hero was taller than the visible area
           and users had to scroll to see the fold. svh eliminates that. */}
-      <section className="relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-primary pt-32 md:pt-24 pb-12 md:pb-16">
+      <section data-track-section="hero" className="relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-primary pt-32 md:pt-24 pb-12 md:pb-16">
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-primary/80" />
         {s.hero_image_url ? (
           <Image
@@ -306,21 +309,26 @@ export default async function HomePage() {
           <p className="mx-auto mb-10 max-w-2xl animate-fade-in text-body-lg leading-relaxed text-white/85 delay-200 fill-both">
             {heroSubheadline}
           </p>
+          {/* Only for visitors who arrived from an AI assistant (decided client-side after mount). */}
+          <AiWelcome />
 
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center animate-fade-in delay-300 fill-both">
             <Button size="lg" asChild>
-              <Link href="/get-started?path=tenant">I need space <ArrowRight className="ml-2 h-5 w-5" /></Link>
+              <Link href="/get-started?path=tenant" data-track-id="hero_need_space">I need space <ArrowRight className="ml-2 h-5 w-5" /></Link>
             </Button>
             <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary" asChild>
-              <Link href="/property-valuation"><Building2 className="mr-2 h-5 w-5" />I own property</Link>
+              <Link href="/property-valuation" data-track-id="hero_own_property"><Building2 className="mr-2 h-5 w-5" />I own property</Link>
             </Button>
           </div>
           <Link
             href="/listings"
+            data-track-id="hero_browse"
             className="mt-5 inline-flex min-h-[44px] items-center gap-1.5 text-body-sm font-semibold text-white/75 underline-offset-4 hover:text-gold hover:underline animate-fade-in delay-300 fill-both"
           >
             Browse properties <ArrowRight className="h-4 w-4" />
           </Link>
+          <HeroTalkLine />
+          <HeroCallback />
 
         </Container>
 
@@ -332,7 +340,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── Property Types Quick Browse (retail-first) ─────────────────── */}
-      <section className="bg-white border-b border-border">
+      <section data-track-section="types" className="bg-white border-b border-border">
         <Container>
           <div className="py-8 text-center">
             <p className="overline mb-2 text-foreground-muted">Browse Texas Properties</p>
@@ -361,7 +369,7 @@ export default async function HomePage() {
       <TrustStrip />
 
       {/* ── Featured Listings ─────────────────────────────────────────── */}
-      <section className="section-luxury bg-background-cream">
+      <section data-track-section="listings" className="section-luxury bg-background-cream">
         <Container>
           <RevealOnScroll>
             <div className="mb-14 text-center">
@@ -447,10 +455,12 @@ export default async function HomePage() {
 
       {/* ── Lead-Magnet Band — loud dual capture (valuation + alerts),
           high on the page right after the featured properties. ─────────── */}
-      <LeadMagnetBand surface="homepage-featured" />
+      <div data-track-section="lead_magnet">
+        <LeadMagnetBand surface="homepage-featured" />
+      </div>
 
       {/* ── San Antonio & Hill Country Markets ──────────────────────── */}
-      <section className="section-luxury bg-white">
+      <section data-track-section="markets" className="section-luxury bg-white">
         <Container>
           <RevealOnScroll>
             <div className="mb-14 text-center">
@@ -489,7 +499,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── Services ─────────────────────────────────────────────────── */}
-      <section className="section-luxury bg-background-cream">
+      <section data-track-section="services" className="section-luxury bg-background-cream">
         <Container>
           <RevealOnScroll>
             <div className="mb-14 text-center">
@@ -522,7 +532,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── Owner Services CTA Strip — speaks to dream client ─────────── */}
-      <section className="bg-primary text-white py-12">
+      <section data-track-section="owner" className="bg-primary text-white py-12">
         <Container>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
             <div className="lg:col-span-2">
@@ -548,7 +558,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── Market Brief ─────────────────────────────────────────────── */}
-      <section className="section-luxury bg-background-cream">
+      <section data-track-section="brief" className="section-luxury bg-background-cream">
         <Container>
           <RevealOnScroll>
             <div className="mb-12 text-center">
@@ -586,7 +596,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── Why Us ───────────────────────────────────────────────────── */}
-      <section className="section-luxury bg-white">
+      <section data-track-section="why_us" className="section-luxury bg-white">
         <Container>
           <div className="mx-auto max-w-3xl">
             <RevealOnScroll>
@@ -627,10 +637,12 @@ export default async function HomePage() {
       </section>
 
       {/* ── Google Reviews ───────────────────────────────────────────── */}
-      <GoogleReviews askForReview />
+      <div data-track-section="reviews">
+        <GoogleReviews askForReview />
+      </div>
 
       {/* ── FAQ ──────────────────────────────────────────────────────── */}
-      <section className="section-luxury bg-white">
+      <section data-track-section="faq" className="section-luxury bg-white">
         <Container>
           <RevealOnScroll>
             <div className="mb-12 text-center">
@@ -655,7 +667,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── CTA ────────────────────────────────────────────────────── */}
-      <section className="section-compact bg-gold">
+      <section data-track-section="closing_cta" className="section-compact bg-gold">
         <Container>
           <div className="flex flex-col items-center justify-between gap-8 text-center lg:flex-row lg:text-left">
             <div>

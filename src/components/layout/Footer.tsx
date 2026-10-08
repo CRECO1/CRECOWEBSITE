@@ -57,7 +57,7 @@ export function Footer() {
   const addressLines = contact.address.split('\n');
 
   return (
-    <footer className="bg-primary text-white">
+    <footer data-track-section="footer" className="bg-primary text-white">
       <div className="py-16 md:py-20">
         <Container>
           <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4">

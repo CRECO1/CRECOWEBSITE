@@ -39,6 +39,7 @@ import { GET as runTourFollowup }       from '../tour-followup/route';
 import { GET as runLeadFollowup }       from '../lead-followup/route';
 import { GET as runGeocodeListings }    from '../geocode-listings/route';
 import { GET as runMarketReport }       from '../market-report/route';
+import { GET as runTrackingRetention }  from '../tracking-retention/route';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -85,6 +86,8 @@ const SUB_CRONS = [
   // CRM campaign has a Send Date that's due; then emails the current subscriber
   // segment and clears the date. See /api/cron/market-report/route.ts.
   { name: 'market-report',       handler: runMarketReport },
+  // 12-month retention for first-party visitor tracking (crecotx rows in the CRM's site_events / site_pageviews).
+  { name: 'tracking-retention',  handler: runTrackingRetention },
 ] as const;
 
 export async function GET(req: NextRequest) {

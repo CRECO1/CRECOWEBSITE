@@ -69,6 +69,7 @@ export function MobileStickyCTA({ phone = '(210) 817-3443' }: { phone?: string }
       <div
         role="region"
         aria-label="Quick contact actions"
+        data-track-section="sticky_bar"
         // The tel/sms anchors below fire their own phone_call/sms_click with a
         // real surface; without this the global capture handler would fire a
         // second phone_call (surface:'auto') for the same tap.

@@ -6,6 +6,7 @@
  * across all three cities while the copy can be tailored to each market.
  */
 
+import { TalkToBroker } from '@/components/marketing/TalkToBroker';
 import Link from 'next/link';
 import React from 'react';
 import { findGuide } from '@/lib/guides';
@@ -694,6 +695,8 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
             </div>
           </Container>
         </section>
+
+        <TalkToBroker surface={(config.canonicalPath || config.city).replace(/^\//, '')} heading="Prefer to talk it through?" />
 
         {config.sourcesAsOf && <SourcesMethodology asOf={config.sourcesAsOf} />}
       </main>

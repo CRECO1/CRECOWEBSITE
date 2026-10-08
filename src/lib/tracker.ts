@@ -14,6 +14,10 @@
  *   • email-click identification: links in our campaign emails carry `ctk` (a signed client token); the
  *     server links this visitor to that contact so their site activity shows on the contact card
  *
+ * Local additions on crecotx.com (Oct 2026, keep when re-syncing the other sites): Do Not Track / Global Privacy
+ * Control opt-out, an injected allow() gate (bots, datacenters, team devices), and ai_source labelling of visits that
+ * arrive from AI assistants.
+ *
  * Privacy: first-party only, no third-party sync, no PII in the browser — identity is only ever learned
  * server-side (a lead form, or a signed ctk from OUR OWN email). Every accessor is try/caught: tracking
  * must never break a render or a form.
@@ -32,11 +36,12 @@ const VISIT_GAP_MS = 30 * 60 * 1000;
 export const CLICK_ID_KEYS = ['gclid', 'gbraid', 'wbraid', 'dclid', 'msclkid', 'fbclid', 'ttclid', 'li_fat_id', 'twclid'] as const;
 const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'] as const;
 
-export interface TrackerEnv { lang?: string; tz?: string; screen?: string; dpr?: number; conn?: string; scheme?: string; touch?: boolean }
+export interface TrackerEnv { lang?: string; tz?: string; screen?: string; dpr?: number; conn?: string; scheme?: string; touch?: boolean; ai_source?: string }
 export interface FirstTouch {
   t: number; landing_page?: string; referrer?: string;
   utm_source?: string; utm_medium?: string; utm_campaign?: string; utm_term?: string; utm_content?: string;
   click_ids?: Record<string, string>;
+  ai_source?: string;
 }
 /** What every lead form should spread into its POST (see trackerPayload). */
 export interface TrackerPayload {
@@ -45,6 +50,8 @@ export interface TrackerPayload {
 
 let endpoint = '/api/track';
 let started = false;
+/** False when the visitor opted out (DNT/GPC) or the injected gate rejected them (bot, datacenter, team device). */
+let enabled = false;
 let engagedMs = 0;
 let lastTick = 0;
 let maxScroll = 0;
@@ -59,6 +66,63 @@ interface EventRow { type: string; label?: string; value?: number; path: string;
 const isBrowser = () => typeof window !== 'undefined' && typeof document !== 'undefined';
 const devHost = () => /localhost|127\.0\.0\.1|\.local$/.test(window.location.hostname);
 const siteHost = () => window.location.hostname.replace(/^www\./, '');
+
+/** Do Not Track / Global Privacy Control — either one switches every tracker signal off. */
+export function trackingOptOut(): boolean {
+  try {
+    const n = navigator as unknown as { doNotTrack?: string | null; msDoNotTrack?: string | null; globalPrivacyControl?: boolean };
+    const w = window as unknown as { doNotTrack?: string | null };
+    return n.doNotTrack === '1' || n.doNotTrack === 'yes' || w.doNotTrack === '1' || n.msDoNotTrack === '1' || n.globalPrivacyControl === true;
+  } catch { return false; }
+}
+
+// ── AI-assistant visit labelling ────────────────────────────────────────────────────────────────
+// Matched on the utm_source (ChatGPT appends utm_source=chatgpt.com to links it opens) and then the referrer
+// host. Keep the SQL fallback in supabase/crm/ai_funnel_30d.sql in step with this list.
+const AI_SOURCES: ReadonlyArray<readonly [label: string, pattern: RegExp]> = [
+  ['chatgpt', /(^|\.)(chatgpt\.com|chat\.openai\.com|openai\.com)$|^chatgpt/i],
+  ['perplexity', /perplexity/i],
+  ['claude', /(^|\.)claude\.ai$|^claude/i],
+  ['gemini', /gemini\.google\.com|bard\.google\.com|^gemini/i],
+  ['copilot', /copilot\.microsoft\.com|(^|\.)copilot\.com$|^copilot/i],
+  ['grok', /(^|\.)grok\.com$|(^|\.)x\.ai$|^grok/i],
+  ['meta_ai', /(^|\.)meta\.ai$|^meta[_.]ai/i],
+  ['deepseek', /deepseek/i],
+  ['mistral', /chat\.mistral\.ai|^mistral/i],
+  ['you', /(^|\.)you\.com$/i],
+  ['phind', /phind\.com/i],
+  ['poe', /(^|\.)poe\.com$/i],
+  ['duckai', /duck\.ai$/i],
+];
+
+/** AI-assistant label for a utm_source and/or referrer, or '' when the visit isn't from one. */
+export function classifyAiSource(utmSource?: string | null, referrer?: string | null): string {
+  const candidates: string[] = [];
+  if (utmSource) candidates.push(utmSource.trim().toLowerCase());
+  if (referrer) {
+    try { candidates.push(new URL(referrer).hostname.toLowerCase()); } catch { candidates.push(referrer.toLowerCase()); }
+  }
+  for (const c of candidates) for (const [label, re] of AI_SOURCES) if (re.test(c)) return label;
+  return '';
+}
+
+const AI_KEY = 'trk_ai';
+
+/**
+ * The AI assistant that sent THIS visit ('' if none). Decided once per tab session from the landing URL and
+ * referrer, then remembered — later in-app navigations don't re-read the (stale) document.referrer.
+ */
+export function aiSource(): string {
+  if (!isBrowser()) return '';
+  try {
+    const stored = sessionStorage.getItem(AI_KEY);
+    if (stored !== null) return stored;
+    const label = classifyAiSource(new URLSearchParams(window.location.search).get('utm_source'), document.referrer && !document.referrer.includes(window.location.host) ? document.referrer : undefined);
+    sessionStorage.setItem(AI_KEY, label);
+    return label;
+  } catch { return ''; }
+}
+
 
 function uuid(): string {
   try { if (crypto.randomUUID) return crypto.randomUUID(); } catch { /* fall through */ }
@@ -82,7 +146,7 @@ function lsSet(key: string, v: string) { try { localStorage.setItem(key, v); } c
 
 /** Persistent anonymous visitor id — localStorage first, cookie as the survivor if storage is cleared. */
 export function visitorId(): string {
-  if (!isBrowser()) return '';
+  if (!isBrowser() || trackingOptOut()) return '';
   let id = ls(VID_KEY) || getCookie(VID_KEY);
   if (!id) id = uuid();
   lsSet(VID_KEY, id);
@@ -136,6 +200,8 @@ function recordVisit(clicks: Record<string, string>) {
     const ft: FirstTouch = { t: now, landing_page: window.location.pathname.slice(0, 200), referrer: offSiteReferrer() };
     for (const k of UTM_KEYS) { const v = p.get(k); if (v) ft[k] = v.slice(0, 120); }
     if (Object.keys(clicks).length) ft.click_ids = clicks;
+    const ai = aiSource();
+    if (ai) ft.ai_source = ai;
     lsSet(FIRST_KEY, JSON.stringify(ft));
   }
 }
@@ -151,13 +217,15 @@ export function environment(): TrackerEnv {
     if (c?.effectiveType) env.conn = c.effectiveType;
     env.scheme = window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     env.touch = 'ontouchstart' in window || (navigator.maxTouchPoints ?? 0) > 0;
+    const ai = aiSource();
+    if (ai) env.ai_source = ai;
   } catch { /* ignore */ }
   return env;
 }
 
 /** Spread this into any lead form POST so the lead carries the whole visitor story. */
 export function trackerPayload(): TrackerPayload {
-  if (!isBrowser()) return {};
+  if (!isBrowser() || trackingOptOut()) return {};
   try {
     return {
       visitor_id: visitorId(),
@@ -179,7 +247,7 @@ function send(path: string, body: unknown) {
 
 function flush() {
   if (flushTimer) { clearTimeout(flushTimer); flushTimer = null; }
-  if (!queue.length || !isBrowser() || devHost()) { queue = []; return; }
+  if (!queue.length || !isBrowser() || devHost() || !enabled) { queue = []; return; }
   const events = queue.splice(0, 20);
   send('/event', { site: siteHost(), visitor_id: visitorId(), session_id: sessionId(), events });
   if (queue.length) flush();
@@ -187,7 +255,9 @@ function flush() {
 
 /** Record a behaviour event (batched, fire-and-forget). */
 export function trackBehavior(type: string, label?: string, value?: number, meta?: Record<string, unknown>) {
-  if (!isBrowser() || devHost()) return;
+  if (!isBrowser() || devHost() || !enabled) return;
+  const ai = aiSource();
+  if (ai) meta = { ...meta, ai_source: ai };
   queue.push({
     type: type.slice(0, 40),
     label: label ? label.slice(0, 160) : undefined,
@@ -201,8 +271,9 @@ export function trackBehavior(type: string, label?: string, value?: number, meta
 
 // ── pageview ────────────────────────────────────────────────────────────────────────────────────
 export function trackPageview(attr: { utm_source?: string; utm_medium?: string; utm_campaign?: string; utm_term?: string; utm_content?: string } = {}) {
-  if (!isBrowser() || typeof navigator.sendBeacon !== 'function' || devHost()) return;
+  if (!isBrowser() || typeof navigator.sendBeacon !== 'function' || devHost() || !enabled) return;
   try {
+    aiSource();                       // decide + remember the AI label on the session's first view
     const clicks = captureClickIds();
     recordVisit(clicks);
     flushPageEngagement();            // close out the previous SPA page
@@ -313,10 +384,15 @@ function onError(ev: ErrorEvent) {
 /**
  * Start the tracker once per page load. `ep` is the base of the ingest routes: '' (same origin, FairOaks)
  * or 'https://www.fairoaksrealtygroup.com' (the other two sites, cross-origin via text/plain beacons).
+ * `allow` is an optional extra gate evaluated once (see analytics-gate.shouldTrackVisitor).
  */
-export function initTracker(ep = '') {
+export function initTracker(ep = '', allow?: () => boolean) {
   if (!isBrowser() || started) return;
   started = true;
+  // Opted out (DNT/GPC) or rejected by the caller's gate (bots, datacenters, team devices): no listeners, no
+  // storage, no beacons — every send path above also checks `enabled`.
+  enabled = !trackingOptOut() && (allow ? allow() : true);
+  if (!enabled) return;
   endpoint = `${ep.replace(/\/$/, '')}/api/track`;
   try {
     visitorId();

@@ -23,6 +23,7 @@
  */
 
 import { initTracker, trackPageview, trackBehavior, trackerPayload } from '@/lib/tracker';
+import { shouldTrackVisitor } from '@/lib/analytics-gate';
 
 const COOKIE_NAME = 'creco_attr';
 const COOKIE_TTL_DAYS = 30;
@@ -60,6 +61,7 @@ const LEAD_EVENTS = new Set<string>([
   'development_inquiry_submitted',
   'retail_leasing_inquiry_submitted',
   'get_started_submitted',
+  'homepage_callback_submitted',
   'property_alerts_subscribed',
   // The inline landing-page forms. These were firing their own event but
   // never mirroring to generate_lead, so the GA4 lead reports undercounted.
@@ -326,7 +328,7 @@ export function sendPageviewBeacon(): void {
   if (typeof window === 'undefined') return;
   // v2: the shared tracker adds the persistent visitor id, visit number, click ids, environment and the signed
   // email-link token, and starts the behaviour listeners. Posts cross-origin to the CRM's ingest.
-  initTracker('https://www.fairoaksrealtygroup.com');
+  initTracker('https://www.fairoaksrealtygroup.com', shouldTrackVisitor);
   trackPageview(readUtmsFromCookie());
 }
 

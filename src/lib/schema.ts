@@ -96,6 +96,8 @@ export const BUSINESS = {
   trecLicense: BRAND_TREC_LICENSE,
   trecLicenseDisplay: `TREC #${BRAND_TREC_LICENSE}`,
   hours: 'Monday–Friday, 8:00 AM–5:30 PM Central',
+  /** Compact form for tight UI lines (hero). Keep in step with `hours`. */
+  hoursShort: 'Mon–Fri 8:00–5:30',
   markets: ['San Antonio', 'Texas Hill Country'],
   /** Third-party profiles verified to exist and belong to CRECO. Only add a
    *  URL once it's confirmed — never guess one. */

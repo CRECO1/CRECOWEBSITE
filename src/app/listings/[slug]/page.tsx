@@ -4,6 +4,7 @@
 // cache. Was `force-dynamic` — the last public page never migrated to caching.
 export const revalidate = 1800;
 
+import { TalkToBroker } from '@/components/marketing/TalkToBroker';
 import type { Metadata } from 'next';
 import { metaDescription } from '@/lib/seo-meta';
 import { JsonLd } from '@/components/seo/JsonLd';
@@ -499,6 +500,14 @@ export default async function ListingDetailPage({ params }: Props) {
             </div>
           </div>
         </Container>
+
+        {!closed && (
+          <TalkToBroker
+            surface="listing"
+            heading="Questions about this property?"
+            body="Call or text a broker, or tell us what you need and we will follow up."
+          />
+        )}
 
         <FaqSection
           faqs={listingFaqs}

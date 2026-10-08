@@ -58,6 +58,7 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
 
   return (
     <header
+      data-track-section="nav"
       className={cn(
         'fixed left-0 right-0 top-0 z-50 transition-all duration-300',
         isTransparent

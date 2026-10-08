@@ -1,3 +1,4 @@
+import { TalkToBroker } from '@/components/marketing/TalkToBroker';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight, FileText, MapPin, Quote, ShieldCheck } from 'lucide-react';
@@ -171,6 +172,12 @@ export default function MarketBriefPage() {
             </div>
           </Container>
         </section>
+        <TalkToBroker
+          surface="market-brief"
+          path="exploring"
+          heading="Need numbers before the first edition?"
+          body="Call or text a broker for current San Antonio and Hill Country availability and rents, or tell us what you are looking for."
+        />
         <FaqSection faqs={MARKET_BRIEF_FAQS} path="/market-brief" heading="About the Market Brief" className="section-luxury bg-background-cream" />
       </main>
       <Footer />

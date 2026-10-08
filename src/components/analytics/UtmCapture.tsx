@@ -15,6 +15,7 @@
 import { useEffect } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { captureUtmsToCookie, sendPageviewBeacon } from '@/lib/analytics';
+import { onPageView } from '@/lib/conversion-signals';
 
 export function UtmCapture() {
   const pathname = usePathname();
@@ -23,6 +24,7 @@ export function UtmCapture() {
   useEffect(() => {
     captureUtmsToCookie();
     sendPageviewBeacon();   // live "who's on the site now" feed (fire-and-forget)
+    onPageView(pathname);   // resets the homepage click counter; logs intent_reached on lead-one-step-away pages
     // Including searchParams in deps catches ?utm_* added via in-app
     // navigation. pathname covers the common case of landing on a new
     // page via deep link.

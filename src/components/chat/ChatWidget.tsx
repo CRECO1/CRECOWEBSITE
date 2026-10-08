@@ -197,6 +197,8 @@ export function ChatWidget() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open CRECO chat"
+        data-track-section="chat"
+        data-track-id="open_chat"
         className="fixed z-40 bottom-6 right-6 max-md:bottom-24 max-md:right-4 inline-flex items-center gap-2 rounded-full bg-primary text-white pl-3 pr-4 py-3 shadow-2xl border border-gold/40 hover:bg-primary/90 transition-colors"
       >
         <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gold text-primary">
