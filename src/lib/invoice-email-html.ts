@@ -69,7 +69,7 @@ export function buildInvoiceEmailHtml({ invoice, message }: InvoiceEmailHtmlOpti
 
 /**
  * Wrap the email body in a full HTML doc with a simulated inbox header
- * (From / To / Subject / Attached). Used by the live preview iframe on
+ * (From / To / Cc / Subject / Attached). Used by the live preview iframe on
  * /billing/invoices/new — gives the admin a true "this is what they'll
  * see when they open it" experience.
  *
@@ -92,6 +92,8 @@ export function buildInvoiceEmailPreview({
   const safeTo      = escapeHtml(invoice.client_email || '(client email)');
   const safeSubject = escapeHtml(subject || '(no subject)');
   const safePdf     = escapeHtml(`${invoice.invoice_number || 'INV-PREVIEW'}.pdf`);
+  // The CC stored on the invoice (per-invoice, never a global default). Shown only when one is set.
+  const ccRow       = invoice.cc_email ? `\n        <div><strong>Cc</strong> ${escapeHtml(invoice.cc_email)}</div>` : '';
 
   return `<!doctype html>
 <html>
@@ -111,7 +113,7 @@ export function buildInvoiceEmailPreview({
     <div class="preview-shell">
       <div class="preview-header">
         <div><strong>From</strong> ${safeFrom}</div>
-        <div><strong>To</strong> ${safeTo}</div>
+        <div><strong>To</strong> ${safeTo}</div>${ccRow}
         <div><strong>Subject</strong> <span style="color:#1A1A1A;font-weight:600">${safeSubject}</span></div>
         <div style="margin-top:6px"><strong>Attached</strong> <span class="attachment-chip">📎 ${safePdf}</span></div>
       </div>

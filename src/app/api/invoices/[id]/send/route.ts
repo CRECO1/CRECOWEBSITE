@@ -156,5 +156,13 @@ export async function POST(
     })
     .eq('id', id);
 
+  // Audit trail: keep who this invoice was CC'd to on the record. Its own update, so a database that
+  // doesn't have the cc_email column yet can never block the send or the status change above.
+  if ((bodyCc ?? null) !== (fullInvoice.cc_email ?? null)) {
+    try {
+      await supabase.from('invoices').update({ cc_email: bodyCc ?? null }).eq('id', id);
+    } catch { /* best-effort */ }
+  }
+
   return NextResponse.json({ success: true, message_id: messageId });
 }

@@ -223,13 +223,13 @@ export default function InvoiceDetailPage() {
         throw new Error(body?.error ?? 'Send failed');
       }
       setComposeOpen(false);
-      setInfo(`Invoice sent to ${invoice.client_email}.`);
+      setInfo(`Invoice sent to ${invoice.client_email}${composeCc.trim() ? ` (cc ${composeCc.trim()})` : ''}.`);
       logActivity({
         action: invoice.sent_at ? 'sent' : 'sent',
         entity_type: 'invoice',
         entity_id: invoice.id,
         entity_label: invoice.invoice_number,
-        diff: { to: invoice.client_email, resend: !!invoice.sent_at },
+        diff: { to: invoice.client_email, cc: composeCc.trim() || null, resend: !!invoice.sent_at },
       });
       await load();
     } catch (e) {
@@ -598,6 +598,10 @@ export default function InvoiceDetailPage() {
         stripe_payment_link_url: draft.stripe_payment_link_url?.trim() || null,
         email_subject: draft.email_subject?.trim() || null,
         email_message: draft.email_message?.trim() || null,
+        // Only touched when edited, so saving an unrelated change never depends on the cc_email column existing.
+        ...((draft.cc_email?.trim().toLowerCase() || null) !== (invoice?.cc_email ?? null)
+          ? { cc_email: draft.cc_email?.trim().toLowerCase() || null }
+          : {}),
       })
       .eq('id', draft.id);
     if (e1) { setBusy(null); setError(e1.message); return; }
@@ -1187,6 +1191,15 @@ export default function InvoiceDetailPage() {
                     <p className="text-caption text-foreground-muted">
                       Custom subject + message for this invoice only. Leave blank to use the global template at send time.
                     </p>
+                    <Field label="CC (this invoice only)">
+                      <input
+                        type="email"
+                        className={inputCls}
+                        value={view.cc_email ?? ''}
+                        onChange={e => setDraft(d => d && ({ ...d, cc_email: e.target.value }))}
+                        placeholder="Optional — copied when this invoice is emailed"
+                      />
+                    </Field>
                     <Field label="Subject">
                       <input
                         className={inputCls}
@@ -1205,8 +1218,16 @@ export default function InvoiceDetailPage() {
                       />
                     </Field>
                   </>
-                ) : view.email_subject || view.email_message ? (
+                ) : view.email_subject || view.email_message || view.cc_email ? (
                   <div className="space-y-3 text-body-sm">
+                    {view.cc_email && (
+                      <div>
+                        <p className="text-caption uppercase tracking-widest text-foreground-muted mb-1">
+                          {invoice.sent_at ? 'CC\u2019d on send' : 'CC when sent'}
+                        </p>
+                        <p className="text-primary">{view.cc_email}</p>
+                      </div>
+                    )}
                     {view.email_subject && (
                       <div>
                         <p className="text-caption uppercase tracking-widest text-foreground-muted mb-1">Subject</p>
