@@ -59,7 +59,6 @@ import { GoogleReviews } from '@/components/marketing/GoogleReviews';
 import { HEADWALL_TOBIN_HILL } from '@/lib/press';
 import { CORE_ANSWERS } from '@/lib/answers';
 import { AiWelcome } from '@/components/marketing/AiWelcome';
-import { HeroTalkLine } from '@/components/marketing/HeroTalkLine';
 import { HeroCallback } from '@/components/marketing/HeroCallback';
 
 
@@ -327,7 +326,6 @@ export default async function HomePage() {
           >
             Browse properties <ArrowRight className="h-4 w-4" />
           </Link>
-          <HeroTalkLine />
           <HeroCallback />
 
         </Container>
