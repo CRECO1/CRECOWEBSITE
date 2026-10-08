@@ -44,7 +44,8 @@ interface ResendWebhookEvent {
     subject?: string;
     /** Some event types include this nested click info */
     click?: { ipAddress?: string; userAgent?: string; link?: string };
-    /** Open events carry user agent + IP */
+    /** Open events carry user agent + IP (under data.open, not data.click) */
+    open?: { ipAddress?: string; userAgent?: string };
     bounce?: { message?: string; subType?: string };
   };
 }
@@ -196,8 +197,8 @@ export async function POST(req: NextRequest) {
   // ── Insert the event row ────────────────────────────────────────
   const occurredAt = event.created_at;
   const recipientEmail = Array.isArray(event.data?.to) ? event.data.to[0] : (event.data?.to ?? null);
-  const userAgent = event.data?.click?.userAgent ?? null;
-  const ipAddress = event.data?.click?.ipAddress ?? null;
+  const userAgent = event.data?.click?.userAgent ?? event.data?.open?.userAgent ?? null;
+  const ipAddress = event.data?.click?.ipAddress ?? event.data?.open?.ipAddress ?? null;
 
   const { error: insertErr } = await supabase
     .from('invoice_email_events')

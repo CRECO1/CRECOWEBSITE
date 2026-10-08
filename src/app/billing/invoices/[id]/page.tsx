@@ -22,7 +22,7 @@ import { supabase } from '@/lib/supabase';
 import {
   calculateTotals, formatMoney, formatDate, effectiveStatus,
   STATUS_STYLES, lineAmount, balanceDue,
-  type Invoice, type InvoiceLineItem, type InvoiceEmailEvent,
+  type Invoice, type InvoiceLineItem, type InvoiceEmailEvent, describeEventSource, recipientRole,
 } from '@/lib/invoices';
 import { FALLBACK_TEMPLATE, substituteTemplate } from '@/lib/invoice-email';
 import { buildInvoiceEmailPreview } from '@/lib/invoice-email-html';
@@ -94,6 +94,44 @@ export default function InvoiceDetailPage() {
   // "Email tracking" card. Populated by the Resend webhook; the page
   // just reads what's already in the DB.
   const [emailEvents, setEmailEvents] = useState<InvoiceEmailEvent[]>([]);
+
+  // Who an invoice email went to and who opened it — one row per recipient. Resend reports each event against the
+  // specific address, so a To and a Cc recipient are tracked separately.
+  const renderRecipientBreakdown = () => {
+                        const people = new Map<string, { role: 'to' | 'cc'; delivered: boolean; opens: number; lastOpen: string | null; bounced: boolean; sources: Set<string> }>();
+                        for (const ev of [...emailEvents].reverse()) {
+                          const who = ev.recipient_email?.toLowerCase();
+                          if (!who) continue;
+                          const p = people.get(who) ?? { role: recipientRole(ev), delivered: false, opens: 0, lastOpen: null, bounced: false, sources: new Set<string>() };
+                          if (ev.event_type === 'email.delivered') p.delivered = true;
+                          if (ev.event_type === 'email.bounced' || ev.event_type === 'email.complained') p.bounced = true;
+                          if (ev.event_type === 'email.opened') { p.opens += 1; p.lastOpen = ev.occurred_at; const src = describeEventSource(ev); if (src) p.sources.add(src); }
+                          people.set(who, p);
+                        }
+                        if (!people.size) return null;
+                        return (
+                          <div className="mt-3 border border-border rounded-md divide-y divide-border">
+                            {[...people.entries()].map(([who, p]) => (
+                              <div key={who} className="px-3 py-2 text-caption">
+                                <div className="flex items-center justify-between gap-2">
+                                  <span className="font-semibold text-primary break-all">{who} <span className="font-normal text-foreground-muted">({p.role === 'cc' ? 'Cc' : 'To'})</span></span>
+                                  <span className={p.bounced ? 'text-red-700 font-semibold' : p.opens ? 'text-green-800 font-semibold' : 'text-foreground-muted'}>
+                                    {p.bounced ? 'Bounced' : p.opens ? `Opened ${p.opens}×` : p.delivered ? 'Delivered · not opened' : 'Sent'}
+                                  </span>
+                                </div>
+                                {p.opens > 0 && (
+                                  <div className="text-foreground-muted mt-0.5">
+                                    Last opened {p.lastOpen ? new Date(p.lastOpen).toLocaleString() : '—'}{p.sources.size ? ` · ${[...p.sources].join(', ')}` : ''}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                            <p className="px-3 py-2 text-caption text-foreground-muted">
+                              Some mail apps (Outlook, Hotmail) block the tracking image, so “not opened” can still mean it was read. An open within seconds of delivery is often a mail security scan rather than a person.
+                            </p>
+                          </div>
+                        );
+                      };
 
   // Global email template — loaded once on mount, used as the fallback
   // when this invoice doesn't carry a per-invoice email_subject/message.
@@ -1055,6 +1093,7 @@ export default function InvoiceDetailPage() {
                       </div>
                       <Row label="First open" value={invoice.first_opened_at ? new Date(invoice.first_opened_at).toLocaleString() : '—'} />
                       <Row label="Most recent" value={invoice.last_opened_at ? new Date(invoice.last_opened_at).toLocaleString() : '—'} />
+                      {renderRecipientBreakdown()}
                       {emailEvents.length > 0 && (
                         <details className="mt-3">
                           <summary className="cursor-pointer text-caption text-gold-dark font-semibold hover:text-gold">
@@ -1065,6 +1104,8 @@ export default function InvoiceDetailPage() {
                               <li key={ev.id} className="flex items-center justify-between gap-2 border-b border-border pb-1.5 last:border-0">
                                 <span className="text-foreground-muted">
                                   {new Date(ev.occurred_at).toLocaleString()}
+                                  {ev.recipient_email ? <span className="text-primary"> · {ev.recipient_email}</span> : null}
+                                  {describeEventSource(ev) ? <span> · {describeEventSource(ev)}</span> : null}
                                 </span>
                                 <span className="font-mono text-primary">
                                   {ev.event_type.replace('email.', '')}
@@ -1080,6 +1121,7 @@ export default function InvoiceDetailPage() {
                       <div className="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-amber-50 border border-amber-200 text-amber-900 font-medium text-body-sm">
                         Not yet opened
                       </div>
+                      {renderRecipientBreakdown()}
                       <p className="text-caption text-foreground-muted">
                         We'll record the open here as soon as the client loads the email. Some email clients block tracking images for privacy — if you suspect they read it but it doesn't show, that's why.
                       </p>

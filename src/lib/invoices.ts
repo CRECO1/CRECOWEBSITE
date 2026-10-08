@@ -210,6 +210,32 @@ export interface InvoiceEmailEvent {
   user_agent: string | null;
   ip_address: string | null;
   created_at: string;
+  /** The full Resend payload (kept by the webhook). Opens carry data.open.{ipAddress,userAgent}. */
+  raw?: {
+    data?: {
+      open?: { ipAddress?: string; userAgent?: string };
+      click?: { ipAddress?: string; userAgent?: string };
+      headers?: { name: string; value: string }[];
+    };
+  } | null;
+}
+
+/** Where an open/click came from, in plain words ("Gmail image proxy", "Chrome on Windows"). */
+export function describeEventSource(ev: InvoiceEmailEvent): string | null {
+  const ua = ev.user_agent ?? ev.raw?.data?.open?.userAgent ?? ev.raw?.data?.click?.userAgent ?? '';
+  if (!ua) return null;
+  if (/GoogleImageProxy/i.test(ua)) return 'Gmail (image proxy)';
+  if (/YahooMailProxy/i.test(ua)) return 'Yahoo Mail (image proxy)';
+  const os = /iPhone|iPad|iPod/i.test(ua) ? 'iOS' : /Android/i.test(ua) ? 'Android' : /Windows/i.test(ua) ? 'Windows'
+    : /Mac OS X|Macintosh/i.test(ua) ? 'macOS' : /Linux/i.test(ua) ? 'Linux' : null;
+  const browser = /Edg\//i.test(ua) ? 'Edge' : /Firefox\//i.test(ua) ? 'Firefox' : /Chrome\//i.test(ua) ? 'Chrome' : /Safari\//i.test(ua) ? 'Safari' : null;
+  return [browser, os && `on ${os}`].filter(Boolean).join(' ') || 'Unknown device';
+}
+
+/** Whether this event's recipient was on To or Cc (read from the stored headers). */
+export function recipientRole(ev: InvoiceEmailEvent): 'cc' | 'to' {
+  const cc = ev.raw?.data?.headers?.find(h => h.name.toLowerCase() === 'cc')?.value ?? '';
+  return ev.recipient_email && cc.toLowerCase().includes(ev.recipient_email.toLowerCase()) ? 'cc' : 'to';
 }
 
 /** Color classes for status badges. Keeps the admin list legible at a glance. */
