@@ -17,9 +17,10 @@ const navLinks = [
   { href: '/property-valuation', label: 'Free Valuation' },
   { href: '/insights', label: 'Insights' },
   { href: '/about', label: 'About' },
-  // There was no Contact link anywhere in the header — the /contact page (and its form) existed but nobody could find it.
-  { href: '/contact', label: 'Contact' },
-  { href: '/get-started', label: 'Get Started', isHighlight: true },
+  // Contact Us is a plain nav link like the rest (owner's call — not a button). The /contact page + form existed but nothing
+  // linked to it. It replaces the old highlighted Get Started button to keep the header uncrowded; /get-started stays one
+  // click away from the home-page hero CTAs and the footer.
+  { href: '/contact', label: 'Contact Us' },
 ];
 
 interface HeaderProps {
@@ -186,9 +187,7 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
               <Phone className="h-5 w-5" />
             </a>
 
-            {/* "Get Started" already sits in the nav links above (isHighlight=true),
-                so we don't repeat it here. The Schedule button used to live in this
-                slot but was removed per request — Get Started covers the same intent. */}
+            {/* No highlighted nav button any more: Contact Us is a plain nav link. */}
 
             {variant !== 'minimal' && (
               <button
