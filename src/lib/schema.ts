@@ -95,7 +95,7 @@ export const BUSINESS = {
   longitude: -98.643139,
   trecLicense: BRAND_TREC_LICENSE,
   trecLicenseDisplay: `TREC #${BRAND_TREC_LICENSE}`,
-  hours: 'Monday–Friday, 9:00 AM–6:00 PM Central',
+  hours: 'Monday–Friday, 8:00 AM–5:30 PM Central',
   markets: ['San Antonio', 'Texas Hill Country'],
   /** Third-party profiles verified to exist and belong to CRECO. Only add a
    *  URL once it's confirmed — never guess one. */
@@ -284,8 +284,8 @@ export function siteGraph() {
         openingHoursSpecification: [{
           '@type': 'OpeningHoursSpecification',
           dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-          opens: '09:00',
-          closes: '18:00',
+          opens: '08:00',
+          closes: '17:30',
         }],
         priceRange: 'Commission-based; tenant representation typically paid by landlord',
         currenciesAccepted: 'USD',

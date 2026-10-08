@@ -41,5 +41,5 @@ Request indexing for `/`, `/market-brief` and `/fair-oaks-ranch-commercial-real-
 
 ## Open facts (do not guess — confirm with Zack)
 - Social profiles for `sameAs`: LinkedIn company page (footer link `linkedin.com/company/crecotx` returned 404), Facebook, Instagram, Crexi. Only add confirmed URLs in `src/lib/schema.ts`.
-- Business hours (`Mon–Fri 9–6 Central`) are already published in `BUSINESS.hours`; confirm they're still right.
+- Business hours are Mon–Fri 8:00 AM–5:30 PM Central (confirmed by Zack Oct 2026) in `BUSINESS.hours` and the `openingHoursSpecification` in `schema.ts`.
 - When the first Market Brief edition publishes, replace the pre-launch copy and `MARKET_BRIEF_FAQS` in `src/lib/answers.ts`.

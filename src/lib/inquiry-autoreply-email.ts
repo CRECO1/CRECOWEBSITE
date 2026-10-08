@@ -96,7 +96,7 @@ export function buildInquiryAutoreplyEmail({ name, pathLabel }: InquiryAutoreply
                   <td style="padding:20px 22px" align="center">
                     <div style="color:#FFFFFF;font-size:16px;font-weight:700;line-height:1.4;margin-bottom:12px">Need help now?</div>
                     <a href="tel:${BRAND_PHONE_TEL}" style="display:inline-block;background:${GOLD};color:${INK};padding:14px 30px;border-radius:8px;font-weight:700;font-size:18px;text-decoration:none;white-space:nowrap">Call ${escapeHtml(BRAND_PHONE_DISPLAY)}</a>
-                    <div style="color:#BFBFBF;font-size:12px;line-height:1.5;margin-top:10px">Tap to dial · Monday–Friday, 9 AM–6 PM Central</div>
+                    <div style="color:#BFBFBF;font-size:12px;line-height:1.5;margin-top:10px">Tap to dial · Monday–Friday, 8:00 AM–5:30 PM Central</div>
                   </td>
                 </tr>
               </table>

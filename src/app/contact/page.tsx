@@ -158,7 +158,7 @@ export default function ContactPage() {
                     <div>
                       <p className="font-semibold text-primary">Hours</p>
                       <p className="text-body-sm text-foreground-muted">
-                        Mon–Fri: 9am – 6pm<br />
+                        Mon–Fri: 8:00am – 5:30pm<br />
                         Sat & Sun: By Appointment
                       </p>
                     </div>
