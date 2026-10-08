@@ -1,3 +1,12 @@
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════════════
+-- HOW TO RUN (once, ~1 minute): Supabase dashboard → the CRM project (the one with the site_events and
+-- site_pageviews tables) → SQL Editor → New query → paste this whole file → Run. "Success. No rows returned"
+-- means it worked. Safe to re-run. Then read the results with:
+--     select * from ai_funnel_30d;            -- AI visitors by assistant and landing page
+--     select * from ai_vs_other_funnel_30d;   -- AI vs everyone else
+--     select * from home_first_click_30d;     -- what people click first on the homepage
+-- ═══════════════════════════════════════════════════════════════════════════════════════════════════════
+
 -- AI-referral conversion funnel + homepage first-click views for crecotx.com.
 --
 -- RUN IN THE CRM SUPABASE PROJECT (the one that holds site_pageviews / site_events — the first-party tracker's
@@ -115,3 +124,6 @@ select case when ai_source is null then 'not_ai' else 'ai' end        as channel
 
 revoke all on public.site_sessions_30d, public.ai_funnel_30d, public.ai_vs_other_funnel_30d, public.home_first_click_30d
   from anon, authenticated;
+
+-- Quick check after running (expect rows only once real visits have been tracked):
+-- select * from ai_vs_other_funnel_30d;
