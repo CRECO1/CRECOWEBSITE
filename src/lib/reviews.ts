@@ -55,7 +55,7 @@ export const REVIEWS: Review[] = [
 
 /** Profile-level figures. Keep in step with the live Google Business Profile. */
 export const GOOGLE_RATING = 5.0;
-export const GOOGLE_REVIEW_COUNT = 6;
+export const GOOGLE_REVIEW_COUNT = 38;   // verified on the live Google Business Profile 2026-10-08: 5.0, 37 five-star + 1 four-star
 
 /**
  * The verified Google Business Profile. This is the same ?cid= URL carried in

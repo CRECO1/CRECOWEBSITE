@@ -56,6 +56,6 @@ Built on the first-party tracker (`src/lib/tracker.ts` → the CRM project's `si
 - **Reading it** — run `supabase/crm/ai_funnel_30d.sql` once in the **CRM** Supabase SQL editor, then `select * from ai_funnel_30d;`, `ai_vs_other_funnel_30d`, `home_first_click_30d`. At current volume (a handful of AI sessions a week) read the leading indicators (intent, call/text taps), not the lead rate.
 - **Phone taps are the proxy for calls** — there is no call-tracking number.
 
-### Pending Zack decisions (both stubbed in `src/lib/hero-proof.ts`)
-- Google rating in the hero: set `SHOW_GOOGLE_RATING = true`.
-- Response-time promise: set `RESPONSE_TIME_PROMISE` to his exact wording; it renders after the AI welcome line.
+### Hero decisions (`src/lib/hero-proof.ts`)
+- Google rating in the hero: ON (approved). Count shown at 15+ reviews; live profile verified 2026-10-08 at 5.0 / 38 reviews. Update `GOOGLE_RATING` / `GOOGLE_REVIEW_COUNT` in `src/lib/reviews.ts` when it changes.
+- Response-time promise (still pending): set `RESPONSE_TIME_PROMISE` to his exact wording; it renders after the AI welcome line.

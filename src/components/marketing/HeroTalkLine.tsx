@@ -2,12 +2,12 @@ import { Star } from 'lucide-react';
 import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 import { BUSINESS } from '@/lib/schema';
 import { GOOGLE_RATING, GOOGLE_REVIEW_COUNT } from '@/lib/reviews';
-import { SHOW_GOOGLE_RATING } from '@/lib/hero-proof';
+import { HERO_MIN_REVIEWS_TO_SHOW_COUNT, SHOW_GOOGLE_RATING } from '@/lib/hero-proof';
 
 /**
  * "Prefer to talk? Call or text (210) 817-3443 · Mon–Fri 8:00–5:30 · Licensed Texas brokerage"
- * — the hero's no-form option. The Google rating is wired but hidden until SHOW_GOOGLE_RATING (lib/hero-proof.ts)
- * is switched on.
+ * — the hero's no-form option. The Google rating follows (lib/hero-proof.ts: SHOW_GOOGLE_RATING, and the count only
+ * at HERO_MIN_REVIEWS_TO_SHOW_COUNT or more).
  */
 export function HeroTalkLine() {
   return (
@@ -25,8 +25,9 @@ export function HeroTalkLine() {
         <>
           <span aria-hidden="true" className="text-white/40">·</span>
           <span className="inline-flex items-center gap-1">
+            {GOOGLE_RATING.toFixed(1)}
             <Star className="h-3.5 w-3.5 fill-gold text-gold" aria-hidden="true" />
-            {GOOGLE_RATING.toFixed(1)} on Google ({GOOGLE_REVIEW_COUNT} reviews)
+            on Google{GOOGLE_REVIEW_COUNT >= HERO_MIN_REVIEWS_TO_SHOW_COUNT ? ` (${GOOGLE_REVIEW_COUNT} reviews)` : ''}
           </span>
         </>
       )}
