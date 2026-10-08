@@ -3,7 +3,8 @@ import { jsonLd } from '@/lib/jsonLd';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { breadcrumbList, webPage } from '@/lib/schema';
 import Link from 'next/link';
-import { Calendar, Clock, ArrowRight, BookOpen } from 'lucide-react';
+import Image from 'next/image';
+import { Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
@@ -92,18 +93,31 @@ export default function InsightsIndex() {
             <RevealOnScroll>
               <p className="overline mb-3 text-foreground-muted">Most Recent</p>
             </RevealOnScroll>
-            <Link href={`/insights/${featured.slug}`} className="group block rounded-2xl bg-white shadow-card hover:shadow-card-hover transition-all overflow-hidden">
-              <div className="grid grid-cols-1 lg:grid-cols-5 gap-0">
-                <div className="lg:col-span-2 bg-gradient-to-br from-primary to-primary/80 p-8 lg:p-12 flex flex-col justify-center text-white">
-                  <BookOpen className="mb-4 h-10 w-10 text-gold" />
-                  <p className="text-caption uppercase tracking-widest text-gold mb-2">{featured.category}</p>
-                  <p className="text-body-sm text-white/70">By {featured.author}</p>
+            <Link href={`/insights/${featured.slug}`} className="group block overflow-hidden rounded-2xl bg-white shadow-card transition-all hover:shadow-card-hover">
+              <div className="grid grid-cols-1 lg:grid-cols-5">
+                <div className="relative min-h-[240px] bg-primary lg:col-span-2 lg:min-h-[420px]">
+                  {featured.cover && (
+                    <Image
+                      src={featured.cover.src}
+                      alt={featured.cover.alt}
+                      fill
+                      priority
+                      sizes="(max-width: 1024px) 100vw, 40vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      style={{ objectPosition: featured.cover.position }}
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-primary/70 via-primary/10 to-transparent" />
+                  <span className="absolute left-5 top-5 rounded-full bg-gold px-3.5 py-1.5 text-caption font-semibold uppercase tracking-widest text-primary">
+                    {featured.category}
+                  </span>
                 </div>
-                <div className="lg:col-span-3 p-8 lg:p-12">
-                  <h2 className="font-heading text-display-sm font-bold text-primary mb-4 group-hover:text-gold transition-colors">
+                <div className="flex flex-col justify-center p-8 lg:col-span-3 lg:p-12">
+                  <p className="mb-3 text-caption font-semibold uppercase tracking-widest text-gold-dark">Featured · By {featured.author}</p>
+                  <h2 className="mb-4 font-heading text-display-sm font-bold text-primary transition-colors group-hover:text-gold">
                     {featured.title}
                   </h2>
-                  <p className="text-body text-foreground-muted leading-relaxed mb-6">{featured.excerpt}</p>
+                  <p className="mb-6 text-body leading-relaxed text-foreground-muted">{featured.excerpt}</p>
                   <div className="flex items-center gap-5 text-caption text-foreground-muted">
                     <span className="flex items-center gap-1.5">
                       <Calendar className="h-3.5 w-3.5" /> {formatDate(featured.publishedAt)}
@@ -112,7 +126,7 @@ export default function InsightsIndex() {
                       <Clock className="h-3.5 w-3.5" /> {featured.readingMinutes} min read
                     </span>
                   </div>
-                  <span className="mt-6 inline-flex items-center gap-2 text-body-sm font-semibold text-gold-dark group-hover:text-gold transition-colors">
+                  <span className="mt-6 inline-flex items-center gap-2 text-body-sm font-semibold text-gold-dark transition-colors group-hover:text-gold">
                     Read article <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </span>
                 </div>
@@ -131,13 +145,30 @@ export default function InsightsIndex() {
               <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {rest.map((post, i) => (
                   <RevealOnScroll key={post.slug} delay={i * 80}>
-                    <Link href={`/insights/${post.slug}`} className="group h-full block rounded-xl border border-border bg-white p-7 hover:border-gold hover:shadow-card-hover transition-all flex flex-col">
-                      <p className="text-caption uppercase tracking-widest text-gold mb-3">{post.category}</p>
-                      <h3 className="font-heading text-heading-sm font-bold text-primary group-hover:text-gold transition-colors mb-3 line-clamp-3">{post.title}</h3>
-                      <p className="text-body-sm text-foreground-muted leading-relaxed mb-5 flex-1 line-clamp-4">{post.excerpt}</p>
-                      <div className="flex items-center gap-4 text-caption text-foreground-muted border-t border-border pt-4">
-                        <span className="flex items-center gap-1.5"><Calendar className="h-3 w-3" /> {formatDate(post.publishedAt)}</span>
-                        <span className="flex items-center gap-1.5"><Clock className="h-3 w-3" /> {post.readingMinutes} min</span>
+                    <Link href={`/insights/${post.slug}`} className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-white transition-all hover:border-gold hover:shadow-card-hover">
+                      <div className="relative aspect-[16/10] overflow-hidden bg-primary">
+                        {post.cover && (
+                          <Image
+                            src={post.cover.src}
+                            alt={post.cover.alt}
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="object-cover transition-transform duration-700 group-hover:scale-105"
+                            style={{ objectPosition: post.cover.position }}
+                          />
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-primary/50 to-transparent" />
+                        <span className="absolute left-4 top-4 rounded-full bg-gold px-3 py-1 text-caption font-semibold uppercase tracking-widest text-primary">
+                          {post.category}
+                        </span>
+                      </div>
+                      <div className="flex flex-1 flex-col p-6">
+                        <h3 className="mb-3 line-clamp-3 font-heading text-heading-sm font-bold text-primary transition-colors group-hover:text-gold">{post.title}</h3>
+                        <p className="mb-5 line-clamp-3 flex-1 text-body-sm leading-relaxed text-foreground-muted">{post.excerpt}</p>
+                        <div className="flex items-center justify-between border-t border-border pt-4 text-caption text-foreground-muted">
+                          <span className="flex items-center gap-1.5"><Calendar className="h-3 w-3" /> {formatDate(post.publishedAt)}</span>
+                          <span className="flex items-center gap-1.5"><Clock className="h-3 w-3" /> {post.readingMinutes} min</span>
+                        </div>
                       </div>
                     </Link>
                   </RevealOnScroll>

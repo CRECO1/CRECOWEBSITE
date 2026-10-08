@@ -5,6 +5,7 @@ import { metaTitle, metaDescription } from '@/lib/seo-meta';
 import { jsonLd } from '@/lib/jsonLd';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight, Calendar, Clock, BookOpen } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
@@ -105,8 +106,22 @@ export default async function InsightDetailPage({ params }: Props) {
         </div>
 
         {/* Hero */}
-        <section className="bg-primary py-16 text-white">
-          <Container>
+        <section className="relative overflow-hidden bg-primary py-16 text-white">
+          {post.cover && (
+            <>
+              <Image
+                src={post.cover.src}
+                alt=""
+                fill
+                priority
+                sizes="100vw"
+                className="object-cover opacity-30"
+                style={{ objectPosition: post.cover.position }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/85 to-primary/40" />
+            </>
+          )}
+          <Container className="relative">
             <div className="max-w-3xl">
               <p className="overline mb-3 text-gold">CRECO Insights · {post.category}</p>
               <h1 className="font-heading text-display font-bold mb-6">{post.title}</h1>

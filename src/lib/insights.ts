@@ -42,6 +42,8 @@ export interface InsightPost {
   sections: InsightSection[];
   /** Closing paragraph(s) */
   conclusion: string[];
+  /** Cover photo (path under /public) shown on the index + post hero */
+  cover?: { src: string; alt: string; position?: string };
   /** Slugs of related posts to link from the bottom of this post */
   relatedSlugs?: string[];
 }
@@ -68,6 +70,7 @@ export const POSTS: InsightPost[] = [
     author: 'CRECO',
     readingMinutes: 9,
     category: 'Market Outlook',
+    cover: { src: '/properties/8000-fair-oaks-pkwy/realty-group-exterior.jpg', alt: 'Hill Country commercial office building at 8000 Fair Oaks Pkwy', position: 'center 60%' },
     intro: [
       'Texas commercial real estate enters 2026 in a more interesting position than headlines suggest. Yes, cap rates have moved out from 2022 lows. Yes, office faces real questions. But beneath those well-known stories, the on-the-ground market across San Antonio, Austin, Houston, and Dallas–Fort Worth is more nuanced — and in some segments, more opportunity-rich — than at any point since 2015.',
       'This piece walks through what we are seeing on the ground at CRECO, what we expect to play out over the next 12-18 months, and what we are recommending to clients across our retail, industrial, and office practice areas. It is not a forecast. It is a synthesis of the conversations we are having with Texas commercial real estate owners, tenants, lenders, and investors every day.',
@@ -146,6 +149,7 @@ export const POSTS: InsightPost[] = [
     author: 'CRECO',
     readingMinutes: 8,
     category: 'Tenant Strategy',
+    cover: { src: '/properties/8000-fair-oaks-pkwy/executive-suites-south.jpg', alt: 'Modern two-story stone office building', position: 'center 40%' },
     intro: [
       'Every Texas business owner who has signed a third or fourth commercial lease eventually asks the question: should I just buy this building? The answer matters because it locks up real capital and changes the financial profile of your business — but most owners we talk to make the decision based on instinct rather than analysis.',
       'There is a clear framework for thinking through lease-vs-buy on Texas commercial real estate, and it applies whether you are a single-location operator, a multi-location concept, or a service business needing dedicated space. This piece walks through the framework — including the SBA 504 financing path that makes ownership accessible to Texas businesses with as little as 10% down — and the questions that should actually drive the decision.',
@@ -244,6 +248,7 @@ export const POSTS: InsightPost[] = [
     author: 'CRECO',
     readingMinutes: 10,
     category: 'Owner Strategy',
+    cover: { src: '/properties/8000-fair-oaks-pkwy/monument-sign.jpg', alt: 'Commercial property monument sign', position: 'center' },
     intro: [
       'Most Texas commercial real estate owners with multi-property portfolios operate on inertia. They acquired the assets over time, the properties throw off cash, and the day-to-day operations consume enough attention that strategic decisions never get made. The result: portfolios that should have been actively managed sit static for 5, 10, 20 years — accumulating capex backlog, missing repositioning opportunities, and forgoing 1031 cycles that could have meaningfully grown the portfolio.',
       'The owners who compound wealth through Texas commercial real estate are not the ones who buy and hold passively. They are the ones who treat their portfolio as a living book — actively making hold/sell/reposition decisions on each asset based on submarket fundamentals, asset condition, tenant credit, capex requirements, and capital deployment alternatives. This piece walks through the framework we use at CRECO to advise multi-property Texas commercial real estate owners.',
@@ -351,6 +356,7 @@ export const POSTS: InsightPost[] = [
     author: 'CRECO',
     readingMinutes: 9,
     category: 'Tenant Strategy',
+    cover: { src: '/properties/15033-main-st-lytle/aerial.jpg', alt: 'Aerial view of a commercial site beside Interstate 35', position: 'center 70%' },
     intro: [
       'Texas industrial leasing is more nuanced in 2026 than at any point in the last decade. Statewide vacancy ticked up off historic lows; modern bulk distribution rents held; older Class B/C industrial rents softened; and submarket pricing diverged. The result: tenants who negotiate carefully are signing meaningfully better deals than tenants who treat industrial as a commodity rate negotiation.',
       "This piece walks through what we see across CRECO's Texas industrial leasing practice — current rate ranges by submarket, the spec items that actually decide whether you got a good deal (vs the ones that don't matter much), what to push on in negotiations, and the deal terms that tell you to walk away.",
@@ -448,6 +454,7 @@ export const POSTS: InsightPost[] = [
     author: 'CRECO',
     readingMinutes: 10,
     category: 'Investment',
+    cover: { src: '/properties/15033-main-st-lytle/front-wide.jpg', alt: 'Main Street commercial building in Lytle, Texas', position: 'center 55%' },
     intro: [
       'The 1031 like-kind exchange is the most powerful tax-deferral tool in Texas commercial real estate. Used well, it lets owners trade up the quality of their portfolios across decades while compounding deferred tax dollars into more real estate. Used poorly, it produces rushed acquisitions of mediocre replacement property — or worse, a failed exchange and a fully taxable sale.',
       "This piece walks through how we advise CRECO clients to approach 1031 exchanges in 2026 — when to plan, how to time, what to look for in replacement property, when reverse exchanges make sense, and the mistakes that owners routinely make under deadline pressure.",
@@ -552,6 +559,7 @@ export const POSTS: InsightPost[] = [
     author: 'CRECO',
     readingMinutes: 8,
     category: 'Market Outlook',
+    cover: { src: '/properties/8000-fair-oaks-pkwy/retail-strip-wide.jpg', alt: 'Retail strip with Spotted Deer Coffee and Parkers Ice Cream', position: '75% 40%' },
     intro: [
       "The 'retail apocalypse' headlines of the late 2010s produced one of the most lopsided narratives in commercial real estate. The reality on the ground in Texas in 2026 is that strong retail centers are leasing aggressively, generating real NOI growth, and trading at meaningfully attractive cap rates — while weak centers are struggling, vacant, and increasingly hard to finance. The bifurcation is the entire story.",
       "This piece walks through what we see across CRECO's Texas retail leasing practice — what separates strong centers from weak, the tenant categories driving demand, current rate ranges by submarket, and the metrics that actually matter for both owners and tenants.",
