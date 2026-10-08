@@ -244,20 +244,10 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
               </Link>
 
               {/* Action button stack — extra top margin clears the link
-                  stack visually, space-y-3 keeps the three buttons reading
-                  as a single group rather than three drifting CTAs. */}
+                  stack visually, space-y-3 keeps the Call + Text buttons reading
+                  as a single group. */}
               <div className="mt-10 space-y-3">
-                <Button
-                  size="lg"
-                  fullWidth
-                  className="bg-gold hover:bg-gold-dark text-primary font-semibold"
-                  asChild
-                >
-                  <Link href="/get-started" onClick={() => setIsMenuOpen(false)}>
-                    <Building2 className="mr-2 h-5 w-5" />
-                    Get Started
-                  </Link>
-                </Button>
+                {/* The gold "Get Started" button was removed from the phone menu (owner's call); Contact Us is in the link list above. */}
                 {/* Was one Call button labeled "Call/Text" but only
                     linked to tel:. Split into a real Call + Text pair
                     with distinct GA attribution so tapping "Text"
