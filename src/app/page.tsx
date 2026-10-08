@@ -59,7 +59,6 @@ import { GoogleReviews } from '@/components/marketing/GoogleReviews';
 import { HEADWALL_TOBIN_HILL } from '@/lib/press';
 import { CORE_ANSWERS } from '@/lib/answers';
 import { AiWelcome } from '@/components/marketing/AiWelcome';
-import { HeroCallback } from '@/components/marketing/HeroCallback';
 
 
 // SERVICES — ordered by what brings owners and tenants in the door
@@ -326,7 +325,6 @@ export default async function HomePage() {
           >
             Browse properties <ArrowRight className="h-4 w-4" />
           </Link>
-          <HeroCallback />
 
         </Container>
 
