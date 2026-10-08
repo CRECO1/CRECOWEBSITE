@@ -174,6 +174,17 @@ export async function POST(req: NextRequest) {
     if (inv) { invoiceId = inv.id; workspaceId = inv.workspace_id; }
   }
   if (!invoiceId) {
+    // (b) Every message we send is recorded per recipient (the client's copy and any Cc copy are separate
+    // messages), so events for the Cc copy resolve here.
+    const { data: msg, error: msgErr } = await supabase
+      .from('invoice_email_messages')
+      .select('invoice_id, workspace_id')
+      .eq('message_id', messageId)
+      .maybeSingle();
+    if (msgErr) console.error('[resend/webhook] invoice_email_messages lookup failed:', msgErr.message, msgErr.code ?? '');
+    if (msg) { invoiceId = msg.invoice_id; workspaceId = msg.workspace_id; }
+  }
+  if (!invoiceId) {
     // Reminder rows carry their own workspace_id — same value as the
     // parent invoice but we read it directly to avoid an extra join.
     const { data: rem, error: remErr } = await supabase

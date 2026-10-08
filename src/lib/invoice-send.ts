@@ -6,14 +6,19 @@
  * branded HTML body, attaches the rendered PDF, fires through Resend, and
  * returns the Resend message ID for downstream logging.
  *
- * Does NOT touch the database — callers are responsible for marking the
- * invoice as sent / logging the reminder row. This keeps the helper pure.
+ * Callers are responsible for marking the invoice as sent / logging the reminder row.
+ * The one thing it DOES write is invoice_email_messages (which Resend message ids went to
+ * which recipient), so webhook events resolve back to the invoice. Best-effort.
  */
 
 import { Resend } from 'resend';
 import { renderInvoicePdf } from './invoice-pdf';
 import type { Invoice } from './invoices';
 import { buildInvoiceEmailHtml } from './invoice-email-html';
+import { signInvoiceView } from './invoice-view-token';
+import { createClient } from '@supabase/supabase-js';
+
+const SITE_URL = 'https://www.crecotx.com';
 
 export interface SendInvoiceOptions {
   invoice: Invoice;
@@ -57,10 +62,6 @@ export async function sendInvoiceEmail(opts: SendInvoiceOptions): Promise<string
   const pdf = await renderInvoicePdf(invoice);
   const pdfBuffer = Buffer.from(pdf);
 
-  // Body HTML is rendered by the shared builder so the live preview on
-  // /billing/invoices/new is guaranteed to match what we ship.
-  const html = buildInvoiceEmailHtml({ invoice, message });
-
   // Invoice PDF is always first; extras (W-9, etc.) tail behind. Most
   // email clients show attachments in the order they're listed, so the
   // invoice itself stays the visually-primary file.
@@ -70,18 +71,51 @@ export async function sendInvoiceEmail(opts: SendInvoiceOptions): Promise<string
   ];
 
   const resend = new Resend(process.env.RESEND_API_KEY);
-  const result = await resend.emails.send({
-    from: getFromEmail(),
-    to: invoice.client_email,
-    cc: cc ? [cc] : undefined,
-    replyTo: replyTo ?? process.env.LEAD_NOTIFICATION_EMAIL ?? 'info@crecotx.com',
-    subject,
-    html,
-    attachments,
-  });
 
+  // One message PER recipient. A single message with a Cc can't tell us who clicked or opened — every copy
+  // carries the same link. So the client gets their copy with their own signed "View invoice online" link,
+  // and anyone Cc'd gets a separate copy (marked as a copy) with theirs. Body HTML is still rendered by the
+  // shared builder so the live preview matches what ships.
+  const replyToAddr = replyTo ?? process.env.LEAD_NOTIFICATION_EMAIL ?? 'info@crecotx.com';
+  const sendTo = async (recipient: string, role: 'to' | 'cc') => {
+    let viewUrl: string | undefined;
+    try { viewUrl = `${SITE_URL}/inv/${signInvoiceView({ inv: invoice.id, email: recipient.toLowerCase(), role })}`; }
+    catch (e) { console.warn('[invoice-send] could not sign view link; sending without it:', e); }
+    const html = buildInvoiceEmailHtml({ invoice, message, viewUrl, copyOf: role === 'cc' ? invoice.client_email : undefined });
+    return resend.emails.send({
+      from: getFromEmail(),
+      to: recipient,
+      replyTo: replyToAddr,
+      subject: role === 'cc' ? `Copy: ${subject}` : subject,
+      html,
+      attachments,
+    });
+  };
+
+  const result = await sendTo(invoice.client_email, 'to');
   if (result.error) {
     throw new Error(result.error.message ?? 'Resend rejected the send');
   }
-  return result.data?.id;
+  const primaryId = result.data?.id;
+
+  // Record every message id so the Resend webhook can resolve events for the Cc copy (and reminders) back to this invoice.
+  const recorded: { message_id: string; invoice_id: string; workspace_id: string; recipient_email: string; role: 'to' | 'cc' }[] = [];
+  if (primaryId) recorded.push({ message_id: primaryId, invoice_id: invoice.id, workspace_id: invoice.workspace_id, recipient_email: invoice.client_email.toLowerCase(), role: 'to' });
+
+  // The Cc copy never blocks or fails the invoice: the client's copy has already gone out.
+  if (cc && cc.toLowerCase() !== invoice.client_email.toLowerCase()) {
+    try {
+      const ccResult = await sendTo(cc, 'cc');
+      if (ccResult.error) console.error('[invoice-send] Cc copy rejected:', ccResult.error.message);
+      else if (ccResult.data?.id) recorded.push({ message_id: ccResult.data.id, invoice_id: invoice.id, workspace_id: invoice.workspace_id, recipient_email: cc.toLowerCase(), role: 'cc' });
+    } catch (e) { console.error('[invoice-send] Cc copy failed:', e); }
+  }
+
+  if (recorded.length) {
+    try {
+      const url = process.env.NEXT_PUBLIC_SUPABASE_URL, key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+      if (url && key) await createClient(url, key, { auth: { persistSession: false } }).from('invoice_email_messages').upsert(recorded, { onConflict: 'message_id' });
+    } catch (e) { console.error('[invoice-send] could not record message ids:', e); }
+  }
+  return primaryId;
 }

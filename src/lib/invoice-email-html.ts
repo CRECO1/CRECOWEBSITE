@@ -18,13 +18,23 @@ export interface InvoiceEmailHtmlOptions {
   invoice: Invoice;
   /** The (already-substituted) personal message that appears above the summary. */
   message: string;
+  /** This recipient's signed link to the invoice page (/inv/<token>) — also how we learn who actually looked. */
+  viewUrl?: string;
+  /** Set on a Cc copy: the person the invoice was actually sent to. */
+  copyOf?: string;
 }
 
 /**
  * Render the HTML body of an invoice email. Subject lives on the envelope,
  * not in here — render it separately in the preview chrome if you want.
  */
-export function buildInvoiceEmailHtml({ invoice, message }: InvoiceEmailHtmlOptions): string {
+export function buildInvoiceEmailHtml({ invoice, message, viewUrl, copyOf }: InvoiceEmailHtmlOptions): string {
+  const copyBanner = copyOf
+    ? `<p style="margin:0 0 16px;padding:10px 14px;background:#FAFAF8;border:1px solid #E8E5E0;border-radius:6px;font-size:13px;color:#525252">Copy for your records — this invoice was sent to <strong>${escapeHtml(copyOf)}</strong>.</p>`
+    : '';
+  const viewBlock = viewUrl
+    ? `<p style="margin:16px 0"><a href="${escapeHtml(viewUrl)}" style="display:inline-block;background:#ffffff;color:#1A1A1A;padding:11px 20px;border-radius:8px;font-weight:700;text-decoration:none;border:1px solid #1A1A1A">View invoice online</a></p>`
+    : '';
   const payLinkBlock = invoice.stripe_payment_link_url
     ? `<p style="margin:16px 0"><a href="${escapeHtml(invoice.stripe_payment_link_url)}" style="display:inline-block;background:#1A1A1A;color:#C9A962;padding:12px 22px;border-radius:8px;font-weight:700;text-decoration:none">Pay online →</a></p>`
     : '';
@@ -44,6 +54,7 @@ export function buildInvoiceEmailHtml({ invoice, message }: InvoiceEmailHtmlOpti
         </a>
       </div>
 
+      ${copyBanner}
       <h2 style="margin:0 0 16px;color:#1A1A1A;font-size:20px">Invoice ${safeNumber}</h2>
 
       <div style="white-space:pre-line;margin:0 0 24px;line-height:1.6">${escapeHtml(message)}</div>
@@ -55,6 +66,7 @@ export function buildInvoiceEmailHtml({ invoice, message }: InvoiceEmailHtmlOpti
       </table>
 
       ${payLinkBlock}
+      ${viewBlock}
 
       <p style="margin:20px 0;color:#525252">Mail check to:<br/>CRECO - Commercial Real Estate Company<br/>8000 Fair Oaks Pkwy, Suite 100<br/>Fair Oaks Ranch, TX 78015</p>
 
@@ -86,7 +98,8 @@ export function buildInvoiceEmailPreview({
   message: string;
   fromEmail?: string;
 }): string {
-  const bodyHtml = buildInvoiceEmailHtml({ invoice, message });
+  // Preview shows the button exactly as it will appear (the link itself is signed per recipient at send time).
+  const bodyHtml = buildInvoiceEmailHtml({ invoice, message, viewUrl: 'https://www.crecotx.com/inv/preview' });
 
   const safeFrom    = escapeHtml(fromEmail);
   const safeTo      = escapeHtml(invoice.client_email || '(client email)');

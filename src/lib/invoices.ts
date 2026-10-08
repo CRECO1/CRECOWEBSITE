@@ -220,6 +220,36 @@ export interface InvoiceEmailEvent {
   } | null;
 }
 
+/** A human-signal event from the public invoice page: the recipient viewed it, downloaded the PDF, or clicked Pay online. */
+export interface InvoiceView {
+  id: string;
+  invoice_id: string;
+  recipient_email: string | null;
+  role: 'to' | 'cc' | null;
+  kind: 'view' | 'pdf' | 'pay_click';
+  ip_address: string | null;
+  user_agent: string | null;
+  created_at: string;
+}
+
+/**
+ * Whether an "opened" event is probably a machine rather than a person. The tracking pixel fires for mail
+ * security scanners and Apple's Mail Privacy Protection too, so an open is only weak evidence. This is a
+ * guess from the evidence we have — a confirmed "viewed online" always outranks it:
+ *   • Apple Mail Privacy Protection fetches images via Apple's 17.x.x.x network
+ *   • known security-scanner user agents
+ *   • opened within ~20 s of delivery (people rarely read an invoice that fast; scanners do)
+ */
+export function openLooksAutomated(ev: InvoiceEmailEvent, deliveredAtMs: number | null): string | null {
+  if (ev.event_type !== 'email.opened') return null;
+  const ua = ev.user_agent ?? ev.raw?.data?.open?.userAgent ?? '';
+  const ip = ev.ip_address ?? ev.raw?.data?.open?.ipAddress ?? '';
+  if (/^17\./.test(ip)) return "Apple's privacy proxy";
+  if (/barracuda|proofpoint|mimecast|symantec|messagelabs|safelinks|defender|scanner|headless/i.test(ua)) return 'a mail security scanner';
+  if (deliveredAtMs != null && new Date(ev.occurred_at).getTime() - deliveredAtMs < 20_000) return 'opened within seconds of delivery';
+  return null;
+}
+
 /** Where an open/click came from, in plain words ("Gmail image proxy", "Chrome on Windows"). */
 export function describeEventSource(ev: InvoiceEmailEvent): string | null {
   const ua = ev.user_agent ?? ev.raw?.data?.open?.userAgent ?? ev.raw?.data?.click?.userAgent ?? '';

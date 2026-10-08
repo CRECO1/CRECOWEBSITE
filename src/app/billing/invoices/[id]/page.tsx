@@ -22,7 +22,7 @@ import { supabase } from '@/lib/supabase';
 import {
   calculateTotals, formatMoney, formatDate, effectiveStatus,
   STATUS_STYLES, lineAmount, balanceDue,
-  type Invoice, type InvoiceLineItem, type InvoiceEmailEvent, describeEventSource, recipientRole,
+  type Invoice, type InvoiceLineItem, type InvoiceEmailEvent, type InvoiceView, describeEventSource, recipientRole, openLooksAutomated,
 } from '@/lib/invoices';
 import { FALLBACK_TEMPLATE, substituteTemplate } from '@/lib/invoice-email';
 import { buildInvoiceEmailPreview } from '@/lib/invoice-email-html';
@@ -94,44 +94,113 @@ export default function InvoiceDetailPage() {
   // "Email tracking" card. Populated by the Resend webhook; the page
   // just reads what's already in the DB.
   const [emailEvents, setEmailEvents] = useState<InvoiceEmailEvent[]>([]);
+  // Confirmed human signals from the public invoice page (viewed online / downloaded PDF / clicked Pay online).
+  const [views, setViews] = useState<InvoiceView[]>([]);
 
-  // Who an invoice email went to and who opened it — one row per recipient. Resend reports each event against the
-  // specific address, so a To and a Cc recipient are tracked separately.
+  // Who an invoice email went to and what each person actually did. Resend reports each event against the
+  // specific address, and each recipient has their own copy + signed link, so a To and a Cc are tracked
+  // separately. Strongest signal wins: viewed online (a real browser loaded the page) > opened by what looks
+  // like a person > opened only automatically (scanner / privacy proxy / within seconds of delivery) > delivered.
+  type Person = {
+    role: 'to' | 'cc'; delivered: boolean; deliveredAt: number | null; bounced: boolean;
+    humanOpens: number; autoOpens: number; autoWhy: Set<string>; lastOpen: string | null; sources: Set<string>;
+    views: number; lastView: string | null; viewSources: Set<string>; pdfs: number; payClicks: number;
+  };
+  const buildPeople = () => {
+    const people = new Map<string, Person>();
+    const get = (who: string, role: 'to' | 'cc'): Person => {
+      const cur = people.get(who);
+      if (cur) return cur;
+      const fresh: Person = { role, delivered: false, deliveredAt: null, bounced: false, humanOpens: 0, autoOpens: 0, autoWhy: new Set(), lastOpen: null, sources: new Set(), views: 0, lastView: null, viewSources: new Set(), pdfs: 0, payClicks: 0 };
+      people.set(who, fresh);
+      return fresh;
+    };
+    const ordered = [...emailEvents].reverse();
+    for (const ev of ordered) {
+      const who = ev.recipient_email?.toLowerCase();
+      if (!who) continue;
+      const p = get(who, recipientRole(ev));
+      if (ev.event_type === 'email.delivered') { p.delivered = true; p.deliveredAt = new Date(ev.occurred_at).getTime(); }
+      if (ev.event_type === 'email.bounced' || ev.event_type === 'email.complained') p.bounced = true;
+    }
+    for (const ev of ordered) {
+      if (ev.event_type !== 'email.opened') continue;
+      const who = ev.recipient_email?.toLowerCase();
+      if (!who) continue;
+      const p = get(who, recipientRole(ev));
+      const why = openLooksAutomated(ev, p.deliveredAt);
+      if (why) { p.autoOpens += 1; p.autoWhy.add(why); } else p.humanOpens += 1;
+      p.lastOpen = ev.occurred_at;
+      const src = describeEventSource(ev); if (src) p.sources.add(src);
+    }
+    for (const v of [...views].reverse()) {
+      const who = v.recipient_email?.toLowerCase();
+      if (!who) continue;
+      const p = get(who, v.role === 'cc' ? 'cc' : 'to');
+      if (v.kind === 'view') {
+        p.views += 1; p.lastView = v.created_at;
+        const ua = v.user_agent ?? '';
+        const os = /iPhone|iPad|iPod/i.test(ua) ? 'iPhone/iPad' : /Android/i.test(ua) ? 'Android' : /Windows/i.test(ua) ? 'Windows' : /Mac OS X|Macintosh/i.test(ua) ? 'Mac' : null;
+        const br = /Edg\//i.test(ua) ? 'Edge' : /Firefox\//i.test(ua) ? 'Firefox' : /Chrome\//i.test(ua) ? 'Chrome' : /Safari\//i.test(ua) ? 'Safari' : null;
+        const label = [br, os && `on ${os}`].filter(Boolean).join(' '); if (label) p.viewSources.add(label);
+      }
+      if (v.kind === 'pdf') p.pdfs += 1;
+      if (v.kind === 'pay_click') p.payClicks += 1;
+    }
+    return people;
+  };
+  const trackingHeadline = () => {
+    const people = buildPeople();
+    const viewers = [...people.entries()].filter(([, p]) => p.views > 0).map(([w]) => w);
+    const openers = [...people.entries()].filter(([, p]) => p.humanOpens > 0).map(([w]) => w);
+    const autoOnly = [...people.values()].some(p => p.autoOpens > 0);
+    if (viewers.length) return { tone: 'green' as const, text: `Viewed online by ${viewers.join(', ')}` };
+    if (openers.length) return { tone: 'green' as const, text: `Opened by ${openers.join(', ')}` };
+    if (autoOnly) return { tone: 'amber' as const, text: 'Opened — but only automatically so far (no confirmed read yet)' };
+    return null;
+  };
   const renderRecipientBreakdown = () => {
-                        const people = new Map<string, { role: 'to' | 'cc'; delivered: boolean; opens: number; lastOpen: string | null; bounced: boolean; sources: Set<string> }>();
-                        for (const ev of [...emailEvents].reverse()) {
-                          const who = ev.recipient_email?.toLowerCase();
-                          if (!who) continue;
-                          const p = people.get(who) ?? { role: recipientRole(ev), delivered: false, opens: 0, lastOpen: null, bounced: false, sources: new Set<string>() };
-                          if (ev.event_type === 'email.delivered') p.delivered = true;
-                          if (ev.event_type === 'email.bounced' || ev.event_type === 'email.complained') p.bounced = true;
-                          if (ev.event_type === 'email.opened') { p.opens += 1; p.lastOpen = ev.occurred_at; const src = describeEventSource(ev); if (src) p.sources.add(src); }
-                          people.set(who, p);
-                        }
-                        if (!people.size) return null;
-                        return (
-                          <div className="mt-3 border border-border rounded-md divide-y divide-border">
-                            {[...people.entries()].map(([who, p]) => (
-                              <div key={who} className="px-3 py-2 text-caption">
-                                <div className="flex items-center justify-between gap-2">
-                                  <span className="font-semibold text-primary break-all">{who} <span className="font-normal text-foreground-muted">({p.role === 'cc' ? 'Cc' : 'To'})</span></span>
-                                  <span className={p.bounced ? 'text-red-700 font-semibold' : p.opens ? 'text-green-800 font-semibold' : 'text-foreground-muted'}>
-                                    {p.bounced ? 'Bounced' : p.opens ? `Opened ${p.opens}×` : p.delivered ? 'Delivered · not opened' : 'Sent'}
-                                  </span>
-                                </div>
-                                {p.opens > 0 && (
-                                  <div className="text-foreground-muted mt-0.5">
-                                    Last opened {p.lastOpen ? new Date(p.lastOpen).toLocaleString() : '—'}{p.sources.size ? ` · ${[...p.sources].join(', ')}` : ''}
-                                  </div>
-                                )}
-                              </div>
-                            ))}
-                            <p className="px-3 py-2 text-caption text-foreground-muted">
-                              Some mail apps (Outlook, Hotmail) block the tracking image, so “not opened” can still mean it was read. An open within seconds of delivery is often a mail security scan rather than a person.
-                            </p>
-                          </div>
-                        );
-                      };
+    const people = buildPeople();
+    if (!people.size) return null;
+    return (
+      <div className="mt-3 border border-border rounded-md divide-y divide-border">
+        {[...people.entries()].map(([who, p]) => {
+          const status = p.bounced ? { text: 'Bounced', cls: 'text-red-700 font-semibold' }
+            : p.views ? { text: `Viewed online ${p.views}×`, cls: 'text-green-800 font-semibold' }
+            : p.humanOpens ? { text: `Opened ${p.humanOpens}×`, cls: 'text-green-800 font-semibold' }
+            : p.autoOpens ? { text: `Opened ${p.autoOpens}× — looks automatic`, cls: 'text-amber-700 font-semibold' }
+            : p.delivered ? { text: 'Delivered · not opened', cls: 'text-foreground-muted' }
+            : { text: 'Sent', cls: 'text-foreground-muted' };
+          return (
+            <div key={who} className="px-3 py-2 text-caption">
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-semibold text-primary break-all">{who} <span className="font-normal text-foreground-muted">({p.role === 'cc' ? 'Cc copy' : 'To'})</span></span>
+                <span className={status.cls}>{status.text}</span>
+              </div>
+              {p.views > 0 && (
+                <div className="text-foreground-muted mt-0.5">
+                  Last viewed {p.lastView ? new Date(p.lastView).toLocaleString() : '—'}{p.viewSources.size ? ` · ${[...p.viewSources].join(', ')}` : ''}
+                  {p.pdfs > 0 ? ' · downloaded the PDF' : ''}{p.payClicks > 0 ? ' · clicked Pay online' : ''}
+                </div>
+              )}
+              {p.views === 0 && (p.pdfs > 0 || p.payClicks > 0) && (
+                <div className="text-foreground-muted mt-0.5">{p.pdfs > 0 ? 'Downloaded the PDF' : ''}{p.pdfs > 0 && p.payClicks > 0 ? ' · ' : ''}{p.payClicks > 0 ? 'Clicked Pay online' : ''}</div>
+              )}
+              {(p.humanOpens + p.autoOpens) > 0 && p.views === 0 && (
+                <div className="text-foreground-muted mt-0.5">
+                  Last email open {p.lastOpen ? new Date(p.lastOpen).toLocaleString() : '—'}{p.sources.size ? ` · ${[...p.sources].join(', ')}` : ''}
+                  {p.autoOpens > 0 ? ` · likely automatic (${[...p.autoWhy].join('; ')})` : ''}
+                </div>
+              )}
+            </div>
+          );
+        })}
+        <p className="px-3 py-2 text-caption text-foreground-muted">
+          “Viewed online” is the reliable signal — it means they opened the invoice page in a browser from their own link. Email opens are weaker: Outlook and Hotmail block the tracking image, and mail security scanners and Apple’s privacy proxy trigger it without a person.
+        </p>
+      </div>
+    );
+  };
 
   // Global email template — loaded once on mount, used as the fallback
   // when this invoice doesn't carry a per-invoice email_subject/message.
@@ -170,6 +239,13 @@ export default function InvoiceDetailPage() {
       .eq('invoice_id', id)
       .order('occurred_at', { ascending: false });
     setEmailEvents((events ?? []) as InvoiceEmailEvent[]);
+    // Page-view signals — tolerate the table not existing yet (pre-migration) so the page still renders.
+    const { data: viewRows } = await supabase
+      .from('invoice_views')
+      .select('*')
+      .eq('invoice_id', id)
+      .order('created_at', { ascending: false });
+    setViews((viewRows ?? []) as InvoiceView[]);
 
     // Payment ledger — the sum of these drives the invoice's paid/partial
     // status (recalc trigger, migration 0046).
@@ -1085,12 +1161,18 @@ export default function InvoiceDetailPage() {
                     <p className="text-body-sm text-foreground-muted">
                       No tracking message id on file. Send (or re-send) the invoice to start tracking opens.
                     </p>
-                  ) : invoice.open_count && invoice.open_count > 0 ? (
+                  ) : ((invoice.open_count ?? 0) > 0 || views.length > 0) ? (
                     <div className="space-y-2 text-body-sm">
-                      <div className="inline-flex items-center gap-2 px-2 py-1 rounded-md bg-green-50 border border-green-200 text-green-900 font-semibold">
-                        <CheckCircle className="h-4 w-4" />
-                        Opened {invoice.open_count} time{invoice.open_count !== 1 ? 's' : ''}
-                      </div>
+                      {(() => {
+                        const h = trackingHeadline();
+                        const green = !h || h.tone === 'green';
+                        return (
+                          <div className={`inline-flex items-center gap-2 px-2 py-1 rounded-md border font-semibold ${green ? 'bg-green-50 border-green-200 text-green-900' : 'bg-amber-50 border-amber-200 text-amber-900'}`}>
+                            <CheckCircle className="h-4 w-4" />
+                            {h ? h.text : `Opened ${invoice.open_count} time${invoice.open_count !== 1 ? 's' : ''}`}
+                          </div>
+                        );
+                      })()}
                       <Row label="First open" value={invoice.first_opened_at ? new Date(invoice.first_opened_at).toLocaleString() : '—'} />
                       <Row label="Most recent" value={invoice.last_opened_at ? new Date(invoice.last_opened_at).toLocaleString() : '—'} />
                       {renderRecipientBreakdown()}
