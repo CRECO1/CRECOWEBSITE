@@ -47,6 +47,8 @@ export interface Invoice {
   client_email: string;
   client_company: string | null;
   client_address: string | null;
+  /** Optional CC copied when this invoice is emailed (pre-fills the Compose modal). */
+  cc_email?: string | null;
 
   issue_date: string;          // ISO date, YYYY-MM-DD
   due_date: string;            // ISO date

@@ -84,6 +84,8 @@ export async function POST(
     if (typeof body?.message === 'string') bodyMessage = clampString(body.message, MAX_LEN.message);
     if (typeof body?.cc === 'string' && isValidEmail(body.cc)) bodyCc = body.cc;
   } catch { /* no body is fine */ }
+  // A CC stored on the invoice (set while it was still a draft) applies unless the Compose modal sent one.
+  if (!bodyCc && fullInvoice.cc_email && isValidEmail(fullInvoice.cc_email)) bodyCc = fullInvoice.cc_email;
 
   // Resolution order for subject + message:
   //   1. Request body (Compose modal — admin tweaked something at send time)

@@ -200,7 +200,7 @@ export default function InvoiceDetailPage() {
       setComposeSubject(invoice.email_subject ?? substituteTemplate(template.default_subject, invoice));
       setComposeMessage(invoice.email_message ?? substituteTemplate(template.default_message, invoice));
     }
-    setComposeCc('');
+    setComposeCc(invoice.cc_email ?? '');
     setComposeOpen(true);
   }
 
