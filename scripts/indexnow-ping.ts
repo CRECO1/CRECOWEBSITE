@@ -15,6 +15,9 @@
  * Usage:
  *   npm run indexnow                    # submit the standard key-page list
  *   npm run indexnow -- /some/new-page  # submit only the paths given
+ *   npm run indexnow -- --sitemap       # submit every URL in the live sitemap.xml
+ *
+ * Run it AFTER a deploy is live (IndexNow makes the engines fetch the URL now).
  *
  * Every network call is bounded by REQUEST_TIMEOUT_MS; the script never hangs.
  */
@@ -59,6 +62,8 @@ export const KEY_PATHS = [
   '/owner-services',
   '/seller-investor-representation',
   '/listings',
+  '/market-brief',
+  '/markets',
   ...CITY_PATHS,
   '/llms.txt',
   '/llms-full.txt',
@@ -67,9 +72,21 @@ export const KEY_PATHS = [
 const toUrl = (path: string) =>
   /^https?:\/\//i.test(path) ? path : `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`;
 
+/** Every <loc> in the live sitemap that belongs to this host (IndexNow rejects others). */
+async function sitemapUrls(): Promise<string[]> {
+  const res = await fetch(`${SITE_URL}/sitemap.xml`, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
+  if (!res.ok) throw new Error(`sitemap.xml returned HTTP ${res.status}`);
+  const xml = await res.text();
+  const urls = [...xml.matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/g)].map(m => m[1]);
+  return urls.filter(u => new URL(u).host === HOST);
+}
+
 async function main() {
-  const paths = process.argv.slice(2).filter(a => !a.startsWith('-'));
-  const urlList = (paths.length > 0 ? paths : KEY_PATHS).map(toUrl);
+  const args = process.argv.slice(2);
+  const paths = args.filter(a => !a.startsWith('-'));
+  const useSitemap = args.includes('--sitemap');
+  // A single IndexNow POST carries at most 10,000 URLs; the sitemap is far smaller.
+  const urlList = (useSitemap ? await sitemapUrls() : (paths.length > 0 ? paths : KEY_PATHS).map(toUrl)).slice(0, 10_000);
 
   const payload = { host: HOST, key: KEY, keyLocation: KEY_LOCATION, urlList };
 

@@ -16,6 +16,7 @@ const BOTS: ReadonlyArray<readonly [name: string, pattern: RegExp]> = [
   ['OAI-SearchBot', /OAI-SearchBot/i],
   ['ChatGPT-User', /ChatGPT-User/i],
   ['ClaudeBot', /ClaudeBot/i],
+  ['Claude-SearchBot', /Claude-SearchBot/i],
   ['Claude-User', /Claude-User/i],
   ['PerplexityBot', /PerplexityBot/i],
   ['Perplexity-User', /Perplexity-User/i],
@@ -26,6 +27,14 @@ const BOTS: ReadonlyArray<readonly [name: string, pattern: RegExp]> = [
   ['Meta-ExternalAgent', /meta-externalagent/i],
   ['CCBot', /CCBot/i],
   ['Bytespider', /Bytespider/i],
+  ['Diffbot', /Diffbot/i],
+  ['DuckAssistBot', /DuckAssistBot/i],
+  ['MistralAI-User', /MistralAI-User/i],
+  ['cohere-ai', /cohere-ai/i],
+  ['YouBot', /YouBot/i],
+  ['GrokBot', /GrokBot|xAI-Bot/i],
+  ['Meta-ExternalFetcher', /meta-externalfetcher/i],
+  ['GoogleOther', /GoogleOther|Google-CloudVertexBot|Google-NotebookLM/i],
 ];
 
 /** Canonical bot name for a user-agent, or null for anything we don't track. */

@@ -7,6 +7,8 @@ import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { MarketReportCapture } from '@/components/marketing/MarketReportCapture';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { FaqSection } from '@/components/marketing/FaqSection';
+import { MARKET_BRIEF_FAQS } from '@/lib/answers';
 import { FOUNDER, FOUNDER_ID, breadcrumbList, webPage } from '@/lib/schema';
 
 /**
@@ -169,6 +171,7 @@ export default function MarketBriefPage() {
             </div>
           </Container>
         </section>
+        <FaqSection faqs={MARKET_BRIEF_FAQS} path="/market-brief" heading="About the Market Brief" className="section-luxury bg-background-cream" />
       </main>
       <Footer />
     </>

@@ -18,8 +18,11 @@ not the CRM's). Human traffic is never logged.
   ```
 
 Tracked bots: GPTBot, OAI-SearchBot, ChatGPT-User, ClaudeBot, Claude-User,
-PerplexityBot, Perplexity-User, Googlebot, Bingbot, Applebot, Amazonbot,
-Meta-ExternalAgent, CCBot, Bytespider.
+Claude-SearchBot, PerplexityBot, Perplexity-User, Googlebot, Bingbot, Applebot,
+Amazonbot, Meta-ExternalAgent, Meta-ExternalFetcher, CCBot, Bytespider, Diffbot,
+DuckAssistBot, MistralAI-User, cohere-ai, YouBot, GrokBot/xAI-Bot, and Google's
+GoogleOther / Vertex / NotebookLM fetchers (the last group is stored as `GoogleOther`).
+The table is shared with other CRECO sites; filter on `host`.
 
 | column | meaning |
 |---|---|

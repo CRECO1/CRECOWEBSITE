@@ -34,6 +34,9 @@ const AI_CRAWLERS = [
   // Common Crawl (feeds many LLM datasets), ByteDance, Amazon, Meta, Microsoft, others
   'CCBot', 'Bytespider', 'Amazonbot', 'Meta-ExternalAgent', 'FacebookBot', 'Bingbot',
   'DuckAssistBot', 'MistralAI-User', 'cohere-ai', 'YouBot',
+  // Diffbot (knowledge-graph feed used by several answer engines), Google's other AI
+  // fetchers (GoogleOther, Vertex, NotebookLM), Meta's on-demand fetcher, Huawei
+  'Diffbot', 'GoogleOther', 'Google-CloudVertexBot', 'Google-NotebookLM', 'Meta-ExternalFetcher', 'PetalBot',
 ];
 
 export default function robots(): MetadataRoute.Robots {

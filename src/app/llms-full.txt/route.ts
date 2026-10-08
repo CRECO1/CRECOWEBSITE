@@ -5,6 +5,7 @@ import { ASSET_CLASSES, BUSINESS, CANONICAL_DESCRIPTION, CAPABILITIES, DBA_STATE
 import { IN_MARKET_SUBMARKETS, PARENT_METRO_LABELS, type ParentMetro } from '@/lib/submarkets-content';
 import { PUBLISHED_GUIDES } from '@/lib/guides';
 import { SORTED_POSTS } from '@/lib/insights';
+import { CORE_ANSWERS, WHO_IS_BROKER } from '@/lib/answers';
 import { transactionLabel } from '@/lib/utils';
 import type { Listing } from '@/lib/supabase';
 
@@ -147,6 +148,8 @@ Insights:
 ${SORTED_POSTS.map(p => `- [${p.title}](${SITE_URL}/insights/${p.slug}) (${p.publishedAt}): ${p.excerpt}`).join('\n')}
 
 ## Frequently asked questions
+
+${[...CORE_ANSWERS, WHO_IS_BROKER].map(f => `**Q: ${f.q}**\nA: ${f.a}`).join('\n\n')}
 
 **Q: Who does commercial real estate in Fair Oaks Ranch and the Hill Country?**
 A: CRECO is headquartered in Fair Oaks Ranch at 8000 Fair Oaks Pkwy, Suite 100, inside the mixed-use center it owns and operates, and is developing Elkhorn Point (±20,000 SF retail across two ±10,000 SF buildings, 8923 Dietz Elkhorn Rd). It represents tenants, landlords, owners, and investors in Fair Oaks Ranch, Boerne, Comfort, and the Hill Country across retail, office, industrial, flex, and land. Details: ${SITE_URL}/fair-oaks-ranch-commercial-real-estate

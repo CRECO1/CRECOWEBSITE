@@ -5,6 +5,7 @@ export const revalidate = 1800;
 import type { Metadata } from 'next';
 import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { CityHubPage } from '@/components/marketing/CityHubPage';
+import { HOW_TO_LEASE_FAIR_OAKS } from '@/lib/answers';
 
 export const metadata: Metadata = {
   title: 'Fair Oaks Ranch Commercial Real Estate Broker | CRECO',
@@ -132,6 +133,7 @@ export default function FairOaksRanchPage() {
           ],
         },
         faqs: [
+          HOW_TO_LEASE_FAIR_OAKS,
           {
             q: 'Who does commercial real estate in Fair Oaks Ranch, TX?',
             a: 'CRECO - Commercial Real Estate Company is a full-service commercial real estate brokerage representing tenants, landlords, owners, and investors across retail, office, industrial, flex, and land — for lease and for sale — in San Antonio and the Texas Hill Country. It is headquartered in Fair Oaks Ranch at 8000 Fair Oaks Pkwy, Suite 100 (TREC #9014367), and it owns and operates 8000 Fair Oaks Plaza and is developing the Elkhorn Point retail center. Call (210) 817-3443.',

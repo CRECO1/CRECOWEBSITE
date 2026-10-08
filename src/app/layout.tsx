@@ -138,6 +138,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${playfair.variable} ${sourceSans.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Machine-readable summaries for AI agents (llmstxt.org convention). */}
+        <link rel="alternate" type="text/plain" href="/llms.txt" title="CRECO summary for AI assistants" />
+        <link rel="alternate" type="text/markdown" href="/llms-full.txt" title="CRECO full reference for AI assistants" />
+      </head>
       <body suppressHydrationWarning>
         {/* Skip-to-content link — invisible until focused, jumps
             keyboard users past the header/nav straight to the page's

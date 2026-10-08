@@ -57,6 +57,7 @@ import { TrustStrip } from '@/components/marketing/TrustStrip';
 import { LeadMagnetBand } from '@/components/marketing/LeadMagnetBand';
 import { GoogleReviews } from '@/components/marketing/GoogleReviews';
 import { HEADWALL_TOBIN_HILL } from '@/lib/press';
+import { CORE_ANSWERS } from '@/lib/answers';
 
 
 // SERVICES — ordered by what brings owners and tenants in the door
@@ -90,6 +91,7 @@ const LOCAL_MARKETS = [
 ];
 
 const FAQS = [
+  ...CORE_ANSWERS,
   {
     q: 'Does CRECO represent tenants or landlords?',
     a: 'Both — and investors. CRECO is a full-service brokerage, not a tenant-only firm: it represents tenants and buyers looking for space, landlords and owners leasing or selling property, and investors buying and selling commercial real estate, across retail, office, industrial, flex, and land. When both parties authorize it in writing, CRECO can act as an intermediary under Texas law. For tenants, representation is typically free because the landlord pays the commission.',
@@ -101,10 +103,6 @@ const FAQS = [
   {
     q: 'What types of commercial real estate does CRECO handle in Texas?',
     a: 'CRECO is a full-service Texas commercial real estate brokerage representing tenants, landlords, owners, and investors. We handle retail (strip centers, restaurants, freestanding, urban storefronts), industrial and warehouse (distribution, light manufacturing, flex-industrial), office (Class A/B/C, medical, professional), flex space, and commercial land — for lease, sale, and investment.',
-  },
-  {
-    q: 'Where in Texas do you work?',
-    a: 'San Antonio and the Texas Hill Country. We are headquartered at 8000 Fair Oaks Pkwy in Fair Oaks Ranch, where we own and operate Fair Oaks Plaza, and our work centers on Fair Oaks Ranch, Boerne, Leon Springs and the I-10 corridor, Stone Oak, the Medical Center and Northwest San Antonio, and New Braunfels. If you are a tenant with a requirement elsewhere in Texas, we help there too.',
   },
   {
     q: 'Do you work with multi-property owners and investors?',

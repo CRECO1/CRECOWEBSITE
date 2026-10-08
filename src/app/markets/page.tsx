@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { ArrowRight, MapPin, Building2 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
+import { FaqSection } from '@/components/marketing/FaqSection';
+import { MARKETS_FAQS } from '@/lib/answers';
 import {
   submarketsByMetro, isInMarket, PARENT_METRO_LABELS,
   type ParentMetro,
@@ -216,6 +218,7 @@ export default function MarketsHubPage() {
             </div>
           </Container>
         </section>
+        <FaqSection faqs={MARKETS_FAQS} path="/markets" heading="San Antonio & Hill Country markets — FAQ" className="section-luxury bg-background-cream" />
       </main>
       <Footer />
     </>
