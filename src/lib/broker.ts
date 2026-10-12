@@ -180,9 +180,18 @@ export function getBrokerForListing(slug: string | null | undefined): Broker {
 }
 
 /**
+ * Who a general website lead lands with when no listing or page claims it.
+ * Zack triages every inbound web lead (Oct 2026) and hands it to Brian or
+ * keeps it himself; Brian is the backup, so he is still alerted and sees the
+ * contact. Deliberately NOT LISTING_DEFAULT_BROKER: that one decides who a
+ * visitor sees on a listing, and this only decides who the lead is assigned to.
+ */
+export const LEAD_TRIAGE_OWNER: Broker = PRIMARY_BROKER;
+
+/**
  * Who owns a lead: the alert goes to them and the CRM contact + call-back
  * task are theirs. Listing assignment wins, then the page's source, then the
- * default owner (Brian).
+ * triage owner (Zack), who assigns it on from the CRM.
  */
 export function getLeadOwner(opts: { listingSlug?: string | null; source?: string | null }): Broker {
   if (opts.listingSlug && LISTING_BROKER_MAP[opts.listingSlug]) return LISTING_BROKER_MAP[opts.listingSlug];
@@ -190,7 +199,7 @@ export function getLeadOwner(opts: { listingSlug?: string | null; source?: strin
   for (const [prefix, broker] of SOURCE_BROKER_PREFIXES) {
     if (src.startsWith(prefix)) return broker;
   }
-  return LISTING_DEFAULT_BROKER;
+  return LEAD_TRIAGE_OWNER;
 }
 
 /**

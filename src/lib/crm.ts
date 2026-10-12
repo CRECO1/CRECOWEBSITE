@@ -458,8 +458,8 @@ export async function pushToCrm(p: CrmPayload): Promise<boolean> {
       }
       clientId = existing.id;
     } else {
-      // The lead's owner (Zack for his listings, Brian for the rest — see
-      // getLeadOwner). Falls back to the first admin only if that profile
+      // The lead's owner (Brian on his listing, Zack for everything else —
+      // Zack triages and assigns on; see getLeadOwner). Falls back to the first admin only if that profile
       // can't be found, so a renamed mailbox never leaves the contact unowned.
       const leadOwner = getLeadOwner({ listingSlug: p.listing_slug, source: p.source });
       const ownerEmail = leadOwner.crm_profile_email;

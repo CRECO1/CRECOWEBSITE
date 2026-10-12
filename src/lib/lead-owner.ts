@@ -7,7 +7,7 @@ import { getLeadBackup, type Broker } from './broker';
  * the person who has to call the lead back learned about it second-hand, if
  * at all. Every alert now also goes straight to the lead's owner and their
  * backup — see getLeadOwner() / getLeadBackup() in lib/broker.ts (Zack owns
- * his listings, Brian the rest, and each is secondary on the other's).
+ * his listings and triages the rest, and each is secondary on the other's).
  */
 export function leadAlertRecipients(owner: Broker): string[] {
   const inbox = (process.env.LEAD_NOTIFICATION_EMAIL ?? 'info@crecotx.com').trim();

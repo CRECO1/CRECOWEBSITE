@@ -180,9 +180,9 @@ export function BrokerCard({
  * enough to ride inside the form card rather than as a sidebar, so it works at
  * phone width with no layout change.
  *
- * With no `broker`, it shows both Zack and Brian: general-form leads route to
- * Brian by default (getLeadOwner) with Zack as backup, so naming only Zack
- * promised a reply from someone who usually isn't the one answering. Pass a
+ * With no `broker`, it shows both Zack and Brian: general-form leads land with
+ * Zack (getLeadOwner) who assigns them on, often to Brian, so naming only one
+ * promised a reply from someone who may not be the one answering. Pass a
  * broker when the page knows exactly who owns its leads.
  */
 export function BrokerTrustLine({
