@@ -174,7 +174,7 @@ const TENANT_CATEGORIES = [
 const TERMS = [
   { label: 'Base rent (in-line)', value: 'Call for pricing — contact CRECO for current rates' },
   { label: 'Lease type',          value: 'Triple net (NNN)' },
-  { label: 'Term',                value: '3-5 yr initial with renewal options' },
+  { label: 'Term',                value: '5-10 yr initial with renewal options' },
   { label: 'Escalations',         value: '4% annual base escalation' },
   { label: 'TI allowance',        value: 'Scaled to deal — more for anchors + F&B' },
   { label: 'Exclusive use',       value: 'Granted narrowly to protect category leaders' },
