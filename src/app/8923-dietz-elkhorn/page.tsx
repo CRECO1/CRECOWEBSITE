@@ -100,7 +100,7 @@ const FALLBACK = {
   faqs: [
     {
       q: 'How big are the spaces and how are they divided?',
-      a: 'Elkhorn Point is two ±10,000 SF retail buildings — ±20,000 SF of divisible space. Nothing is built yet, so demising is set to your plan rather than chosen from what is left: take a small bay or a large footprint. End-cap positions are finite and the earliest LOIs get first pick.',
+      a: 'Elkhorn Point is two ±10,000 SF retail buildings — ±20,000 SF of divisible space. Nothing is built yet, so suites can be combined or divided to fit tenant needs and demising is set to your plan rather than chosen from what is left: take a small bay or a large footprint. End-cap positions are finite and the earliest LOIs get first pick.',
     },
     {
       q: 'Can my food concept work here?',
@@ -429,7 +429,7 @@ export default async function DietzElkhornPage() {
                 </h2>
                 <p className="text-body text-foreground-muted leading-relaxed mb-4">
                   Two ±10,000 SF buildings give ±20,000 SF of divisible retail. Nothing is
-                  built yet, so demising follows your plan — a small bay or a large footprint
+                  built yet, so suites can be combined or divided to fit tenant needs and demising follows your plan — a small bay or a large footprint
                   for restaurants, fitness studios, and medical users. End-cap positions allow
                   for a patio, and F&B space is designed for grease,
                   venting, and 3-phase power so you don&apos;t retrofit later.
@@ -508,9 +508,9 @@ export default async function DietzElkhornPage() {
               </h2>
               <p className="mt-3 text-body text-foreground-muted leading-relaxed">
                 Two 9,990 SF retail buildings on Lots 1 and 2, with frontage parking on
-                Dietz Elkhorn Rd and a drive-thru lane. Behind them, Lot 3 (±2.21 acres,
-                for sale) is planned for a future building of up to 20,000 SF with its own
-                parking off Elkhorn Rd.
+                Dietz Elkhorn Rd and a drive-thru lane. Lot 3 (±2.21 acres, available for
+                sale, ground lease or build-to-suit) is planned for a future building of up to
+                20,000 SF with its own parking off Elkhorn Rd.
               </p>
             </div>
 
