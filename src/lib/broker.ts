@@ -157,17 +157,6 @@ const LISTING_BROKER_MAP: Record<string, Broker> = {
 };
 
 /**
- * Lead sources that belong to a broker regardless of listing — the custom
- * property pages whose forms don't carry a listing slug.
- */
-const SOURCE_BROKER_PREFIXES: Array<[string, Broker]> = [
-  ['8923-dietz-elkhorn', PRIMARY_BROKER], // Elkhorn Point leasing page
-  ['8000-fair-oaks-pkwy', PRIMARY_BROKER], // 8000 Fair Oaks Pkwy plaza page
-  ['owner-report', PRIMARY_BROKER],        // owner property reports — Zack prepares the BOV
-  ['valuation-request', PRIMARY_BROKER],   // /property-valuation — Zack prepares the BOV
-];
-
-/**
  * Return the broker responsible for a given listing slug. Falls back
  * to LISTING_DEFAULT_BROKER when the listing isn't explicitly assigned. Every
  * inquiry surface that renders a broker card should call this rather
@@ -189,16 +178,15 @@ export function getBrokerForListing(slug: string | null | undefined): Broker {
 export const LEAD_TRIAGE_OWNER: Broker = PRIMARY_BROKER;
 
 /**
- * Who owns a lead: the alert goes to them and the CRM contact + call-back
- * task are theirs. Listing assignment wins, then the page's source, then the
- * triage owner (Zack), who assigns it on from the CRM.
+ * Who owns a lead: the alert goes to them and the CRM contact + call-back task are theirs.
+ *
+ * Every web lead comes to the broker first (Zack, Oct 2026: "all leads come straight to me and I
+ * will delegate"), whatever listing or page it came from; he assigns it on from the CRM, and the
+ * person it goes to is notified there. Which broker a listing page SHOWS is a separate question
+ * (getBrokerForListing) and is unchanged.
  */
 export function getLeadOwner(opts: { listingSlug?: string | null; source?: string | null }): Broker {
-  if (opts.listingSlug && LISTING_BROKER_MAP[opts.listingSlug]) return LISTING_BROKER_MAP[opts.listingSlug];
-  const src = opts.source ?? '';
-  for (const [prefix, broker] of SOURCE_BROKER_PREFIXES) {
-    if (src.startsWith(prefix)) return broker;
-  }
+  void opts;
   return LEAD_TRIAGE_OWNER;
 }
 

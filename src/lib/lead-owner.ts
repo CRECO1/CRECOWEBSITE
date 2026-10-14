@@ -11,7 +11,10 @@ import { getLeadBackup, type Broker } from './broker';
  */
 export function leadAlertRecipients(owner: Broker): string[] {
   const inbox = (process.env.LEAD_NOTIFICATION_EMAIL ?? 'info@crecotx.com').trim();
-  const emails = [inbox, owner.alert_email, getLeadBackup(owner).alert_email];
+  // The backup is NOT copied on the instant alert: leads come to the broker first and he delegates
+  // (the person he assigns gets a CRM notification). The backup still shares the contact and is
+  // emailed by the lead-SLA escalation if the owner hasn't made contact in time.
+  const emails = [inbox, owner.alert_email];
   return Array.from(new Set(emails.filter(Boolean).map(e => e.trim().toLowerCase())));
 }
 
