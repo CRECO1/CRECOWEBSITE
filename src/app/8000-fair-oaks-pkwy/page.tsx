@@ -641,6 +641,13 @@ export default function FairOaksDevPage() {
                 >
                   About CRECO
                 </Link>
+                <a
+                  href="https://fairoaksranchplaza.com"
+                  className="inline-flex items-center gap-2 rounded-lg border border-white/30 px-7 py-3.5 text-body-sm font-semibold text-white hover:bg-white/10"
+                >
+                  Fair Oaks Ranch Plaza community site
+                  <ArrowRight className="h-4 w-4" />
+                </a>
               </div>
             </div>
           </Container>

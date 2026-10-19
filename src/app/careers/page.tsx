@@ -262,6 +262,12 @@ export default function CareersPage() {
                   <Link href="/8000-fair-oaks-pkwy" className="inline-flex items-center gap-1.5 text-body-sm font-semibold text-gold-dark hover:text-gold">
                     See the building <ArrowRight className="h-3 w-3" />
                   </Link>
+                  <p className="text-body-sm text-foreground-muted leading-relaxed mt-4 mb-2">
+                    We're part of the Fair Oaks Ranch Plaza community, where local businesses hire local people.
+                  </p>
+                  <a href="https://fairoaksranchplaza.com/jobs" className="inline-flex items-center gap-1.5 text-body-sm font-semibold text-gold-dark hover:text-gold">
+                    See local openings <ArrowRight className="h-3 w-3" />
+                  </a>
                 </div>
               </aside>
             </div>
