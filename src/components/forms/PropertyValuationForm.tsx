@@ -18,7 +18,7 @@
  * and land have none), and everyone who got a number left with it.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { VALUATION_DISCLAIMER } from '@/lib/valuation-copy';
 import { ArrowLeft, ArrowRight, CheckCircle, Loader2, TrendingUp } from 'lucide-react';
 import { getRecaptchaToken } from './Recaptcha';
@@ -65,6 +65,12 @@ export function PropertyValuationForm() {
 
   // Step 1 — the property
   const [address, setAddress] = useState('');
+  // /property-valuation?address=… (from a /listings search that found nothing) pre-fills the
+  // address. Read after mount so the page itself stays static.
+  useEffect(() => {
+    const a = new URLSearchParams(window.location.search).get('address');
+    if (a) setAddress(a.slice(0, 200));
+  }, []);
   const [propertyType, setPropertyType] = useState<PropertyType>('retail');
   const [location, setLocation] = useState(LOCATIONS[0].value);
   const [totalSf, setTotalSf] = useState('');

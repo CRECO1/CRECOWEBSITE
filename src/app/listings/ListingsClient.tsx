@@ -407,6 +407,24 @@ export function ListingsClient({ initialListings, children }: { initialListings:
                  because the type is the visitor's stated intent; a search term
                  (an address they were hunting) is not a category, so it hands
                  the component the generic variant instead. */
+              <>
+              {/* A street-address search that matched nothing is usually an owner looking up
+                  their own property (an AI-referred visitor did exactly this). Don't dead-end
+                  them — offer the free valuation with the address already filled in. */}
+              {/^\s*\d{2,6}\s+\S+/.test(search) && (
+                <div className="mb-8 rounded-2xl border border-gold/40 bg-gold/10 p-6 text-center">
+                  <p className="font-heading text-heading font-bold text-primary">Own {search.trim()}?</p>
+                  <p className="mx-auto mt-1 max-w-md text-body-sm text-foreground-muted">
+                    It isn&apos;t one of our listings. If it&apos;s yours, get a free value range — and Zack will follow up with a Broker Opinion of Value from real comps.
+                  </p>
+                  <Link
+                    href={`/property-valuation?address=${encodeURIComponent(search.trim())}`}
+                    className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-3 text-body-sm font-semibold text-white hover:bg-primary/90"
+                  >
+                    Value this address <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              )}
               <ListingsEmptyState
                 propertyType={search.trim() ? null : propertyType}
                 otherFiltersActive={transactionType !== 'all' || submarket !== 'all' || sizeIdx !== 0 || search !== ''}
@@ -414,6 +432,7 @@ export function ListingsClient({ initialListings, children }: { initialListings:
                 onClearFilters={clearAllFilters}
                 onClearOtherFilters={clearOtherFilters}
               />
+              </>
             ) : view === 'map' ? (
               <>
                 <p className="mb-4 text-body-sm text-foreground-muted">
