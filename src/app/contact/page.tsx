@@ -181,8 +181,9 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              {/* Form */}
-              <div className="lg:col-span-2">
+              {/* Form — first on phones (the number is already in the header and the sticky bar);
+                  on desktop it sits to the right of the info column. */}
+              <div className="order-first lg:order-none lg:col-span-2">
                 <div className="rounded-2xl bg-white p-8 shadow-card lg:p-10">
                   {submitted ? (
                     <div className="py-12 text-center">
@@ -216,8 +217,8 @@ export default function ContactPage() {
                             <input id="contact-email" name="email" type="email" required placeholder="you@company.com" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
                           </div>
                           <div>
-                            <label className="label-readable" htmlFor="contact-phone">Phone *</label>
-                            <input id="contact-phone" name="phone" type="tel" required placeholder="(210) 555-0000" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
+                            <label className="label-readable" htmlFor="contact-phone">Phone <span className="font-normal text-foreground-muted">(optional — for a faster callback)</span></label>
+                            <input id="contact-phone" name="phone" type="tel" autoComplete="tel" placeholder="(210) 555-0000" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
                           </div>
                         </div>
                         <div>
