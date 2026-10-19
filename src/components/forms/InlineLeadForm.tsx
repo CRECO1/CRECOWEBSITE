@@ -150,7 +150,7 @@ export function InlineLeadForm({
           <input required name="name" value={f.name} onChange={set('name')} placeholder="Your name" aria-label="Your name" autoComplete="name" className={field} />
           <input required type="email" name="email" value={f.email} onChange={set('email')} placeholder="you@company.com" aria-label="Email address" autoComplete="email" className={field} />
         </div>
-        <input required type="tel" name="phone" value={f.phone} onChange={set('phone')} placeholder="Phone" aria-label="Phone number" autoComplete="tel" className={field} />
+        <input type="tel" name="phone" value={f.phone} onChange={set('phone')} placeholder="Phone (optional — faster callback)" aria-label="Phone number (optional)" autoComplete="tel" className={field} />
         <textarea
           name="context"
           rows={2}

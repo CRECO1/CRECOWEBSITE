@@ -42,9 +42,9 @@ export function ListYourSpaceForm({ surface = 'list-your-space' }: { surface?: s
       property_interest: f.address,
       message: [
         `Property address: ${f.address}`,
-        `Property type: ${f.property_type}`,
+        `Property type: ${f.property_type || '—'}`,
         `Approx. size: ${f.size || '—'}`,
-        `Looking to: ${f.intent}`,
+        `Looking to: ${f.intent || '—'}`,
         f.notes ? `Notes: ${f.notes}` : '',
       ].filter(Boolean).join('\n'),
       recaptchaToken,
@@ -73,20 +73,20 @@ export function ListYourSpaceForm({ surface = 'list-your-space' }: { surface?: s
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <input required name="name" aria-label="Your name" value={f.name} onChange={set('name')} placeholder="Your name" className={field} />
         <input required type="email" name="email" aria-label="Email address" value={f.email} onChange={set('email')} placeholder="you@company.com" className={field} />
-        <input required type="tel" name="phone" aria-label="Phone" value={f.phone} onChange={set('phone')} placeholder="Phone" className={field} />
+        <input type="tel" name="phone" aria-label="Phone (optional)" value={f.phone} onChange={set('phone')} placeholder="Phone (optional)" className={field} />
         <input name="company" aria-label="Company (optional)" value={f.company} onChange={set('company')} placeholder="Company (optional)" className={field} />
       </div>
 
       <input required name="address" aria-label="Property address" value={f.address} onChange={set('address')} placeholder="Property address" className={field} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <select required name="property_type" aria-label="Property type" value={f.property_type} onChange={set('property_type')} className={field}>
-          <option value="">Property type…</option>
+        <select name="property_type" aria-label="Property type" value={f.property_type} onChange={set('property_type')} className={field}>
+          <option value="">Property type (optional)</option>
           {LISTING_PROPERTY_TYPES.map(t => <option key={t}>{t}</option>)}
         </select>
         <input name="size" aria-label="Approximate size" value={f.size} onChange={set('size')} placeholder="Approx. size (SF or acres)" className={field} />
-        <select required name="intent" aria-label="Lease or sale" value={f.intent} onChange={set('intent')} className={field}>
-          <option value="">Lease or sale…</option>
+        <select name="intent" aria-label="Lease or sale" value={f.intent} onChange={set('intent')} className={field}>
+          <option value="">Lease or sale (optional)</option>
           {LISTING_INTENT.map(t => <option key={t}>{t}</option>)}
         </select>
       </div>

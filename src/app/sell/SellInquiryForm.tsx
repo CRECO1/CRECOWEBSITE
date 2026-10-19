@@ -83,8 +83,8 @@ export function SellInquiryForm() {
             </div>
             <input name="address" aria-label="Property address" required placeholder="Property Address" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
             <div className="grid grid-cols-2 gap-4">
-              <select name="property_type" aria-label="Property type" required className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark">
-                <option value="">Property type…</option>
+              <select name="property_type" aria-label="Property type (optional)" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark">
+                <option value="">Property type (optional)</option>
                 <option>Office</option>
                 <option>Warehouse / Industrial</option>
                 <option>Flex</option>
@@ -94,8 +94,8 @@ export function SellInquiryForm() {
                 <option>Mixed-Use</option>
                 <option>Other</option>
               </select>
-              <select name="goal" aria-label="Your goal" required className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark">
-                <option value="">My goal…</option>
+              <select name="goal" aria-label="Your goal (optional)" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark">
+                <option value="">My goal (optional)</option>
                 <option>Sell</option>
                 <option>Either sell or lease</option>
                 <option>Just want a valuation</option>

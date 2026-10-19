@@ -40,9 +40,9 @@ export function DevelopmentOpportunityForm({ surface = 'development-opportunitie
       source: 'development-inquiry',
       property_interest: f.location,
       message: [
-        `Role: ${f.role}`,
+        `Role: ${f.role || '—'}`,
         `Site / location: ${f.location}`,
-        `Site type: ${f.site_type}`,
+        `Site type: ${f.site_type || '—'}`,
         `Approx. size: ${f.size || '—'}`,
         f.notes ? `Notes: ${f.notes}` : '',
       ].filter(Boolean).join('\n'),
@@ -72,20 +72,20 @@ export function DevelopmentOpportunityForm({ surface = 'development-opportunitie
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <input required name="name" aria-label="Your name" value={f.name} onChange={set('name')} placeholder="Your name" className={field} />
         <input required type="email" name="email" aria-label="Email address" value={f.email} onChange={set('email')} placeholder="you@company.com" className={field} />
-        <input required type="tel" name="phone" aria-label="Phone" value={f.phone} onChange={set('phone')} placeholder="Phone" className={field} />
+        <input type="tel" name="phone" aria-label="Phone (optional)" value={f.phone} onChange={set('phone')} placeholder="Phone (optional)" className={field} />
         <input name="company" aria-label="Company (optional)" value={f.company} onChange={set('company')} placeholder="Company (optional)" className={field} />
       </div>
 
-      <select required name="role" aria-label="Which describes you" value={f.role} onChange={set('role')} className={field}>
-        <option value="">Which describes you?…</option>
+      <select name="role" aria-label="Which describes you" value={f.role} onChange={set('role')} className={field}>
+        <option value="">Which describes you? (optional)</option>
         {DEVELOPMENT_ROLES.map(r => <option key={r}>{r}</option>)}
       </select>
 
       <input required name="location" aria-label="Site address or target area" value={f.location} onChange={set('location')} placeholder="Site address, or the area you're targeting" className={field} />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <select required name="site_type" aria-label="Site type" value={f.site_type} onChange={set('site_type')} className={field}>
-          <option value="">Site type…</option>
+        <select name="site_type" aria-label="Site type" value={f.site_type} onChange={set('site_type')} className={field}>
+          <option value="">Site type (optional)</option>
           {DEVELOPMENT_PROPERTY_TYPES.map(t => <option key={t}>{t}</option>)}
         </select>
         <input name="size" aria-label="Approximate size" value={f.size} onChange={set('size')} placeholder="Approx. size (acres or SF)" className={field} />
