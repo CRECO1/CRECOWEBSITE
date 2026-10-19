@@ -17,7 +17,10 @@ import { PRIMARY_BROKER } from '@/lib/broker';
 import { GOOGLE_RATING, GOOGLE_REVIEW_COUNT } from '@/lib/reviews';
 
 /**
- * /get-started — the short funnel (v2).
+ * /get-started — the short funnel (v3: ONE screen after picking a path; questions are optional
+ * taps under the contact fields, never a step between the visitor and the submit).
+ *
+ * History (v2): 
  *
  * v1 asked seven questions per path (29 in all) before anyone could reach the
  * contact step. v2 is capped at THREE questions per path — the three that
@@ -39,7 +42,8 @@ import { GOOGLE_RATING, GOOGLE_REVIEW_COUNT } from '@/lib/reviews';
  * Questions are data — edit PATHS, not JSX. Keep every path at 3 or fewer.
  */
 
-const FUNNEL_VERSION = 'v2';
+// v3: one screen — contact fields first, the questions are optional taps below them.
+const FUNNEL_VERSION = 'v3';
 
 type Path = 'tenant' | 'buyer' | 'seller' | 'pm' | 'exploring';
 
@@ -478,10 +482,10 @@ export default function GetStartedPage() {
     });
     setPath(p);
     setStep(0);
-    if (PATHS[p].steps.length === 0) {
-      trackEvent('get_started_contact_reached', { path: p, total_steps: 0, funnel_version: FUNNEL_VERSION });
-      setContactStep(true);
-    }
+    // One screen: contact fields first, the questions below as optional taps. The old
+    // question-by-question walk put every question between a visitor and the submit.
+    trackEvent('get_started_contact_reached', { path: p, total_steps: PATHS[p].steps.length, funnel_version: FUNNEL_VERSION });
+    setContactStep(true);
   }
 
   // /get-started?path=tenant — skip the picker. Read once on mount from the
@@ -503,21 +507,11 @@ export default function GetStartedPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // One event per question actually seen — which question loses people.
-  // Must stay above the conditional returns below (hook order).
+  // The one-screen form was shown for this path.
   useEffect(() => {
-    if (!path || contactStep || done) return;
-    const steps = PATHS[path].steps;
-    const current = steps[step];
-    if (!current) return;
-    trackEvent('get_started_step_viewed', {
-      path,
-      step_id: current.id,
-      step_index: step + 1,
-      total_steps: steps.length,
-      funnel_version: FUNNEL_VERSION,
-    });
-  }, [path, step, contactStep, done]);
+    if (!path || done) return;
+    trackEvent('get_started_form_viewed', { path, total_questions: PATHS[path].steps.length, funnel_version: FUNNEL_VERSION });
+  }, [path, done]);
 
   // ─── Path picker ──────────────────────────────────────────────────────────
   if (!path) {
@@ -531,7 +525,7 @@ export default function GetStartedPage() {
                 How can we help?
               </h1>
               <p className="mt-3 text-body text-foreground-muted">
-                Three quick questions, then our team takes it from there.
+                Pick one, leave your name and number — that’s all we need. Everything else is optional.
               </p>
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -570,21 +564,6 @@ export default function GetStartedPage() {
   const STEPS = config.steps;
   const current = STEPS[step];
   const labelled = labelAnswers(path, answers);
-
-  function advance() {
-    if (step < STEPS.length - 1) {
-      setTimeout(() => setStep(s => s + 1), 200);
-    } else {
-      // Finished the questions — the last drop-off point before the submit.
-      trackEvent('get_started_contact_reached', { path, total_steps: STEPS.length, funnel_version: FUNNEL_VERSION });
-      setTimeout(() => setContactStep(true), 200);
-    }
-  }
-
-  function choose(value: string) {
-    setAnswers(a => ({ ...a, [current.id]: value }));
-    advance();
-  }
 
   function restart() {
     trackEvent('get_started_restarted', { path, step_index: step + 1, funnel_version: FUNNEL_VERSION });
@@ -709,6 +688,38 @@ export default function GetStartedPage() {
                 </label>
                 <input id="gs-email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@company.com" autoComplete="email" className={field} />
               </div>
+              {STEPS.some(st => st.type === 'choice') && (
+                <div className="space-y-4 border-t border-border pt-4">
+                  <p className="text-body-sm font-semibold text-primary">
+                    Help us find the right fit <span className="font-normal text-foreground-muted">— optional, tap any that apply</span>
+                  </p>
+                  {STEPS.filter(st => st.type === 'choice' && st.options).map(st => (
+                    <fieldset key={st.id}>
+                      <legend className="mb-2 text-body-sm text-foreground-muted">{st.question}</legend>
+                      <div className="flex flex-wrap gap-2">
+                        {st.options!.map(opt => {
+                          const on = answers[st.id] === opt.value;
+                          return (
+                            <button
+                              key={opt.value}
+                              type="button"
+                              aria-pressed={on}
+                              onClick={() => setAnswers(a => {
+                                const next = { ...a };
+                                if (on) delete next[st.id]; else next[st.id] = opt.value;
+                                return next;
+                              })}
+                              className={`rounded-full border px-3.5 py-2 text-body-sm transition-colors ${on ? 'border-gold bg-gold/15 font-semibold text-primary' : 'border-border text-foreground-muted hover:border-gold'}`}
+                            >
+                              {opt.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </fieldset>
+                  ))}
+                </div>
+              )}
               {path === 'exploring' && (
                 <div>
                   <label htmlFor="gs-interest" className="label-readable">
@@ -741,111 +752,14 @@ export default function GetStartedPage() {
             <TalkStrip path={path} answers={answers} stepIndex={STEPS.length + 1} allowCallback={false} />
             <button
               type="button"
-              onClick={() => (STEPS.length > 0 ? setContactStep(false) : restart())}
+              onClick={restart}
               className="mx-auto mt-6 flex items-center gap-2 text-body-sm text-foreground-muted transition-colors hover:text-primary"
             >
-              <ArrowLeft className="h-4 w-4" /> {STEPS.length > 0 ? 'Back to questions' : 'Change path'}
+              <ArrowLeft className="h-4 w-4" /> Change path
             </button>
           </div>
         </Container>
       </Shell>
     );
   }
-
-  // ─── Question ─────────────────────────────────────────────────────────────
-  const progress = ((step + 1) / (STEPS.length + 1)) * 100;
-  return (
-    <Shell>
-      <Container className="py-10 sm:py-12">
-        <div className="mx-auto max-w-2xl">
-          <div className="mb-6 text-center">
-            <p className="overline mb-2 text-gold">{config.label}</p>
-            <p className="text-body-sm text-foreground-muted">
-              Question {step + 1} of {STEPS.length}
-            </p>
-          </div>
-
-          <div className="mb-8 h-2 w-full overflow-hidden rounded-full bg-border">
-            <div className="h-full rounded-full bg-gold transition-all duration-500" style={{ width: `${progress}%` }} />
-          </div>
-
-          <div className="rounded-2xl bg-white p-6 shadow-card sm:p-8">
-            <h1 className="mb-2 text-center font-heading text-heading-xl font-bold text-primary">
-              {current.question}
-            </h1>
-            {current.helper && (
-              <p className="mb-6 text-center text-body-sm text-foreground-muted">{current.helper}</p>
-            )}
-            {!current.helper && <div className="mb-6" />}
-
-            {current.type === 'choice' && current.options && (
-              <div className={`grid gap-3 ${current.options.length > 4 ? 'sm:grid-cols-2' : 'grid-cols-1'}`}>
-                {current.options.map(opt => {
-                  const Icon = opt.icon;
-                  const selected = answers[current.id] === opt.value;
-                  return (
-                    <button
-                      key={opt.value}
-                      onClick={() => choose(opt.value)}
-                      className={`flex items-start gap-3 rounded-xl border-2 p-4 text-left transition-all hover:border-gold hover:bg-gold/5 ${
-                        selected ? 'border-gold bg-gold/10 text-primary' : 'border-border text-foreground-muted'
-                      }`}
-                    >
-                      {Icon && (
-                        <span className={`mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${selected ? 'bg-gold text-primary' : 'bg-gold/10 text-gold'}`}>
-                          <Icon className="h-4 w-4" />
-                        </span>
-                      )}
-                      <span className="flex-1">
-                        <span className="block text-body-sm font-semibold text-primary">{opt.label}</span>
-                        {opt.description && (
-                          <span className="mt-0.5 block text-caption text-foreground-muted">{opt.description}</span>
-                        )}
-                      </span>
-                      {selected && <CheckCircle className="h-5 w-5 shrink-0 text-gold" />}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-
-            {current.type === 'text' && (
-              <>
-                <input
-                  value={answers[current.id] ?? ''}
-                  onChange={e => setAnswers(a => ({ ...a, [current.id]: e.target.value }))}
-                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); advance(); } }}
-                  placeholder={current.placeholder}
-                  className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark"
-                />
-                <div className="mt-6 text-center">
-                  <Button size="lg" onClick={advance}>
-                    {step === STEPS.length - 1 ? 'Continue' : 'Next'}
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                  <button type="button" onClick={advance} className="ml-4 text-body-sm text-foreground-muted transition-colors hover:text-primary">
-                    Skip
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-
-          <TalkStrip path={path} answers={answers} stepIndex={step + 1} />
-
-          <div className="mt-6 flex items-center justify-between">
-            {step > 0 ? (
-              <button onClick={() => setStep(s => s - 1)} className="flex items-center gap-2 text-body-sm text-foreground-muted transition-colors hover:text-primary">
-                <ArrowLeft className="h-4 w-4" /> Back
-              </button>
-            ) : (
-              <button onClick={restart} className="flex items-center gap-2 text-body-sm text-foreground-muted transition-colors hover:text-primary">
-                <ArrowLeft className="h-4 w-4" /> Change path
-              </button>
-            )}
-          </div>
-        </div>
-      </Container>
-    </Shell>
-  );
 }
