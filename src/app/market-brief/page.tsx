@@ -1,7 +1,7 @@
 import { TalkToBroker } from '@/components/marketing/TalkToBroker';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowRight, FileText, MapPin, Quote, ShieldCheck } from 'lucide-react';
+import { ArrowRight, MapPin, Quote } from 'lucide-react';
 import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
@@ -11,21 +11,19 @@ import { JsonLd } from '@/components/seo/JsonLd';
 import { FaqSection } from '@/components/marketing/FaqSection';
 import { MARKET_BRIEF_FAQS } from '@/lib/answers';
 import { FOUNDER, FOUNDER_ID, breadcrumbList, webPage } from '@/lib/schema';
+import { BriefContent, BRIEF_SECTIONS } from './BriefContent';
 
 /**
- * /market-brief — the San Antonio & Hill Country Market Brief, pre-launch.
- *
- * Replaces the statewide quarterly Texas reports (/guides/qN-2026-* and
- * /research, all 308 → here since Oct 2026). Deliberately honest: no figures
- * until the first edition is written and sourced. The signup reuses
- * MarketReportCapture (posts to /api/leads with source 'market-report' — a
- * subscription source, so no broker "new lead" alert; honeypot + reCAPTCHA
- * come with it).
+ * /market-brief — the San Antonio & Hill Country Market Brief. Issue 1 (Q2 2026 data)
+ * is published here in full, no gate; the signup is for the NEXT edition. Content lives
+ * in ./BriefContent.tsx. The signup reuses MarketReportCapture (posts to /api/leads with
+ * source 'market-report' — a subscription source, so no broker "new lead" alert; honeypot
+ * + reCAPTCHA come with it).
  */
 
 const TITLE = 'San Antonio & Hill Country Market Brief | CRECO';
 const DESCRIPTION =
-  "CRECO's quarterly brief on San Antonio and Texas Hill Country commercial real estate, written by broker Zachary A. Stovall with cited sources. First edition coming this quarter.";
+  "Issue 1 (Q2 2026): San Antonio and Texas Hill Country retail, office, industrial and flex vacancy, rents and absorption from CBRE, Cushman & Wakefield and Partners side by side, plus Boerne, Fair Oaks Ranch and New Braunfels. Every figure sourced.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -47,21 +45,6 @@ export const metadata: Metadata = {
     type: 'website',
   },
 };
-
-const COVERAGE = [
-  {
-    title: 'Retail, office and industrial',
-    body: 'Leasing activity, availability and asking rents by property type — what is moving and what is sitting.',
-  },
-  {
-    title: 'Submarket by submarket',
-    body: 'Fair Oaks Ranch, Boerne, Leon Springs and the I-10 corridor, Stone Oak, the Medical Center and Northwest San Antonio, New Braunfels.',
-  },
-  {
-    title: 'What it means for you',
-    body: 'A short read for tenants weighing a renewal or a move, and for owners deciding whether to lease, hold or sell.',
-  },
-];
 
 export default function MarketBriefPage() {
   return (
@@ -87,7 +70,7 @@ export default function MarketBriefPage() {
                 San Antonio &amp; Hill Country Market Brief
               </h1>
               <p className="text-body-lg text-white/75 leading-relaxed">
-                CRECO&apos;s quarterly brief on commercial real estate in San Antonio and the Texas Hill Country — written by {FOUNDER.name}, with every figure cited to its source. The first edition is coming this quarter.
+                Issue 1 · Q2 2026 data · Published October 2026. Retail, office, industrial and flex across San Antonio and the Hill Country, with CBRE, Cushman &amp; Wakefield and Partners side by side and every figure cited. Written by {FOUNDER.name}.
               </p>
             </div>
           </Container>
@@ -99,43 +82,31 @@ export default function MarketBriefPage() {
           </Container>
         </section>
 
-        {/* Signup + what's in it */}
+        {/* The brief + signup for the next edition */}
         <section className="section-luxury bg-background-cream">
           <Container>
+            <nav aria-label="Brief sections" className="mb-8 flex flex-wrap gap-x-5 gap-y-2 text-body-sm">
+              {BRIEF_SECTIONS.map(sec => (
+                <a key={sec.id} href={`#${sec.id}`} className="font-semibold text-gold-dark hover:text-gold">{sec.label}</a>
+              ))}
+            </nav>
             <div className="grid grid-cols-1 gap-10 lg:grid-cols-5">
-              <div className="lg:col-span-3">
-                <p className="overline mb-3">What the brief covers</p>
-                <h2 className="font-heading text-display-sm font-bold text-primary mb-6">
-                  A local read, from people who own property here.
-                </h2>
-                <ul className="space-y-5">
-                  {COVERAGE.map(item => (
-                    <li key={item.title} className="flex items-start gap-4">
-                      <div className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gold/10 text-gold">
-                        <FileText className="h-5 w-5" />
-                      </div>
-                      <div>
-                        <h3 className="font-heading text-heading-sm font-semibold text-primary">{item.title}</h3>
-                        <p className="mt-1 text-body-sm text-foreground-muted leading-relaxed">{item.body}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-8 flex items-start gap-3 rounded-xl border border-border bg-white p-5">
-                  <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-gold" />
-                  <p className="text-body-sm text-foreground-muted leading-relaxed">
-                    <span className="font-semibold text-primary">Sourced, not guessed.</span>{' '}
-                    Every number in the brief names where it came from, so you can check it — and where we&apos;re giving our own read from deals we&apos;re working, we say so.
-                  </p>
-                </div>
+              <div className="lg:col-span-3 -mt-8">
+                <BriefContent />
               </div>
-
               <div className="lg:col-span-2">
-                <div className="lg:sticky lg:top-28">
+                <div className="lg:sticky lg:top-28 space-y-4">
                   <MarketReportCapture variant="dark" surface="market-brief" />
-                  <p className="mt-3 text-caption text-foreground-muted">
-                    One email when each edition is published. Unsubscribe anytime.
+                  <p className="text-caption text-foreground-muted">
+                    One email when the next edition is published — Q3 figures once the major brokerages release them. Unsubscribe anytime.
                   </p>
+                  <div className="rounded-xl border border-border bg-white p-5">
+                    <p className="text-body-sm font-semibold text-primary">Want this applied to your property or search?</p>
+                    <p className="mt-1 text-body-sm text-foreground-muted leading-relaxed">Call or text a broker for current availability and rents near you — we own and operate property in these markets.</p>
+                    <Link href="/get-started" className="mt-3 inline-flex items-center gap-2 text-body-sm font-semibold text-gold-dark hover:text-gold">
+                      Talk to a broker <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
@@ -175,7 +146,7 @@ export default function MarketBriefPage() {
         <TalkToBroker
           surface="market-brief"
           path="exploring"
-          heading="Need numbers before the first edition?"
+          heading="Need numbers for a specific property or submarket?"
           body="Call or text a broker for current San Antonio and Hill Country availability and rents, or tell us what you are looking for."
         />
         <FaqSection faqs={MARKET_BRIEF_FAQS} path="/market-brief" heading="About the Market Brief" className="section-luxury bg-background-cream" />

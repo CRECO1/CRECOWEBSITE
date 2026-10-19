@@ -580,10 +580,10 @@ export default async function HomePage() {
                   San Antonio &amp; Hill Country Market Brief
                 </h3>
                 <p className="mb-5 text-body-sm text-foreground-muted leading-relaxed">
-                  Written by Zachary A. Stovall, with cited sources. The first edition is coming this quarter — sign up to get it by email.
+                  Issue 1 is out: Q2 2026 retail, office, industrial and flex across San Antonio and the Hill Country, with every figure sourced. Free to read.
                 </p>
                 <span className="inline-flex items-center gap-2 text-body-sm font-semibold text-gold-dark group-hover:text-gold transition-colors">
-                  Get the brief <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  Read the brief <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </span>
               </Link>
             </RevealOnScroll>

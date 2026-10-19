@@ -41,7 +41,7 @@ export const REPRESENTATION_ANSWER: Faq = {
 export const MARKET_BRIEF_FAQS: Faq[] = [
   {
     q: 'What is the San Antonio & Hill Country Market Brief?',
-    a: `A quarterly brief on San Antonio and Texas Hill Country commercial real estate (retail, office and industrial) written by ${FOUNDER.name}, with each figure cited to its source. The first edition is in preparation and publishes this quarter; sign up on this page to get one email when it is out.`,
+    a: `A quarterly brief on San Antonio and Texas Hill Country commercial real estate (retail, office, industrial and flex) written by ${FOUNDER.name}, with each figure cited to its source. Issue 1 (Q2 2026 data, October 2026) is published on this page; sign up to get one email when the next edition is out.`,
   },
   {
     q: 'Where can I find CRECO\'s San Antonio market information today?',

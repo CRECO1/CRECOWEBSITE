@@ -87,7 +87,7 @@ Active listings: /listings
 - Office space for lease (San Antonio & Hill Country): /texas-office-space-for-lease
 - Commercial property for sale (San Antonio & Hill Country): /texas-commercial-property-for-sale
 - City hubs (San Antonio & Hill Country): /san-antonio-commercial-real-estate, /fair-oaks-ranch-commercial-real-estate, /boerne-commercial-real-estate, /markets (Stone Oak, NW San Antonio, New Braunfels and more)
-- San Antonio & Hill Country Market Brief (quarterly, first edition coming this quarter — email signup): /market-brief
+- San Antonio & Hill Country Market Brief (quarterly; Issue 1 with Q2 2026 data is published; email signup for the next edition): /market-brief
 - Get started (multi-path inquiry): /get-started
 - Sell a property: /sell
 

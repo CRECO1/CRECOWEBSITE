@@ -49,11 +49,11 @@ export function MarketReportCapture({
         : 'bg-background-cream border border-border'}
       errorClassName="text-red-400"
       heading="San Antonio & Hill Country Market Brief"
-      body="Our quarterly read on local commercial real estate, with every figure sourced. First edition this quarter. Free. No call."
+      body="Get the next edition of our quarterly read on local commercial real estate, every figure sourced. Free. No call."
       submitLabel="Send me the brief"
       success={{
         heading: "You're on the list.",
-        body: "We'll email you the first edition as soon as it's published.",
+        body: "We'll email you the next edition as soon as it's published.",
       }}
       email={email}
       onEmailChange={setEmail}

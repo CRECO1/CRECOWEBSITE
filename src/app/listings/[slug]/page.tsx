@@ -19,6 +19,7 @@ import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { getListingBySlug, getListings } from '@/lib/supabase';
 import { SYNTHETIC_LISTINGS } from '@/lib/featured-properties';
 import { cache } from 'react';
+import Image from 'next/image';
 import { formatPrice, formatSqft, formatAcres, formatLeaseRate, transactionLabel, propertyTypeLabel, googleMapsUrl } from '@/lib/utils';
 import { ListingInquiryTabs } from './ListingInquiryTabs';
 import { ListingViewTracker } from './ListingViewTracker';
@@ -262,6 +263,21 @@ export default async function ListingDetailPage({ params }: Props) {
                   </div>
                 </div>
               </div>
+              {/* Phones: a compact photo on the first screen. The full gallery sits below the
+                  fold, and a property page with no picture up top reads as a spec sheet.
+                  Kept short (16:9, 180px max) so the price and the brochure ask stay in view. */}
+              {images[0] && (
+                <a href="#gallery" aria-label={`See all ${images.length} photos of ${listing!.title}`}
+                  className="relative mt-4 block h-[180px] w-full overflow-hidden rounded-xl bg-background-cream lg:hidden">
+                  <Image src={images[0]} alt={`${listing!.title} – ${propertyTypeLabel(listing!.property_type)} property in ${listing!.city}, TX`}
+                    fill priority sizes="100vw" className="object-cover" />
+                  {images.length > 1 && (
+                    <span className="absolute bottom-2 right-2 rounded-full bg-black/65 px-3 py-1 text-caption font-semibold text-white">
+                      {images.length} photos
+                    </span>
+                  )}
+                </a>
+              )}
             </div>
             {!closed && (
               <div className="lg:col-span-1">
@@ -282,10 +298,12 @@ export default async function ListingDetailPage({ params }: Props) {
         </Container>
 
         {/* Image Gallery — click to open lightbox */}
-        <ListingGallery
-          images={images}
-          altPrefix={`${listing!.title} – ${propertyTypeLabel(listing!.property_type)} property in ${listing!.city}, TX`}
-        />
+        <div id="gallery" className="scroll-mt-24">
+          <ListingGallery
+            images={images}
+            altPrefix={`${listing!.title} – ${propertyTypeLabel(listing!.property_type)} property in ${listing!.city}, TX`}
+          />
+        </div>
 
         {/* Detail Content */}
         <Container className="py-10">

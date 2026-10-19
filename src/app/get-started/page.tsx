@@ -316,14 +316,16 @@ function BrokerTrust({ compact = false }: { compact?: boolean }) {
  * half-finished quiz still arrives as a lead.
  */
 function TalkStrip({
-  path, answers, stepIndex, allowCallback = true,
+  path, answers, stepIndex, allowCallback = true, defaultOpen = false,
 }: {
   path: Path | null;
   answers: Answers;
   stepIndex: number;
   allowCallback?: boolean;
+  /** Show the name + number form straight away (the picker screen). */
+  defaultOpen?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [sending, setSending] = useState(false);
@@ -491,6 +493,16 @@ export default function GetStartedPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Picker screen shown — the missing top of the funnel. Without it, "arrived" and
+  // "chose a path" can't be compared, so a leak on this screen was invisible.
+  useEffect(() => {
+    if (path) return;
+    const p = new URLSearchParams(window.location.search).get('path');
+    if (p && (PATH_ORDER as string[]).includes(p)) return; // deep link skips the picker
+    trackEvent('get_started_picker_viewed', { funnel_version: FUNNEL_VERSION });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // One event per question actually seen — which question loses people.
   // Must stay above the conditional returns below (hook order).
   useEffect(() => {
@@ -547,7 +559,7 @@ export default function GetStartedPage() {
             <div className="mt-10">
               <BrokerTrust compact />
             </div>
-            <TalkStrip path={null} answers={{}} stepIndex={0} />
+            <TalkStrip path={null} answers={{}} stepIndex={0} defaultOpen />
           </div>
         </Container>
       </Shell>
