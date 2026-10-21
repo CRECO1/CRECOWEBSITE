@@ -54,6 +54,9 @@ export interface Listing {
   // Specs
   sqft: number | null;
   available_sqft: number | null;      // for divisible spaces
+  // Suite-level availability for multi-tenant centers: one row per open space.
+  // The DB column is optional — pages simply omit the table until it is set.
+  available_spaces?: Array<{ suite: string; sqft: number; building?: string | null; note?: string | null }> | null;
   lot_size: number | null;            // acres
   zoning: string | null;
   year_built: number | null;

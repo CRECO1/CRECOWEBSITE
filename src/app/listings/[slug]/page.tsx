@@ -32,6 +32,7 @@ import { hubLinksForListing } from '@/lib/hub-links';
 import { ListingGallery } from '@/components/marketing/ListingGallery';
 import { CompareToggle } from '@/components/listings/CompareToggle';
 import { ListingDetailMap } from '@/components/listings/ListingDetailMap';
+import { AvailableSpaces } from '@/components/listings/AvailableSpaces';
 import { BrochureRequestForm } from '@/components/forms/BrochureRequestForm';
 import { Bell } from 'lucide-react';
 import type { Listing } from '@/lib/supabase';
@@ -127,7 +128,14 @@ export default async function ListingDetailPage({ params }: Props) {
   const listing = await getListing(slug).catch(() => null);
   if (!listing) notFound();
 
-  const images = (listing!.images as string[] | null) ?? [];
+  const allImages = (listing!.images as string[] | null) ?? [];
+  // Site and floor plans are drawings, not photos: shown as a thumbnail in the gallery
+  // they are unreadable, and they make a poor cover. They get their own full-width
+  // section below instead. A listing whose only images are plans keeps them as photos.
+  const isPlan = (u: string) => /site-?plan|floor-?plan/i.test(u);
+  const planImages = allImages.filter(isPlan);
+  const images = allImages.some(u => !isPlan(u)) ? allImages.filter(u => !isPlan(u)) : allImages;
+  const plansSeparate = images.length !== allImages.length;
   const closed = closedLabel(listing!);
 
   const priceDisplay = closed
@@ -312,26 +320,33 @@ export default async function ListingDetailPage({ params }: Props) {
             {/* Main */}
             <div className="lg:col-span-2">
               {/* Key Stats */}
-              <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-                {[
-                  { icon: Layers, label: 'Building SF', value: formatSqft(listing!.sqft) },
+              {(() => {
+                // A tile with nothing to say ("—") reads as an unfinished page, so only
+                // the facts we actually have are shown.
+                const tiles = [
+                  { icon: Layers, label: 'Building SF', value: listing!.sqft ? formatSqft(listing!.sqft) : null },
                   // Available SF only when it's a divisible space (differs from
                   // the building total) — a tenant looking for 5k SF in a 30k
                   // building needs to see what's actually available.
-                  ...(listing!.available_sqft != null && listing!.available_sqft !== listing!.sqft
-                    ? [{ icon: Ruler, label: 'Available SF', value: formatSqft(listing!.available_sqft) }]
-                    : []),
-                  { icon: Ruler, label: 'Lot Size', value: listing!.lot_size != null ? formatAcres(listing!.lot_size) : '—' },
-                  { icon: Calendar, label: 'Year Built', value: listing!.year_built ?? '—' },
-                  { icon: Map, label: 'Zoning', value: listing!.zoning ?? '—' },
-                ].map(({ icon: Icon, label, value }) => (
-                  <div key={label} className="rounded-xl border border-border p-4 text-center">
-                    <Icon className="mx-auto mb-2 h-5 w-5 text-gold" />
-                    <div className="font-heading text-heading font-bold text-primary">{value}</div>
-                    <div className="text-caption text-foreground-muted">{label}</div>
+                  { icon: Ruler, label: 'Available SF', value: listing!.available_sqft != null && listing!.available_sqft !== listing!.sqft ? formatSqft(listing!.available_sqft) : null },
+                  { icon: Ruler, label: 'Lot Size', value: listing!.lot_size != null ? formatAcres(listing!.lot_size) : null },
+                  { icon: Calendar, label: 'Year Built', value: listing!.year_built ?? null },
+                  { icon: Map, label: 'Zoning', value: listing!.zoning ?? null },
+                ].filter(t => t.value !== null && t.value !== '');
+                if (!tiles.length) return null;
+                const cols = tiles.length >= 4 ? 'sm:grid-cols-4' : tiles.length === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2';
+                return (
+                  <div className={`mb-8 grid grid-cols-2 gap-4 ${cols}`}>
+                    {tiles.map(({ icon: Icon, label, value }) => (
+                      <div key={label} className="rounded-xl border border-border p-4 text-center">
+                        <Icon className="mx-auto mb-2 h-5 w-5 text-gold" />
+                        <div className="font-heading text-heading font-bold text-primary">{value}</div>
+                        <div className="text-caption text-foreground-muted">{label}</div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                );
+              })()}
 
               {/* Industrial-specific stats, only if any are set */}
               {(listing!.clear_height || listing!.dock_doors || listing!.grade_doors) && (
@@ -374,6 +389,8 @@ export default async function ListingDetailPage({ params }: Props) {
                 </div>
               )}
 
+              <AvailableSpaces spaces={listing!.available_spaces} />
+
               {/* Features */}
               {Array.isArray(listing!.features) && (listing!.features as string[]).length > 0 && (
                 <div className="mb-8">
@@ -386,6 +403,27 @@ export default async function ListingDetailPage({ params }: Props) {
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {/* Site / floor plans — full width and tappable to open at full size. */}
+              {plansSeparate && planImages.length > 0 && (
+                <div className="mb-8">
+                  <h2 className="mb-4 font-heading text-heading-lg font-semibold text-primary">
+                    {planImages.every(u => /floor-?plan/i.test(u)) ? 'Floor Plan' : 'Site Plan'}
+                  </h2>
+                  <div className="space-y-4">
+                    {planImages.map((u, i) => (
+                      <a key={u} href={u} target="_blank" rel="noopener noreferrer"
+                        className="block overflow-hidden rounded-xl border border-border bg-white"
+                        aria-label={`Open the plan for ${listing!.title} at full size`}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={u} alt={`${listing!.title} plan ${planImages.length > 1 ? i + 1 : ''}`.trim()}
+                          loading="lazy" className="mx-auto h-auto w-full max-w-4xl" />
+                      </a>
+                    ))}
+                  </div>
+                  <p className="mt-2 text-caption text-foreground-muted">Tap the plan to open it at full size.</p>
                 </div>
               )}
 
