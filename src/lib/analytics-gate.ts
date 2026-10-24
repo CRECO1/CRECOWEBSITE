@@ -23,7 +23,7 @@ export const PROD_HOSTS = new Set(['crecotx.com', 'www.crecotx.com']);
 // session replay or fire marketing analytics on these. Owner reports (/r/)
 // ARE tracked: GA gets a generic page_location (see GoogleAnalytics.tsx) so
 // the token never leaves our logs.
-export const EXCLUDED_PREFIXES = ['/admin', '/billing', '/manage', '/client/'];
+export const EXCLUDED_PREFIXES = ['/admin', '/billing', '/manage', '/client/', '/r/', '/inv/'];
 
 // Staff-only areas. Visiting one marks the device as internal.
 const STAFF_PREFIXES = ['/admin', '/billing', '/manage'];

@@ -98,7 +98,12 @@ export async function POST(req: NextRequest) {
   // per IP per minute is generous for legit traffic (a single broker
   // signing themselves up + retrying once or twice) and tight enough
   // to make scripted creation pointless.
-  const limited = enforceRateLimit(req, {
+  // Kill switch: set ONBOARDING_DISABLED=1 in Vercel to close public self-signup
+  // without a deploy of code (existing workspaces are unaffected).
+  if (process.env.ONBOARDING_DISABLED === '1') {
+    return NextResponse.json({ error: 'Signups are currently closed. Email info@crecotx.com and we will set you up.' }, { status: 503 });
+  }
+  const limited = await enforceRateLimit(req, {
     namespace: 'onboard',
     max: 5,
     windowMs: 60_000,
@@ -198,11 +203,12 @@ export async function POST(req: NextRequest) {
     // message so the UI can link to /manage/login.
     const msg = createErr?.message ?? 'Could not create account';
     const isDuplicate = /already (registered|exists)/i.test(msg);
+    if (!isDuplicate) console.error('[onboard] createUser failed:', msg);
     return NextResponse.json(
       {
         error: isDuplicate
           ? 'An account with this email already exists. Sign in instead.'
-          : msg,
+          : 'Could not create account. Please try again or email info@crecotx.com.',
         duplicate: isDuplicate,
       },
       { status: isDuplicate ? 409 : 500 },

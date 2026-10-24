@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { requireWorkspaceAdmin } from '@/lib/api-auth';
 import { getPlaidClient } from '@/lib/plaid';
+import { sealSecret } from '@/lib/secret-box';
 
 /**
  * POST /api/plaid/exchange
@@ -64,7 +65,7 @@ export async function POST(req: NextRequest) {
     const rows = accountsRes.data.accounts.map(a => ({
       workspace_id: workspace.id,
       plaid_item_id: item_id,
-      plaid_access_token: access_token,
+      plaid_access_token: sealSecret(access_token),
       plaid_account_id: a.account_id,
       institution_name: institutionName,
       account_name: a.name,

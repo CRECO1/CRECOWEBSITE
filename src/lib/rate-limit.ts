@@ -125,6 +125,40 @@ export function checkRateLimit(key: string, opts: RateLimitOptions): RateLimitRe
 }
 
 /**
+ * Shared (cross-instance) limiter. When UPSTASH_REDIS_REST_URL and
+ * UPSTASH_REDIS_REST_TOKEN are set (Vercel KV / Upstash integration), counts
+ * live in Redis so the limit binds across serverless instances and cold
+ * starts. Without them, or if Redis errors, it falls back to the per-instance
+ * in-memory limiter above, so a Redis outage can never take a form down.
+ */
+export async function checkRateLimitShared(key: string, opts: RateLimitOptions): Promise<RateLimitResult> {
+  const url = process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
+  if (!url || !token) return checkRateLimit(key, opts);
+  try {
+    const windowSec = Math.max(1, Math.ceil(opts.windowMs / 1000));
+    const redisKey = `rl:${opts.namespace}:${key}`;
+    const res = await fetch(`${url.replace(/\/$/, '')}/pipeline`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify([['INCR', redisKey], ['EXPIRE', redisKey, String(windowSec), 'NX'], ['PTTL', redisKey]]),
+      signal: AbortSignal.timeout(1500),
+      cache: 'no-store',
+    });
+    if (!res.ok) return checkRateLimit(key, opts);
+    const out = (await res.json()) as Array<{ result?: number }>;
+    const count = Number(out?.[0]?.result ?? 0);
+    const pttl = Number(out?.[2]?.result ?? opts.windowMs);
+    const resetAt = Date.now() + (pttl > 0 ? pttl : opts.windowMs);
+    if (!count) return checkRateLimit(key, opts);
+    if (count > opts.max) return { allowed: false, remaining: 0, resetAt };
+    return { allowed: true, remaining: Math.max(0, opts.max - count), resetAt };
+  } catch {
+    return checkRateLimit(key, opts);
+  }
+}
+
+/**
  * Convenience wrapper for the common case: check by client IP, return
  * a Response if rate-limited. Caller can `return` it directly.
  *
@@ -135,12 +169,12 @@ export function checkRateLimit(key: string, opts: RateLimitOptions): RateLimitRe
  * + Retry-After in seconds — courteous to legitimate clients and required
  * by some HTTP linters.
  */
-export function enforceRateLimit(
+export async function enforceRateLimit(
   req: NextRequest,
   opts: RateLimitOptions,
-): Response | null {
+): Promise<Response | null> {
   const ip = clientIp(req);
-  const result = checkRateLimit(ip, opts);
+  const result = await checkRateLimitShared(ip, opts);
   if (result.allowed) return null;
   const retryAfterSeconds = Math.max(1, Math.ceil((result.resetAt - Date.now()) / 1000));
   return new Response(

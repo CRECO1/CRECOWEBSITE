@@ -12,7 +12,7 @@ export async function GET(
   // But every call renders a PDF server-side, so it is the most expensive
   // anonymous endpoint we expose and it was the only public one with no
   // ceiling. 15/min/IP is far above what a human browsing listings needs.
-  const limited = enforceRateLimit(req, { namespace: 'brochure', max: 15, windowMs: 60_000 });
+  const limited = await enforceRateLimit(req, { namespace: 'brochure', max: 15, windowMs: 60_000 });
   if (limited) return limited;
 
   try {
@@ -27,7 +27,11 @@ export async function GET(
 
     // A real marketing flyer beats the generated one-pager.
     if (listing.brochure_url) {
-      return NextResponse.redirect(new URL(listing.brochure_url, req.url), 307);
+      // Only follow http(s) URLs: a stray javascript:/data: or malformed value must never become a redirect.
+      try {
+        const dest = new URL(listing.brochure_url, req.url);
+        if (dest.protocol === 'https:' || dest.protocol === 'http:') return NextResponse.redirect(dest, 307);
+      } catch { /* fall through to the generated one-pager */ }
     }
 
     const { jsPDF } = await import('jspdf');

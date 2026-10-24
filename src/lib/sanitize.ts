@@ -65,6 +65,11 @@ export function clampString(input: unknown, max: number): string {
  * real human uses. The intent is: reject anything that doesn't look like a
  * normal email, since this is how spam gets a foothold.
  */
+/** Collapse CR/LF (and Unicode line separators) so a value can never break out of an email subject line. */
+export function oneLine(input: string): string {
+  return input.replace(/[\r\n\u2028\u2029]+/g, ' ').trim();
+}
+
 export function isValidEmail(input: unknown): input is string {
   if (typeof input !== 'string') return false;
   if (input.length === 0 || input.length > 254) return false;

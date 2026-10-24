@@ -23,6 +23,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { looksLikeGibberishName } from '@/lib/bot-filter';
 import { sendLeadToCrm } from '@/lib/crm-lead';
+import { isValidEmail } from '@/lib/sanitize';
 
 // ─── Tool schemas (fed to Claude) ────────────────────────────────────
 
@@ -220,7 +221,7 @@ export async function executeCaptureLead(input: CaptureLeadInput) {
   if (!name || !email || !interest) {
     return { error: 'Missing required fields — name, email, and interest description are all required. Ask the visitor for whichever is missing.' };
   }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  if (!isValidEmail(email)) {
     return { error: 'Email format looks invalid. Ask the visitor to confirm their email.' };
   }
 

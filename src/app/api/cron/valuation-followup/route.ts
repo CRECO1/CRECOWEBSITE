@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isCronAuthorized } from '@/lib/cron-auth';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { escapeHtml } from '@/lib/sanitize';
@@ -99,7 +100,7 @@ export async function GET(req: NextRequest) {
   if (!expectedAuth) {
     return NextResponse.json({ error: 'CRON_SECRET is not configured' }, { status: 503 });
   }
-  if (providedAuth !== expectedAuth) {
+  if (!isCronAuthorized(providedAuth)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

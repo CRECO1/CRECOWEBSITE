@@ -3,6 +3,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { CRECO_SYSTEM_PROMPT } from '@/lib/chat-system-prompt';
 import { CHAT_TOOLS, executeChatTool } from '@/lib/chat-tools';
 import { clampString } from '@/lib/sanitize';
+import { enforceRateLimit, checkRateLimitShared } from '@/lib/rate-limit';
 
 /**
  * Chat endpoint backing the on-site chatbot.
@@ -36,25 +37,11 @@ const MAX_TURNS = 30;
 const MAX_INPUT_LEN = 4000;
 const MAX_OUTPUT_TOKENS = 1024;
 
-// Best-effort in-memory rate limit — survives within a warm Vercel function
-// instance, resets on cold start. For a hard guarantee we'd back this with
-// Upstash Redis, but for a chatbot the honeypot + Anthropic's own rate
-// limits + sane MAX_TURNS already cover the realistic threats.
-const RATE_WINDOW_MS = 60_000;
-const RATE_MAX_REQUESTS = 20;
-const rateBuckets = new Map<string, { count: number; resetAt: number }>();
-
-function checkRate(ip: string): boolean {
-  const now = Date.now();
-  const bucket = rateBuckets.get(ip);
-  if (!bucket || bucket.resetAt < now) {
-    rateBuckets.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS });
-    return true;
-  }
-  if (bucket.count >= RATE_MAX_REQUESTS) return false;
-  bucket.count += 1;
-  return true;
-}
+// Rate limiting uses the shared helper in lib/rate-limit.ts, which keys on the
+// platform-set x-real-ip (not the client-controlled leftmost X-Forwarded-For)
+// and is backed by Redis when UPSTASH_REDIS_REST_* / KV_REST_API_* are set.
+const MAX_TOTAL_CHARS = 16_000; // whole-conversation cap, bounds input tokens per request
+const DAILY_REQUEST_CAP = Number(process.env.CHAT_DAILY_REQUEST_CAP ?? 3000); // global spend breaker
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -69,11 +56,16 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Crude IP detection — Vercel sets x-forwarded-for; first hop is the client
-  const ip = (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim() || 'unknown';
-  if (!checkRate(ip)) {
+  // Per-IP burst limit (trusted IP source) plus a per-IP hourly ceiling and a
+  // global daily breaker, so a distributed script cannot run up the Anthropic bill.
+  const tooFast = await enforceRateLimit(req, { namespace: 'chat', max: 12, windowMs: 60_000 });
+  if (tooFast) return tooFast;
+  const hourly = await enforceRateLimit(req, { namespace: 'chat-hour', max: 120, windowMs: 3_600_000 });
+  if (hourly) return hourly;
+  const day = await checkRateLimitShared('global', { namespace: 'chat-day', max: DAILY_REQUEST_CAP, windowMs: 86_400_000 });
+  if (!day.allowed) {
     return new Response(
-      JSON.stringify({ error: "You're sending messages a little fast — try again in a minute." }),
+      JSON.stringify({ error: 'Chat is busy right now. Please call (210) 817-3443 or use the contact form.' }),
       { status: 429, headers: { 'Content-Type': 'application/json' } },
     );
   }
@@ -102,6 +94,10 @@ export async function POST(req: NextRequest) {
     const safe = clampString(content, MAX_INPUT_LEN);
     if (!safe) continue;
     messages.push({ role, content: safe });
+  }
+
+  if (messages.reduce((n, m) => n + m.content.length, 0) > MAX_TOTAL_CHARS) {
+    return new Response('Conversation too long. Refresh to start over.', { status: 400 });
   }
 
   if (messages.length === 0 || messages[0].role !== 'user') {

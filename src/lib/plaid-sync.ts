@@ -16,6 +16,7 @@
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { openSecret } from '@/lib/secret-box';
 import { getPlaidClient } from './plaid';
 
 export interface SyncResult {
@@ -79,7 +80,7 @@ async function syncOneAccount(supabase: SupabaseClient, acct: BankAccountRow): P
   // runaway loops in case the cursor protocol behaves unexpectedly.
   for (let iter = 0; iter < 10 && hasMore; iter++) {
     const res = await plaid.client.transactionsSync({
-      access_token: acct.plaid_access_token,
+      access_token: openSecret(acct.plaid_access_token),
       cursor,
       count: 100,
     });

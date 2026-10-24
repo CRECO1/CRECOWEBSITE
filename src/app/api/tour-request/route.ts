@@ -4,7 +4,7 @@ import { randomBytes } from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { verifyRecaptcha } from '@/lib/recaptcha';
-import { escapeHtml, clampString, isValidEmail, safePhone, MAX_LEN } from '@/lib/sanitize';
+import { escapeHtml, clampString, isValidEmail, oneLine, safePhone, MAX_LEN } from '@/lib/sanitize';
 import { screenSubmission } from '@/lib/bot-filter';
 import { buildSignupContext } from '@/lib/signup-context';
 import { checkEmailQuality } from '@/lib/email-quality';
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
   // Per-IP rate limit. Tour requests are infrequent for any one person
   // — 6/min is plenty for a real prospect filling out 1-2 tours and
   // tight enough to throttle scripted abuse.
-  const limited = enforceRateLimit(req, {
+  const limited = await enforceRateLimit(req, {
     namespace: 'tour-request',
     max: 6,
     windowMs: 60_000,
@@ -329,7 +329,7 @@ export async function POST(req: NextRequest) {
         from: getFromEmail(),
         to: email,
         replyTo: NOTIFICATION_EMAIL,
-        subject: `Tour request received — ${listingTitle || 'CRECO commercial property'}`,
+        subject: oneLine(`Tour request received — ${listingTitle || 'CRECO commercial property'}`),
         html: `
           <div style="font-family:Helvetica,Arial,sans-serif;max-width:600px;color:#1A1A1A">
             <div style="margin:0 0 20px;padding:0 0 18px;border-bottom:2px solid #C9A962">
@@ -369,7 +369,7 @@ export async function POST(req: NextRequest) {
       await resend.emails.send({
         from: getFromEmail(),
         to: leadAlertRecipients(getLeadOwner({ listingSlug })),
-        subject: `🏢 Tour requested: ${listingTitle || listingSlug || 'Property'} — ${name}`,
+        subject: oneLine(`🏢 Tour requested: ${listingTitle || listingSlug || 'Property'} — ${name}`),
         html: `
           <div style="font-family:Helvetica,Arial,sans-serif;max-width:600px;color:#1A1A1A">
             <h2 style="color:#1A1A1A">New Tour Request — CRECO</h2>

@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { enforceRateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -29,15 +30,35 @@ function page(title: string, body: string, status = 200): Response {
   );
 }
 
+/**
+ * GET only renders a confirm button. Corporate mail gateways open every link in
+ * a message with GET; doing the unsubscribe there silently dropped real
+ * contacts. The change happens on POST, which also serves RFC 8058 one-click
+ * (`List-Unsubscribe-Post: List-Unsubscribe=One-Click`) from mail clients.
+ */
 export async function GET(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('token');
-  if (!token) return page('Invalid link', 'This unsubscribe link is missing its token.', 400);
+  if (!token || token.length > 200) return page('Invalid link', 'This unsubscribe link is missing its token.', 400);
+  return page(
+    'Unsubscribe from CRECO emails?',
+    `Confirm below and you'll stop receiving marketing emails from <strong>CRECO</strong>.
+     <form method="POST" action="/unsubscribe?token=${encodeURIComponent(token)}" style="margin-top:20px">
+       <button type="submit" style="background:#C9A962;color:#1A1A1A;border:0;border-radius:8px;padding:12px 24px;font-size:15px;font-weight:700;cursor:pointer">Unsubscribe me</button>
+     </form>`,
+  );
+}
+
+export async function POST(req: NextRequest) {
+  const limited = await enforceRateLimit(req, { namespace: 'unsubscribe', max: 20, windowMs: 60_000 });
+  if (limited) return limited;
+  const token = req.nextUrl.searchParams.get('token');
+  if (!token || token.length > 200) return page('Invalid link', 'This unsubscribe link is missing its token.', 400);
 
   const supabase = crmClient();
   if (!supabase) return page('Temporarily unavailable', 'Please try again in a moment.', 503);
 
   const { data: client } = await supabase
-    .from('crm_clients').select('id').eq('unsubscribe_token', token).single();
+    .from('crm_clients').select('id').eq('unsubscribe_token', token).maybeSingle();
   if (!client) return page('Link not found', 'This unsubscribe link is invalid or has already been used.', 404);
 
   await supabase.from('crm_clients').update({ unsubscribed_at: new Date().toISOString() }).eq('id', client.id);

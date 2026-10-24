@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isCronAuthorized } from '@/lib/cron-auth';
 import { createClient } from '@supabase/supabase-js';
 import { syncAllAccounts } from '@/lib/plaid-sync';
 
@@ -19,7 +20,7 @@ export async function GET(req: NextRequest) {
   if (!expected) {
     return NextResponse.json({ error: 'CRON_SECRET not configured' }, { status: 503 });
   }
-  if (req.headers.get('authorization') !== expected) {
+  if (!isCronAuthorized(req.headers.get('authorization'))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY || !process.env.NEXT_PUBLIC_SUPABASE_URL) {

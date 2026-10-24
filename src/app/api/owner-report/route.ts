@@ -35,7 +35,7 @@ function todayCentral(): string {
 type Client = { id: string; first_name: string | null; last_name: string | null; business_name: string | null; email: string | null; phone: string | null; agent_id: string | null; tags: string[] | null };
 
 export async function POST(req: NextRequest) {
-  const limited = enforceRateLimit(req, { namespace: 'owner-report', max: 20, windowMs: 60_000 });
+  const limited = await enforceRateLimit(req, { namespace: 'owner-report', max: 20, windowMs: 60_000 });
   if (limited) return limited;
 
   let body: { token?: unknown; type?: unknown; interest?: unknown; phone?: unknown };

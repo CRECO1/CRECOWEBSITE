@@ -1,5 +1,3 @@
-import { withPayload } from '@payloadcms/next/withPayload';
-
 /**
  * Content-Security-Policy
  *
@@ -23,8 +21,8 @@ const cspDirectives = {
     "'unsafe-inline'",          // required for Tailwind + Next runtime
     'https://www.googletagmanager.com',  // Google Analytics
     'https://*.clarity.ms',              // Microsoft Clarity
-    'https://www.google.com',            // reCAPTCHA (when enabled)
-    'https://www.gstatic.com',           // reCAPTCHA assets
+    'https://www.google.com/recaptcha/', // reCAPTCHA (path-scoped: not all of google.com)
+    'https://www.gstatic.com/recaptcha/', // reCAPTCHA assets
     'https://va.vercel-scripts.com',     // Vercel Analytics
   ],
   'style-src': [
@@ -56,7 +54,6 @@ const cspDirectives = {
                                          // and frame-src already allow this host;
                                          // without it every form page logs a CSP error
     'https://www.googletagmanager.com',
-    'https://api.resend.com',            // outbound from server-side, harmless to allow
     'https://va.vercel-scripts.com',
   ],
   'frame-src': [
@@ -173,6 +170,13 @@ const securityHeaders = [
   },
 ];
 
+// Image optimizer allow-list: our own Supabase project's host (from the same env var the app uses),
+// not every *.supabase.co tenant. Falls back to the wildcard only if the var is absent at build time.
+let supabaseImageHost = '**.supabase.co';
+try {
+  if (process.env.NEXT_PUBLIC_SUPABASE_URL) supabaseImageHost = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname;
+} catch { /* keep wildcard */ }
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Don't fail the production build on ESLint errors. The .eslintrc.json
@@ -202,11 +206,7 @@ const nextConfig = {
       {
         // Supabase Storage — agent photos, listing images, etc.
         protocol: 'https',
-        hostname: '**.supabase.co',
-      },
-      {
-        protocol: 'https',
-        hostname: '**.supabase.in',
+        hostname: supabaseImageHost,
       },
     ],
   },
@@ -223,7 +223,7 @@ const nextConfig = {
   experimental: {
     reactCompiler: false,
   },
-  serverExternalPackages: ['sharp', 'graphql'],
+  serverExternalPackages: ['sharp'],
 
   // Canonicalize the apex domain to www. crecotx.com currently serves a 200
   // (duplicate-content split) while every canonical tag points to www — this
@@ -309,4 +309,4 @@ const nextConfig = {
   },
 };
 
-export default withPayload(nextConfig);
+export default nextConfig;

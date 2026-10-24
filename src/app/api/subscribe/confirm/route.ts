@@ -42,9 +42,31 @@ const origin = () => SITE_URL;
 const landing = (status: 'confirmed' | 'already' | 'invalid') =>
   NextResponse.redirect(`${origin()}/subscribe/confirmed?status=${status}`, { status: 303 });
 
+/**
+ * GET only shows a "Confirm my subscription" button; the confirmation itself
+ * happens on POST. Mail security scanners and prefetchers open every link with
+ * GET and used to confirm bot signups on a victim's behalf, defeating the point
+ * of double opt-in.
+ */
 export async function GET(req: NextRequest) {
+  const token = req.nextUrl.searchParams.get('token');
+  if (!token || token.length < 32) return landing('invalid');
+  const safe = encodeURIComponent(token);
+  return new NextResponse(
+    `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Confirm your subscription · CRECO</title></head>
+<body style="margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#FAF8F5;color:#1A1A1A">
+<div style="max-width:480px;margin:0 auto;padding:72px 24px;text-align:center">
+<h1 style="font-size:22px;margin:0 0 12px">Confirm your subscription</h1>
+<p style="line-height:1.6;color:#525252;margin:0 0 24px">One click and you're on the CRECO list.</p>
+<form method="POST" action="/api/subscribe/confirm?token=${safe}"><button type="submit" style="background:#C9A962;color:#1A1A1A;border:0;border-radius:8px;padding:12px 24px;font-size:15px;font-weight:700;cursor:pointer">Confirm subscription</button></form>
+</div></body></html>`,
+    { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } },
+  );
+}
+
+export async function POST(req: NextRequest) {
   // A token is a secret; guessing is the only attack and this makes it slow.
-  const limited = enforceRateLimit(req, { namespace: 'subscribe-confirm', max: 20, windowMs: 60_000 });
+  const limited = await enforceRateLimit(req, { namespace: 'subscribe-confirm', max: 20, windowMs: 60_000 });
   if (limited) return limited;
 
   const token = req.nextUrl.searchParams.get('token');

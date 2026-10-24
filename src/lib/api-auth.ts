@@ -93,7 +93,7 @@ export async function requireAdmin(): Promise<RequireAdminResult> {
   const { data: adminRow } = await supabase
     .from('admin_users')
     .select('email')
-    .ilike('email', user.email)
+    .ilike('email', user.email.replace(/[\\%_]/g, '\\$&')) // escape LIKE wildcards: exact, case-insensitive match
     .maybeSingle();
   if (!adminRow) {
     return {

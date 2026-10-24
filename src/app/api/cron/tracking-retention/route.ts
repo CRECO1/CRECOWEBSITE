@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isCronAuthorized } from '@/lib/cron-auth';
 
 /**
  * GET /api/cron/tracking-retention
@@ -22,7 +23,7 @@ const TABLES = ['site_events', 'site_pageviews'] as const;
 export async function GET(req: NextRequest) {
   const expected = process.env.CRON_SECRET ? `Bearer ${process.env.CRON_SECRET}` : null;
   if (!expected) return NextResponse.json({ error: 'CRON_SECRET not configured' }, { status: 503 });
-  if (req.headers.get('authorization') !== expected) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  if (!isCronAuthorized(req.headers.get('authorization'))) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const url = (process.env.CRM_SUPABASE_URL ?? '').trim();
   const key = (process.env.CRM_SUPABASE_SERVICE_ROLE_KEY ?? '').trim();

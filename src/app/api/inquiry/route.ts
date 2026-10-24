@@ -129,7 +129,7 @@ export async function POST(req: NextRequest) {
   // filling out a form (typical inquiry takes ~2-5 minutes) and tight
   // enough to throttle a scripted abuse loop. Layered on top of the
   // existing reCAPTCHA + honeypot — defense in depth.
-  const limited = enforceRateLimit(req, {
+  const limited = await enforceRateLimit(req, {
     namespace: 'inquiry',
     max: 8,
     windowMs: 60_000,

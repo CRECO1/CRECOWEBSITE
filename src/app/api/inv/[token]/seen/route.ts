@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { verifyInvoiceView } from '@/lib/invoice-view-token';
+import { clientIp, enforceRateLimit } from '@/lib/rate-limit';
 
 /**
  * POST /api/inv/[token]/seen — records that a real browser rendered the invoice page (kind 'view') or clicked
@@ -14,6 +15,8 @@ const KINDS = new Set(['view', 'pdf', 'pay_click']);
 const BOT = /bot|crawl|spider|slurp|preview|scanner|headless|lighthouse|curl|wget|python|axios|node-fetch|go-http|java\/|okhttp|barracuda|proofpoint|mimecast|symantec|messagelabs|safelinks/i;
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
+  const limited = await enforceRateLimit(req, { namespace: 'inv-seen', max: 30, windowMs: 60_000 });
+  if (limited) return new NextResponse(null, { status: 204 });
   const { token } = await params;
   const claim = verifyInvoiceView(token);
   const ua = req.headers.get('user-agent') ?? '';
@@ -33,14 +36,15 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ tok
   try {
     const { data: inv } = await db.from('invoices').select('id, workspace_id').eq('id', claim.inv).maybeSingle();
     if (!inv) return new NextResponse(null, { status: 204 });
-    // One 'view' per recipient per 30 minutes (a refresh or a returning tab isn't a new view).
-    if (kind === 'view') {
+    // One event of each kind per recipient per 30 minutes (a refresh or a returning tab isn't a new view; also bounds row growth).
+    {
       const since = new Date(Date.now() - 30 * 60_000).toISOString();
       const { data: recent } = await db.from('invoice_views').select('id').eq('invoice_id', claim.inv)
-        .eq('recipient_email', claim.email).eq('kind', 'view').gte('created_at', since).limit(1);
+        .eq('recipient_email', claim.email).eq('kind', kind).gte('created_at', since).limit(1);
       if (recent?.length) return new NextResponse(null, { status: 204 });
     }
-    const ip = (req.headers.get('x-forwarded-for') ?? '').split(',')[0].trim() || null;
+    const ipRaw = clientIp(req);
+    const ip = ipRaw && ipRaw !== 'unknown' ? ipRaw : null;
     await db.from('invoice_views').insert({
       invoice_id: claim.inv, workspace_id: inv.workspace_id, recipient_email: claim.email, role: claim.role,
       kind, ip_address: ip, user_agent: ua.slice(0, 300),

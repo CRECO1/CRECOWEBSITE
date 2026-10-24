@@ -117,7 +117,7 @@ async function handle(request: NextRequest): Promise<NextResponse> {
       const { data: adminRow } = await supabase
         .from('admin_users')
         .select('email')
-        .ilike('email', user.email)
+        .ilike('email', user.email.replace(/[\\%_]/g, '\\$&')) // escape LIKE wildcards: exact, case-insensitive match
         .maybeSingle();
       if (!adminRow) {
         // Authenticated but not authorized. 404 the surface so we don't

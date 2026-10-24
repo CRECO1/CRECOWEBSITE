@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { openSecret } from '@/lib/secret-box';
 import { requireAdmin } from '@/lib/api-auth';
 import { getPlaidClient } from '@/lib/plaid';
 
@@ -62,7 +63,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     const plaid = getPlaidClient();
     if (plaid) {
       try {
-        await plaid.client.itemRemove({ access_token: row.plaid_access_token });
+        await plaid.client.itemRemove({ access_token: openSecret(row.plaid_access_token) });
       } catch (err) {
         console.warn('[plaid/account.DELETE] itemRemove failed:', err);
       }

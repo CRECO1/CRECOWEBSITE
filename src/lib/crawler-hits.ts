@@ -53,8 +53,17 @@ export interface CrawlerHit {
   host: string | null;
 }
 
+// The bot match is on a spoofable User-Agent, so cap writes per warm instance (~120/min) so a
+// scripted flood of fake "Googlebot" requests can't turn into unbounded service-role inserts.
+let windowStart = 0;
+let windowCount = 0;
+const MAX_HITS_PER_MINUTE = 120;
+
 /** Fire-and-forget insert. Resolves (never rejects) within ~3s. */
 export async function logCrawlerHit(hit: CrawlerHit): Promise<void> {
+  const now = Date.now();
+  if (now - windowStart > 60_000) { windowStart = now; windowCount = 0; }
+  if (++windowCount > MAX_HITS_PER_MINUTE) return;
   const url = (process.env.NEXT_PUBLIC_SUPABASE_URL ?? '').trim();
   const key = (process.env.SUPABASE_SERVICE_ROLE_KEY ?? '').trim();
   if (!url || !key) return;

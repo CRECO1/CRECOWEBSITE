@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { verifyRecaptcha } from '@/lib/recaptcha';
-import { escapeHtml, clampString, isValidEmail, MAX_LEN } from '@/lib/sanitize';
+import { escapeHtml, clampString, isValidEmail, oneLine, MAX_LEN } from '@/lib/sanitize';
 import { pushToCrm } from '@/lib/crm';
 import { findGuide } from '@/lib/guides';
 import { renderGuideEmailHtml } from '@/lib/guide-email';
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
   // Tightened from 10/min. A person signs up once; the only caller who needs
   // several in a window is a script. 4 leaves room for a genuine retry after a
   // typo or a failed captcha without leaving the door open to list-stuffing.
-  const limited = enforceRateLimit(req, {
+  const limited = await enforceRateLimit(req, {
     namespace: 'subscribe',
     max: 4,
     windowMs: 60_000,
@@ -226,7 +226,7 @@ export async function POST(req: NextRequest) {
           await resend.emails.send({
             from: getFromEmail(),
             to: email,
-            subject: `${guide.title} — your CRECO download`,
+            subject: oneLine(`${guide.title} — your CRECO download`),
             html: renderGuideEmailHtml({ guide, recipientName: name || '' }),
           });
         } else {

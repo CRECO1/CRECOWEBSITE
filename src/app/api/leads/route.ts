@@ -3,7 +3,7 @@ import { sendLeadToCrm } from '@/lib/crm-lead';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 import { verifyRecaptcha } from '@/lib/recaptcha';
-import { escapeHtml, clampString, isValidEmail, safePhone, MAX_LEN } from '@/lib/sanitize';
+import { escapeHtml, clampString, isValidEmail, oneLine, safePhone, MAX_LEN } from '@/lib/sanitize';
 import { screenSubmission } from '@/lib/bot-filter';
 import { buildSignupContext } from '@/lib/signup-context';
 import { leadSourceLabel } from '@/lib/lead-source-label';
@@ -139,7 +139,7 @@ export async function POST(req: NextRequest) {
   // the design rationale (best-effort, defense in depth on top of
   // reCAPTCHA + honeypot). 8/min matches the inquiry endpoint — same
   // form-fill cadence assumption.
-  const limited = enforceRateLimit(req, {
+  const limited = await enforceRateLimit(req, {
     namespace: 'leads',
     max: 8,
     windowMs: 60_000,
@@ -417,7 +417,7 @@ export async function POST(req: NextRequest) {
         from: getFromEmail(),
         to: leadAlertRecipients(owner),
         replyTo: email,
-        subject,
+        subject: oneLine(subject),
         html: `
           <div style="font-family:sans-serif;max-width:600px">
             ${bannerHtml}

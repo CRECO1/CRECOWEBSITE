@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isCronAuthorized } from '@/lib/cron-auth';
 import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 
@@ -108,7 +109,7 @@ function applyMerge(template: string, c: Recipient): string {
 export async function GET(req: NextRequest) {
   const expected = process.env.CRON_SECRET ? `Bearer ${process.env.CRON_SECRET}` : null;
   if (!expected) return NextResponse.json({ error: 'CRON_SECRET not configured' }, { status: 503 });
-  if (req.headers.get('authorization') !== expected) {
+  if (!isCronAuthorized(req.headers.get('authorization'))) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

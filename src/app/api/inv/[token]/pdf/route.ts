@@ -2,13 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { verifyInvoiceView } from '@/lib/invoice-view-token';
 import { renderInvoicePdf } from '@/lib/invoice-pdf';
+import { enforceRateLimit } from '@/lib/rate-limit';
 import type { Invoice } from '@/lib/invoices';
 
 /** GET /api/inv/[token]/pdf — the invoice PDF for the holder of a valid signed link. */
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-export async function GET(_req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
+  const limited = await enforceRateLimit(req, { namespace: 'inv-pdf', max: 20, windowMs: 60_000 });
+  if (limited) return limited;
   const { token } = await params;
   const claim = verifyInvoiceView(token);
   if (!claim) return NextResponse.json({ error: 'Not found' }, { status: 404 });

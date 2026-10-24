@@ -82,7 +82,31 @@ function htmlPage(title: string, body: string, status = 200): NextResponse {
   });
 }
 
+/**
+ * GET only renders a confirm button; the state change happens on POST. Mail
+ * security scanners and link prefetchers open every link in an email with GET,
+ * and used to "click" this one — confirming tours and emailing the prospect
+ * without a human in the loop.
+ */
 export async function GET(req: NextRequest) {
+  const token = req.nextUrl.searchParams.get('token');
+  if (!token || token.length < 32 || !/^[a-f0-9]+$/i.test(token)) return confirmTour(req);
+  return htmlPage(
+    'Confirm this tour',
+    `<div class="check">?</div>
+     <h1>Confirm this tour?</h1>
+     <p>This marks the tour as scheduled and sends the prospect a confirmation email.</p>
+     <form method="POST" action="/api/tour-confirm?token=${encodeURIComponent(token)}">
+       <button type="submit" style="background:#C9A962;color:#1A1A1A;border:0;border-radius:8px;padding:12px 24px;font-size:15px;font-weight:700;cursor:pointer">Confirm tour</button>
+     </form>`,
+  );
+}
+
+export async function POST(req: NextRequest) {
+  return confirmTour(req);
+}
+
+async function confirmTour(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('token');
   if (!token || typeof token !== 'string' || token.length < 32 || !/^[a-f0-9]+$/i.test(token)) {
     return htmlPage(
