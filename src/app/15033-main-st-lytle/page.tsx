@@ -11,7 +11,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
   MapPin, Phone, ArrowRight, Store, Scissors, Coffee, Shirt,
-  Building2, TrendingUp, Users, Sparkles,
+  Building2, TrendingUp, Users, Sparkles, FileText,
 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
@@ -20,6 +20,10 @@ import { BrokerCard } from '@/components/marketing/BrokerCard';
 import { LISTING_DEFAULT_BROKER, getLeadBackup } from '@/lib/broker';
 import { MarketReportCapture } from '@/components/marketing/MarketReportCapture';
 import { PropertyAlertsInline } from '@/components/marketing/PropertyAlertsInline';
+import { TrackedAnchor } from '@/components/analytics/TrackedAnchor';
+
+// Downloadable leasing flyer (PDF) — kept in the property's public folder.
+const FLYER_PDF = '/properties/15033-main-st-lytle/15033-main-st-lytle-for-lease-flyer.pdf';
 
 // ─── Property photos ────────────────────────────────────────────────────
 // 4 site photos compressed from the LoopNet originals (sips -Z 2000
@@ -248,6 +252,17 @@ export default function LytleMainStPage() {
                   <Phone className="h-4 w-4" />
                   {PHONE_DISPLAY}
                 </a>
+                <TrackedAnchor
+                  href={FLYER_PDF}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  event="flyer_downloaded"
+                  params={{ property: '15033-main-st-lytle', surface: 'hero' }}
+                  className="inline-flex items-center gap-2 rounded-lg border border-white/30 px-7 py-3.5 text-body-sm font-semibold text-white hover:bg-white/10"
+                >
+                  <FileText className="h-4 w-4" />
+                  Download flyer
+                </TrackedAnchor>
               </div>
             </div>
           </Container>
