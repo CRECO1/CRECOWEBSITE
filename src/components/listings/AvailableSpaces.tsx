@@ -28,7 +28,11 @@ export function AvailableSpaces({ spaces }: { spaces: Listing['available_spaces'
           <tbody>
             {rows.map(s => (
               <tr key={`${s.building ?? ''}-${s.suite}`} className="border-t border-border">
-                <td className="px-4 py-3 font-semibold text-primary">{s.suite}</td>
+                <td className="px-4 py-3 font-semibold text-primary">
+                  {s.suite}
+                  {/* The Notes column is hidden on phones, and rate/terms are what a tenant came for: show them here instead. */}
+                  {s.note && <span className="mt-1 block text-caption font-normal leading-snug text-foreground-muted sm:hidden">{s.note}</span>}
+                </td>
                 {hasBuilding && <td className="px-4 py-3 text-foreground-muted">{s.building ?? ''}</td>}
                 <td className="px-4 py-3 text-right font-semibold text-primary">{formatSqft(Number(s.sqft))}</td>
                 {hasNote && <td className="hidden px-4 py-3 text-foreground-muted sm:table-cell">{s.note ?? ''}</td>}
