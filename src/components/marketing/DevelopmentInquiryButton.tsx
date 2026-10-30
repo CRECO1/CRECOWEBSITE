@@ -24,7 +24,8 @@
  * keeps the title + close-X visible while the form scrolls.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 import { ArrowRight, X, type LucideIcon } from 'lucide-react';
 import { DevelopmentInterestForm } from '@/components/forms/DevelopmentInterestForm';
 import { trackEvent } from '@/lib/analytics';
@@ -49,6 +50,8 @@ export function DevelopmentInquiryButton({
   initialInterest,
 }: DevelopmentInquiryButtonProps) {
   const [open, setOpen] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(cardRef, open);
 
   // Lock body scroll while the modal is open. Restore on unmount so the
   // page doesn't get stuck with a frozen scrollbar if this button is
@@ -105,6 +108,7 @@ export function DevelopmentInquiryButton({
               dynamic vh formula avoids mobile-browser-chrome edge cases
               where 100vh underflows the actual visible area. */}
           <div
+            ref={cardRef}
             className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden"
             style={{ maxHeight: 'min(calc(100dvh - 7rem), calc(100vh - 7rem))' }}
             onClick={e => e.stopPropagation()}

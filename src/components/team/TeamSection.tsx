@@ -18,7 +18,8 @@
  * the grid.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 import Image from 'next/image';
 import { Phone, Award, User, X, ArrowRight, Send, Loader2, CheckCircle, MessageSquare } from 'lucide-react';
 import { Container } from '@/components/ui/Container';
@@ -78,6 +79,16 @@ export function TeamSection({
 }: TeamSectionProps = {}) {
   const [agents, setAgents] = useState<Agent[]>(initialAgents && initialAgents.length > 0 ? initialAgents : []);
   const [selected, setSelected] = useState<Agent | null>(null);
+  const bioRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(bioRef, !!selected);
+  useEffect(() => {
+    if (!selected) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setSelected(null); };
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKey);
+    return () => { window.removeEventListener('keydown', onKey); document.body.style.overflow = prev; };
+  }, [selected]);
 
   // Broker-message capture (opened from inside the profile modal). Turns a
   // profile view into a real lead routed to that broker, instead of relying on
@@ -217,10 +228,14 @@ export function TeamSection({
           centered across viewports. */}
       {selected && (
         <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${selected.name} — profile`}
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
           onClick={() => setSelected(null)}
         >
           <div
+            ref={bioRef}
             className="relative w-full max-w-sm rounded-2xl bg-white shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >

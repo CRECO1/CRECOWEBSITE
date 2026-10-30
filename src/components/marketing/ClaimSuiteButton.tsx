@@ -23,13 +23,16 @@
  *     clicking outside.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 import { ArrowRight, X } from 'lucide-react';
 import { RetailLeasingInquiryForm } from '@/components/forms/RetailLeasingInquiryForm';
 import { trackEvent } from '@/lib/analytics';
 
 export function ClaimSuiteButton() {
   const [open, setOpen] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(cardRef, open);
 
   // Lock body scroll while the modal is open. Restore on unmount so the
   // page doesn't get stuck with a frozen scrollbar if the component is
@@ -87,6 +90,7 @@ export function ClaimSuiteButton() {
               Using 100dvh (when supported) to handle mobile browser chrome
               correctly; 100vh is the desktop safe fallback. */}
           <div
+            ref={cardRef}
             className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden"
             style={{ maxHeight: 'min(calc(100dvh - 7rem), calc(100vh - 7rem))' }}
             onClick={e => e.stopPropagation()}
