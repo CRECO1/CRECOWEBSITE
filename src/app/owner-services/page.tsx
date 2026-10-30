@@ -250,10 +250,10 @@ export default async function OwnerServicesPage() {
                   <Calculator className="h-6 w-6" />
                 </div>
                 <div>
-                  <p className="overline mb-2 text-gold">Free Tool · 60 Seconds</p>
+                  <p className="overline mb-2 text-gold">Property Valuation</p>
                   <h2 className="font-heading text-display-sm font-bold mb-3">What's your Texas commercial property worth?</h2>
                   <p className="text-body text-white/70">
-                    Get an instant preliminary valuation range using current Texas cap rates by property type and submarket. No contact info required to see the number. Free, no obligation, and our team follows up only if you want a full broker valuation.
+                    Request a preliminary valuation range built on current Texas cap rates by property type and submarket. Turnaround and any fee depend on the information we need and the work required to build it out, which we confirm with you up front.
                   </p>
                 </div>
               </div>

@@ -14,9 +14,9 @@
 export const VALUATION_CTA = {
   heading: 'What is your Texas commercial property worth?',
   body:
-    'Get an instant, cap-rate-based value range for your property in about 60 seconds. The number is free and nothing is gated — no email, no phone, no account.',
-  action: 'Value my property',
-  reassurance: 'Free · No contact details required to see your range',
+    'Tell us about your property and we’ll prepare a cap-rate-based value range.',
+  action: 'Request a valuation',
+  reassurance: 'No obligation to start · Scope and timing confirmed up front',
 } as const;
 
 /**
