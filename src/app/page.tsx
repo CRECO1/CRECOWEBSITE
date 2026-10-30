@@ -277,7 +277,7 @@ export default async function HomePage() {
         <div className="hero-overlay-luxury absolute inset-0" />
 
         <Container className="relative z-10 text-center text-white">
-          <p className="overline mb-6 animate-fade-in-down text-gold">CRECO · Commercial Real Estate Company</p>
+          <p className="overline mx-auto mb-6 w-fit animate-fade-in-down text-gold">CRECO · Commercial Real Estate Company</p>
           <h1 className="mb-6 animate-fade-in-up font-heading text-display-xl font-bold text-white text-shadow-hero fill-both">
             {heroHeadline.includes('\n')
               ? heroHeadline.split('\n').map((line: string, i: number) => (
@@ -304,22 +304,22 @@ export default async function HomePage() {
               </Button>
             </div>
           </div>
-          <p className="mt-8 text-body text-white/90 animate-fade-in delay-300 fill-both">
+          <p className="mx-auto mt-8 max-w-2xl text-body text-white/90 animate-fade-in delay-300 fill-both">
             Prefer to talk?{' '}
             <a href={`sms:${BUSINESS.phoneE164.replace(/-/g, '')}`} data-track-id="hero_text" className="font-semibold text-gold underline-offset-4 hover:underline">Text</a>
             {' '}or{' '}
             <a href={`tel:${BUSINESS.phoneE164.replace(/-/g, '')}`} data-track-id="hero_call" className="font-semibold text-gold underline-offset-4 hover:underline">call {BUSINESS.phoneDisplay}</a>
           </p>
           {SHOW_GOOGLE_RATING && (
-            <p className="mt-2 text-body-sm text-white/70 animate-fade-in delay-300 fill-both">
+            <p className="mx-auto mt-2 max-w-2xl text-body-sm text-white/70 animate-fade-in delay-300 fill-both">
               <Star className="mr-1 inline h-4 w-4 fill-gold text-gold" />
-              {GOOGLE_RATING.toFixed(1)} on Google{GOOGLE_REVIEW_COUNT >= HERO_MIN_REVIEWS_TO_SHOW_COUNT ? ` · ${GOOGLE_REVIEW_COUNT} reviews` : ''} · TREC licensed
+              {GOOGLE_RATING.toFixed(1)} on Google{GOOGLE_REVIEW_COUNT >= HERO_MIN_REVIEWS_TO_SHOW_COUNT ? ` · ${GOOGLE_REVIEW_COUNT} reviews` : ''}
             </p>
           )}
           <Link
             href="/listings"
             data-track-id="hero_browse"
-            className="mt-3 inline-flex min-h-[44px] items-center gap-1.5 text-body-sm font-medium text-white/60 underline-offset-4 hover:text-gold hover:underline animate-fade-in delay-300 fill-both"
+            className="mx-auto mt-3 flex min-h-[44px] w-fit items-center gap-1.5 text-body-sm font-medium text-white/60 underline-offset-4 hover:text-gold hover:underline animate-fade-in delay-300 fill-both"
           >
             Or browse properties <ArrowRight className="h-4 w-4" />
           </Link>

@@ -18,7 +18,7 @@ import { breadcrumbList } from '@/lib/schema';
 export const metadata: Metadata = {
   title: "What's My Commercial Property Worth? | CRECO",
   description:
-    "What's your commercial property worth? Tell us about it in 20 seconds and get a free Broker Opinion of Value from CRECO's broker — San Antonio & the Texas Hill Country.",
+    "What's your commercial property worth? Tell us about it and CRECO's broker will prepare a cap-rate-based value range — San Antonio & the Texas Hill Country.",
   keywords: [
     'commercial property valuation texas',
     'what is my commercial property worth',
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     images: [DEFAULT_OG_IMAGE],
     title: "What's My Commercial Property Worth? | CRECO",
     description:
-      'Get an instant preliminary valuation for your Texas commercial property — industrial, retail, office, flex. Free, no obligation.',
+      'Request a cap-rate-based valuation for your Texas commercial property — industrial, retail, office, flex.',
     url: 'https://www.crecotx.com/property-valuation',
     type: 'website',
   },
@@ -46,17 +46,17 @@ const HOW_IT_WORKS = [
   {
     icon: Calculator,
     title: 'Tell us about the property',
-    body: "Address, type, size and how it's used — no financials needed. If it's leased, add the annual rent for an instant range. About 20 seconds.",
+    body: "Address, type, size and how it's used — no financials needed. If it's leased, add the annual rent to sharpen the range.",
   },
   {
     icon: TrendingUp,
     title: 'See where you stand',
-    body: "Leased properties get an instant cap-rate range on the spot. Owner-occupied, vacant and land get the value drivers for their market.",
+    body: "Leased properties get a preliminary cap-rate range. Owner-occupied, vacant and land get the value drivers for their market.",
   },
   {
     icon: Building2,
-    title: 'Zack sends the real number',
-    body: "Zachary A. Stovall, CRECO's broker/owner, prepares your Broker Opinion of Value from actual comparable sales — usually the same business day. No charge, no obligation.",
+    title: 'Zack reviews it personally',
+    body: "Zachary A. Stovall, CRECO's broker/owner, prepares your Broker Opinion of Value from actual comparable sales. We confirm scope and timing with you first.",
   },
 ];
 
@@ -100,8 +100,8 @@ const FAQS: { q: string; a: string }[] = [
     a: "Submarket is one of the biggest value levers. The same building supports a different price in a primary submarket (strong demand, lower cap rates) than in a secondary or tertiary one. Texas metros each have their own dynamics — Class A office in Stone Oak or the Domain prices very differently from Class B space downtown. The tool asks for a submarket tier so the estimate reflects that.",
   },
   {
-    q: 'Is the valuation free, and what happens after?',
-    a: "Yes — completely free, with no obligation. Tell us about the property and where to send it; Zachary A. Stovall, CRECO's broker/owner, prepares a Broker Opinion of Value from comparable sales (and, if you want, a walkthrough). Leased properties also get an instant preliminary range on the spot.",
+    q: 'What happens after I submit my property?',
+    a: "Tell us about the property and where to send it. Zachary A. Stovall, CRECO's broker/owner, reviews it and follows up personally about a Broker Opinion of Value built from comparable sales (and, if you want, a walkthrough). Timing and any fee depend on the information we need to build it out.",
   },
 ];
 
@@ -123,29 +123,32 @@ export default function PropertyValuationPage() {
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}
-        <section className="bg-primary py-16 sm:py-20 text-white">
+        <section className="bg-primary py-10 sm:py-20 text-white">
           <Container>
             <div className="max-w-3xl">
-              <p className="overline mb-3 text-gold">Free Preliminary Valuation</p>
-              <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-5 leading-tight">
+              <p className="overline mb-3 text-gold">Property Valuation</p>
+              <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-4 sm:mb-5 leading-tight">
                 What's your Texas commercial property worth?
               </h1>
-              <p className="text-body-lg text-white/70 leading-relaxed mb-4 max-w-2xl">
-                Tell us about your property in about 20 seconds and get a free Broker Opinion of Value — real comparable sales, not a tax-roll guess.
+              <p className="text-body-lg text-white/70 leading-relaxed max-w-2xl">
+                Tell us about your property and we&apos;ll prepare a cap-rate-based value range, reviewed personally by Zachary A. Stovall, CRECO&apos;s broker/owner.
               </p>
-              <p className="text-body text-white/60 leading-relaxed max-w-2xl">
-                Prepared personally by Zachary A. Stovall, CRECO&apos;s broker/owner. Free, no obligation.
+              <p className="mt-5 text-body text-white/80">
+                Prefer to talk?{' '}
+                <a href="sms:+12108173443" className="font-semibold text-gold underline-offset-4 hover:underline">Text</a>
+                {' '}or{' '}
+                <a href="tel:+12108173443" className="font-semibold text-gold underline-offset-4 hover:underline">call (210) 817-3443</a>
               </p>
             </div>
           </Container>
         </section>
 
         {/* Form + sidebar */}
-        <section className="section-luxury bg-background-cream">
+        <section className="section-luxury !pt-6 sm:!pt-16 bg-background-cream">
           <Container>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
               <div className="lg:col-span-2">
-                <div className="rounded-2xl bg-white shadow-card p-7 sm:p-10">
+                <div className="rounded-2xl bg-white shadow-card p-5 sm:p-10">
                   <p className="overline mb-3">Your property</p>
                   <h2 className="font-heading text-heading-xl font-bold text-primary mb-2">Tell us about it.</h2>
                   <p className="text-body text-foreground-muted mb-5">

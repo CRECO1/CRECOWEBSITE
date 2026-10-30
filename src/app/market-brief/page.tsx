@@ -60,7 +60,7 @@ export default function MarketBriefPage() {
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}
-        <section className="bg-primary py-16 sm:py-20 text-white">
+        <section className="bg-primary py-10 sm:py-20 text-white">
           <Container>
             <div className="max-w-3xl">
               <p className="overline mb-3 text-gold flex items-center gap-2">
@@ -94,7 +94,7 @@ export default function MarketBriefPage() {
               <div className="lg:col-span-3 -mt-8">
                 <BriefContent />
               </div>
-              <div className="lg:col-span-2">
+              <div className="order-first lg:order-none lg:col-span-2">
                 <div className="lg:sticky lg:top-28 space-y-4">
                   <MarketReportCapture variant="dark" surface="market-brief" />
                   <p className="text-caption text-foreground-muted">
