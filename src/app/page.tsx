@@ -297,13 +297,11 @@ export default async function HomePage() {
               <Button size="xl" fullWidth className="!text-primary" asChild>
                 <Link href="/get-started?path=tenant" data-track-id="hero_need_space">I need space <ArrowRight className="ml-2 h-5 w-5" /></Link>
               </Button>
-              <p className="text-body-sm text-white/80">Tell us what you need. We reply personally.</p>
             </div>
             <div className="flex flex-col items-center gap-2">
               <Button size="xl" fullWidth className="!text-primary" asChild>
                 <Link href="/property-valuation" data-track-id="hero_own_property"><Building2 className="mr-2 h-5 w-5" />I own property</Link>
               </Button>
-              <p className="text-body-sm text-white/80">Request a valuation for your property.</p>
             </div>
           </div>
           <p className="mt-8 text-body text-white/90 animate-fade-in delay-300 fill-both">
