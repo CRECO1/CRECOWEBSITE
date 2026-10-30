@@ -63,7 +63,7 @@ export function Breadcrumbs({
               ) : (
                 <Link
                   href={item.href}
-                  className="inline-flex min-h-[44px] items-center hover:text-primary transition-colors truncate max-w-[160px] sm:min-h-0 sm:max-w-none"
+                  className="inline-flex items-center py-2.5 -my-2.5 hover:text-primary transition-colors truncate max-w-[160px] sm:py-0 sm:my-0 sm:max-w-none"
                 >
                   {item.label}
                 </Link>
