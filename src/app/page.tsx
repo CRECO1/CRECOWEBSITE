@@ -43,9 +43,7 @@ export const metadata: Metadata = {
 import Link from 'next/link';
 import Image from 'next/image';
 import {
-  ArrowRight, Star, Building2, Award, Sparkles, MapPin,
-  Briefcase, Warehouse, Store, Layers, LineChart, Wrench, BadgeCheck,
-  BarChart3, Calculator,
+  ArrowRight, Star, Building2, MapPin, Layers, BadgeCheck,
 } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
@@ -53,31 +51,15 @@ import { Container } from '@/components/ui/Container';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
 import { getListings, supabase } from '@/lib/supabase';
 import { withSyntheticListings, listingLinkProps } from '@/lib/featured-properties';
-import { TrustStrip } from '@/components/marketing/TrustStrip';
 import { LeadMagnetBand } from '@/components/marketing/LeadMagnetBand';
 import { GoogleReviews } from '@/components/marketing/GoogleReviews';
 import { HEADWALL_TOBIN_HILL } from '@/lib/press';
 import { CORE_ANSWERS } from '@/lib/answers';
 import { AiWelcome } from '@/components/marketing/AiWelcome';
+import { BUSINESS } from '@/lib/schema';
+import { SHOW_GOOGLE_RATING, HERO_MIN_REVIEWS_TO_SHOW_COUNT } from '@/lib/hero-proof';
+import { GOOGLE_RATING, GOOGLE_REVIEW_COUNT } from '@/lib/reviews';
 
-
-// SERVICES — ordered by what brings owners and tenants in the door
-const SERVICES = [
-  { icon: Briefcase, title: 'Tenant Representation', description: 'Site selection and lease negotiation for businesses leasing retail, restaurant, office, medical, industrial, and flex space.' },
-  { icon: Building2, title: 'Landlord & Owner Representation', description: 'Leasing and sales for property owners across retail, office, industrial, flex, and land — marketing, tenant and buyer sourcing, negotiation, diligence to close.' },
-  { icon: LineChart, title: 'Investment Sales & Advisory', description: 'Acquisitions, dispositions, underwriting, 1031 exchanges, and portfolio strategy for investors and multi-property owners across Texas.' },
-  { icon: Wrench, title: 'Property Management', description: 'Day-to-day operations and tenant relations for commercial assets — built for owners with multiple Texas properties.' },
-  { icon: Layers, title: 'Property Development', description: 'Site selection, entitlements, pro forma, and construction coordination — concept through stabilization.' },
-];
-
-// PROPERTY_TYPES — retail first, then industrial, then office (per business priority)
-const PROPERTY_TYPES = [
-  { icon: Store, label: 'Retail', href: '/listings?type=retail', description: 'Strip centers, freestanding, restaurant, urban storefront' },
-  { icon: Warehouse, label: 'Industrial', href: '/listings?type=warehouse', description: 'Warehouse, distribution, light manufacturing, flex-industrial' },
-  { icon: Briefcase, label: 'Office', href: '/listings?type=office', description: 'Class A/B/C, medical, professional, executive suites' },
-  { icon: Layers, label: 'Flex', href: '/listings?type=flex', description: 'Mixed office + warehouse / showroom configurations' },
-  { icon: MapPin, label: 'Land', href: '/listings?type=land', description: 'Raw or improved land for commercial development' },
-];
 
 // San Antonio & Hill Country markets — homepage geo grid. Every card links to
 // an existing, indexable in-market page (Austin / Houston / DFW pages are
@@ -277,7 +259,7 @@ export default async function HomePage() {
           hidden height — so when the browser first loaded and the URL
           bar was visible, the hero was taller than the visible area
           and users had to scroll to see the fold. svh eliminates that. */}
-      <section data-track-section="hero" className="relative flex min-h-[100svh] items-center justify-center overflow-hidden bg-primary pt-32 md:pt-24 pb-12 md:pb-16">
+      <section data-track-section="hero" className="relative flex min-h-[88svh] items-center justify-center overflow-hidden bg-primary pt-32 md:pt-24 pb-12 md:pb-16">
         <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-primary/80" />
         {s.hero_image_url ? (
           <Image
@@ -310,59 +292,43 @@ export default async function HomePage() {
           {/* Only for visitors who arrived from an AI assistant (decided client-side after mount). */}
           <AiWelcome />
 
-          <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center animate-fade-in delay-300 fill-both">
-            <Button size="lg" asChild>
-              <Link href="/get-started?path=tenant" data-track-id="hero_need_space">I need space <ArrowRight className="ml-2 h-5 w-5" /></Link>
-            </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-primary" asChild>
-              <Link href="/property-valuation" data-track-id="hero_own_property"><Building2 className="mr-2 h-5 w-5" />I own property</Link>
-            </Button>
+          <div className="mx-auto grid max-w-2xl grid-cols-1 gap-4 sm:grid-cols-2 animate-fade-in delay-300 fill-both">
+            <div className="flex flex-col items-center gap-2">
+              <Button size="xl" fullWidth className="!text-primary" asChild>
+                <Link href="/get-started?path=tenant" data-track-id="hero_need_space">I need space <ArrowRight className="ml-2 h-5 w-5" /></Link>
+              </Button>
+              <p className="text-body-sm text-white/80">Tell us what you need. We reply personally.</p>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Button size="xl" fullWidth className="!text-primary" asChild>
+                <Link href="/property-valuation" data-track-id="hero_own_property"><Building2 className="mr-2 h-5 w-5" />I own property</Link>
+              </Button>
+              <p className="text-body-sm text-white/80">Request a valuation for your property.</p>
+            </div>
           </div>
+          <p className="mt-8 text-body text-white/90 animate-fade-in delay-300 fill-both">
+            Prefer to talk?{' '}
+            <a href={`sms:${BUSINESS.phoneE164.replace(/-/g, '')}`} data-track-id="hero_text" className="font-semibold text-gold underline-offset-4 hover:underline">Text</a>
+            {' '}or{' '}
+            <a href={`tel:${BUSINESS.phoneE164.replace(/-/g, '')}`} data-track-id="hero_call" className="font-semibold text-gold underline-offset-4 hover:underline">call {BUSINESS.phoneDisplay}</a>
+          </p>
+          {SHOW_GOOGLE_RATING && (
+            <p className="mt-2 text-body-sm text-white/70 animate-fade-in delay-300 fill-both">
+              <Star className="mr-1 inline h-4 w-4 fill-gold text-gold" />
+              {GOOGLE_RATING.toFixed(1)} on Google{GOOGLE_REVIEW_COUNT >= HERO_MIN_REVIEWS_TO_SHOW_COUNT ? ` · ${GOOGLE_REVIEW_COUNT} reviews` : ''} · TREC licensed
+            </p>
+          )}
           <Link
             href="/listings"
             data-track-id="hero_browse"
-            className="mt-5 inline-flex min-h-[44px] items-center gap-1.5 text-body-sm font-semibold text-white/75 underline-offset-4 hover:text-gold hover:underline animate-fade-in delay-300 fill-both"
+            className="mt-3 inline-flex min-h-[44px] items-center gap-1.5 text-body-sm font-medium text-white/60 underline-offset-4 hover:text-gold hover:underline animate-fade-in delay-300 fill-both"
           >
-            Browse properties <ArrowRight className="h-4 w-4" />
+            Or browse properties <ArrowRight className="h-4 w-4" />
           </Link>
 
         </Container>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <div className="h-10 w-6 rounded-full border-2 border-white/30 flex items-center justify-center">
-            <div className="h-2 w-0.5 rounded-full bg-white/60" />
-          </div>
-        </div>
       </section>
-
-      {/* ── Property Types Quick Browse (retail-first) ─────────────────── */}
-      <section data-track-section="types" className="bg-white border-b border-border">
-        <Container>
-          <div className="py-8 text-center">
-            <p className="overline mb-2 text-foreground-muted">Browse Texas Properties</p>
-            <h2 className="font-heading text-heading-lg font-bold text-primary">Find your space, your way</h2>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 pb-10">
-            {PROPERTY_TYPES.map(({ icon: Icon, label, href, description }) => (
-              <Link
-                key={label}
-                href={href}
-                className="group flex flex-col items-center gap-3 rounded-xl border border-border p-5 transition-all hover:border-gold hover:bg-gold/5 text-center"
-              >
-                <Icon className="h-8 w-8 text-gold" />
-                <span className="font-heading font-semibold text-primary group-hover:text-gold-dark">{label}</span>
-                <span className="text-caption text-foreground-muted line-clamp-2">{description}</span>
-              </Link>
-            ))}
-          </div>
-        </Container>
-      </section>
-
-      {/* ── Trust Strip ───────────────────────────────────────────────── */}
-      {/* Server component — fetches the live active-listings count + the
-          operator-curated stats on every render so the band is honest
-          without anyone hand-maintaining the numbers. */}
-      <TrustStrip />
 
       {/* ── Featured Listings ─────────────────────────────────────────── */}
       <section data-track-section="listings" className="section-luxury bg-background-cream">
@@ -455,138 +421,18 @@ export default async function HomePage() {
         <LeadMagnetBand surface="homepage-featured" />
       </div>
 
-      {/* ── San Antonio & Hill Country Markets ──────────────────────── */}
-      <section data-track-section="markets" className="section-luxury bg-white">
-        <Container>
-          <RevealOnScroll>
-            <div className="mb-14 text-center">
-              <p className="overline mb-3">Where We Work</p>
-              <h2 className="font-heading text-display font-bold text-primary gold-line gold-line-center inline-block pb-4">San Antonio &amp; the Hill Country</h2>
-              <p className="mx-auto mt-6 max-w-2xl text-body text-foreground-muted">
-                Headquartered in Fair Oaks Ranch, where we own and operate Fair Oaks Plaza. Our work is focused on San Antonio and the Texas Hill Country — the markets we know street by street.
-              </p>
-            </div>
-          </RevealOnScroll>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {LOCAL_MARKETS.map((m, i) => (
-              <RevealOnScroll key={m.href} delay={i * 80}>
-                <Link href={m.href} className="group block rounded-xl border border-border bg-white p-6 hover:border-gold hover:shadow-card-hover transition-all h-full">
-                  <div className="flex items-start gap-3">
-                    <MapPin className="mt-1 h-5 w-5 text-gold shrink-0" />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-heading text-heading-sm font-bold text-primary group-hover:text-gold-dark transition-colors">{m.name}</h3>
-                        {m.badge && (
-                          <span className="rounded-full bg-gold/15 px-2 py-0.5 text-caption font-semibold text-gold-dark">{m.badge}</span>
-                        )}
-                      </div>
-                      <p className="mt-1 text-caption text-foreground-muted">{m.tagline}</p>
-                    </div>
-                  </div>
-                </Link>
-              </RevealOnScroll>
-            ))}
-          </div>
-          <p className="mt-10 text-center text-body-sm text-foreground-muted">
-            Representing tenants elsewhere in Texas?{' '}
-            <Link href="/get-started?path=tenant" className="font-semibold text-gold-dark hover:underline">We help there too.</Link>
-          </p>
-        </Container>
-      </section>
-
-      {/* ── Services ─────────────────────────────────────────────────── */}
-      <section data-track-section="services" className="section-luxury bg-background-cream">
-        <Container>
-          <RevealOnScroll>
-            <div className="mb-14 text-center">
-              <p className="overline mb-3">What We Do</p>
-              <h2 className="font-heading text-display font-bold text-primary gold-line gold-line-center inline-block pb-4">Texas Commercial Real Estate Services</h2>
-              <p className="mx-auto mt-6 max-w-2xl text-body text-foreground-muted">
-                Whether you&apos;re leasing your first office, repositioning a portfolio, or underwriting your tenth deal, the work below is handled by the same team start to finish.
-              </p>
-            </div>
-          </RevealOnScroll>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {SERVICES.map(({ icon: Icon, title, description }, i) => (
-              <RevealOnScroll key={title} delay={i * 80}>
-                <div className="h-full rounded-xl border border-border bg-white p-7 transition-all hover:border-gold hover:shadow-card-hover">
-                  <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gold/10 text-gold">
-                    <Icon className="h-6 w-6" />
-                  </div>
-                  <h3 className="mb-3 font-heading text-heading font-semibold text-primary">{title}</h3>
-                  <p className="text-body-sm text-foreground-muted leading-relaxed">{description}</p>
-                </div>
-              </RevealOnScroll>
-            ))}
-          </div>
-          <div className="mt-12 text-center">
-            <Button variant="outline" size="lg" asChild>
-              <Link href="/services">Explore All Services <ArrowRight className="ml-2 h-5 w-5" /></Link>
-            </Button>
-          </div>
-        </Container>
-      </section>
-
       {/* ── Owner Services CTA Strip — speaks to dream client ─────────── */}
       <section data-track-section="owner" className="bg-primary text-white py-12">
         <Container>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
-            <div className="lg:col-span-2">
-              <p className="overline mb-2 text-gold">For Multi-Property Owners</p>
-              <h2 className="font-heading text-display-sm font-bold mb-3">Built for Texas commercial property owners with portfolios.</h2>
-              <p className="text-body text-white/70">
-                Hold/sell analysis. Repositioning strategy. 1031 exchange identification. Tenant mix optimization. Property management with institutional-quality reporting at boutique-firm responsiveness. CRECO is your Texas commercial real estate operating partner.
-              </p>
+          <div className="flex flex-col items-center justify-between gap-6 text-center lg:flex-row lg:text-left">
+            <div className="max-w-2xl">
+              <p className="overline mb-2 text-gold">For Property Owners</p>
+              <h2 className="font-heading text-display-sm font-bold">Own commercial property in San Antonio or the Hill Country?</h2>
+              <p className="mt-2 text-body text-white/70">Hold or sell, lease up or reposition: start with a valuation.</p>
             </div>
-            <div className="flex flex-wrap items-center gap-3 lg:justify-end">
-              <Button size="lg" className="bg-gold text-primary hover:bg-gold-light" asChild>
-                <Link href="/list-your-space?from=home-owner">List your space <ArrowRight className="ml-2 h-5 w-5" /></Link>
-              </Button>
-              <Button size="lg" variant="outline" className="border-white/40 text-white hover:bg-white/10" asChild>
-                <Link href="/sell?from=home-owner">Sell it</Link>
-              </Button>
-              <Button size="lg" variant="outline" className="border-white/40 text-white hover:bg-white/10" asChild>
-                <Link href="/development-opportunities?from=home-owner">Development site</Link>
-              </Button>
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      {/* ── Market Brief ─────────────────────────────────────────────── */}
-      <section data-track-section="brief" className="section-luxury bg-background-cream">
-        <Container>
-          <RevealOnScroll>
-            <div className="mb-12 text-center">
-              <p className="overline mb-3">Free for Owners, Tenants &amp; Investors</p>
-              <h2 className="font-heading text-display-sm font-bold text-primary gold-line gold-line-center inline-block pb-3">
-                Local market data, no obligation.
-              </h2>
-              <p className="mx-auto mt-6 max-w-2xl text-body text-foreground-muted">
-                A quarterly read on San Antonio and Hill Country commercial real estate, with every figure sourced. Use it whether you ever talk to us or not.
-              </p>
-            </div>
-          </RevealOnScroll>
-          <div className="mx-auto max-w-2xl">
-            <RevealOnScroll>
-              <Link
-                href="/market-brief"
-                className="group h-full block rounded-2xl bg-white p-8 shadow-card hover:shadow-card-hover transition-all border border-border/40"
-              >
-                <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gold/10 text-gold">
-                  <BarChart3 className="h-6 w-6" />
-                </div>
-                <h3 className="mb-3 font-heading text-heading-lg font-bold text-primary group-hover:text-gold transition-colors">
-                  San Antonio &amp; Hill Country Market Brief
-                </h3>
-                <p className="mb-5 text-body-sm text-foreground-muted leading-relaxed">
-                  Issue 1 is out: Q2 2026 retail, office, industrial and flex across San Antonio and the Hill Country, with every figure sourced. Free to read.
-                </p>
-                <span className="inline-flex items-center gap-2 text-body-sm font-semibold text-gold-dark group-hover:text-gold transition-colors">
-                  Read the brief <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </span>
-              </Link>
-            </RevealOnScroll>
+            <Button size="xl" className="shrink-0 bg-gold text-primary hover:bg-gold-light" asChild>
+              <Link href="/property-valuation?from=home-owner" data-track-id="owner_strip_valuation">Request a valuation <ArrowRight className="ml-2 h-5 w-5" /></Link>
+            </Button>
           </div>
         </Container>
       </section>
@@ -670,15 +516,35 @@ export default async function HomePage() {
               <h2 className="font-heading text-display-sm font-bold text-primary">{s.cta_headline}</h2>
               <p className="mt-2 text-body text-primary/70">{s.cta_subheadline}</p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-3 shrink-0">
-              <Button size="xl" className="bg-white text-primary hover:bg-white/90 shadow-lg font-bold" asChild>
-                <Link href="/get-started"><Sparkles className="mr-2 h-5 w-5 text-gold" />Find Space</Link>
-              </Button>
-              <Button size="xl" className="bg-primary text-white hover:bg-primary/90 shadow-lg font-bold" asChild>
-                <Link href="/sell">List My Property</Link>
-              </Button>
+            <div className="flex flex-col items-center gap-4 shrink-0">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <Button size="xl" className="bg-primary text-white hover:bg-primary/90 shadow-lg font-bold" asChild>
+                  <Link href="/get-started?path=tenant" data-track-id="closing_need_space">I need space</Link>
+                </Button>
+                <Button size="xl" className="bg-primary text-white hover:bg-primary/90 shadow-lg font-bold" asChild>
+                  <Link href="/property-valuation" data-track-id="closing_own_property">I own property</Link>
+                </Button>
+              </div>
+              <p className="text-body text-primary">
+                Or{' '}
+                <a href={`sms:${BUSINESS.phoneE164.replace(/-/g, '')}`} className="font-semibold underline">text</a>
+                {' '}/{' '}
+                <a href={`tel:${BUSINESS.phoneE164.replace(/-/g, '')}`} className="font-semibold underline">call {BUSINESS.phoneDisplay}</a>
+              </p>
             </div>
           </div>
+        </Container>
+      </section>
+
+      {/* ── Where we work: compact link row (kept for local SEO) ─────── */}
+      <section data-track-section="markets" className="bg-white border-t border-border py-10">
+        <Container>
+          <p className="overline mb-4 text-center text-foreground-muted">Where We Work</p>
+          <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-body-sm">
+            {LOCAL_MARKETS.map(m => (
+              <li key={m.href}><Link href={m.href} className="text-foreground-muted hover:text-gold-dark hover:underline">{m.name}</Link></li>
+            ))}
+          </ul>
         </Container>
       </section>
 
