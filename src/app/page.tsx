@@ -306,9 +306,9 @@ export default async function HomePage() {
           </div>
           <p className="mx-auto mt-8 max-w-2xl text-body text-white/90 animate-fade-in delay-300 fill-both">
             Prefer to talk?{' '}
-            <a href={`sms:${BUSINESS.phoneE164.replace(/-/g, '')}`} data-track-id="hero_text" className="font-semibold text-gold underline-offset-4 hover:underline">Text</a>
+            <a href={`sms:${BUSINESS.phoneE164.replace(/-/g, '')}`} data-track-id="hero_text" className="inline-block py-2 font-semibold text-gold underline-offset-4 hover:underline">Text</a>
             {' '}or{' '}
-            <a href={`tel:${BUSINESS.phoneE164.replace(/-/g, '')}`} data-track-id="hero_call" className="font-semibold text-gold underline-offset-4 hover:underline">call {BUSINESS.phoneDisplay}</a>
+            <a href={`tel:${BUSINESS.phoneE164.replace(/-/g, '')}`} data-track-id="hero_call" className="inline-block py-2 font-semibold text-gold underline-offset-4 hover:underline">call {BUSINESS.phoneDisplay}</a>
           </p>
           {SHOW_GOOGLE_RATING && (
             <p className="mx-auto mt-2 max-w-2xl text-body-sm text-white/70 animate-fade-in delay-300 fill-both">

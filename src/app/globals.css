@@ -583,3 +583,8 @@
 .creco-popup .leaflet-popup-content-wrapper { border-radius: 12px; box-shadow: 0 8px 24px rgba(15,27,51,.18); }
 .creco-popup .leaflet-popup-content { margin: 12px 14px; line-height: 1.4; }
 .creco-pin { background: transparent; border: 0; }
+
+/* Phone-friendly map zoom buttons (Leaflet default is 30px). */
+@media (pointer: coarse) {
+  .leaflet-touch .leaflet-bar a { width: 40px; height: 40px; line-height: 40px; }
+}
