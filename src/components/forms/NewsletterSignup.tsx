@@ -46,6 +46,7 @@ export function NewsletterSignup() {
           <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gold/60" aria-hidden="true" />
           <input
             type="email"
+            autoComplete="email"
             required
             // Placeholder-only: a screen reader announced this as just
             // "edit text". The visible design has no room for a label, so

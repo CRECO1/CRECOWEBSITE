@@ -231,6 +231,7 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
           <label htmlFor="dev-2" className="block text-body-sm font-semibold text-primary mb-1.5">Email *</label>
           <input id="dev-2"
             type="email"
+            autoComplete="email"
             required
             value={email}
             onChange={e => setEmail(e.target.value)}
@@ -247,6 +248,7 @@ export function DevelopmentInterestForm({ initialInterest = 'retail' }: Developm
           <label htmlFor="dev-3" className="block text-body-sm font-semibold text-primary mb-1.5">Phone</label>
           <input id="dev-3"
             type="tel"
+            autoComplete="tel"
             value={phone}
             onChange={e => setPhone(e.target.value)}
             className="w-full rounded-lg border border-border bg-white px-3 py-2.5 text-body-sm text-primary focus:outline-none focus:border-gold-dark"

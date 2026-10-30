@@ -71,10 +71,10 @@ export function ListYourSpaceForm({ surface = 'list-your-space' }: { surface?: s
     <form onSubmit={submit} className="space-y-4" data-lead-form="list_your_space">
       <Honeypot />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <input required name="name" aria-label="Your name" value={f.name} onChange={set('name')} placeholder="Your name" className={field} />
-        <input required type="email" name="email" aria-label="Email address" value={f.email} onChange={set('email')} placeholder="you@company.com" className={field} />
-        <input type="tel" name="phone" aria-label="Phone (optional)" value={f.phone} onChange={set('phone')} placeholder="Phone (optional)" className={field} />
-        <input name="company" aria-label="Company (optional)" value={f.company} onChange={set('company')} placeholder="Company (optional)" className={field} />
+        <input required name="name" autoComplete="name" aria-label="Your name" value={f.name} onChange={set('name')} placeholder="Your name" className={field} />
+        <input required type="email" name="email" autoComplete="email" aria-label="Email address" value={f.email} onChange={set('email')} placeholder="you@company.com" className={field} />
+        <input type="tel" name="phone" autoComplete="tel" aria-label="Phone (optional)" value={f.phone} onChange={set('phone')} placeholder="Phone (optional)" className={field} />
+        <input name="company" autoComplete="organization" aria-label="Company (optional)" value={f.company} onChange={set('company')} placeholder="Company (optional)" className={field} />
       </div>
 
       <input required name="address" aria-label="Property address" value={f.address} onChange={set('address')} placeholder="Property address" className={field} />

@@ -205,17 +205,17 @@ export default function ContactPage() {
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                           <div>
                             <label className="label-readable" htmlFor="contact-name">Full Name *</label>
-                            <input id="contact-name" name="name" required placeholder="Jane Smith" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
+                            <input id="contact-name" name="name" autoComplete="name" required placeholder="Jane Smith" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
                           </div>
                           <div>
                             <label className="label-readable" htmlFor="contact-company">Company</label>
-                            <input id="contact-company" name="company" placeholder="Acme Logistics LLC" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
+                            <input id="contact-company" name="company" autoComplete="organization" placeholder="Acme Logistics LLC" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
                           </div>
                         </div>
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                           <div>
                             <label className="label-readable" htmlFor="contact-email">Email *</label>
-                            <input id="contact-email" name="email" type="email" required placeholder="you@company.com" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
+                            <input id="contact-email" name="email" type="email" autoComplete="email" required placeholder="you@company.com" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
                           </div>
                           <div>
                             <label className="label-readable" htmlFor="contact-phone">Phone <span className="font-normal text-foreground-muted">(optional — for a faster callback)</span></label>

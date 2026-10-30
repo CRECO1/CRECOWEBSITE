@@ -70,10 +70,10 @@ export function DevelopmentOpportunityForm({ surface = 'development-opportunitie
     <form onSubmit={submit} className="space-y-4">
       <Honeypot />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <input required name="name" aria-label="Your name" value={f.name} onChange={set('name')} placeholder="Your name" className={field} />
-        <input required type="email" name="email" aria-label="Email address" value={f.email} onChange={set('email')} placeholder="you@company.com" className={field} />
-        <input type="tel" name="phone" aria-label="Phone (optional)" value={f.phone} onChange={set('phone')} placeholder="Phone (optional)" className={field} />
-        <input name="company" aria-label="Company (optional)" value={f.company} onChange={set('company')} placeholder="Company (optional)" className={field} />
+        <input required name="name" autoComplete="name" aria-label="Your name" value={f.name} onChange={set('name')} placeholder="Your name" className={field} />
+        <input required type="email" name="email" autoComplete="email" aria-label="Email address" value={f.email} onChange={set('email')} placeholder="you@company.com" className={field} />
+        <input type="tel" name="phone" autoComplete="tel" aria-label="Phone (optional)" value={f.phone} onChange={set('phone')} placeholder="Phone (optional)" className={field} />
+        <input name="company" autoComplete="organization" aria-label="Company (optional)" value={f.company} onChange={set('company')} placeholder="Company (optional)" className={field} />
       </div>
 
       <select name="role" aria-label="Which describes you" value={f.role} onChange={set('role')} className={field}>

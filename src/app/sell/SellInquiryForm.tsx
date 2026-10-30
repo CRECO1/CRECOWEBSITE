@@ -74,12 +74,12 @@ export function SellInquiryForm() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <Honeypot />
             <div className="grid grid-cols-2 gap-4">
-              <input name="name" aria-label="Your name" required placeholder="Your Name" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
-              <input name="company" aria-label="Company or entity" placeholder="Company / Entity" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
+              <input name="name" autoComplete="name" aria-label="Your name" required placeholder="Your Name" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
+              <input name="company" autoComplete="organization" aria-label="Company or entity" placeholder="Company / Entity" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <input name="phone" aria-label="Phone number (optional)" type="tel" placeholder="Phone Number (optional)" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
-              <input name="email" aria-label="Email address" type="email" required placeholder="Email Address" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
+              <input name="phone" autoComplete="tel" aria-label="Phone number (optional)" type="tel" placeholder="Phone Number (optional)" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
+              <input name="email" autoComplete="email" aria-label="Email address" type="email" required placeholder="Email Address" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
             </div>
             <input name="address" aria-label="Property address" required placeholder="Property Address" className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark" />
             <div className="grid grid-cols-2 gap-4">

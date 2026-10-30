@@ -160,6 +160,7 @@ export function CareerApplicationForm() {
           <label htmlFor="career-2" className="block text-body-sm font-semibold text-primary mb-1.5">Email *</label>
           <input id="career-2"
             type="email"
+            autoComplete="email"
             required
             value={email}
             onChange={e => setEmail(e.target.value)}
@@ -171,6 +172,7 @@ export function CareerApplicationForm() {
           <label htmlFor="career-3" className="block text-body-sm font-semibold text-primary mb-1.5">Phone *</label>
           <input id="career-3"
             type="tel"
+            autoComplete="tel"
             required
             value={phone}
             onChange={e => setPhone(e.target.value)}

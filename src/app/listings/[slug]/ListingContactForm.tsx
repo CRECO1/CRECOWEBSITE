@@ -101,6 +101,7 @@ export function ListingContactForm({
       <Honeypot />
       <input
         name="name"
+        autoComplete="name"
         aria-label="Your name"
         required
         placeholder="Your Name"
@@ -108,12 +109,14 @@ export function ListingContactForm({
       />
       <input
         name="company"
+        autoComplete="organization"
         aria-label="Company (optional)"
         placeholder="Company (optional)"
         className="w-full rounded-lg border border-border px-4 py-3 text-body-sm text-primary focus:outline-none focus:ring-2 focus:ring-gold-dark"
       />
       <input
         name="email"
+        autoComplete="email"
         aria-label="Email address"
         type="email"
         required
@@ -122,6 +125,7 @@ export function ListingContactForm({
       />
       <input
         name="phone"
+        autoComplete="tel"
         aria-label="Phone (optional)"
         type="tel"
         placeholder="Phone (optional)"

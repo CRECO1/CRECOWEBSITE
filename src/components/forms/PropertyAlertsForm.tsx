@@ -185,6 +185,7 @@ export function PropertyAlertsForm() {
           <label htmlFor="pa-2" className="block text-body-sm font-semibold text-primary mb-1.5">Email</label>
           <input id="pa-2"
             type="email"
+            autoComplete="email"
             required
             value={email}
             onChange={e => setEmail(e.target.value)}

@@ -183,6 +183,7 @@ export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress, b
           <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-1">Phone *</span>
           <input
             type="tel"
+            autoComplete="tel"
             required
             value={phone}
             onChange={e => setPhone(e.target.value)}
@@ -196,6 +197,7 @@ export function TourSchedulerForm({ listingSlug, listingTitle, listingAddress, b
         <span className="block text-caption uppercase tracking-widest text-foreground-muted mb-1">Email *</span>
         <input
           type="email"
+          autoComplete="email"
           required
           value={email}
           onChange={e => setEmail(e.target.value)}
