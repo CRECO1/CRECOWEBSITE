@@ -110,8 +110,8 @@ const FAQS = [
 ];
 
 const DEFAULT_SETTINGS = {
-  hero_headline: 'Commercial real estate for San Antonio & the Texas Hill Country',
-  hero_subheadline: 'Leasing, sales and owner representation from a team that owns and operates commercial property here — Fair Oaks Plaza, our Lytle center and the Elkhorn Point development.',
+  hero_headline: 'Commercial real estate, handled personally.',
+  hero_subheadline: 'Leasing, sales and owner representation from a team that owns and operates commercial property in Texas.',
   hero_image_url: '/images/sa-hero.jpg' as string | null,
   about_headline: 'A trailblazing approach to Texas commercial real estate.',
   about_text: 'CRECO is built on innovation, expertise, and a relentless commitment to client outcomes. We blend deep Texas market knowledge with the analytical rigor you would expect from a national firm — and we keep our roster small enough that every client works directly with a principal. From single-asset tenants to multi-property portfolio owners, we treat your assignment like our name is on the building.',
@@ -277,7 +277,7 @@ export default async function HomePage() {
         <div className="hero-overlay-luxury absolute inset-0" />
 
         <Container className="relative z-10 text-center text-white">
-          <p className="overline mb-6 animate-fade-in-down text-gold">San Antonio · Boerne · Texas Hill Country</p>
+          <p className="overline mb-6 animate-fade-in-down text-gold">CRECO · Commercial Real Estate Company</p>
           <h1 className="mb-6 animate-fade-in-up font-heading text-display-xl font-bold text-white text-shadow-hero fill-both">
             {heroHeadline.includes('\n')
               ? heroHeadline.split('\n').map((line: string, i: number) => (
