@@ -29,6 +29,7 @@
  */
 
 import type { NextRequest } from 'next/server';
+import { resolveClientIp } from '@/lib/client-ip';
 
 interface Bucket {
   count: number;
@@ -58,21 +59,7 @@ function getNamespaceBuckets(namespace: string): Map<string, Bucket> {
  * unattributed traffic through unlimited.
  */
 export function clientIp(req: NextRequest): string {
-  // Prefer x-real-ip: on Vercel this is set by the platform to the true
-  // client IP and cannot be spoofed by a client-supplied header. Keying the
-  // rate limiter on it (rather than the LEFTMOST x-forwarded-for entry, which
-  // an attacker controls — send `X-Forwarded-For: 1.2.3.<rand>` and land in a
-  // fresh bucket every request) is what makes the throttle actually bind.
-  const realIp = req.headers.get('x-real-ip');
-  if (realIp && realIp.trim()) return realIp.trim();
-  // Fallback: use the LAST x-forwarded-for hop — the one appended by the
-  // trusted edge proxy — not the client-supplied leftmost entry.
-  const xff = req.headers.get('x-forwarded-for');
-  if (xff) {
-    const parts = xff.split(',').map(s => s.trim()).filter(Boolean);
-    if (parts.length) return parts[parts.length - 1];
-  }
-  return 'unknown';
+  return resolveClientIp(req.headers);
 }
 
 export interface RateLimitOptions {
