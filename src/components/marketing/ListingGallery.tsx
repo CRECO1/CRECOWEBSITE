@@ -109,7 +109,7 @@ export function ListingGallery({ images, altPrefix }: Props) {
             <button
               type="button"
               onClick={() => setLightboxIdx(0)}
-              className="md:col-span-2 aspect-[4/3] relative rounded-xl overflow-hidden bg-background-cream group"
+              className={`${total > 1 ? 'md:col-span-2' : 'md:col-span-2 lg:col-span-3'} ${total > 1 ? 'aspect-[4/3]' : 'aspect-[16/9]'} relative rounded-xl overflow-hidden bg-background-cream group`}
               aria-label={`Open photo 1 of ${total}`}
             >
               <Image
@@ -130,7 +130,7 @@ export function ListingGallery({ images, altPrefix }: Props) {
                 full-width they pushed the title, price and specs ~1,000px
                 down on a phone. The hero + "View all" button below still
                 open every photo there. */}
-            <div className="hidden md:grid grid-rows-2 gap-3">
+            {total > 1 && (<div className="hidden md:grid grid-rows-2 gap-3">
               {[1, 2].map(i => {
                 const hasImg = !!images[i];
                 const showPlusOverlay = i === 2 && remaining > 0;
@@ -169,7 +169,7 @@ export function ListingGallery({ images, altPrefix }: Props) {
                   </button>
                 );
               })}
-            </div>
+            </div>)}
           </div>
 
           {/* On phones the thumbnails are hidden, so the button shows whenever

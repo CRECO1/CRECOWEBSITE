@@ -223,87 +223,79 @@ export default async function ListingDetailPage({ params }: Props) {
             only photos and Clarity showed 53% of visitors leaving before the
             10–15% scroll mark — most never saw the price or any way to respond.
             Campaign clicks land here, so the ask has to be on the first screen. */}
-        <Container className="pt-6 pb-2">
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:items-start">
-            <div className="lg:col-span-2">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <p className="text-caption text-foreground-muted mb-1">
-                    <MapPin className="mr-1 inline h-3 w-3" />
-                    <a
-                      href={googleMapsUrl(`${listing!.address}, ${listing!.city}, ${listing!.state} ${listing!.zip}`)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Open property location in Google Maps"
-                      className="hover:text-gold transition-colors"
-                    >
-                      {listing!.address}, {listing!.city}, {listing!.state} {listing!.zip}
-                    </a>
-                    {listing!.submarket ? ` · ${listing!.submarket}` : ''}
-                  </p>
-                  <h1 className="font-heading text-display-sm font-bold text-primary">
-                    {listing!.title}
-                  </h1>
-                  {listing!.headline && (
-                    <p className="mt-2 text-body text-foreground-muted">{listing!.headline}</p>
-                  )}
-                </div>
-                <div>
-                  <p className="font-heading text-display-sm font-bold text-primary">
-                    {priceDisplay}
-                  </p>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {closed ? (
-                      <span className="rounded-full bg-slate-700 px-3 py-0.5 text-caption font-semibold text-white uppercase">
-                        {closed}
-                      </span>
-                    ) : (
-                      <span className="rounded-full bg-gold/20 px-3 py-0.5 text-caption font-semibold text-gold-dark uppercase">
-                        {transactionLabel(listing!.transaction_type)}
-                      </span>
-                    )}
-                    <span className="rounded-full bg-primary/10 px-3 py-0.5 text-caption font-semibold text-primary uppercase">
-                      {propertyTypeLabel(listing!.property_type)}
+        <section className="relative overflow-hidden bg-primary text-white">
+          {images[0] && (
+            <>
+              <Image src={images[0]} alt="" fill priority sizes="100vw" className="object-cover" aria-hidden="true" />
+              <div className="absolute inset-0 bg-primary/75" aria-hidden="true" />
+            </>
+          )}
+          <Container className="relative z-10 py-10 sm:py-16">
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:items-center">
+              <div className="lg:col-span-2">
+                <p className="text-caption text-white/80 mb-2">
+                  <MapPin className="mr-1 inline h-3 w-3" />
+                  <a
+                    href={googleMapsUrl(`${listing!.address}, ${listing!.city}, ${listing!.state} ${listing!.zip}`)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Open property location in Google Maps"
+                    className="hover:text-gold transition-colors"
+                  >
+                    {listing!.address}, {listing!.city}, {listing!.state} {listing!.zip}
+                  </a>
+                  {listing!.submarket ? ` · ${listing!.submarket}` : ''}
+                </p>
+                <h1 className="font-heading text-display font-bold text-white">
+                  {listing!.title}
+                </h1>
+                {listing!.headline && (
+                  <p className="mt-3 max-w-2xl text-body text-white/85">{listing!.headline}</p>
+                )}
+                <p className="mt-5 font-heading text-display-sm font-bold text-gold">
+                  {priceDisplay}
+                </p>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  {closed ? (
+                    <span className="rounded-full bg-slate-700 px-3 py-0.5 text-caption font-semibold text-white uppercase">
+                      {closed}
                     </span>
-                  </div>
-                  <div className="mt-3 flex">
-                    <CompareToggle listingId={listing!.id} variant="full" />
-                  </div>
+                  ) : (
+                    <span className="rounded-full bg-gold px-3 py-0.5 text-caption font-semibold text-primary uppercase">
+                      {transactionLabel(listing!.transaction_type)}
+                    </span>
+                  )}
+                  <span className="rounded-full bg-white/15 px-3 py-0.5 text-caption font-semibold text-white uppercase">
+                    {propertyTypeLabel(listing!.property_type)}
+                  </span>
+                  <CompareToggle listingId={listing!.id} variant="full" />
                 </div>
+                {images.length > 1 && (
+                  <a href="#gallery" className="mt-5 inline-block text-body-sm font-semibold text-white underline underline-offset-4 hover:text-gold">
+                    See all {images.length} photos ↓
+                  </a>
+                )}
               </div>
-              {/* Phones: a compact photo on the first screen. The full gallery sits below the
-                  fold, and a property page with no picture up top reads as a spec sheet.
-                  Kept short (16:9, 180px max) so the price and the brochure ask stay in view. */}
-              {images[0] && (
-                <a href="#gallery" aria-label={`See all ${images.length} photos of ${listing!.title}`}
-                  className="relative mt-4 block h-[180px] w-full overflow-hidden rounded-xl bg-background-cream lg:hidden">
-                  <Image src={images[0]} alt={`${listing!.title} – ${propertyTypeLabel(listing!.property_type)} property in ${listing!.city}, TX`}
-                    fill priority sizes="100vw" className="object-cover" />
-                  {images.length > 1 && (
-                    <span className="absolute bottom-2 right-2 rounded-full bg-black/65 px-3 py-1 text-caption font-semibold text-white">
-                      {images.length} photos
-                    </span>
-                  )}
-                </a>
+              {!closed && (
+                <div className="lg:col-span-1">
+                  <div className="rounded-2xl bg-white p-3 shadow-xl">
+                    <BrochureRequestForm
+                      listingSlug={listing!.slug}
+                      listingTitle={listing!.title}
+                      brochureUrl={listing!.brochure_url}
+                    />
+                  </div>
+                  <a
+                    href="#inquiry-tour"
+                    className="mt-3 hidden items-center gap-1 text-body-sm font-semibold text-gold hover:text-white lg:inline-flex"
+                  >
+                    Or schedule a tour →
+                  </a>
+                </div>
               )}
             </div>
-            {!closed && (
-              <div className="lg:col-span-1">
-                <BrochureRequestForm
-                  listingSlug={listing!.slug}
-                  listingTitle={listing!.title}
-                  brochureUrl={listing!.brochure_url}
-                />
-                <a
-                  href="#inquiry-tour"
-                  className="mt-2 hidden items-center gap-1 text-body-sm font-semibold text-gold-dark hover:text-primary lg:inline-flex"
-                >
-                  Or schedule a tour →
-                </a>
-              </div>
-            )}
-          </div>
-        </Container>
+          </Container>
+        </section>
 
         {/* Image Gallery — click to open lightbox */}
         <div id="gallery" className="scroll-mt-24">

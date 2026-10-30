@@ -251,8 +251,9 @@ export function ListingsClient({ initialListings, children }: { initialListings:
       <Header />
       <main className="min-h-screen pt-20">
         {/* Page Header */}
-        <div className="bg-primary py-14 text-white">
-          <Container>
+        <div className="relative overflow-hidden bg-primary py-14 text-white">
+          <div className="absolute inset-0 opacity-15" style={{ backgroundImage: "url('/images/sa-hero.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }} aria-hidden="true" />
+          <Container className="relative z-10">
             <p className="overline mb-2 text-gold">Available Now</p>
             <h1 className="font-heading text-display-sm font-bold">Texas Commercial Properties</h1>
             <p className="mt-2 text-body text-white/60">
