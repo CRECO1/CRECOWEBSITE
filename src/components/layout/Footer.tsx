@@ -298,10 +298,10 @@ export function Footer() {
               </Link>
               {/* Credit link to the studio that built the site (same owner); a real local backlink for High Ground. */}
               <a
-                href="https://highgroundautomation.com"
+                href="https://highgroundautomation.com/?utm_source=crecotx&utm_medium=referral&utm_campaign=footer-credit"
                 className="inline-flex min-h-[44px] items-center text-caption text-white/50 transition-colors hover:text-gold md:min-h-0"
               >
-                Website by High Ground Automation
+                Built by High Ground Automation
               </a>
             </div>
           </div>
