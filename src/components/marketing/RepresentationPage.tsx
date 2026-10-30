@@ -52,8 +52,10 @@ export function RepresentationPage({ content }: { content: RepresentationPageCon
         </div>
 
         {/* Hero: one confident line. The full answer sits in the band below. */}
-        <section className="bg-primary py-16 sm:py-20 text-white">
-          <Container>
+        <section className="bg-primary py-16 sm:py-20 text-white relative overflow-hidden">
+          <div className="absolute inset-0 opacity-15"
+            style={{ backgroundImage: "url('/images/sa-hero.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }} aria-hidden="true" />
+          <Container className="relative z-10">
             <div className="max-w-4xl">
               <p className="overline mb-3 text-gold">{content.eyebrow}</p>
               <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-5 leading-tight">{content.h1}</h1>

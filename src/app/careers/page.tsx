@@ -90,8 +90,10 @@ export default function CareersPage() {
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}
-        <section className="bg-primary py-16 sm:py-24 text-white">
-          <Container>
+        <section className="bg-primary py-16 sm:py-24 text-white relative overflow-hidden">
+          <div className="absolute inset-0 opacity-15"
+            style={{ backgroundImage: "url('/images/sa-hero.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }} aria-hidden="true" />
+          <Container className="relative z-10">
             <div className="max-w-3xl">
               <p className="overline mb-3 text-gold flex items-center gap-2">
                 <Briefcase className="h-3.5 w-3.5" /> Careers · Texas Commercial Real Estate

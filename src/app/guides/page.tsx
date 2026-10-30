@@ -73,8 +73,10 @@ export default function GuidesIndex() {
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}
-        <section className="bg-primary py-16 sm:py-20 text-white">
-          <Container>
+        <section className="bg-primary py-16 sm:py-20 text-white relative overflow-hidden">
+          <div className="absolute inset-0 opacity-15"
+            style={{ backgroundImage: "url('/images/sa-hero.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }} aria-hidden="true" />
+          <Container className="relative z-10">
             <p className="overline mb-3 text-gold">Commercial Real Estate · Free Guides</p>
             <h1 className="font-heading text-display-md sm:text-display-lg font-bold mb-4">
               In-depth analysis for the decisions that matter.

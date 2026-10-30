@@ -72,8 +72,10 @@ export default function ComparePage() {
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}
-        <section className="bg-primary py-12 sm:py-14 text-white">
-          <Container>
+        <section className="bg-primary py-12 sm:py-14 text-white relative overflow-hidden">
+          <div className="absolute inset-0 opacity-15"
+            style={{ backgroundImage: "url('/images/sa-hero.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }} aria-hidden="true" />
+          <Container className="relative z-10">
             <p className="overline mb-2 text-gold flex items-center gap-2">
               <Scale className="h-3.5 w-3.5" /> Compare Listings
             </p>

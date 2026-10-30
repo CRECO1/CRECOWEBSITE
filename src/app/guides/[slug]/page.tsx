@@ -128,8 +128,10 @@ export default async function GuidePage({ params }: PageProps) {
         </div>
 
         {/* Hero */}
-        <section className="bg-primary py-12 sm:py-16 text-white">
-          <Container>
+        <section className="bg-primary py-12 sm:py-16 text-white relative overflow-hidden">
+          <div className="absolute inset-0 opacity-15"
+            style={{ backgroundImage: "url('/images/sa-hero.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }} aria-hidden="true" />
+          <Container className="relative z-10">
             <Link href="/guides" className="inline-flex items-center gap-2 text-caption text-gold hover:text-gold-light mb-4">
               ← All guides
             </Link>

@@ -154,8 +154,10 @@ export default async function ServiceDetailPage({ params }: Props) {
         </div>
 
         {/* Hero */}
-        <section className="bg-primary py-16 text-white">
-          <Container>
+        <section className="bg-primary py-16 text-white relative overflow-hidden">
+          <div className="absolute inset-0 opacity-15"
+            style={{ backgroundImage: "url('/images/sa-hero.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }} aria-hidden="true" />
+          <Container className="relative z-10">
             <div className="max-w-3xl">
               <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-lg bg-gold text-primary">
                 <Icon className="h-7 w-7" />

@@ -33,8 +33,10 @@ export default function NotFound() {
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}
-        <section className="bg-primary py-16 sm:py-24 text-white">
-          <Container>
+        <section className="bg-primary py-16 sm:py-24 text-white relative overflow-hidden">
+          <div className="absolute inset-0 opacity-15"
+            style={{ backgroundImage: "url('/images/sa-hero.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }} aria-hidden="true" />
+          <Container className="relative z-10">
             <div className="mx-auto max-w-2xl text-center">
               <p className="font-heading text-display-xl font-bold text-gradient-gold mb-4">
                 404

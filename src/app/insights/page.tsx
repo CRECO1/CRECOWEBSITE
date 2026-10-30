@@ -77,8 +77,10 @@ export default function InsightsIndex() {
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}
-        <section className="bg-primary py-16 text-white">
-          <Container>
+        <section className="bg-primary py-16 text-white relative overflow-hidden">
+          <div className="absolute inset-0 opacity-15"
+            style={{ backgroundImage: "url('/images/sa-hero.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }} aria-hidden="true" />
+          <Container className="relative z-10">
             <p className="overline mb-2 text-gold">Texas Commercial Real Estate · Insights</p>
             <h1 className="font-heading text-display-sm font-bold">CRECO Insights</h1>
             <p className="mt-3 max-w-2xl text-body text-white/60">

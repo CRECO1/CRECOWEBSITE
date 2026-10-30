@@ -122,8 +122,10 @@ export default function ListYourSpacePage() {
       <main className="min-h-screen pt-20">
 
         {/* Hero + form side by side — the ask is visible without scrolling */}
-        <section className="bg-primary py-16 sm:py-20 text-white">
-          <Container>
+        <section className="bg-primary py-16 sm:py-20 text-white relative overflow-hidden">
+          <div className="absolute inset-0 opacity-15"
+            style={{ backgroundImage: "url('/images/sa-hero.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }} aria-hidden="true" />
+          <Container className="relative z-10">
             <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:items-start">
               <div>
                 <p className="overline mb-3 text-gold">For Texas Property Owners</p>
