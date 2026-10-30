@@ -124,6 +124,39 @@ async function handle(request: NextRequest): Promise<NextResponse> {
         // confirm the URL exists to a casual prober.
         return new NextResponse('Not found', { status: 404 });
       }
+
+      // Two-step sign-in. An account that has an authenticator app enrolled
+      // must have passed the 6-digit code (aal2) to reach /admin or /billing;
+      // a password-only session is sent to the code step. REQUIRE_ADMIN_MFA=1
+      // additionally forces accounts with no authenticator to enroll first.
+      // Left off by default so turning this on can never lock the team out
+      // before everyone has enrolled.
+      const requireMfa = process.env.REQUIRE_ADMIN_MFA === '1';
+      try {
+        const { data: aal, error: aalErr } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+        if (aalErr) throw aalErr;
+        if (aal?.nextLevel === 'aal2' && aal.currentLevel !== 'aal2') {
+          const mfaUrl = new URL('/manage/login', request.url);
+          mfaUrl.searchParams.set('mfa', '1');
+          mfaUrl.searchParams.set('redirect', pathname);
+          return NextResponse.redirect(mfaUrl);
+        }
+        if (requireMfa && aal?.nextLevel !== 'aal2') {
+          const enrollUrl = new URL('/manage/security', request.url);
+          enrollUrl.searchParams.set('required', '1');
+          return NextResponse.redirect(enrollUrl);
+        }
+      } catch (mfaError) {
+        console.error('Middleware MFA check error:', mfaError);
+        // Strict mode fails closed. Otherwise a hiccup in the MFA lookup must
+        // not take the admin offline; the password session and the admin
+        // allowlist above have already been enforced.
+        if (requireMfa) {
+          const loginUrl = new URL('/manage/login', request.url);
+          loginUrl.searchParams.set('redirect', pathname);
+          return NextResponse.redirect(loginUrl);
+        }
+      }
     }
 
     return supabaseResponse;

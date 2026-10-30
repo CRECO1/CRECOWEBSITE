@@ -33,7 +33,7 @@
     "react-easy-crop": "^5.5.7",
     "react-leaflet": "^5.0.0",
     "react-plaid-link": "^4.1.1",
-    "resend": "^4.0.0",
+    "resend": "^6.35.0",
     "stripe": "^22.1.1",
     "tailwind-merge": "^2.5.4"
   },
@@ -45,7 +45,7 @@
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.1",
     "eslint-config-next": "15.4.11",
-    "postcss": "^8.4.47",
+    "postcss": "^8.5.32",
     "sharp": "0.35.5",
     "tailwindcss": "^3.4.14",
     "tsx": "^4.19.1",
@@ -54,5 +54,8 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "overrides": {
+    "postcss": "$postcss"
   }
 }

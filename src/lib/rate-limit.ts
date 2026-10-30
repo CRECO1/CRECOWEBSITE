@@ -125,6 +125,38 @@ export function checkRateLimit(key: string, opts: RateLimitOptions): RateLimitRe
 }
 
 /**
+ * Shared limiter backed by the Supabase database (public.rl_hit, see
+ * supabase/migrations/0056_rate_limit_hits.sql). Used when no Redis is
+ * configured. If the function is not installed yet, the key is missing, or the
+ * call is slow or fails, it falls back to the in-memory limiter so a form can
+ * never be taken down by the limiter itself.
+ */
+async function checkRateLimitDb(key: string, opts: RateLimitOptions): Promise<RateLimitResult> {
+  const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const svc = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!base || !svc) return checkRateLimit(key, opts);
+  try {
+    const res = await fetch(`${base.replace(/\/$/, '')}/rest/v1/rpc/rl_hit`, {
+      method: 'POST',
+      headers: { apikey: svc, Authorization: `Bearer ${svc}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_key: `${opts.namespace}:${key}`, p_window_ms: opts.windowMs }),
+      signal: AbortSignal.timeout(1500),
+      cache: 'no-store',
+    });
+    if (!res.ok) return checkRateLimit(key, opts);
+    const rows = (await res.json()) as Array<{ hits?: number; ttl_ms?: number }>;
+    const hits = Number(rows?.[0]?.hits ?? 0);
+    if (!hits) return checkRateLimit(key, opts);
+    const ttl = Number(rows?.[0]?.ttl_ms ?? opts.windowMs);
+    const resetAt = Date.now() + (ttl > 0 ? ttl : opts.windowMs);
+    if (hits > opts.max) return { allowed: false, remaining: 0, resetAt };
+    return { allowed: true, remaining: Math.max(0, opts.max - hits), resetAt };
+  } catch {
+    return checkRateLimit(key, opts);
+  }
+}
+
+/**
  * Shared (cross-instance) limiter. When UPSTASH_REDIS_REST_URL and
  * UPSTASH_REDIS_REST_TOKEN are set (Vercel KV / Upstash integration), counts
  * live in Redis so the limit binds across serverless instances and cold
@@ -134,7 +166,7 @@ export function checkRateLimit(key: string, opts: RateLimitOptions): RateLimitRe
 export async function checkRateLimitShared(key: string, opts: RateLimitOptions): Promise<RateLimitResult> {
   const url = process.env.UPSTASH_REDIS_REST_URL ?? process.env.KV_REST_API_URL;
   const token = process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.KV_REST_API_TOKEN;
-  if (!url || !token) return checkRateLimit(key, opts);
+  if (!url || !token) return checkRateLimitDb(key, opts);
   try {
     const windowSec = Math.max(1, Math.ceil(opts.windowMs / 1000));
     const redisKey = `rl:${opts.namespace}:${key}`;
@@ -145,7 +177,7 @@ export async function checkRateLimitShared(key: string, opts: RateLimitOptions):
       signal: AbortSignal.timeout(1500),
       cache: 'no-store',
     });
-    if (!res.ok) return checkRateLimit(key, opts);
+    if (!res.ok) return checkRateLimitDb(key, opts);
     const out = (await res.json()) as Array<{ result?: number }>;
     const count = Number(out?.[0]?.result ?? 0);
     const pttl = Number(out?.[2]?.result ?? opts.windowMs);
