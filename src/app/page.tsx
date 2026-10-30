@@ -110,7 +110,7 @@ const FAQS = [
 ];
 
 const DEFAULT_SETTINGS = {
-  hero_headline: 'Commercial real estate, handled personally.',
+  hero_headline: 'Lease it. Buy it. Sell it.',
   hero_subheadline: 'Leasing, sales and owner representation from a team that owns and operates commercial property in Texas.',
   hero_image_url: '/images/sa-hero.jpg' as string | null,
   about_headline: 'A trailblazing approach to Texas commercial real estate.',
