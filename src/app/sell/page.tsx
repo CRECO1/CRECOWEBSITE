@@ -95,10 +95,10 @@ export default function SellPage() {
 
               <div className="grid grid-cols-2 gap-5">
                 {STATS.map(({ icon: Icon, value, label }) => (
-                  <div key={label} className="rounded-xl border border-white/10 bg-white/5 p-6 text-center backdrop-blur-sm">
+                  <div key={label} className="rounded-xl border border-white/10 bg-white/5 p-4 sm:p-6 text-center backdrop-blur-sm">
                     <Icon className="mx-auto mb-3 h-8 w-8 text-gold" />
-                    <div className="font-heading text-display-sm font-bold text-white">{value}</div>
-                    <div className="mt-1 text-caption uppercase tracking-wider text-white/50">{label}</div>
+                    <div className="font-heading text-body-lg sm:text-heading-sm font-bold text-white">{value}</div>
+                    <div className="mt-1 text-caption uppercase tracking-wider text-white/70">{label}</div>
                   </div>
                 ))}
               </div>

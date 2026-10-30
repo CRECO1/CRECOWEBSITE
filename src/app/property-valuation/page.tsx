@@ -123,7 +123,7 @@ export default function PropertyValuationPage() {
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}
-        <section className="bg-primary py-10 sm:py-20 text-white relative overflow-hidden">
+        <section className="bg-primary py-10 sm:py-12 text-white relative overflow-hidden">
           <div className="absolute inset-0 opacity-15"
             style={{ backgroundImage: "url('/images/sa-hero.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }} aria-hidden="true" />
           <Container className="relative z-10">

@@ -548,6 +548,16 @@ export default async function ListingDetailPage({ params }: Props) {
           </div>
         </Container>
 
+        {/* More Available Properties — cross-sell */}
+        <RelatedListings
+          currentSlug={listing!.slug}
+          currentPropertyType={listing!.property_type}
+          currentSubmarket={listing!.submarket}
+          limit={3}
+          title="More Available Properties"
+          subtitle={`Other Texas commercial real estate currently on the market — prioritized by similar property type${listing!.submarket ? ' and submarket' : ''}.`}
+        />
+
         <FaqSection
           faqs={listingFaqs}
           path={`/listings/${listing!.slug}`}
@@ -563,15 +573,6 @@ export default async function ListingDetailPage({ params }: Props) {
           label="Browse more"
         />
 
-        {/* More Available Properties — cross-sell */}
-        <RelatedListings
-          currentSlug={listing!.slug}
-          currentPropertyType={listing!.property_type}
-          currentSubmarket={listing!.submarket}
-          limit={3}
-          title="More Available Properties"
-          subtitle={`Other Texas commercial real estate currently on the market — prioritized by similar property type${listing!.submarket ? ' and submarket' : ''}.`}
-        />
       </main>
       {!closed && <MobileInquiryBar />}
       <Footer />
