@@ -121,6 +121,9 @@ export default async function InsightDetailPage({ params }: Props) {
               <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/85 to-primary/40" />
             </>
           )}
+          {!post.cover && (
+            <div className="absolute inset-0 opacity-15" style={{ backgroundImage: "url('/images/sa-hero.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }} aria-hidden="true" />
+          )}
           <Container className="relative">
             <div className="max-w-3xl">
               <p className="overline mb-3 text-gold">CRECO Insights · {post.category}</p>

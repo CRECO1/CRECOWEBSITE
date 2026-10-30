@@ -36,8 +36,9 @@ export default function TermsPage() {
       />
       <Header />
       <main className="min-h-screen pt-20 bg-white">
-        <div className="bg-primary py-12 text-white">
-          <Container>
+        <div className="relative overflow-hidden bg-primary py-12 text-white">
+          <div className="absolute inset-0 opacity-15" style={{ backgroundImage: "url('/images/sa-hero.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }} aria-hidden="true" />
+          <Container className="relative z-10">
             <p className="overline mb-2 text-gold">Legal</p>
             <h1 className="font-heading text-display-sm font-bold">Terms of Use</h1>
             <p className="mt-2 text-body-sm text-white/60">Last updated: {LAST_UPDATED}</p>

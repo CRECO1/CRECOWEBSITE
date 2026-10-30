@@ -37,8 +37,9 @@ export default async function SubmarketsPage() {
       <Header />
       <main className="min-h-screen pt-20">
         {/* Hero */}
-        <div className="bg-primary py-16 text-white">
-          <Container>
+        <div className="relative overflow-hidden bg-primary py-16 text-white">
+          <div className="absolute inset-0 opacity-15" style={{ backgroundImage: "url('/images/sa-hero.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }} aria-hidden="true" />
+          <Container className="relative z-10">
             <p className="overline mb-2 text-gold">Where We Work</p>
             <h1 className="font-heading text-display-sm font-bold">San Antonio Submarkets</h1>
             <p className="mt-3 max-w-xl text-body text-white/60">
