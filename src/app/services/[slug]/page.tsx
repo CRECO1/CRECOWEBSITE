@@ -1,4 +1,3 @@
-import { TalkToBroker } from '@/components/marketing/TalkToBroker';
 import type { Metadata } from 'next';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { breadcrumbList } from '@/lib/schema';
@@ -303,7 +302,6 @@ export default async function ServiceDetailPage({ params }: Props) {
           </Container>
         </section>
 
-        {service.slug === 'tenant-representation' && <TalkToBroker surface="tenant-representation" />}
 
         {/* Related Services */}
         {related.length > 0 && (

@@ -419,22 +419,6 @@ export default async function HomePage() {
         <LeadMagnetBand surface="homepage-featured" />
       </div>
 
-      {/* ── Owner Services CTA Strip — speaks to dream client ─────────── */}
-      <section data-track-section="owner" className="bg-primary text-white py-12">
-        <Container>
-          <div className="flex flex-col items-center justify-between gap-6 text-center lg:flex-row lg:text-left">
-            <div className="max-w-2xl">
-              <p className="overline mb-2 text-gold">For Property Owners</p>
-              <h2 className="font-heading text-display-sm font-bold">Own commercial property in San Antonio or the Hill Country?</h2>
-              <p className="mt-2 text-body text-white/70">Hold or sell, lease up or reposition: start with a valuation.</p>
-            </div>
-            <Button size="xl" className="shrink-0 bg-gold text-primary hover:bg-gold-light" asChild>
-              <Link href="/property-valuation?from=home-owner" data-track-id="owner_strip_valuation">Request a valuation <ArrowRight className="ml-2 h-5 w-5" /></Link>
-            </Button>
-          </div>
-        </Container>
-      </section>
-
       {/* ── Why Us ───────────────────────────────────────────────────── */}
       <section data-track-section="why_us" className="section-luxury bg-white">
         <Container>
