@@ -40,8 +40,8 @@ function valuationConfirmationHtml(name: string): string {
         </a>
       </div>
       <h2 style="margin:0 0 16px;color:#1A1A1A;font-size:20px">Got it, ${safeName}.</h2>
-      <p style="line-height:1.6">Thanks for using the CRECO valuation tool. <strong style="color:#1A1A1A">Zachary A. Stovall, CRECO&#39;s broker/owner, will get your full Broker Opinion of Value back to you the same business day</strong> &mdash; a personal read on your property, not an auto-reply.</p>
-      <p style="line-height:1.6;margin-top:16px"><strong>What the Broker Opinion of Value covers that the instant range can&#39;t:</strong></p>
+      <p style="line-height:1.6">Thanks for using the CRECO valuation tool. <strong style="color:#1A1A1A">Zachary A. Stovall, CRECO&#39;s broker/owner, will follow up personally about your Broker Opinion of Value</strong> &mdash; a personal read on your property, not an auto-reply.</p>
+      <p style="line-height:1.6;margin-top:16px"><strong>What the Broker Opinion of Value covers that the preliminary range can&#39;t:</strong></p>
       <ul style="line-height:1.7;color:#3B3B3B;padding-left:20px">
         <li>Comparable Texas commercial transactions from the last 12 months in your submarket</li>
         <li>Lease analysis — WALT, tenant credit, escalators, expense recovery structure</li>

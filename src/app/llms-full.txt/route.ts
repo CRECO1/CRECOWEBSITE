@@ -95,7 +95,7 @@ ${REPRESENTATION_STATEMENT}
 
 - Tenants: site selection and lease negotiation for retail, restaurant, office, medical office, industrial, and flex space. CRECO searches the entire market (LoopNet, CoStar, Crexi, off-market), not just its own listings. Tenant representation is typically paid by the landlord.
 - Landlords and owners: leasing and marketing of commercial property, lease negotiation, and property management. CRECO also owns and leases its own centers, so it underwrites deals the way owners do.
-- Investors, buyers, and sellers: investment sales and acquisitions, 1031 exchange replacement property, and a no-obligation broker opinion of value (typically within one to two business days).
+- Investors, buyers, and sellers: investment sales and acquisitions, 1031 exchange replacement property, and a no-obligation broker opinion of value.
 - Intermediary: when both parties authorize it in writing, CRECO can act as an intermediary between landlord and tenant or seller and buyer, as permitted by Texas law.
 - Clients work directly with the people doing the deal (no call center), and inquiries are answered personally by our team.
 

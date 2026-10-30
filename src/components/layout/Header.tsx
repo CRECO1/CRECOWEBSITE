@@ -14,7 +14,7 @@ const navLinks = [
   { href: '/listings', label: 'Properties' },
   { href: '/services', label: 'Services' },
   { href: '/owner-services', label: 'Owner Services' },
-  { href: '/property-valuation', label: 'Free Valuation' },
+  { href: '/property-valuation', label: 'Valuation' },
   { href: '/insights', label: 'Insights' },
   { href: '/about', label: 'About' },
   // Contact Us is a plain nav link like the rest (owner's call — not a button). The /contact page + form existed but nothing

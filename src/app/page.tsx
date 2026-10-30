@@ -97,7 +97,7 @@ const FAQS = [
   },
   {
     q: 'How do I list my commercial property with CRECO?',
-    a: 'Submit a property opinion request on our /sell page or call us at (210) 817-3443. We will tour the property, review your rent roll and operating history, benchmark recent comparable Texas transactions, and deliver a no-obligation Broker Opinion of Value (BOV) and recommended marketing strategy within one to two business days.',
+    a: 'Submit a property opinion request on our /sell page or call us at (210) 817-3443. We will tour the property, review your rent roll and operating history, benchmark recent comparable Texas transactions, and deliver a no-obligation Broker Opinion of Value (BOV) and recommended marketing strategy.',
   },
   {
     q: 'How do I contact CRECO?',

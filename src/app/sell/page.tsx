@@ -13,7 +13,7 @@ import { BUSINESS, breadcrumbList, businessRef } from '@/lib/schema';
 const SELL_FAQS = [
   {
     q: 'How do I sell or lease my commercial property in Texas with CRECO?',
-    a: `Request a broker opinion of value on this page or call ${BUSINESS.phoneDisplay}. CRECO tours the property, reviews the rent roll and operating history, benchmarks comparable Texas transactions, and delivers a no-obligation value range and marketing strategy — typically within one to two business days.`,
+    a: `Request a broker opinion of value on this page or call ${BUSINESS.phoneDisplay}. CRECO tours the property, reviews the rent roll and operating history, benchmarks comparable Texas transactions, and delivers a no-obligation value range and marketing strategy.`,
   },
   {
     q: 'How will CRECO market my property?',

@@ -84,8 +84,8 @@ const FAQS: { q: string; a: string }[] = [
     a: "These are CRECO estimates, not figures from a third-party data service. As a rough 2026 guide for stabilized Texas assets we work with: industrial and multi-tenant retail generally around 6.5–8.5%, single-tenant net-lease depending heavily on tenant credit and remaining term, and Class B office wider at roughly 8–10.5%. Value-add, distressed, or special-use properties trade outside these bands. The tool applies these ranges by property type and submarket tier — the right cap rate for your specific asset still depends on lease structure and condition.",
   },
   {
-    q: 'How accurate is an instant online valuation versus a broker appraisal?',
-    a: "An instant range is a directional starting point — it tells you whether your asset is roughly where you think it is. It can't see your actual lease terms, tenant credit, deferred maintenance, recent comparable sales, or current buyer demand, all of which routinely move the number 10–20% either way. A full broker valuation or formal appraisal accounts for those. Use the instant range to ground the conversation, not to set a list price.",
+    q: 'How accurate is an online valuation range versus a broker appraisal?',
+    a: "An online range is a directional starting point — it tells you whether your asset is roughly where you think it is. It can't see your actual lease terms, tenant credit, deferred maintenance, recent comparable sales, or current buyer demand, all of which routinely move the number 10–20% either way. A full broker valuation or formal appraisal accounts for those. Use the range to ground the conversation, not to set a list price.",
   },
   {
     q: 'What information do I need to value my commercial property?',
@@ -256,7 +256,7 @@ export default function PropertyValuationPage() {
                 Get a full broker valuation — no obligation.
               </h2>
               <p className="text-body-lg text-white/70 leading-relaxed mb-8">
-                The preliminary number is a starting point. A full broker valuation includes a property walkthrough, comp analysis, lease review, condition adjustments, and market-timing recommendations. Free for property owners considering disposition or 1031 exchange.
+                The preliminary number is a starting point. A full broker valuation includes a property walkthrough, comp analysis, lease review, condition adjustments, and market-timing recommendations.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
                 <Link

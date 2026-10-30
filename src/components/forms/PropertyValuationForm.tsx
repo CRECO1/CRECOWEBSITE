@@ -219,7 +219,7 @@ export function PropertyValuationForm() {
           </div>
           {usage === 'leased' && (
             <label className="block">
-              <span className={labelCls}>Annual rent you collect (optional — gets you an instant range)</span>
+              <span className={labelCls}>Annual rent you collect (optional — sharpens your range)</span>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground-muted">$</span>
                 <input type="number" inputMode="numeric" min="0" value={annualRent} onChange={e => setAnnualRent(e.target.value)} placeholder="e.g. 180,000" className={`${input} pl-7`} />
@@ -239,8 +239,8 @@ export function PropertyValuationForm() {
           <div>
             <h3 className="font-heading text-heading-sm font-bold text-primary">Where should Zack send your valuation?</h3>
             <p className="mt-1 text-body-sm text-foreground-muted">
-              Zachary A. Stovall, CRECO&apos;s broker/owner, prepares a Broker Opinion of Value for <span className="font-semibold text-primary">{address.trim()}</span> from real comparable sales — usually the same business day.
-              {usage === 'leased' && annualRent ? ' You’ll also see an instant range on the next screen.' : ''}
+              Zachary A. Stovall, CRECO&apos;s broker/owner, prepares a Broker Opinion of Value for <span className="font-semibold text-primary">{address.trim()}</span> from real comparable sales.
+              {usage === 'leased' && annualRent ? ' You’ll also see a preliminary range on the next screen.' : ''}
             </p>
           </div>
           <label className="block">
@@ -276,7 +276,7 @@ export function PropertyValuationForm() {
               <div>
                 <p className="font-heading text-heading-sm font-bold text-green-900">Zack has your request.</p>
                 <p className="mt-1 text-body-sm text-green-800">
-                  He&apos;ll prepare your Broker Opinion of Value for {address.trim()} and reach out {leadPhone.trim() ? 'by phone' : 'by email'} — usually the same business day. A confirmation is on its way to your inbox.
+                  He&apos;ll prepare your Broker Opinion of Value for {address.trim()} and reach out {leadPhone.trim() ? 'by phone' : 'by email'} A confirmation is on its way to your inbox.
                 </p>
               </div>
             </div>
@@ -284,7 +284,7 @@ export function PropertyValuationForm() {
 
           {result ? (
             <div className="form-success-box space-y-4 bg-gradient-to-br from-gold/5 to-transparent">
-              <div className="flex items-center gap-2"><TrendingUp className="h-5 w-5 text-gold" /><p className="overline text-gold">Your instant preliminary range</p></div>
+              <div className="flex items-center gap-2"><TrendingUp className="h-5 w-5 text-gold" /><p className="overline text-gold">Your preliminary range</p></div>
               <div className="grid grid-cols-3 gap-3 text-center">
                 <div><p className="text-caption uppercase tracking-widest text-foreground-muted">Low</p><p className="mt-1 font-heading text-heading-md font-bold text-primary sm:text-display-sm">{currency.format(result.low)}</p></div>
                 <div className="border-x border-gold/20"><p className="text-caption uppercase tracking-widest text-gold-dark">Midpoint</p><p className="mt-1 font-heading text-heading-md font-bold text-gold-dark sm:text-display-sm">{currency.format(result.midpoint)}</p></div>
