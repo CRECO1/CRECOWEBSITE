@@ -77,11 +77,14 @@ const config: Config = {
         // min: readable on a 375px phone, max: dramatic on a 1440px screen.
         'display-xl': ['clamp(2.25rem, 5.5vw + 1rem, 5rem)',     { lineHeight: '1.05', letterSpacing: '-0.03em',  fontWeight: '700' }],
         'display-lg': ['clamp(2rem, 4.5vw + 0.75rem, 4rem)',      { lineHeight: '1.1',  letterSpacing: '-0.025em', fontWeight: '700' }],
+        'display-md': ['clamp(1.75rem, 3vw + 0.75rem, 2.5rem)',   { lineHeight: '1.15', letterSpacing: '-0.02em',  fontWeight: '700' }],
         'display':    ['clamp(1.875rem, 3.5vw + 0.75rem, 3rem)',  { lineHeight: '1.15', letterSpacing: '-0.02em',  fontWeight: '600' }],
         'display-sm': ['clamp(1.5rem, 2.5vw + 0.75rem, 2.25rem)', { lineHeight: '1.2',  letterSpacing: '-0.015em', fontWeight: '600' }],
+        'display-xs': ['clamp(1.25rem, 1.5vw + 0.75rem, 1.75rem)', { lineHeight: '1.25', letterSpacing: '-0.01em', fontWeight: '600' }],
         'heading-xl': ['clamp(1.375rem, 2vw + 0.5rem, 2rem)',     { lineHeight: '1.25', letterSpacing: '-0.01em',  fontWeight: '600' }],
         'heading-lg': ['1.75rem', { lineHeight: '1.3', fontWeight: '600' }],
         'heading': ['1.5rem', { lineHeight: '1.35', fontWeight: '600' }],
+        'heading-md': ['1.375rem', { lineHeight: '1.35', fontWeight: '600' }],
         'heading-sm': ['1.25rem', { lineHeight: '1.4', fontWeight: '600' }],
         // Improved body sizes for better readability (senior-friendly)
         'body-xl': ['1.375rem', { lineHeight: '1.75', letterSpacing: '0.01em' }],  // 22px - extra large for emphasis
