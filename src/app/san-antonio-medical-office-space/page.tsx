@@ -44,7 +44,7 @@ export default function SanAntonioMedicalOfficeSpacePage() {
         quickAnswer:
           "San Antonio’s medical office market is anchored by the South Texas Medical Center, one of the largest medical concentrations in the country, and by suburban clinics following population growth in the northwest, north, and I-35 corridors. Vacancy is lower than general office, and buildout cost and timing often matter more than rent.",
         stats: [
-            { label: "Medical office vacancy", value: "~5-9%", note: "tighter than general office, directional" },
+            { label: "Medical office availability", value: "Tight", note: "tighter than general office" },
             { label: "Core hub", value: "South Texas Medical Center", note: "hospitals, research, specialists" },
             { label: "Suburban growth", value: "Northwest · North · I-35", note: "clinics follow rooftops" },
             { label: "Buildout", value: "Key cost", note: "plumbing, imaging, and shielding drive TI" },
