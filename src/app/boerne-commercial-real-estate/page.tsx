@@ -120,8 +120,8 @@ export default function BoernePage() {
           },
         ],
         propertyLinks: [
-          { label: 'Retail space for lease', href: '/texas-retail-space-for-lease', description: 'Boerne and Texas retail — Main Street destination, I-10 chain corridor, and Highway 46 emerging commercial.' },
-          { label: 'Office space for lease', href: '/texas-office-space-for-lease', description: 'Professional services office in Boerne, Kendall County, and the I-10 corridor.' },
+          { label: 'Retail space for lease', href: '/boerne-retail-space', description: 'Boerne retail — Main Street destination, I-10 chain corridor, and Highway 46 emerging commercial.' },
+          { label: 'Office space for lease', href: '/boerne-office-space', description: 'Professional services office in Boerne, Kendall County, and the I-10 corridor.' },
           { label: 'Fair Oaks Ranch commercial', href: '/fair-oaks-ranch-commercial-real-estate', description: "Boerne's neighboring submarket where CRECO owns and operates the 8000 Fair Oaks Pkwy mixed-use center." },
           { label: 'Commercial property for sale', href: '/texas-commercial-property-for-sale', description: 'Boerne, Kendall County, and Texas commercial property for sale — investment, owner-user, and 1031 opportunities.' },
         ],

@@ -86,6 +86,7 @@ export default function SanAntonioOfficeSpacePage() {
             name: 'South Texas Medical Center',
             characterization: 'Tightest medical office in TX',
             description: "One of the largest medical concentrations in the US. MOB vacancy in the high single digits; renewing tenants seeing first real rent pushes since 2020.",
+            href: '/san-antonio-medical-office-space',
           },
           {
             name: 'Westover Hills',

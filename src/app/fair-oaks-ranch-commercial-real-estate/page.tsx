@@ -173,8 +173,8 @@ export default function FairOaksRanchPage() {
           },
         ],
         propertyLinks: [
-          { label: 'Retail space for lease', href: '/texas-retail-space-for-lease', description: 'Retail in Fair Oaks Ranch and across Texas — strip centers, end-caps with drive-thru, restaurants, and pad sites.' },
-          { label: 'Office space for lease', href: '/texas-office-space-for-lease', description: 'Professional services office in Fair Oaks Ranch and the broader I-10 corridor.' },
+          { label: 'Retail space for lease', href: '/fair-oaks-ranch-retail-space', description: 'Retail in Fair Oaks Ranch and across Texas — strip centers, end-caps with drive-thru, restaurants, and pad sites.' },
+          { label: 'Office space for lease', href: '/fair-oaks-ranch-office-space', description: 'Professional services office in Fair Oaks Ranch and the broader I-10 corridor.' },
           { label: '8000 Fair Oaks Pkwy', href: '/8000-fair-oaks-pkwy', description: "CRECO's mixed-use center at 8000 Fair Oaks Pkwy — 4 retail bays + two executive suite buildings, now leasing." },
           // Elkhorn Point is the only entry here that leaves crecotx.com: the
           // property has its own site and that is where a prospective tenant

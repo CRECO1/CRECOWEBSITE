@@ -55,6 +55,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/san-antonio-office-space`,             lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
     { url: `${BASE_URL}/san-antonio-industrial-space`,         lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
     { url: `${BASE_URL}/san-antonio-retail-space`,             lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
+    { url: `${BASE_URL}/san-antonio-medical-office-space`, lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
+    { url: `${BASE_URL}/boerne-retail-space`, lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
+    { url: `${BASE_URL}/boerne-office-space`, lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
+    { url: `${BASE_URL}/fair-oaks-ranch-retail-space`, lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
+    { url: `${BASE_URL}/fair-oaks-ranch-office-space`, lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
     // CRECO development — 8000 Fair Oaks Pkwy
     { url: `${BASE_URL}/8000-fair-oaks-pkwy`,                  lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.95 },
     // CRECO development — 8923 Dietz Elkhorn (Fair Oaks Ranch retail, pre-leasing)
