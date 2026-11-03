@@ -16,7 +16,7 @@ import { ArrowRight, Building2, MapPin, Scale, X } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { useCompareList } from '@/hooks/useCompareList';
-import { formatPrice, formatLeaseRate, formatSqft, formatAcres, propertyTypeLabel, transactionLabel } from '@/lib/utils';
+import { callForPriceText, formatPrice, formatLeaseRate, formatSqft, formatAcres, propertyTypeLabel, transactionLabel } from '@/lib/utils';
 import type { Listing } from '@/lib/supabase';
 import { NoListingsCTA } from '@/components/listings/NoListingsCTA';
 
@@ -36,7 +36,7 @@ const ROWS: Row[] = [
       ? formatPrice(l.sale_price)
       : l.lease_rate
         ? formatLeaseRate(l.lease_rate, l.lease_rate_basis)
-        : 'Contact for pricing',
+        : callForPriceText(l.transaction_type),
   },
   { label: 'Total SF', value: l => formatSqft(l.sqft) },
   { label: 'Available SF', value: l => formatSqft(l.available_sqft ?? l.sqft) },

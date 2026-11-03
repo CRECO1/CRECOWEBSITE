@@ -12,7 +12,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Building2, MapPin } from 'lucide-react';
-import {
+import { callForPriceText, sizeSummary,
   formatPrice, formatSqft, formatLeaseRate, transactionLabel, propertyTypeLabel,
 } from '@/lib/utils';
 
@@ -31,7 +31,7 @@ export function PropertyCard({ listing, showPropertyTypeBadge = false }: Propert
     ? formatPrice(listing.sale_price)
     : listing.lease_rate
       ? formatLeaseRate(listing.lease_rate, listing.lease_rate_basis)
-      : 'Contact for pricing';
+      : callForPriceText(listing.transaction_type);
 
   const heroImage = Array.isArray(listing.images) && listing.images[0] ? listing.images[0] : null;
 
@@ -95,8 +95,12 @@ export function PropertyCard({ listing, showPropertyTypeBadge = false }: Propert
         <p className="mb-3 price-tag text-xl">{priceDisplay}</p>
         <div className="flex items-center gap-3 text-caption text-foreground-muted border-t border-border pt-3">
           <span>{propertyTypeLabel(listing.property_type)}</span>
-          <span aria-hidden="true">·</span>
-          <span>{formatSqft(listing.sqft)}</span>
+          {sizeSummary(listing) && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>{sizeSummary(listing)}</span>
+            </>
+          )}
           {listing.zoning && (
             <>
               <span aria-hidden="true">·</span>

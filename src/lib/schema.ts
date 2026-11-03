@@ -14,7 +14,7 @@
 import type { Listing } from './supabase';
 import { listingHref } from './featured-properties';
 import { BRAND_LEGAL_NAME, BRAND_NAME, BRAND_TREC_LICENSE, CANONICAL_DESCRIPTION, DBA_STATEMENT } from './brand';
-import { formatLeaseRate, formatPrice, propertyTypeLabel, transactionLabel } from './utils';
+import { callForPriceText, formatLeaseRate, formatPrice, propertyTypeLabel, transactionLabel } from './utils';
 
 export const SITE_URL = 'https://www.crecotx.com';
 /**
@@ -395,7 +395,7 @@ const AVAILABILITY: Record<string, string> = {
 export function listingPriceText(l: Pick<Listing, 'transaction_type' | 'sale_price' | 'lease_rate' | 'lease_rate_basis'>): string {
   if (l.transaction_type !== 'lease' && l.sale_price) return formatPrice(l.sale_price);
   if (l.lease_rate) return formatLeaseRate(l.lease_rate, l.lease_rate_basis);
-  return 'Contact for pricing';
+  return callForPriceText(l.transaction_type);
 }
 
 export function listingUrl(l: Pick<Listing, 'slug' | 'landing_url'>): string {

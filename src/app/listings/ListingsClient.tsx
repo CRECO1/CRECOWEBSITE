@@ -26,7 +26,7 @@ import { Input } from '@/components/ui/Input';
 import { CompareToggle } from '@/components/listings/CompareToggle';
 import { SaveSearchModal } from '@/components/listings/SaveSearchModal';
 import { ListingsEmptyState } from '@/components/listings/ListingsEmptyState';
-import { formatSqft, formatAcres, formatLeaseRate, formatPrice, transactionLabel, propertyTypeLabel } from '@/lib/utils';
+import { callForPriceText, formatSqft, formatAcres, formatLeaseRate, formatPrice, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 import type { Listing } from '@/lib/supabase';
 import { withSyntheticListings, listingLinkProps } from '@/lib/featured-properties';
 import { trackViewItemList, trackListingSearch, trackSelectItem } from '@/lib/analytics';
@@ -114,7 +114,7 @@ function priceLine(l: Listing, alsoSale?: Listing): string {
   if (l.transaction_type === 'sale' && l.sale_price) return formatPrice(l.sale_price);
   if (l.lease_rate) return formatLeaseRate(l.lease_rate, l.lease_rate_basis);
   if (alsoSale?.sale_price) return formatPrice(alsoSale.sale_price);
-  return l.transaction_type === 'sale' ? 'Call for offers' : 'Call for rate';
+  return callForPriceText(l.transaction_type);
 }
 
 export function ListingsClient({ initialListings, children }: { initialListings: Listing[]; children?: React.ReactNode }) {

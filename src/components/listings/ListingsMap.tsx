@@ -21,7 +21,7 @@ import L from 'leaflet';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { Building2, MapPin, ArrowRight } from 'lucide-react';
 import type { Listing } from '@/lib/supabase';
-import { formatPrice, formatLeaseRate, formatSqft, transactionLabel, propertyTypeLabel } from '@/lib/utils';
+import { callForPriceText, formatPrice, formatLeaseRate, formatSqft, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 import { BASEMAPS, BasemapToggle, PROPERTY_PIN, pinIcon, type Basemap } from './map-base';
 import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 
@@ -187,7 +187,7 @@ function ListingInfoCard({ listing }: { listing: Listing }) {
       ? formatPrice(listing.sale_price)
       : listing.lease_rate
         ? formatLeaseRate(listing.lease_rate, listing.lease_rate_basis)
-        : 'Contact for pricing';
+        : callForPriceText(listing.transaction_type);
 
   const img = listing.images && (listing.images as string[])[0];
 

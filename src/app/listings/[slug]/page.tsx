@@ -19,7 +19,7 @@ import { getListingBySlug, getListings } from '@/lib/supabase';
 import { SYNTHETIC_LISTINGS } from '@/lib/featured-properties';
 import { cache } from 'react';
 import Image from 'next/image';
-import { formatPrice, formatSqft, formatAcres, formatLeaseRate, transactionLabel, propertyTypeLabel, googleMapsUrl } from '@/lib/utils';
+import { callForPriceText, formatPrice, formatSqft, formatAcres, formatLeaseRate, transactionLabel, propertyTypeLabel, googleMapsUrl } from '@/lib/utils';
 import { ListingInquiryTabs } from './ListingInquiryTabs';
 import { ListingViewTracker } from './ListingViewTracker';
 import { MobileInquiryBar } from './MobileInquiryBar';
@@ -143,7 +143,7 @@ export default async function ListingDetailPage({ params }: Props) {
     ? formatPrice(listing!.sale_price)
     : listing!.lease_rate
       ? formatLeaseRate(listing!.lease_rate, listing!.lease_rate_basis)
-      : 'Contact for pricing';
+      : callForPriceText(listing!.transaction_type);
   // RealEstateListing (property as Accommodation w/ floorSize, geo, amenity
   // features; lease/sale Offer incl. "contact for pricing"; broker = CRECO @id)
   // + BreadcrumbList mirroring the visible crumb strip. Built in @/lib/schema
@@ -159,7 +159,7 @@ export default async function ListingDetailPage({ params }: Props) {
     },
     {
       q: `What is the asking ${listing!.transaction_type === 'sale' ? 'price' : 'rate'} for ${listing!.title}?`,
-      a: `${listingPriceText(listing!)}.${listing!.sqft ? ` The property is ${listing!.sqft.toLocaleString()} SF` : ''}${listing!.available_sqft && listing!.available_sqft !== listing!.sqft ? ` with ${listing!.available_sqft.toLocaleString()} SF available` : ''}${listing!.sqft ? '.' : ''} Final terms depend on lease length, build-out, and credit — CRECO provides a full pricing package on request.`,
+      a: `${listingPriceText(listing!)}.${listing!.sqft ? ` The property is ${listing!.sqft.toLocaleString()} SF` : ''}${listing!.available_sqft && listing!.available_sqft !== listing!.sqft ? ` with ${listing!.available_sqft.toLocaleString()} SF available` : ''}${listing!.sqft ? '.' : ''} ${listing!.transaction_type === 'sale' ? 'Pricing depends on the buyer, structure and timing — call CRECO for the full offering package.' : 'Final terms depend on lease length, build-out, and credit — CRECO provides a full pricing package on request.'}`,
     },
     {
       q: `Who is the listing broker for ${listing!.title}?`,

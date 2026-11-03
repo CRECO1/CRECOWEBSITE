@@ -16,7 +16,7 @@ import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { getSubmarketBySlug, getListingsBySubmarket } from '@/lib/supabase';
-import { formatSqft, formatLeaseRate, formatPrice, transactionLabel, propertyTypeLabel } from '@/lib/utils';
+import { callForPriceText, sizeSummary, formatSqft, formatLeaseRate, formatPrice, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 import { BUSINESS_ID } from '@/lib/schema';
 import { NoListingsCTA } from '@/components/listings/NoListingsCTA';
 import {
@@ -395,9 +395,9 @@ export default async function SubmarketDetailPage({ params }: Props) {
                           ? formatPrice(listing.sale_price)
                           : listing.lease_rate
                             ? formatLeaseRate(listing.lease_rate, listing.lease_rate_basis)
-                            : 'Contact for pricing'}
+                            : callForPriceText(listing.transaction_type)}
                       </p>
-                      <p className="text-caption text-foreground-muted border-t border-border pt-3">{formatSqft(listing.sqft)}{listing.zoning ? ` · Zoning ${listing.zoning}` : ''}</p>
+                      <p className="text-caption text-foreground-muted border-t border-border pt-3">{[sizeSummary(listing), listing.zoning ? `Zoning ${listing.zoning}` : ''].filter(Boolean).join(' · ')}</p>
                     </div>
                   </Link>
                 ))}

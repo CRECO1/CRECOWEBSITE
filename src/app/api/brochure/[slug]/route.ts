@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getListingBySlug } from '@/lib/supabase';
 import { SYNTHETIC_LISTINGS } from '@/lib/featured-properties';
 import { enforceRateLimit } from '@/lib/rate-limit';
-import { formatPrice, formatSqft, formatLeaseRate, transactionLabel, propertyTypeLabel } from '@/lib/utils';
+import { callForPriceText, formatPrice, formatSqft, formatLeaseRate, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 
 export async function GET(
   req: NextRequest,
@@ -83,7 +83,7 @@ export async function GET(
       ? formatPrice(listing.sale_price)
       : listing.lease_rate
         ? formatLeaseRate(listing.lease_rate, listing.lease_rate_basis)
-        : 'Contact for pricing';
+        : callForPriceText(listing.transaction_type);
     doc.text(priceLine, 20, 82);
     doc.setTextColor(0);
 

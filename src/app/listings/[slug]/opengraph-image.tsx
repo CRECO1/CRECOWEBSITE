@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { getListingBySlug } from '@/lib/supabase';
 import { SYNTHETIC_LISTINGS } from '@/lib/featured-properties';
-import { formatPrice, formatSqft, formatLeaseRate, transactionLabel, propertyTypeLabel } from '@/lib/utils';
+import { sizeSummary, callForPriceText, formatPrice, formatSqft, formatLeaseRate, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 
 // Branded social-share card for each listing (Slack/LinkedIn/iMessage/X + AI
 // citations). Replaces the raw first-photo OG with a composed card: property
@@ -37,12 +37,12 @@ export default async function Image({ params }: { params: Promise<{ slug: string
         ? formatPrice(listing.sale_price)
         : listing.lease_rate
           ? formatLeaseRate(listing.lease_rate, listing.lease_rate_basis)
-          : 'Contact for pricing')
+          : callForPriceText(listing.transaction_type))
     : '';
   const cityLine = listing
     ? [listing.address, listing.city, listing.state].filter(Boolean).join(', ')
     : 'Texas';
-  const sf = listing?.sqft ? formatSqft(listing.sqft) : '';
+  const sf = listing ? sizeSummary(listing) : '';
   // Status-aware badge: closed deals (shown on-site as social proof) read
   // LEASED/SOLD rather than the transaction type, so the card isn't misleading.
   const badge = listing

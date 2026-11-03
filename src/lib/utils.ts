@@ -23,6 +23,16 @@ export function formatAcres(n: number | null | undefined): string {
   return `${n.toLocaleString(undefined, { maximumFractionDigits: 2 })} ac`;
 }
 
+/** What to show where a listing has no published price — the same words everywhere. */
+export function callForPriceText(transactionType: string | null | undefined): string {
+  return transactionType === 'sale' ? 'Call for offers' : 'Call for rate';
+}
+
+/** "19,923 SF · 1.01 ac", acres only for land, or '' when we have neither (never a bare dash). */
+export function sizeSummary(l: { sqft?: number | null; lot_size?: number | null }): string {
+  return [l.sqft ? formatSqft(l.sqft) : '', l.lot_size ? formatAcres(l.lot_size) : ''].filter(Boolean).join(' · ');
+}
+
 export function formatLeaseRate(rate: number | null | undefined, basis: string | null | undefined): string {
   if (rate == null) return '—';
   // Always two decimals: "$7.50/SF/yr", never "$7.5/SF/yr".

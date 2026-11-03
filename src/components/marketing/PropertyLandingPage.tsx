@@ -25,7 +25,7 @@ import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 import { RevealOnScroll } from '@/hooks/useScrollReveal';
-import {
+import { callForPriceText, sizeSummary,
   formatPrice, formatSqft, formatLeaseRate, transactionLabel, propertyTypeLabel,
 } from '@/lib/utils';
 import type { Listing, PropertyType, TransactionType, LandingPageContent } from '@/lib/supabase';
@@ -254,12 +254,12 @@ export async function PropertyLandingPage({ config: configIn, dbContent }: Props
                           ? formatPrice(listing.sale_price)
                           : listing.lease_rate
                             ? formatLeaseRate(listing.lease_rate, listing.lease_rate_basis)
-                            : 'Contact for pricing'}
+                            : callForPriceText(listing.transaction_type)}
                       </p>
                       <div className="flex items-center gap-3 text-caption text-foreground-muted border-t border-border pt-3">
                         <span>{propertyTypeLabel(listing.property_type)}</span>
                         <span>·</span>
-                        <span>{formatSqft(listing.sqft)}</span>
+                        {sizeSummary(listing) && <><span>·</span><span>{sizeSummary(listing)}</span></>}
                       </div>
                     </div>
                   </Link>
