@@ -13,9 +13,9 @@ import { getLandingPage } from '@/lib/supabase';
 // FAQs below when populated; keep it in sync (see
 // supabase/landing-pages-sa-hill-country.sql).
 const baseMetadata: Metadata = {
-  title: 'Office Space for Lease in San Antonio & the Hill Country | CRECO',
+  title: 'Office Space for Lease in San Antonio & Hill Country | CRECO',
   description:
-    'Office space for lease in San Antonio and the Texas Hill Country — Class A and B, medical office, professional and executive suites in Stone Oak, the Medical Center, the I-10 corridor, Fair Oaks Ranch and Boerne.',
+    'Office space for lease in San Antonio and the Hill Country — Class A and B, medical and executive suites in Stone Oak, the Medical Center and Boerne.',
   keywords: [
     'office space for lease san antonio',
     'office space for lease texas hill country',
@@ -30,7 +30,7 @@ const baseMetadata: Metadata = {
   alternates: { canonical: 'https://www.crecotx.com/texas-office-space-for-lease' },
   openGraph: {
     images: [DEFAULT_OG_IMAGE],
-    title: 'Office Space for Lease in San Antonio & the Hill Country | CRECO',
+    title: 'Office Space for Lease in San Antonio & Hill Country | CRECO',
     description:
       'Office space in San Antonio and the Texas Hill Country — Class A/B, medical, professional and executive suites, from a team that leases executive suites in its own building.',
     url: 'https://www.crecotx.com/texas-office-space-for-lease',

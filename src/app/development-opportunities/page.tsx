@@ -27,7 +27,7 @@ const PATH = '/development-opportunities';
 export const metadata: Metadata = {
   title: 'Development Sites & Opportunities | CRECO',
   description:
-    'Own land or an underused site, or looking for one to build on? CRECO represents owners and developers in Texas development transactions — sourcing opportunities, running feasibility, advising on the deal, and negotiating the terms.',
+    'Own land or an underused site, or want one to build on? CRECO sources sites, runs feasibility and negotiates terms for owners and developers.',
   keywords: [
     'commercial land san antonio',
     'development site san antonio',

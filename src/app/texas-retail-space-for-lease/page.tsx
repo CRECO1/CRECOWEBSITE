@@ -13,9 +13,9 @@ import { getLandingPage } from '@/lib/supabase';
 // FAQs below when populated; keep it in sync (see
 // supabase/landing-pages-sa-hill-country.sql).
 const baseMetadata: Metadata = {
-  title: 'Retail Space for Lease in San Antonio & the Hill Country | CRECO',
+  title: 'Retail Space for Lease in San Antonio & Hill Country | CRECO',
   description:
-    'Retail space for lease in San Antonio and the Texas Hill Country — strip centers, restaurant space, inline shop space and pads in Stone Oak, Leon Springs, Fair Oaks Ranch, Boerne and the I-10 corridor.',
+    'Retail space for lease in San Antonio and the Hill Country — strip centers, restaurant space, inline shops and pads in Stone Oak, Boerne and Fair Oaks Ranch.',
   keywords: [
     'retail space for lease san antonio',
     'retail space for lease texas hill country',
@@ -30,7 +30,7 @@ const baseMetadata: Metadata = {
   alternates: { canonical: 'https://www.crecotx.com/texas-retail-space-for-lease' },
   openGraph: {
     images: [DEFAULT_OG_IMAGE],
-    title: 'Retail Space for Lease in San Antonio & the Hill Country | CRECO',
+    title: 'Retail Space for Lease in San Antonio & Hill Country | CRECO',
     description:
       'Retail space in San Antonio and the Texas Hill Country — strip centers, restaurant space, inline shop space and pads, from a team that owns and leases retail here.',
     url: 'https://www.crecotx.com/texas-retail-space-for-lease',

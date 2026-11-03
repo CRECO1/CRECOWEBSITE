@@ -40,6 +40,7 @@ import { formatPrice, formatSqft, transactionLabel, propertyTypeLabel } from '@/
 import { JsonLd } from '@/components/seo/JsonLd';
 import { breadcrumbList, webPage } from '@/lib/schema';
 import { NoListingsCTA } from '@/components/listings/NoListingsCTA';
+import { HEADWALL_TOBIN_HILL } from '@/lib/press';
 export default async function SoldPage() {
   // No demo fallback: an empty result renders an empty state rather than
   // presenting invented transactions as CRECO's track record.
@@ -129,6 +130,31 @@ export default async function SoldPage() {
                   </div>
                 </RevealOnScroll>
               ))}
+            </div>
+
+            {/* Only a few closings are published here. Say so plainly and offer the rest, rather than
+                leaving a one-card page that reads as a thin track record. */}
+            {properties.length > 0 && properties.length < 4 && (
+              <p className="mx-auto mt-10 max-w-2xl text-center text-body-sm text-foreground-muted">
+                We publish only the closings our clients are comfortable sharing.{' '}
+                <Link href="/contact" className="font-semibold text-gold-dark underline underline-offset-2 hover:text-gold">
+                  Ask us for comparable deals in your submarket.
+                </Link>
+              </p>
+            )}
+
+            {/* Representative work reported in the press — described as the article reports it
+                (under contract), never as a closed sale; see src/lib/press.ts. */}
+            <div className="mx-auto mt-14 max-w-3xl rounded-2xl border border-border bg-white p-6 sm:p-8">
+              <p className="overline mb-2">In the news</p>
+              <p className="text-body text-primary leading-relaxed">{HEADWALL_TOBIN_HILL.summary}</p>
+              <p className="mt-3 text-caption text-foreground-muted">
+                <a href={HEADWALL_TOBIN_HILL.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-gold-dark underline underline-offset-2 hover:text-gold">
+                  {HEADWALL_TOBIN_HILL.outlet}, {HEADWALL_TOBIN_HILL.date}
+                </a>
+                {' · '}
+                <Link href="/about" className="font-semibold text-gold-dark underline underline-offset-2 hover:text-gold">More representative work</Link>
+              </p>
             </div>
           </Container>
         </section>

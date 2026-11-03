@@ -13,9 +13,9 @@ import { getLandingPage } from '@/lib/supabase';
 // FAQs below when populated; keep it in sync (see
 // supabase/landing-pages-sa-hill-country.sql).
 const baseMetadata: Metadata = {
-  title: 'Industrial & Warehouse for Lease in San Antonio & the Hill Country | CRECO',
+  title: 'San Antonio & Hill Country Industrial Space for Lease | CRECO',
   description:
-    'Industrial, warehouse and flex space for lease in San Antonio and the Texas Hill Country — distribution, light manufacturing, flex and service-industrial on the I-35, I-10 and Loop 1604 corridors.',
+    'Industrial, warehouse and flex space for lease in San Antonio and the Hill Country, on the I-35, I-10 and Loop 1604 corridors.',
   keywords: [
     'warehouse for lease san antonio',
     'industrial space for lease san antonio',
@@ -29,7 +29,7 @@ const baseMetadata: Metadata = {
   alternates: { canonical: 'https://www.crecotx.com/texas-industrial-property-for-lease' },
   openGraph: {
     images: [DEFAULT_OG_IMAGE],
-    title: 'Industrial & Warehouse for Lease in San Antonio & the Hill Country | CRECO',
+    title: 'San Antonio & Hill Country Industrial Space for Lease | CRECO',
     description:
       'San Antonio and Hill Country industrial — distribution, light manufacturing, flex and service-industrial on the I-35, I-10 and Loop 1604 corridors.',
     url: 'https://www.crecotx.com/texas-industrial-property-for-lease',

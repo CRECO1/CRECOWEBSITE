@@ -29,7 +29,7 @@ import {
 export const metadata: Metadata = {
   title: 'San Antonio & Hill Country Commercial Markets | CRECO',
   description:
-    "Submarket-level guide to commercial real estate in San Antonio and the Texas Hill Country — Stone Oak, Northwest San Antonio, New Braunfels, Boerne, Fair Oaks Ranch and more.",
+    "Submarket guide to commercial real estate in San Antonio and the Hill Country — Stone Oak, Northwest SA, New Braunfels, Boerne and Fair Oaks Ranch.",
   keywords: [
     'san antonio commercial real estate markets',
     'san antonio commercial submarkets',

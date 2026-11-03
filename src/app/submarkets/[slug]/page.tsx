@@ -15,7 +15,7 @@ import { Header, Footer } from '@/components/layout';
 import { Button } from '@/components/ui/Button';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
-import { getSubmarketBySlug, getListingsBySubmarket } from '@/lib/supabase';
+import { getSubmarketBySlug, getListingsBySubmarket, getSubmarkets } from '@/lib/supabase';
 import { callForPriceText, sizeSummary, formatSqft, formatLeaseRate, formatPrice, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 import { BUSINESS_ID } from '@/lib/schema';
 import { NoListingsCTA } from '@/components/listings/NoListingsCTA';
@@ -25,6 +25,13 @@ import {
 } from '@/lib/submarket-content';
 
 interface Props { params: Promise<{ slug: string }> }
+
+// Pre-render every submarket so the page is served from the CDN cache (revalidated by the
+// 30-min window above) instead of being rebuilt on each visit.
+export async function generateStaticParams() {
+  const all = await getSubmarkets().catch(() => []);
+  return all.map(s => ({ slug: s.slug }));
+}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;

@@ -23,7 +23,7 @@ import { BriefContent, BRIEF_SECTIONS } from './BriefContent';
 
 const TITLE = 'San Antonio & Hill Country Market Brief | CRECO';
 const DESCRIPTION =
-  "Issue 1 (Q2 2026): San Antonio and Texas Hill Country retail, office, industrial and flex vacancy, rents and absorption from CBRE, Cushman & Wakefield and Partners side by side, plus Boerne, Fair Oaks Ranch and New Braunfels. Every figure sourced.";
+  "Q2 2026 San Antonio and Hill Country retail, office, industrial and flex vacancy and rents from CBRE, Cushman & Wakefield and Partners. Every figure sourced.";
 
 export const metadata: Metadata = {
   title: TITLE,

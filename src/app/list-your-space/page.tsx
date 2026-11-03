@@ -29,7 +29,7 @@ const PATH = '/list-your-space';
 export const metadata: Metadata = {
   title: 'List Your Commercial Property for Lease | CRECO',
   description:
-    'List retail, office, industrial, flex or land with CRECO. Professional marketing, a direct broker and owner network, screened tenants, and a team that works your listing directly.',
+    'List retail, office, industrial, flex or land with CRECO. Professional marketing, a direct broker network and screened tenants.',
   keywords: [
     'list commercial property for lease',
     'list my commercial space',

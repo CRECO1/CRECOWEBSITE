@@ -62,10 +62,10 @@ const TENANT_ONLY_ANSWER =
 export const LANDLORD_PAGE: RepresentationPageContent = {
   path: '/landlord-representation',
   label: 'Landlord & Owner Representation',
-  metaTitle: 'Landlord & Owner Representation in San Antonio & the Hill Country | CRECO',
+  metaTitle: 'San Antonio Landlord & Owner Representation | CRECO',
   metaDescription:
     // Kept under ~160 characters so search results show it whole.
-    'Yes — CRECO represents San Antonio & Hill Country landlords and owners: leasing, tenant procurement, and dispositions for retail, office, industrial, flex, and land.',
+    'Yes — CRECO represents San Antonio & Hill Country landlords and owners on leasing, tenant procurement and dispositions.',
   inlineForm: {
     heading: 'Have space to lease?',
     body: 'Tell us what you own and our team will come back with how we would market it, who we would target, and what it should command.',
@@ -146,7 +146,7 @@ export const LANDLORD_PAGE: RepresentationPageContent = {
 export const SELLER_INVESTOR_PAGE: RepresentationPageContent = {
   path: '/seller-investor-representation',
   label: 'Sellers & Investors',
-  metaTitle: 'Seller & Investor Representation in San Antonio & the Hill Country | CRECO',
+  metaTitle: 'San Antonio Seller & Investor Representation | CRECO',
   metaDescription:
     'CRECO represents sellers and investors on San Antonio & Hill Country commercial acquisitions and dispositions — retail, office, industrial, flex, and land.',
   inlineForm: {

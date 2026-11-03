@@ -7,9 +7,9 @@ import { PropertyAlertsForm } from '@/components/forms/PropertyAlertsForm';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { breadcrumbList, webPage } from '@/lib/schema';
 export const metadata: Metadata = {
-  title: 'San Antonio & Hill Country Commercial Property Alerts | CRECO',
+  title: 'San Antonio Commercial Property Alerts | CRECO',
   description:
-    'Get alerts when a San Antonio or Hill Country commercial property matching your filters is listed with CRECO — retail, industrial, office, flex, and land. Free, no obligation.',
+    'Get alerts when a San Antonio or Hill Country commercial property matching your filters is listed with CRECO. Free, no obligation.',
   keywords: [
     'san antonio commercial property alerts',
     'commercial real estate alerts san antonio',
@@ -49,7 +49,7 @@ export default function PropertyAlertsPage() {
     <>
       <JsonLd
         data={[
-          webPage('WebPage', '/property-alerts', 'San Antonio & Hill Country Commercial Property Alerts | CRECO', 'Get alerts when a San Antonio or Hill Country commercial property matching your filters is listed with CRECO — retail, industrial, office, flex, and land. Free, no obligation.'),
+          webPage('WebPage', '/property-alerts', 'San Antonio Commercial Property Alerts | CRECO', 'Get alerts when a San Antonio or Hill Country commercial property matching your filters is listed with CRECO. Free, no obligation.'),
           breadcrumbList([{ name: 'Property Alerts', path: '/property-alerts' }]),
         ]}
       />

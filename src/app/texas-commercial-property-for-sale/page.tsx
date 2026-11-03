@@ -13,9 +13,9 @@ import { getLandingPage } from '@/lib/supabase';
 // FAQs below when populated; keep it in sync (see
 // supabase/landing-pages-sa-hill-country.sql).
 const baseMetadata: Metadata = {
-  title: 'Commercial Property for Sale in San Antonio & the Hill Country | CRECO',
+  title: 'Commercial Property for Sale in San Antonio & Hill Country | CRECO',
   description:
-    'Commercial property for sale in San Antonio and the Texas Hill Country — retail centers, office and industrial buildings, pads and land. Investor, owner-user and 1031 advisory from CRECO.',
+    'Commercial property for sale in San Antonio and the Hill Country — retail, office, industrial, pads and land, with investor and 1031 advisory.',
   keywords: [
     'commercial property for sale san antonio',
     'commercial real estate for sale san antonio',
@@ -30,7 +30,7 @@ const baseMetadata: Metadata = {
   alternates: { canonical: 'https://www.crecotx.com/texas-commercial-property-for-sale' },
   openGraph: {
     images: [DEFAULT_OG_IMAGE],
-    title: 'Commercial Property for Sale in San Antonio & the Hill Country | CRECO',
+    title: 'Commercial Property for Sale in San Antonio & Hill Country | CRECO',
     description:
       'San Antonio and Hill Country commercial property for sale — retail, office, industrial and land. Investor, owner-user and 1031 advisory from a team that owns commercial property here.',
     url: 'https://www.crecotx.com/texas-commercial-property-for-sale',

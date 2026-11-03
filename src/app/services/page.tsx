@@ -35,7 +35,7 @@ const SERVICES_FAQS = [
 ];
 
 export const metadata: Metadata = {
-  title: 'San Antonio & Hill Country Commercial Real Estate Services | CRECO',
+  title: 'San Antonio Commercial Real Estate Services | CRECO',
   description:
     'Tenant representation, investment advisory, leasing and sales, property management, and development from CRECO, in San Antonio and the Texas Hill Country.',
   keywords: [
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
   // social previews than the generic homepage one.
   openGraph: {
     images: [DEFAULT_OG_IMAGE],
-    title: 'San Antonio & Hill Country Commercial Real Estate Services | CRECO',
+    title: 'San Antonio Commercial Real Estate Services | CRECO',
     description:
       'Tenant representation, investment advisory, leasing & sales, property management, and development in San Antonio and the Texas Hill Country.',
     url: 'https://www.crecotx.com/services',
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'San Antonio & Hill Country Commercial Real Estate Services | CRECO',
+    title: 'San Antonio Commercial Real Estate Services | CRECO',
     description:
       'Full-service San Antonio & Hill Country CRE firm — tenant rep, investment advisory, leasing & sales, property management.',
   },
