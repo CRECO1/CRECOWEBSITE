@@ -31,7 +31,11 @@ interface HeaderProps {
 export function Header({ variant = 'default', phone = '(210) 817-3443' }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
+  const [isHidden, setIsHidden] = React.useState(false);
   const pathname = usePathname();
+  // On the property grid the nav slides away while scrolling down (more room for the cards)
+  // and returns the moment the visitor scrolls back up.
+  const autoHide = pathname === '/listings';
 
   // Mobile menu a11y: while the full-screen overlay is open, lock body scroll
   // (it previously let the page scroll behind it) and close on Escape (there
@@ -49,12 +53,28 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
   }, [isMenuOpen]);
 
   React.useEffect(() => {
+    let lastY = window.scrollY;
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      const y = window.scrollY;
+      setIsScrolled(y > 20);
+      if (autoHide) {
+        const delta = y - lastY;
+        if (y < 120) setIsHidden(false);
+        else if (delta > 6) setIsHidden(true);
+        else if (delta < -6) setIsHidden(false);
+      }
+      lastY = y;
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [autoHide]);
+
+  const navHidden = autoHide && isHidden && !isMenuOpen;
+  // Lets the page's sticky filter bar slide up into the freed space (see ListingsClient).
+  React.useEffect(() => {
+    document.documentElement.toggleAttribute('data-nav-hidden', navHidden);
+    return () => document.documentElement.removeAttribute('data-nav-hidden');
+  }, [navHidden]);
 
   const isTransparent = variant === 'transparent' && !isScrolled;
   const textShadowStyle = isTransparent ? { textShadow: '0 2px 4px rgba(0,0,0,0.5)' } : {};
@@ -64,6 +84,7 @@ export function Header({ variant = 'default', phone = '(210) 817-3443' }: Header
       data-track-section="nav"
       className={cn(
         'fixed left-0 right-0 top-0 z-50 transition-all duration-300',
+        navHidden && '-translate-y-full',
         isTransparent
           ? 'bg-gradient-to-b from-black/40 to-transparent'
           : 'bg-white shadow-sm',

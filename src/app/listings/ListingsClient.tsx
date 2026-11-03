@@ -333,7 +333,7 @@ export function ListingsClient({ initialListings, children }: { initialListings:
         </div>
 
         {/* Search & Filters */}
-        <div className="border-b border-border bg-white shadow-sm sm:sticky sm:top-20 sm:z-30">
+        <div className="border-b border-border bg-white shadow-sm sm:sticky sm:top-20 sm:z-30 sm:transition-[top] sm:duration-300 [html[data-nav-hidden]_&]:sm:top-0">
           <Container>
             <div className="flex flex-wrap items-center gap-3 py-4">
               <div className="relative flex-1 min-w-[220px]">
