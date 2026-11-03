@@ -40,6 +40,26 @@ export const REPRESENTATION_ANSWER: Faq = {
 /** /market-brief — honest pre-launch answers (no figures until the edition is sourced). */
 export const MARKET_BRIEF_FAQS: Faq[] = [
   {
+    q: 'What is the office vacancy rate in San Antonio?',
+    a: 'In Q2 2026 San Antonio office vacancy was 15.2% (Cushman & Wakefield), 16.9% (Partners) or 17.6% (CBRE); the brokerages measure different building sets, so the rates differ. Average asking rent was $27.97 to $29.76/SF full service. Cushman\'s Far Northwest submarket, along the I-10/1604 gateway, was much tighter at 9.2%.',
+  },
+  {
+    q: 'What is the industrial vacancy rate in San Antonio?',
+    a: 'In Q2 2026 San Antonio industrial vacancy was 10.3% (CBRE), 11.1% (Cushman & Wakefield) or 11.3% (Partners), with average asking rents of $8.52 to $9.22/SF NNN. Small-bay flex was tighter, at 8.0% to 8.7% vacancy and about $12.49 to $12.85/SF NNN.',
+  },
+  {
+    q: 'What is the retail vacancy rate in San Antonio and the Hill Country?',
+    a: 'In Q2 2026 San Antonio metro retail vacancy was 4.1% with asking rent of $19.27/SF NNN (Partners, the only free Q2 retail source we found). The Hill Country is tighter: 2.4% in Kendall County (Boerne) at $22.85/SF NNN and 2.6% in Comal County (New Braunfels) at $28.16/SF NNN.',
+  },
+  {
+    q: 'What is the medical office vacancy rate in San Antonio?',
+    a: 'In July 2026 Matthews reported 12.27% medical office vacancy in the San Antonio metro, asking rent of $29.99/SF and 80,128 SF under construction, with demand concentrated along Loop 1604 and I-10 in Far West/Westover Hills and Far Northwest.',
+  },
+  {
+    q: 'Why do brokerage market reports show different vacancy rates?',
+    a: 'They count different buildings. For San Antonio office, inventory is 34.3M SF at CBRE, 43.7M SF at Partners and 50.3M SF at Cushman & Wakefield, so vacancy and absorption differ. The brief shows every source side by side and links each figure to its report.',
+  },
+  {
     q: 'What is the San Antonio & Hill Country Market Brief?',
     a: `A quarterly brief on San Antonio and Texas Hill Country commercial real estate (retail, office, industrial and flex) written by ${FOUNDER.name}, with each figure cited to its source. Issue 1 (Q2 2026 data, October 2026) is published on this page; sign up to get one email when the next edition is out.`,
   },
