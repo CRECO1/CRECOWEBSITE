@@ -104,7 +104,7 @@ function cityAssetFaqs(config: CityAssetConfig, listings: Listing[]): Faq[] {
       q: `What ${asset} space is available in ${city} right now?`,
       a: listings.length > 0
         ? `CRECO currently markets: ${listings.map(l => `${l.title} (${listingSummary(l)})`).join('; ')}. CRECO's tenant-rep clients also see every other ${city} ${asset} option on the market, including off-market space.`
-        : `As a tenant-representation brokerage, CRECO searches the entire ${city} ${asset} market for its clients — including LoopNet/CoStar inventory and off-market space. Call ${BUSINESS.phoneDisplay} for a current availability survey.`,
+        : `As a tenant-representation brokerage, CRECO searches the entire ${city} ${asset} market for its clients — including other brokers' listings and off-market space. Call ${BUSINESS.phoneDisplay} for a current availability survey.`,
     },
     {
       q: `Which ${city} submarkets are best for ${asset} space?`,

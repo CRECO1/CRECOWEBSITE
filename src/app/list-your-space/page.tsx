@@ -29,7 +29,7 @@ const PATH = '/list-your-space';
 export const metadata: Metadata = {
   title: 'List Your Commercial Property for Lease | CRECO',
   description:
-    'List retail, office, industrial, flex or land with CRECO. Professional marketing, syndication to LoopNet, Crexi and CoStar, screened tenants, and a team that works your listing directly.',
+    'List retail, office, industrial, flex or land with CRECO. Professional marketing, a direct broker and owner network, screened tenants, and a team that works your listing directly.',
   keywords: [
     'list commercial property for lease',
     'list my commercial space',
@@ -58,7 +58,7 @@ const ICONS = { Megaphone, Scale, ShieldCheck, Clock, FileText, UserCheck, Hands
 const FAQS = [
   {
     q: 'Why list commercial space with a broker instead of marketing it myself?',
-    a: 'Most qualified tenants do not find space by driving past it. They search LoopNet, Crexi and CoStar, or they hire a tenant-rep broker who works a network. A listing broker puts your space in both places, screens who responds, and negotiates the terms that actually decide what a lease is worth — rent, term, escalations, concessions and tenant improvements. The cost owners usually underestimate is vacancy: an empty month is gone whatever you save on marketing.',
+    a: 'Most qualified tenants do not find space by driving past it. They search online, or they hire a tenant-rep broker who works a network. A listing broker puts your space in front of both, screens who responds, and negotiates the terms that actually decide what a lease is worth — rent, term, escalations, concessions and tenant improvements. The cost owners usually underestimate is vacancy: an empty month is gone whatever you save on marketing.',
   },
   {
     q: 'What types of commercial property does CRECO list?',

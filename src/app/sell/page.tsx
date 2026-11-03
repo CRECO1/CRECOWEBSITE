@@ -17,7 +17,7 @@ const SELL_FAQS = [
   },
   {
     q: 'How will CRECO market my property?',
-    a: 'Broker book, professional and drone photography, a property website, syndication on CoStar, LoopNet, and Crexi, and direct outreach to qualified buyers and tenants in CRECO\'s Texas owner and broker network — including principals who never search public listings.',
+    a: 'Broker book, professional and drone photography, a property website, targeted exposure through CRECO\'s own channels, and direct outreach to qualified buyers and tenants in CRECO\'s Texas owner and broker network — including principals who never search public listings.',
   },
   {
     q: 'What types of commercial property does CRECO sell and lease for owners?',
@@ -32,7 +32,7 @@ const SELL_FAQS = [
 const STEPS = [
   { number: '01', title: 'Evaluation & Feasibility', description: 'We tour the asset, review rent rolls and operating history, and benchmark against comparable transactions — establishing a defensible value range and, where it matters, whether the deal pencils and what the property\u2019s highest and best use realistically is.' },
   { number: '02', title: 'Positioning Strategy', description: 'We craft the marketing narrative — broker book, property website, drone & professional photography, and a tenant/buyer profile.' },
-  { number: '03', title: 'Targeted Marketing', description: 'CoStar, LoopNet, our principal-broker network, and direct outreach to qualified principals — your asset gets in front of the right eyes.' },
+  { number: '03', title: 'Targeted Marketing', description: 'Our principal-broker network and direct outreach to qualified principals — your asset gets in front of the right eyes.' },
   { number: '04', title: 'Offer Negotiation', description: 'We tee up multiple LOIs when possible, walk you through tradeoffs (price vs. terms vs. certainty), and negotiate aggressively.' },
   { number: '05', title: 'Diligence to Close', description: 'We coordinate with your attorney, accountant, lender, and the buyer\'s diligence team — and we don\'t disappear after the contract is signed.' },
 ];
@@ -147,7 +147,7 @@ export default function SellPage() {
                   {[
                     'Professional photography, drone, and broker-grade marketing materials',
                     'Custom property website and broker book for every listing',
-                    'CoStar, LoopNet, and direct principal outreach included',
+                    'Direct principal outreach and our broker network included',
                     'Quarterly market updates and quarterly tenant retention check-ins',
                     'Tenant- and owner-side fluency across office, industrial, retail, and land',
                     'Principal-level attention from contract to close',

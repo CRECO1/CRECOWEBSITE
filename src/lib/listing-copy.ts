@@ -37,7 +37,7 @@ export const LISTING_BENEFITS: ListingBenefit[] = [
   {
     icon: 'Megaphone',
     title: 'Maximum exposure',
-    body: 'Professional marketing, syndicated to LoopNet, Crexi and CoStar — where tenants and tenant-rep brokers actually search — plus CRECO’s own broker network.',
+    body: 'Professional marketing, backed by CRECO’s own broker network and direct outreach to qualified tenants and buyers.',
   },
   {
     icon: 'Scale',

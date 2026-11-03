@@ -175,7 +175,7 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
         q: `What commercial space is available in ${config.city} right now?`,
         a: available.length > 0
           ? `CRECO currently markets ${available.length} ${available.length === 1 ? 'property' : 'properties'} in the ${config.city} area: ${available.map(l => `${l.title} (${listingSummary(l)})`).join('; ')}. CRECO's tenant- and buyer-rep clients also get access to all other ${config.cityShort} inventory, including off-market space. Call ${BUSINESS.phoneDisplay}.`
-          : `CRECO represents tenants and buyers across the full ${config.cityShort} market — including LoopNet/CoStar inventory and off-market space. Call ${BUSINESS.phoneDisplay} or email ${BUSINESS.email} for a current availability survey.`,
+          : `CRECO represents tenants and buyers across the full ${config.cityShort} market — including other brokers' listings and off-market space. Call ${BUSINESS.phoneDisplay} or email ${BUSINESS.email} for a current availability survey.`,
       }]
     : [];
   // Structured data (Place + Article + BreadcrumbList) — these city hubs shipped
@@ -356,7 +356,7 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
                 tone="light"
                 eyebrow={`${config.cityShort} — tenant & buyer representation`}
                 heading={`Looking for commercial space in ${config.city}?`}
-                body={`Tell us the type, size and timing and our team sends you matching ${config.cityShort} availabilities — including off-market space you won't find on LoopNet. No obligation.`}
+                body={`Tell us the type, size and timing and our team sends you matching ${config.cityShort} availabilities — including off-market space you won't find on public listing sites. No obligation.`}
                 contextLabel="What are you looking for?"
                 contextPlaceholder={`e.g. 5,000 SF retail in ${config.cityShort}, moving Q1`}
                 source="tenant-needs"

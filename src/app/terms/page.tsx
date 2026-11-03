@@ -79,7 +79,7 @@ export default function TermsPage() {
 
             <h2 className="font-heading text-heading-lg font-bold text-primary mt-10">Third-Party Links</h2>
             <p>
-              The Site may link to third-party websites (e.g., LoopNet, Google Maps, TREC). CRECO does not control those sites and is not responsible for their content, policies, or practices. Visits to linked sites are at your own risk.
+              The Site may link to third-party websites (e.g., Google Maps, TREC). CRECO does not control those sites and is not responsible for their content, policies, or practices. Visits to linked sites are at your own risk.
             </p>
 
             <h2 className="font-heading text-heading-lg font-bold text-primary mt-10">Limitation of Liability</h2>

@@ -102,7 +102,6 @@ export const BUSINESS = {
   /** Third-party profiles verified to exist and belong to CRECO. Only add a
    *  URL once it's confirmed — never guess one. */
   sameAs: [
-    'https://www.loopnet.com/company/creco-llc/san-antonio-tx/w7l0jcll/',
     // Google Business Profile — verified Sept 2026. The ?cid= form is the
     // canonical, stable identity URL; the review link is a call to action,
     // not an identity, so it does not belong in sameAs.
@@ -110,7 +109,6 @@ export const BUSINESS = {
     // TODO(Zack): LinkedIn company page — footer links linkedin.com/company/crecotx, which returned 404
     // TODO(Zack): Facebook page — footer links facebook.com/crecotx (unverified)
     // TODO(Zack): Instagram — footer links instagram.com/crecotx (unverified)
-    // TODO(Zack): Crexi company/broker profile URL
   ],
 } as const;
 
@@ -120,7 +118,6 @@ export const FOUNDER = {
   trecLicense: '691174',
   sameAs: [
     'https://www.linkedin.com/in/zachary-a-stovall-072b2646/',
-    'https://www.loopnet.com/commercial-real-estate-brokers/profile/zachary-stovall/f0jq0evb',
   ],
 };
 

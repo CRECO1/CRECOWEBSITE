@@ -25,7 +25,7 @@ const VALUE_PROPS = [
   {
     icon: BellRing,
     title: 'New listings as they go live',
-    body: 'We email you when a matching commercial property goes live on the CRECO inventory — often before it hits LoopNet or Crexi.',
+    body: 'We email you when a matching commercial property goes live on the CRECO inventory — often before it reaches the wider market.',
   },
   {
     icon: Filter,

@@ -220,7 +220,7 @@ export default function SanAntonioPage() {
           },
           {
             q: 'Who does landlord representation and leasing for property owners in San Antonio?',
-            a: 'CRECO lists and leases San Antonio office, medical office, retail, industrial, and flex property for owners — pricing, marketing (including LoopNet, CoStar, and Crexi syndication), tenant sourcing, and lease negotiation — and currently markets office, medical, and warehouse space in Northwest, the Medical Center, and Northeast San Antonio. It also leases its own centers in the metro.',
+            a: 'CRECO lists and leases San Antonio office, medical office, retail, industrial, and flex property for owners — pricing, marketing (including our broker network and direct outreach), tenant sourcing, and lease negotiation — and currently markets office, medical, and warehouse space in Northwest, the Medical Center, and Northeast San Antonio. It also leases its own centers in the metro.',
           },
           {
             q: 'Can CRECO sell my San Antonio commercial property or land?',

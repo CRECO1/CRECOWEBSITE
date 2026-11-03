@@ -184,8 +184,8 @@ export const SERVICES: ServiceContent[] = [
         a: 'Residential agents help families buy houses. Tenant reps are commercial real estate brokers who advocate for tenants in commercial leases. The skill sets, lease structures, market knowledge, and economic stakes are entirely different. CRECO is a licensed Texas commercial brokerage whose team works tenant, landlord, and investment assignments — commercial only, not residential.',
       },
       {
-        q: 'Can I just respond to LoopNet listings myself?',
-        a: 'You can — but you\'ll be at a disadvantage. LoopNet listings are landlord-marketed properties. The landlord\'s broker is incentivized to maximize the landlord\'s outcome, not yours. Even if you have a perfectly fair landlord broker on the other side, you won\'t see the off-market sublease, the building down the street that\'s about to lose a tenant, or the comparable that justifies your aggressive counter. Tenant reps see the full market, not just what\'s publicly listed.',
+        q: 'Can I just respond to online listings myself?',
+        a: 'You can — but you\'ll be at a disadvantage. Online listings are landlord-marketed properties. The landlord\'s broker is incentivized to maximize the landlord\'s outcome, not yours. Even if you have a perfectly fair landlord broker on the other side, you won\'t see the off-market sublease, the building down the street that\'s about to lose a tenant, or the comparable that justifies your aggressive counter. Tenant reps see the full market, not just what\'s publicly listed.',
       },
       {
         q: 'How long does the tenant rep process take?',
@@ -218,11 +218,11 @@ export const SERVICES: ServiceContent[] = [
     intro: [
       'Smart Texas commercial real estate investors don\'t buy on cap rate alone. They buy on a defensible thesis built from current submarket comps, tenant credit analysis, mark-to-market upside, lease rollover risk, capex backlog, and disposition path. CRECO brings that level of underwriting rigor to every engagement, whether you are an entrepreneur evaluating your first acquisition or a family office pacing through your tenth deal.',
       'Our investment advisory practice covers every asset type in San Antonio and the Texas Hill Country. We work with private investors, family offices, real estate operators, and high-net-worth individuals deploying capital in commercial real estate here. Many of our clients have 5 to 50+ property portfolios, and we are deeply engaged in the strategic decisions that compound returns: which assets to hold, which to reposition, when to dispose, where to redeploy 1031 proceeds.',
-      'We also bring deal flow. Through the San Antonio and Hill Country commercial real estate relationships our team has built — owners, brokers, attorneys, lenders, family offices, and operators — our network sees off-market acquisition opportunities that never hit LoopNet, CoStar, or Crexi, including family-office portfolio dispositions, owner-operator retirements, and quiet auction processes. When you engage CRECO as your investment advisor, you tap that network.',
+      'We also bring deal flow. Through the San Antonio and Hill Country commercial real estate relationships our team has built — owners, brokers, attorneys, lenders, family offices, and operators — our network sees off-market acquisition opportunities that never get publicly listed, including family-office portfolio dispositions, owner-operator retirements, and quiet auction processes. When you engage CRECO as your investment advisor, you tap that network.',
     ],
     body: [
       'Acquisition underwriting and pro forma modeling on every property you evaluate',
-      'Market and submarket comp analysis using current local transactions, not stale CoStar data',
+      'Market and submarket comp analysis using current local transactions, not stale third-party data',
       'Tenant credit and lease audit (rent roll review, mark-to-market analysis, expense recovery)',
       '1031 exchange identification within the 45-day window — including up-leg coordination',
       'Coordination with your CPA on tax-driven decisions like 1031 timing',
@@ -284,13 +284,13 @@ export const SERVICES: ServiceContent[] = [
     ],
     heroSubhead: 'Owner-side leasing and sales across every commercial property type in San Antonio and the Texas Hill Country. Institutional-quality marketing, principal-led negotiation, and execution from listing to close.',
     intro: [
-      'Listing a Texas commercial property is not "putting it on LoopNet and waiting." Done well, it\'s a coordinated marketing campaign — broker book, drone photography, custom property website, CoStar / LoopNet / Crexi syndication, direct outreach to qualified principals — combined with disciplined negotiation and diligence management. Done poorly, your property sits on the market for 12 months, signals distress, and trades at a discount.',
+      'Listing a Texas commercial property is not "putting up a sign and waiting." Done well, it\'s a coordinated marketing campaign — broker book, drone photography, custom property website, direct outreach to qualified principals — combined with disciplined negotiation and diligence management. Done poorly, your property sits on the market for 12 months, signals distress, and trades at a discount.',
       'CRECO\'s leasing and sales practice handles owner-side representation across all commercial property types in San Antonio and the Hill Country: retail centers, industrial buildings, office buildings, mixed-use, flex, and land. Whether you\'re leasing up vacant space, listing a stabilized asset for sale, or testing the market — we bring institutional-quality marketing materials, target the right buyer or tenant pool, and negotiate aggressively for your outcome.',
       'Every CRECO listing is worked directly by our team — not handed off to a junior associate. You get senior-level attention from listing day through close, including weekly progress reports, real-time activity tracking, and direct availability for buyer/tenant questions.',
     ],
     body: [
       'Comprehensive marketing materials: broker book, drone photography, professional photo, custom property website, virtual tours',
-      'Listing syndication: CoStar, LoopNet, Crexi, plus our local owner/broker network',
+      'Targeted exposure through our local owner/broker network',
       'Direct outreach campaigns to qualified buyer/tenant pools — including principals who never search public listings',
       'Aggressive offer negotiation: multi-bid tension when possible, walk-away leverage on terms that matter',
       'Diligence coordination from contract through close (or lease execution through delivery)',

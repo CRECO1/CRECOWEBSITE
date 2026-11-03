@@ -65,7 +65,7 @@ export default async function ListingsPage() {
     },
     {
       q: 'Does CRECO only show its own listings?',
-      a: `No. This page lists properties CRECO represents or owns, but as a licensed Texas brokerage (${BUSINESS.trecLicenseDisplay}) CRECO's tenant- and buyer-representation clients get access to the entire market — including LoopNet/CoStar/Crexi inventory and off-market space. Tenant representation is typically paid by the landlord.`,
+      a: `No. This page lists properties CRECO represents or owns, but as a licensed Texas brokerage (${BUSINESS.trecLicenseDisplay}) CRECO's tenant- and buyer-representation clients get access to the entire market — including other brokers' listings and off-market space. Tenant representation is typically paid by the landlord.`,
     },
   ];
 

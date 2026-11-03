@@ -68,7 +68,7 @@ export default async function Page() {
           },
           {
             title: 'Off-market matters.',
-            body: 'Many of the best local deals never hit LoopNet or CoStar. Long-time owners in San Antonio and the Hill Country often sell through relationships, and CRECO\'s local owner network surfaces opportunities before they reach the open market.',
+            body: 'Many of the best local deals never get publicly listed. Long-time owners in San Antonio and the Hill Country often sell through relationships, and CRECO\'s local owner network surfaces opportunities before they reach the open market.',
           },
           {
             title: '1031 timing matters.',
