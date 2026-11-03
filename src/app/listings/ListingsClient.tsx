@@ -347,6 +347,15 @@ export function ListingsClient({ initialListings, children }: { initialListings:
                 />
               </div>
 
+              <select
+                value={propertyType}
+                onChange={e => setPropertyType(e.target.value)}
+                className="h-11 min-w-[calc(50%-0.375rem)] flex-1 rounded-lg border border-border px-3 text-body-sm text-primary sm:min-w-0 sm:flex-none"
+                aria-label="Filter by property type"
+              >
+                {propertyTypeOptions.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
+              </select>
+
               {marketOptions.length > 2 && (
                 <select
                   value={market}
@@ -431,20 +440,6 @@ export function ListingsClient({ initialListings, children }: { initialListings:
                   <span className="hidden sm:inline">Map</span>
                 </button>
               </div>
-            </div>
-
-            <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-3 sm:mx-0 sm:px-0" role="group" aria-label="Filter by property type">
-              {propertyTypeOptions.map(p => (
-                <button
-                  key={p.value}
-                  type="button"
-                  onClick={() => setPropertyType(p.value)}
-                  aria-pressed={propertyType === p.value}
-                  className={`shrink-0 rounded-full border px-4 py-1.5 text-caption font-semibold transition-colors ${propertyType === p.value ? 'border-gold bg-gold text-primary' : 'border-border text-foreground-muted hover:border-gold'}`}
-                >
-                  {p.label === 'All Types' ? 'All' : p.label}
-                </button>
-              ))}
             </div>
 
             {filtersOpen && (
