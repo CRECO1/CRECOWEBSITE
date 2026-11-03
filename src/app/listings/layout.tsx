@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { DEFAULT_OG_IMAGE } from '@/lib/og';
 
 export const metadata: Metadata = {
-  title: 'Texas Commercial Real Estate Listings | Lease & Sale | CRECO',
+  title: 'San Antonio & Hill Country Commercial Listings | CRECO',
   description:
     'Live Texas commercial listings — office, warehouse, retail, flex & land for lease or sale, plus off-market and tenant-rep access the portals miss.',
   keywords: [
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     images: [DEFAULT_OG_IMAGE],
-    title: 'Texas Commercial Real Estate Listings | CRECO',
+    title: 'San Antonio & Hill Country Commercial Listings | CRECO',
     description:
       'Active commercial real estate listings across Texas — office, warehouse, retail, flex, and land. Updated daily.',
     url: 'https://www.crecotx.com/listings',

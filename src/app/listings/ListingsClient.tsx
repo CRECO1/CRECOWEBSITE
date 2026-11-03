@@ -26,7 +26,7 @@ import { Input } from '@/components/ui/Input';
 import { CompareToggle } from '@/components/listings/CompareToggle';
 import { SaveSearchModal } from '@/components/listings/SaveSearchModal';
 import { ListingsEmptyState } from '@/components/listings/ListingsEmptyState';
-import { formatSqft, formatLeaseRate, formatPrice, transactionLabel, propertyTypeLabel } from '@/lib/utils';
+import { formatSqft, formatAcres, formatLeaseRate, formatPrice, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 import type { Listing } from '@/lib/supabase';
 import { withSyntheticListings, listingLinkProps } from '@/lib/featured-properties';
 import { trackViewItemList, trackListingSearch, trackSelectItem } from '@/lib/analytics';
@@ -63,6 +63,60 @@ const SIZE_RANGES: { label: string; min: number; max: number }[] = [
   { label: '50,000+ SF', min: 50000, max: Infinity },
 ];
 
+/** Top-level market a listing belongs to — the submarket list alone mixed Fair Oaks Ranch with Fort Worth. */
+const DEFAULT_MARKET = 'San Antonio & Hill Country';
+function marketOf(l: Listing): string {
+  const c = (l.city ?? '').toLowerCase();
+  if (c === 'fort worth') return 'Fort Worth';
+  if (c === 'wichita falls') return 'Wichita Falls';
+  return DEFAULT_MARKET;
+}
+
+/** Newest-first within featured-first, so the strongest inventory leads the grid. */
+function byFeaturedThenNewest(a: Listing, b: Listing): number {
+  if (!!a.featured !== !!b.featured) return a.featured ? -1 : 1;
+  const da = a.listing_date ?? a.created_at ?? '';
+  const db = b.listing_date ?? b.created_at ?? '';
+  return db.localeCompare(da);
+}
+
+const NEW_WINDOW_DAYS = 30;
+function isNew(l: Listing): boolean {
+  const d = l.listing_date ?? l.created_at;
+  if (!d) return false;
+  const t = Date.parse(d);
+  return Number.isFinite(t) && Date.now() - t < NEW_WINDOW_DAYS * 86_400_000;
+}
+
+/** A listing can be on the site as separate lease + sale rows for one building; show it once. */
+type Card = { listing: Listing; alsoSale?: Listing };
+function collapseLeaseSalePairs(rows: Listing[]): Card[] {
+  // Same building = same address, property type and size (Elkhorn's retail center and land pad share an address but aren't one offering).
+  const key = (l: Listing) => `${l.address}|${l.city}|${l.property_type}|${l.sqft ?? ''}`.toLowerCase().trim();
+  const out: Card[] = [];
+  const leaseIdx = new Map<string, number>();
+  for (const l of rows) {
+    if (l.transaction_type === 'lease') leaseIdx.set(key(l), out.length);
+    out.push({ listing: l });
+  }
+  const drop = new Set<number>();
+  out.forEach((c, i) => {
+    if (c.listing.transaction_type !== 'sale') return;
+    const li = leaseIdx.get(key(c.listing));
+    if (li === undefined) return;
+    out[li].alsoSale = c.listing;
+    drop.add(i);
+  });
+  return out.filter((_, i) => !drop.has(i));
+}
+
+function priceLine(l: Listing, alsoSale?: Listing): string {
+  if (l.transaction_type === 'sale' && l.sale_price) return formatPrice(l.sale_price);
+  if (l.lease_rate) return formatLeaseRate(l.lease_rate, l.lease_rate_basis);
+  if (alsoSale?.sale_price) return formatPrice(alsoSale.sale_price);
+  return l.transaction_type === 'sale' ? 'Call for offers' : 'Call for rate';
+}
+
 export function ListingsClient({ initialListings, children }: { initialListings: Listing[]; children?: React.ReactNode }) {
   const router = useRouter();
 
@@ -81,6 +135,7 @@ export function ListingsClient({ initialListings, children }: { initialListings:
   const [propertyType, setPropertyType] = useState<string>('all');
   const [transactionType, setTransactionType] = useState<string>('all');
   const [submarket, setSubmarket] = useState<string>('all');
+  const [market, setMarket] = useState<string>('all');
   const [sizeIdx, setSizeIdx] = useState(0);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [view, setView] = useState<View>('grid');
@@ -97,6 +152,7 @@ export function ListingsClient({ initialListings, children }: { initialListings:
     const type = sp.get('type'); if (type) setPropertyType(type);
     const txn = sp.get('txn'); if (txn) setTransactionType(txn);
     const sub = sp.get('submarket'); if (sub) setSubmarket(sub);
+    const mkt = sp.get('market'); if (mkt) setMarket(mkt);
     // Clamp to a real SIZE_RANGES index — a crafted/stale ?size=7 (or 2.5) used to
     // set sizeIdx out of bounds and crash the whole page on SIZE_RANGES[sizeIdx].min.
     const size = Number(sp.get('size') ?? '0'); if (Number.isFinite(size) && size > 0) setSizeIdx(Math.min(Math.trunc(size), SIZE_RANGES.length - 1));
@@ -127,15 +183,21 @@ export function ListingsClient({ initialListings, children }: { initialListings:
     ];
   }, [listings]);
 
+  const marketOptions = useMemo(() => {
+    const markets = Array.from(new Set(listings.map(marketOf)));
+    markets.sort((a, b) => (a === DEFAULT_MARKET ? -1 : b === DEFAULT_MARKET ? 1 : a.localeCompare(b)));
+    return [{ value: 'all', label: 'All Markets' }, ...markets.map(m => ({ value: m, label: m }))];
+  }, [listings]);
+
   const submarketOptions = useMemo(() => {
     const submarkets = Array.from(
-      new Set(listings.map(l => l.submarket).filter(Boolean) as string[])
+      new Set(listings.filter(l => market === 'all' || marketOf(l) === market).map(l => l.submarket).filter(Boolean) as string[])
     ).sort();
     return [
       { value: 'all', label: 'All Submarkets' },
       ...submarkets.map(s => ({ value: s, label: s })),
     ];
-  }, [listings]);
+  }, [listings, market]);
 
   // Keep the URL in sync with filter state (shareable/bookmarkable filtered
   // views). Held off until the incoming URL has been read.
@@ -145,6 +207,7 @@ export function ListingsClient({ initialListings, children }: { initialListings:
     if (propertyType !== 'all') params.set('type', propertyType);
     if (transactionType !== 'all') params.set('txn', transactionType);
     if (submarket !== 'all') params.set('submarket', submarket);
+    if (market !== 'all') params.set('market', market);
     if (sizeIdx !== 0) params.set('size', String(sizeIdx));
     if (search) params.set('q', search);
     if (view !== 'grid') params.set('view', view);
@@ -153,7 +216,7 @@ export function ListingsClient({ initialListings, children }: { initialListings:
     if (`${window.location.pathname}${window.location.search}` !== next) {
       router.replace(next, { scroll: false });
     }
-  }, [urlRead, propertyType, transactionType, submarket, sizeIdx, search, view, router]);
+  }, [urlRead, propertyType, transactionType, submarket, market, sizeIdx, search, view, router]);
 
   // Refresh to the latest inventory client-side (ISR data may be up to the
   // revalidate window stale). The SSR/props data already populates the grid, so
@@ -189,13 +252,18 @@ export function ListingsClient({ initialListings, children }: { initialListings:
         || l.transaction_type === transactionType
         || l.transaction_type === 'both';
       const matchSubmarket = submarket === 'all' || l.submarket === submarket;
+      const matchMarket = market === 'all' || marketOf(l) === market;
       const sf = l.sqft ?? 0;
       const matchSize = sf >= range.min && sf <= range.max;
-      return matchSearch && matchType && matchTxn && matchSubmarket && matchSize;
-    });
-  }, [listings, search, propertyType, transactionType, submarket, sizeIdx]);
+      return matchSearch && matchType && matchTxn && matchSubmarket && matchMarket && matchSize;
+    }).sort(byFeaturedThenNewest);
+  }, [listings, search, propertyType, transactionType, submarket, market, sizeIdx]);
 
-  const hasFilters = propertyType !== 'all' || transactionType !== 'all' || submarket !== 'all' || sizeIdx !== 0 || search !== '';
+  // One card per building: a lease row and a sale row at the same address collapse together.
+  const cards = useMemo(() => collapseLeaseSalePairs(filtered), [filtered]);
+  const totalBuildings = useMemo(() => collapseLeaseSalePairs(listings).length, [listings]);
+
+  const hasFilters = propertyType !== 'all' || transactionType !== 'all' || submarket !== 'all' || market !== 'all' || sizeIdx !== 0 || search !== '';
 
   // One definition of "clear", shared by the Clear chip, the map's empty state
   // and the grid's. The map's copy of this used to omit submarket, so clearing
@@ -205,6 +273,7 @@ export function ListingsClient({ initialListings, children }: { initialListings:
     setPropertyType('all');
     setTransactionType('all');
     setSubmarket('all');
+    setMarket('all');
     setSizeIdx(0);
   }
 
@@ -213,6 +282,7 @@ export function ListingsClient({ initialListings, children }: { initialListings:
     setSearch('');
     setTransactionType('all');
     setSubmarket('all');
+    setMarket('all');
     setSizeIdx(0);
   }
 
@@ -244,7 +314,7 @@ export function ListingsClient({ initialListings, children }: { initialListings:
     // filtered.length/hasFilters are functions of the filter primitives already
     // listed — adding them to deps would just double-trigger the same fire.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlRead, propertyType, transactionType, submarket, sizeIdx, search]);
+  }, [urlRead, propertyType, transactionType, submarket, market, sizeIdx, search]);
 
   return (
     <>
@@ -255,15 +325,15 @@ export function ListingsClient({ initialListings, children }: { initialListings:
           <div className="absolute inset-0 opacity-15" style={{ backgroundImage: "url('/images/sa-hero.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }} aria-hidden="true" />
           <Container className="relative z-10">
             <p className="overline mb-2 text-gold">Available Now</p>
-            <h1 className="font-heading text-display-sm font-bold">Texas Commercial Properties</h1>
+            <h1 className="font-heading text-display-sm font-bold">San Antonio &amp; Hill Country Commercial Properties</h1>
             <p className="mt-2 text-body text-white/60">
-              {listings.length} active commercial real estate listings — office, industrial, retail, flex, and land — across San Antonio and the Hill Country.
+              {totalBuildings} active commercial real estate listings — office, industrial, retail, flex, and land — across San Antonio and the Hill Country.
             </p>
           </Container>
         </div>
 
         {/* Search & Filters */}
-        <div className="sticky top-20 z-30 border-b border-border bg-white shadow-sm">
+        <div className="border-b border-border bg-white shadow-sm sm:sticky sm:top-20 sm:z-30">
           <Container>
             <div className="flex flex-wrap items-center gap-3 py-4">
               <div className="relative flex-1 min-w-[220px]">
@@ -277,19 +347,21 @@ export function ListingsClient({ initialListings, children }: { initialListings:
                 />
               </div>
 
-              <select
-                value={propertyType}
-                onChange={e => setPropertyType(e.target.value)}
-                className="h-11 rounded-lg border border-border px-3 text-body-sm text-primary"
-                aria-label="Filter by property type"
-              >
-                {propertyTypeOptions.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
-              </select>
+              {marketOptions.length > 2 && (
+                <select
+                  value={market}
+                  onChange={e => { setMarket(e.target.value); setSubmarket('all'); }}
+                  className="h-11 min-w-[calc(50%-0.375rem)] flex-1 rounded-lg border border-border px-3 text-body-sm text-primary sm:min-w-0 sm:flex-none"
+                  aria-label="Filter by market"
+                >
+                  {marketOptions.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
+                </select>
+              )}
 
               <select
                 value={transactionType}
                 onChange={e => setTransactionType(e.target.value)}
-                className="h-11 rounded-lg border border-border px-3 text-body-sm text-primary"
+                className="h-11 min-w-[calc(50%-0.375rem)] flex-1 rounded-lg border border-border px-3 text-body-sm text-primary sm:min-w-0 sm:flex-none"
                 aria-label="Filter by sale or lease"
               >
                 {transactionTypeOptions.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
@@ -299,7 +371,7 @@ export function ListingsClient({ initialListings, children }: { initialListings:
                 <select
                   value={submarket}
                   onChange={e => setSubmarket(e.target.value)}
-                  className="h-11 rounded-lg border border-border px-3 text-body-sm text-primary"
+                  className="h-11 min-w-[calc(50%-0.375rem)] flex-1 rounded-lg border border-border px-3 text-body-sm text-primary sm:min-w-0 sm:flex-none"
                   aria-label="Filter by submarket"
                 >
                   {submarketOptions.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
@@ -359,6 +431,20 @@ export function ListingsClient({ initialListings, children }: { initialListings:
                   <span className="hidden sm:inline">Map</span>
                 </button>
               </div>
+            </div>
+
+            <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-3 sm:mx-0 sm:px-0" role="group" aria-label="Filter by property type">
+              {propertyTypeOptions.map(p => (
+                <button
+                  key={p.value}
+                  type="button"
+                  onClick={() => setPropertyType(p.value)}
+                  aria-pressed={propertyType === p.value}
+                  className={`shrink-0 rounded-full border px-4 py-1.5 text-caption font-semibold transition-colors ${propertyType === p.value ? 'border-gold bg-gold text-primary' : 'border-border text-foreground-muted hover:border-gold'}`}
+                >
+                  {p.label === 'All Types' ? 'All' : p.label}
+                </button>
+              ))}
             </div>
 
             {filtersOpen && (
@@ -428,7 +514,7 @@ export function ListingsClient({ initialListings, children }: { initialListings:
               )}
               <ListingsEmptyState
                 propertyType={search.trim() ? null : propertyType}
-                otherFiltersActive={transactionType !== 'all' || submarket !== 'all' || sizeIdx !== 0 || search !== ''}
+                otherFiltersActive={transactionType !== 'all' || submarket !== 'all' || market !== 'all' || sizeIdx !== 0 || search !== ''}
                 totalCount={listings.length}
                 onClearFilters={clearAllFilters}
                 onClearOtherFilters={clearOtherFilters}
@@ -452,10 +538,10 @@ export function ListingsClient({ initialListings, children }: { initialListings:
             ) : (
               <>
                 <p className="mb-6 text-body-sm text-foreground-muted">
-                  Showing {filtered.length} {filtered.length === 1 ? 'property' : 'properties'}
+                  Showing {cards.length} {cards.length === 1 ? 'property' : 'properties'}
                 </p>
                 <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                  {filtered.map((listing, i) => (
+                  {cards.map(({ listing, alsoSale }, i) => (
                     <Fragment key={listing.id}>
                     <Link {...listingLinkProps(listing)} className="card-luxury group block"
                       onClick={() => trackSelectItem({
@@ -475,11 +561,14 @@ export function ListingsClient({ initialListings, children }: { initialListings:
                         )}
                         <div className="absolute top-4 left-4 flex flex-col gap-2">
                           <span className="rounded-full bg-gold px-3 py-1 text-caption font-semibold text-primary uppercase">
-                            {transactionLabel(listing.transaction_type)}
+                            {alsoSale ? 'For Lease or Sale' : transactionLabel(listing.transaction_type)}
                           </span>
                           <span className="rounded-full bg-white/95 px-3 py-1 text-caption font-semibold text-primary">
                             {propertyTypeLabel(listing.property_type)}
                           </span>
+                          {isNew(listing) && (
+                            <span className="self-start rounded-full bg-primary px-3 py-1 text-caption font-semibold text-white">New</span>
+                          )}
                         </div>
                         {!listing.landing_url && (
                           <div className="absolute top-4 right-4">
@@ -498,14 +587,15 @@ export function ListingsClient({ initialListings, children }: { initialListings:
                         </h2>
                         <p className="mb-4 text-body-sm text-foreground-muted line-clamp-2">{listing.headline ?? ''}</p>
                         <div className="mb-4 price-tag text-2xl">
-                          {listing.transaction_type === 'sale' && listing.sale_price
-                            ? formatPrice(listing.sale_price)
-                            : listing.lease_rate
-                              ? formatLeaseRate(listing.lease_rate, listing.lease_rate_basis)
-                              : 'Contact for pricing'}
+                          {priceLine(listing, alsoSale)}
                         </div>
-                        <div className="flex items-center gap-4 text-caption text-foreground-muted border-t border-border pt-4">
-                          <span className="flex items-center gap-1.5"><Layers className="h-4 w-4" />{formatSqft(listing.sqft)}</span>
+                        <div className="flex min-h-[2.75rem] items-center gap-4 text-caption text-foreground-muted border-t border-border pt-4">
+                          {listing.sqft ? (
+                            <span className="flex items-center gap-1.5"><Layers className="h-4 w-4" />{formatSqft(listing.sqft)}</span>
+                          ) : null}
+                          {listing.lot_size ? (
+                            <span className="flex items-center gap-1.5"><MapPin className="h-4 w-4" />{formatAcres(listing.lot_size)}</span>
+                          ) : null}
                           {listing.zoning && <span>Zoning {listing.zoning}</span>}
                           {listing.clear_height && <span>{listing.clear_height}&apos; clear</span>}
                         </div>
@@ -516,7 +606,7 @@ export function ListingsClient({ initialListings, children }: { initialListings:
                         same one sits at the bottom of the page); it now points
                         at the higher-intent requirements form below instead of
                         asking for the same email twice. */}
-                    {filtered.length > 6 && i === 5 && (
+                    {cards.length > 6 && i === 5 && (
                       <div className="sm:col-span-2 lg:col-span-3">
                         <div className="flex flex-col gap-4 rounded-2xl bg-primary px-6 py-6 text-white sm:flex-row sm:items-center sm:justify-between sm:px-8">
                           <div>
