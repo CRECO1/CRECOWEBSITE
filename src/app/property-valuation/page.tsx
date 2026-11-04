@@ -16,9 +16,9 @@ import { jsonLd } from '@/lib/jsonLd';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { breadcrumbList } from '@/lib/schema';
 export const metadata: Metadata = {
-  title: "What's My Commercial Property Worth? | CRECO",
+  title: 'Commercial Property Valuation in Texas | Free Report | CRECO',
   description:
-    "What's your commercial property worth? Tell us about it and CRECO's broker will prepare a cap-rate-based value range — San Antonio & the Texas Hill Country.",
+    "What's your commercial property worth? Get a free commercial real estate valuation report: a cap-rate-based value range prepared by CRECO's broker for San Antonio & the Texas Hill Country.",
   keywords: [
     'commercial property valuation texas',
     'what is my commercial property worth',
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://www.crecotx.com/property-valuation' },
   openGraph: {
     images: [DEFAULT_OG_IMAGE],
-    title: "What's My Commercial Property Worth? | CRECO",
+    title: 'Commercial Property Valuation in Texas | Free Report | CRECO',
     description:
       'Request a cap-rate-based valuation for your Texas commercial property — industrial, retail, office, flex.',
     url: 'https://www.crecotx.com/property-valuation',
