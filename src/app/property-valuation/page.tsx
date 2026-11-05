@@ -5,6 +5,7 @@ import { ArrowRight, Phone, ShieldCheck, TrendingUp, Calculator, Building2 } fro
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { CapRateTable } from '@/components/marketing/CapRateTable';
+import { ValueEstimator } from '@/components/marketing/ValueEstimator';
 import { PropertyValuationForm } from '@/components/forms/PropertyValuationForm';
 import { BrokerTrustLine } from '@/components/marketing/BrokerCard';
 import { PRIMARY_BROKER } from '@/lib/broker';
@@ -100,6 +101,18 @@ const FAQS: { q: string; a: string }[] = [
     a: "Submarket is one of the biggest value levers. The same building supports a different price in a primary submarket (strong demand, lower cap rates) than in a secondary or tertiary one. Texas metros each have their own dynamics — Class A office in Stone Oak or the Domain prices very differently from Class B space downtown. The tool asks for a submarket tier so the estimate reflects that.",
   },
   {
+    q: 'How do I value commercial land?',
+    a: "Land has no income to capitalize, so it is valued by the sales-comparison approach: recent sales of similar parcels, adjusted for size, zoning and entitlements, utilities, frontage and access, and how close the growth path is. Price per acre or per square foot of comparable sales is the usual yardstick. A cap rate does not apply, which is why the calculator above covers income-producing property only.",
+  },
+  {
+    q: 'Can I look up the value of a commercial property by address?',
+    a: "County appraisal districts publish an assessed value by address, but it is a tax figure, not a market price, and it often differs from what a buyer would pay. A market value comes from comparable sales and, for leased property, the income it produces. Send us the address and we will prepare a broker opinion of value from comps.",
+  },
+  {
+    q: 'How is price per square foot used to value commercial real estate?',
+    a: "Price per square foot is a quick cross-check, not a method on its own. Compare it with recent sales of similar buildings in the same submarket. It misses lease terms, tenant credit and condition, so two buildings at the same price per foot can have very different values. The income approach is the primary method for leased property, and price per square foot confirms it.",
+  },
+  {
     q: 'What happens after I submit my property?',
     a: "Tell us about the property and where to send it. Zachary A. Stovall, CRECO's broker/owner, reviews it and follows up personally about a Broker Opinion of Value built from comparable sales (and, if you want, a walkthrough). Timing and any fee depend on the information we need to build it out.",
   },
@@ -150,7 +163,7 @@ export default function PropertyValuationPage() {
           <Container>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
               <div className="lg:col-span-2">
-                <div className="rounded-2xl bg-white shadow-card p-5 sm:p-10">
+                <div id="valuation-form" className="rounded-2xl bg-white shadow-card p-5 sm:p-10 scroll-mt-28">
                   <p className="overline mb-3">Your property</p>
                   <h2 className="font-heading text-heading-xl font-bold text-primary mb-2">Tell us about it.</h2>
                   <p className="text-body text-foreground-muted mb-5">
@@ -219,6 +232,8 @@ export default function PropertyValuationPage() {
 
         {/* FAQ — answer-first content mirroring the FAQPage schema (indexable +
             AI-citable), targeting commercial-property-valuation search intent. */}
+        <ValueEstimator />
+
         <CapRateTable />
 
         <section className="section-luxury bg-background-cream" id="faq" aria-labelledby="val-faq-heading">
