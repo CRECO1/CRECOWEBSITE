@@ -73,6 +73,14 @@ Phone ${BUSINESS.phoneDisplay} · ${BUSINESS.email} · ${SITE_URL}
 
 Generated: ${updated}. Listings below are live inventory, refreshed every 30 minutes. Short index: ${SITE_URL}/llms.txt
 
+## Data for AI agents
+
+- Listings API (JSON, read-only, no key): ${SITE_URL}/api/v1/listings. Filters: type, transaction (lease|sale), metro, city, submarket, min_sqft, max_sqft, max_lease_rate, max_price, q, limit, offset. Add format=markdown for a markdown list.
+- One listing: ${SITE_URL}/api/v1/listings/{slug}
+- OpenAPI description: ${SITE_URL}/api/openapi.json
+- Markdown for any listing page: ${SITE_URL}/listings/{slug}.md (or send Accept: text/markdown to the listing URL)
+- Conventions: please attribute CRECO and link to each listing's url. Confirm availability and terms with CRECO. The API is read-only: for inquiries send people to ${SITE_URL}/get-started, or ${BUSINESS.phoneDisplay} / ${BUSINESS.email}.
+
 ## Company facts
 
 - Name: ${BUSINESS.name} (short: CRECO) — a d/b/a of ${BUSINESS.legalName}, the licensed Texas brokerage (TREC #${BUSINESS.trecLicense})

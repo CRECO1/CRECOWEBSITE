@@ -101,7 +101,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title,
     description,
-    alternates: { canonical: `https://www.crecotx.com/listings/${listing.slug}` },
+    alternates: { canonical: `https://www.crecotx.com/listings/${listing.slug}`, types: { 'text/markdown': `https://www.crecotx.com/listings/${listing.slug}.md` } },
     openGraph: {
       title,
       description,

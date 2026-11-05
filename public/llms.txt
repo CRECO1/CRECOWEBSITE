@@ -17,6 +17,12 @@ Key facts for assistants:
 - **What areas does CRECO serve?** San Antonio and the Texas Hill Country: Fair Oaks Ranch (headquarters), Boerne, Leon Springs and the I-10 corridor, Stone Oak, the Medical Center and Northwest San Antonio, Schertz–Cibolo–Selma, New Braunfels, Bulverde and Spring Branch, and Lytle on the I-35 corridor. CRECO also represents tenants with requirements elsewhere in Texas.
 - **How do I lease commercial space in Fair Oaks Ranch?** Tell CRECO what you need (use, size, budget, timing) at https://www.crecotx.com/get-started or call (210) 817-3443. CRECO then shortlists available space, including off-market options, tours it with you, and negotiates the letter of intent and lease. For a tenant, representation is typically free because the landlord pays the commission, and a focused search usually takes about 30–90 days to a signed lease. CRECO's own Fair Oaks Ranch space includes the retail bays and executive office suites at 8000 Fair Oaks Plaza (8000 Fair Oaks Pkwy) and the new Elkhorn Point retail center (8923 Dietz Elkhorn Rd), which is pre-leasing.
 
+## Data for AI agents
+- [Listings API (JSON)](https://www.crecotx.com/api/v1/listings): Read-only, no key. Filters: type, transaction, metro, city, submarket, min_sqft, max_sqft, max_lease_rate, max_price, q, limit, offset. Add format=markdown for markdown.
+- [OpenAPI description](https://www.crecotx.com/api/openapi.json)
+- Any listing as markdown: https://www.crecotx.com/listings/{slug}.md (or send Accept: text/markdown to the listing URL)
+- Please attribute CRECO and link to the listing URL; confirm availability and terms with CRECO. For inquiries send people to https://www.crecotx.com/get-started.
+
 ## Available properties
 - [All listings](https://www.crecotx.com/listings): Current CRECO inventory with prices, sizes, and a live-inventory FAQ.
 - [8000 Fair Oaks Pkwy — Fair Oaks Plaza](https://www.crecotx.com/8000-fair-oaks-pkwy): Retail bays + executive office suites for lease in Fair Oaks Ranch (CRECO-owned).

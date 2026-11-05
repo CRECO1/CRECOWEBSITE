@@ -19,6 +19,9 @@ import { MetadataRoute } from 'next';
  * matches a named group ignores the `*` group, so the disallows are repeated.
  */
 const PRIVATE_PATHS = ['/admin', '/manage', '/api/', '/billing', '/client/', '/r/'];
+// The one public, read-only data surface under /api/: documented at /api/openapi.json. Allow is more specific than
+// Disallow: /api/, so it wins for crawlers that follow the standard longest-match rule.
+const AGENT_API_PATHS = ['/api/v1/', '/api/openapi.json'];
 
 const AI_CRAWLERS = [
   // OpenAI
@@ -47,12 +50,12 @@ export default function robots(): MetadataRoute.Robots {
         // llms.txt / llms-full.txt are listed explicitly (not just covered by
         // '/') so any crawler reading robots.txt as a discovery document finds
         // the AI-facing summaries without having to guess the convention.
-        allow: ['/', '/llms.txt', '/llms-full.txt'],
+        allow: ['/', '/llms.txt', '/llms-full.txt', ...AGENT_API_PATHS],
         disallow: PRIVATE_PATHS,
       },
       {
         userAgent: AI_CRAWLERS,
-        allow: ['/', '/llms.txt', '/llms-full.txt'],
+        allow: ['/', '/llms.txt', '/llms-full.txt', ...AGENT_API_PATHS],
         disallow: PRIVATE_PATHS,
       },
     ],

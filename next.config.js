@@ -289,6 +289,14 @@ const nextConfig = {
       { source: '/onboard/:path*', headers: NOINDEX },
       { source: '/signup', headers: NOINDEX },
       { source: '/compare', headers: NOINDEX },
+      // Tell agents where the machine-readable material is, from the home page response itself.
+      {
+        source: '/',
+        headers: [{
+          key: 'Link',
+          value: '</llms.txt>; rel="describedby"; type="text/plain", </llms-full.txt>; rel="describedby"; type="text/markdown", </api/openapi.json>; rel="service-desc"; type="application/json"',
+        }],
+      },
     ];
   },
 
@@ -300,12 +308,24 @@ const nextConfig = {
   // token logic here. The confirmation page renders the correct brand based on
   // the client's business_unit.
   async rewrites() {
-    return [
-      {
-        source: '/api/campaigns/unsubscribe',
-        destination: 'https://www.fairoaksrealtygroup.com/api/campaigns/unsubscribe',
-      },
-    ];
+    return {
+      // Markdown versions of listing pages for AI agents: /listings/<slug>.md, or Accept: text/markdown on
+      // /listings/<slug>. Browsers never send text/markdown, so normal visitors are unaffected.
+      beforeFiles: [
+        { source: '/listings/:slug.md', destination: '/listings/:slug/md' },
+        {
+          source: '/listings/:slug',
+          has: [{ type: 'header', key: 'accept', value: '(.*)text/markdown(.*)' }],
+          destination: '/listings/:slug/md',
+        },
+      ],
+      afterFiles: [
+        {
+          source: '/api/campaigns/unsubscribe',
+          destination: 'https://www.fairoaksrealtygroup.com/api/campaigns/unsubscribe',
+        },
+      ],
+    };
   },
 };
 
