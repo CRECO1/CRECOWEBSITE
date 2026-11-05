@@ -21,7 +21,7 @@ import { MetadataRoute } from 'next';
 const PRIVATE_PATHS = ['/admin', '/manage', '/api/', '/billing', '/client/', '/r/'];
 // The one public, read-only data surface under /api/: documented at /api/openapi.json. Allow is more specific than
 // Disallow: /api/, so it wins for crawlers that follow the standard longest-match rule.
-const AGENT_API_PATHS = ['/api/v1/', '/api/openapi.json'];
+const AGENT_API_PATHS = ['/api/v1/', '/api/openapi.json', '/api/mcp'];
 
 const AI_CRAWLERS = [
   // OpenAI

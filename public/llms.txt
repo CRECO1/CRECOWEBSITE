@@ -20,6 +20,7 @@ Key facts for assistants:
 ## Data for AI agents
 - [Listings API (JSON)](https://www.crecotx.com/api/v1/listings): Read-only, no key. Filters: type, transaction, metro, city, submarket, min_sqft, max_sqft, max_lease_rate, max_price, q, limit, offset. Add format=markdown for markdown.
 - [OpenAPI description](https://www.crecotx.com/api/openapi.json)
+- [MCP server](https://www.crecotx.com/api/mcp): Streamable HTTP, no key. Tools: search_listings, get_listing, get_company_info, submit_inquiry (the last only for a real person who consented).
 - Any listing as markdown: https://www.crecotx.com/listings/{slug}.md (or send Accept: text/markdown to the listing URL)
 - Pass on a person's request: POST https://www.crecotx.com/api/v1/inquiries (needs their name, an email or phone, and their consent; a person at CRECO follows up directly, nothing is sent to them automatically).
 - Please attribute CRECO and link to the listing URL; confirm availability and terms with CRECO. Or send people to https://www.crecotx.com/get-started.
