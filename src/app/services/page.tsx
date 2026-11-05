@@ -81,6 +81,10 @@ export interface ServiceContent {
   icon: any;
   title: string;
   shortDescription: string;
+  /** Optional search-result <title>; falls back to the generic service title. */
+  metaTitle?: string;
+  /** Optional page <h1>; falls back to `title`. */
+  h1?: string;
   /** SEO meta description for the detail page */
   metaDescription: string;
   /** Keyword tags for the detail page */
@@ -116,6 +120,8 @@ export const SERVICES: ServiceContent[] = [
     slug: 'tenant-representation',
     icon: Briefcase,
     title: 'Tenant Representation',
+    metaTitle: 'Tenant Representation in San Antonio | CRECO',
+    h1: 'Tenant Representation in San Antonio & the Hill Country',
     shortDescription: 'Site selection and lease negotiation for businesses leasing retail, restaurant, office, medical office, industrial, and flex space — one of CRECO\'s full-service lines alongside landlord representation and investment sales.',
     metaDescription: 'Tenant representation for retail, restaurant, office, medical, industrial, and flex tenants in San Antonio, Fair Oaks Ranch, and the Hill Country — from a full-service brokerage that also represents landlords, owners, and investors.',
     keywords: [
@@ -190,6 +196,18 @@ export const SERVICES: ServiceContent[] = [
       {
         q: 'How long does the tenant rep process take?',
         a: 'Typical timeline from engagement to lease execution is 60-120 days, depending on market conditions, your specs, and your decisiveness. Move-in adds another 30-90 days for buildout. Highly specific requirements (cold storage, cleanrooms, specialized restaurant) take longer. Simple flex-industrial or executive-suite leases can close in 30-45 days.',
+      },
+      {
+        q: 'What does a tenant rep broker do?',
+        a: 'A tenant rep broker works for the business leasing the space, not the landlord. That means defining your requirements, surveying the market including space that is not widely advertised, touring and comparing options, drafting the letter of intent, negotiating rent, concessions and lease terms, and coordinating through move-in. The broker advocates for your side of the lease from first search to signing.',
+      },
+      {
+        q: 'Do I need a tenant rep broker to lease commercial space in San Antonio?',
+        a: 'You are not required to use one, and many tenants lease without help. A tenant rep is most useful when the lease is a long commitment, when you are weighing several buildings, or when you do not know what landlords will give on rent, free rent and improvement allowances. Hiring one before you contact a landlord or the landlord\'s broker keeps your negotiating position intact.',
+      },
+      {
+        q: 'When should I start looking for commercial space before my lease ends?',
+        a: 'Earlier than most tenants expect. Surveying the market, touring, negotiating and building out space all take time, and a tenant with little time left has little leverage because moving is no longer a realistic option. Check your lease for the notice date for renewal or termination and work backward from it. Starting a year or more ahead gives you room to compare renewing with relocating.',
       },
       {
         q: 'Do you only work with large tenants?',

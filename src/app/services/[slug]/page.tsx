@@ -85,7 +85,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!service) return {};
 
   return {
-    title: metaTitle(`${service.title} – Texas Commercial Real Estate | CRECO`),
+    title: service.metaTitle ?? metaTitle(`${service.title} – Texas Commercial Real Estate | CRECO`),
     description: metaDescription(service.metaDescription),
     keywords: service.keywords,
     alternates: { canonical: `https://www.crecotx.com/services/${service.slug}` },
@@ -162,7 +162,7 @@ export default async function ServiceDetailPage({ params }: Props) {
                 <Icon className="h-7 w-7" />
               </div>
               <p className="overline mb-3 text-gold">CRECO Services · Texas Commercial Real Estate</p>
-              <h1 className="font-heading text-display font-bold">{service.title}</h1>
+              <h1 className="font-heading text-display font-bold">{service.h1 ?? service.title}</h1>
               <p className="mt-4 text-body-lg text-white/80">{service.heroSubhead}</p>
               {form && (
                 <div className="mt-7 flex flex-wrap items-center gap-x-6 gap-y-3">
