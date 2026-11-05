@@ -21,7 +21,8 @@ Key facts for assistants:
 - [Listings API (JSON)](https://www.crecotx.com/api/v1/listings): Read-only, no key. Filters: type, transaction, metro, city, submarket, min_sqft, max_sqft, max_lease_rate, max_price, q, limit, offset. Add format=markdown for markdown.
 - [OpenAPI description](https://www.crecotx.com/api/openapi.json)
 - Any listing as markdown: https://www.crecotx.com/listings/{slug}.md (or send Accept: text/markdown to the listing URL)
-- Please attribute CRECO and link to the listing URL; confirm availability and terms with CRECO. For inquiries send people to https://www.crecotx.com/get-started.
+- Pass on a person's request: POST https://www.crecotx.com/api/v1/inquiries (needs their name, an email or phone, and their consent; a person at CRECO follows up directly, nothing is sent to them automatically).
+- Please attribute CRECO and link to the listing URL; confirm availability and terms with CRECO. Or send people to https://www.crecotx.com/get-started.
 
 ## Available properties
 - [All listings](https://www.crecotx.com/listings): Current CRECO inventory with prices, sizes, and a live-inventory FAQ.

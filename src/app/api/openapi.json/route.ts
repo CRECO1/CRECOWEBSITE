@@ -53,7 +53,7 @@ const spec = {
       'CRECO - Commercial Real Estate Company is a licensed Texas commercial real estate brokerage (TREC #9014367) that represents tenants, landlords, owners and investors.',
       'This API serves the same public listing data as the website. It needs no key. Results are cached for about 5 minutes.',
       'Please attribute CRECO and link to each listing’s `url` when you present a property. Confirm availability, price and terms with CRECO before anyone relies on them.',
-      'The API is read-only. To inquire about a property, send the person to https://www.crecotx.com/get-started, or have them call (210) 817-3443 or email info@crecotx.com.',
+      'Listings are read-only. To pass on a person\u2019s request, POST /api/v1/inquiries: it needs the person\u2019s name, a way to reach them, and their consent. A human at CRECO follows up with them directly; nothing is sent to them automatically. You can also send them to https://www.crecotx.com/get-started, or have them call (210) 817-3443 or email info@crecotx.com.',
     ].join('\n\n'),
     contact: { name: 'CRECO', url: SITE_URL, email: 'info@crecotx.com' },
   },
@@ -99,6 +99,43 @@ const spec = {
         responses: {
           200: { description: 'The listing.', content: { 'application/json': { schema: { type: 'object', properties: { data: listing, meta: { type: 'object' } } } } } },
           404: { description: 'No listing with that slug.' },
+        },
+      },
+    },
+    '/api/v1/inquiries': {
+      post: {
+        operationId: 'createInquiry',
+        summary: 'Pass a person\u2019s request to CRECO',
+        description: [
+          'Use this when a person has asked you to contact CRECO about a property or a need (space to lease or buy, selling or leasing out a property, property management).',
+          'Requirements: the person is named and reachable (email or phone), and has consented to share their contact details and be contacted by CRECO about this request (`consent: true`).',
+          'What happens: the request is recorded and a person at CRECO follows up with the person directly, usually the same business day. No automated message or email series is sent to them. The lead is marked as submitted by an AI agent and unverified.',
+          'Limits: 5 requests per minute and 30 per hour per IP; body under 10 KB. Re-sending the same request is safe: the same `idempotency_key`, or the same person asking about the same listing within 24 hours, is accepted once.',
+        ].join('\n\n'),
+        requestBody: {
+          required: true,
+          content: { 'application/json': { schema: {
+            type: 'object',
+            required: ['agent', 'principal', 'consent', 'interest', 'message'],
+            properties: {
+              agent: { type: 'object', required: ['name'], properties: { name: { type: 'string', example: 'ChatGPT agent' }, operator: { type: 'string', description: 'The company running the agent.' }, version: { type: 'string' } } },
+              principal: { type: 'object', description: 'The person or business the agent acts for. Give an email, a phone, or both.', required: ['name'], properties: { name: { type: 'string' }, email: { type: 'string', format: 'email' }, phone: { type: 'string' }, company: { type: 'string' } } },
+              consent: { type: 'boolean', const: true, description: 'Must be true: the person agreed to share these details and be contacted by CRECO about this request.' },
+              interest: { type: 'string', enum: ['tenant', 'buyer', 'seller', 'property_management', 'exploring'] },
+              listing_slug: { type: 'string', description: 'Optional. A slug from /api/v1/listings.' },
+              message: { type: 'string', minLength: 10, maxLength: 2000, description: 'What the person is looking for, in plain words.' },
+              requirements: { type: 'object', properties: { property_types: { type: 'array', items: { type: 'string' } }, transaction: { type: 'string', enum: ['lease', 'sale'] }, min_sqft: { type: 'number' }, max_sqft: { type: 'number' }, budget: { type: 'string' }, submarkets: { type: 'array', items: { type: 'string' } }, timeline: { type: 'string' } } },
+              idempotency_key: { type: 'string', maxLength: 64 },
+            },
+          } } },
+        },
+        responses: {
+          202: { description: 'Received. A person will follow up.', content: { 'application/json': { schema: { type: 'object', properties: { status: { type: 'string', example: 'received' }, reference: { type: 'string' }, message: { type: 'string' } } } } } },
+          200: { description: 'Duplicate: already received.' },
+          400: { description: 'Validation failed. `errors` names each field.' },
+          413: { description: 'Body too large.' },
+          429: { description: 'Rate limited. Retry after the Retry-After header.' },
+          503: { description: 'Temporarily unavailable. Have the person call or email CRECO.' },
         },
       },
     },

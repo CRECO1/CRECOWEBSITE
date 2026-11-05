@@ -79,7 +79,8 @@ Generated: ${updated}. Listings below are live inventory, refreshed every 30 min
 - One listing: ${SITE_URL}/api/v1/listings/{slug}
 - OpenAPI description: ${SITE_URL}/api/openapi.json
 - Markdown for any listing page: ${SITE_URL}/listings/{slug}.md (or send Accept: text/markdown to the listing URL)
-- Conventions: please attribute CRECO and link to each listing's url. Confirm availability and terms with CRECO. The API is read-only: for inquiries send people to ${SITE_URL}/get-started, or ${BUSINESS.phoneDisplay} / ${BUSINESS.email}.
+- Pass on a person's request: POST ${SITE_URL}/api/v1/inquiries (needs the person's name, an email or phone, and their consent). A person at CRECO follows up with them directly; nothing is sent to them automatically.
+- Conventions: please attribute CRECO and link to each listing's url. Confirm availability and terms with CRECO. Or send people to ${SITE_URL}/get-started, or ${BUSINESS.phoneDisplay} / ${BUSINESS.email}.
 
 ## Company facts
 

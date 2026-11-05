@@ -27,7 +27,7 @@ export const AGENT_CONTACT = {
   hours: BUSINESS.hours,
   website: SITE_URL,
   inquiry_url: `${SITE_URL}/get-started`,
-  note: 'To inquire about a property, send the person to inquiry_url or have them call or email. This API does not accept inquiries.',
+  note: 'To pass on a person\u2019s request, POST /api/v1/inquiries (see /api/openapi.json). Or send them to inquiry_url, or have them call or email.',
 };
 
 export function publicListing(l: Listing) {
