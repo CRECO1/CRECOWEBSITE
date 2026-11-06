@@ -6,7 +6,6 @@
   "transport": "streamable-http",
   "authentication": "none",
   "tools": ["search_listings", "get_listing", "match_requirements", "get_company_info", "request_tour", "submit_inquiry"],
-  "documentation": "https://www.crecotx.com/agents",
   "openapi": "https://www.crecotx.com/api/openapi.json",
   "llms": "https://www.crecotx.com/llms-full.txt",
   "contact": { "phone": "(210) 817-3443", "website": "https://www.crecotx.com" }

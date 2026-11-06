@@ -4,7 +4,6 @@ import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { getListings } from '@/lib/supabase';
 import { BUSINESS, FOUNDER_ID, SITE_URL, breadcrumbList, webPage } from '@/lib/schema';
 
@@ -16,8 +15,8 @@ const DESCRIPTION = 'CRECO\'s front door for AI assistants and agents: a no-key 
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  alternates: { canonical: `${SITE_URL}/agents` },
-  openGraph: { images: [DEFAULT_OG_IMAGE], title: TITLE, description: DESCRIPTION, url: `${SITE_URL}/agents`, type: 'website' },
+  // Unlisted: reachable by direct link only, kept out of search results and the sitemap.
+  robots: { index: false, follow: false },
 };
 
 const TOOLS: [string, string][] = [

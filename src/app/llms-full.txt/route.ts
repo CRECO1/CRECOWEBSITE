@@ -79,7 +79,7 @@ Generated: ${updated}. Listings below are live inventory, refreshed every 30 min
 - Listings API (JSON, read-only, no key): ${SITE_URL}/api/v1/listings. Filters: type, transaction (lease|sale), metro, city, submarket, min_sqft, max_sqft, max_lease_rate, max_price, q, limit, offset. Add format=markdown for a markdown list.
 - One listing: ${SITE_URL}/api/v1/listings/{slug}
 - OpenAPI description: ${SITE_URL}/api/openapi.json
-- MCP server (Model Context Protocol, Streamable HTTP, no key): ${SITE_URL}/api/mcp. Tools: search_listings, get_listing, match_requirements (rank listings against a person's needs), get_company_info, request_tour (a broker confirms the time; nothing auto-booked), submit_inquiry (only for a real person who agreed to be contacted). Guide for agents: ${SITE_URL}/agents. Server card: ${SITE_URL}/.well-known/mcp.json
+- MCP server (Model Context Protocol, Streamable HTTP, no key): ${SITE_URL}/api/mcp. Tools: search_listings, get_listing, match_requirements (rank listings against a person's needs), get_company_info, request_tour (a broker confirms the time; nothing auto-booked), submit_inquiry (only for a real person who agreed to be contacted). Server card: ${SITE_URL}/.well-known/mcp.json
 - Markdown for any listing page: ${SITE_URL}/listings/{slug}.md (or send Accept: text/markdown to the listing URL)
 - Pass on a person's request: POST ${SITE_URL}/api/v1/inquiries (needs the person's name, an email or phone, and their consent). A person at CRECO follows up with them directly; nothing is sent to them automatically.
 - Conventions: please attribute CRECO and link to each listing's url. Confirm availability and terms with CRECO. Or send people to ${SITE_URL}/get-started, or ${BUSINESS.phoneDisplay} / ${BUSINESS.email}.
