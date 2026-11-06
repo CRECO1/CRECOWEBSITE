@@ -1,0 +1,13 @@
+{
+  "name": "crecotx",
+  "title": "CRECO commercial real estate",
+  "description": "Search CRECO's available commercial listings in San Antonio and the Texas Hill Country, match a person's requirements to them, request a tour, or pass on a request. A broker follows up; nothing is auto-booked or auto-sent.",
+  "url": "https://www.crecotx.com/api/mcp",
+  "transport": "streamable-http",
+  "authentication": "none",
+  "tools": ["search_listings", "get_listing", "match_requirements", "get_company_info", "request_tour", "submit_inquiry"],
+  "documentation": "https://www.crecotx.com/agents",
+  "openapi": "https://www.crecotx.com/api/openapi.json",
+  "llms": "https://www.crecotx.com/llms-full.txt",
+  "contact": { "phone": "(210) 817-3443", "website": "https://www.crecotx.com" }
+}

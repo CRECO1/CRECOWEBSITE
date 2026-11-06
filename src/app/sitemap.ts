@@ -32,6 +32,7 @@ export const revalidate = 1800;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
+    { url: `${BASE_URL}/agents`, lastModified: new Date(BRIEF_UPDATED), changeFrequency: 'monthly', priority: 0.7 },
     { url: `${BASE_URL}/answers`, lastModified: new Date(BRIEF_UPDATED), changeFrequency: 'monthly', priority: 0.85 },
     ...ANSWER_PAGES.map(a => ({ url: `${BASE_URL}/answers/${a.slug}`, lastModified: new Date(BRIEF_UPDATED), changeFrequency: 'monthly' as const, priority: 0.8 })),
     { url: BASE_URL,                                  lastModified: CONTENT_REVISED, changeFrequency: 'daily',   priority: 1.0  },

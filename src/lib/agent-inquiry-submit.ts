@@ -11,7 +11,7 @@ import { buildLeadNotificationEmail, leadNotificationSubject, type LeadAnswer } 
 import { clampString, MAX_LEN } from '@/lib/sanitize';
 import { AGENT_API_VERSION, AGENT_CONTACT, CORS, findListing } from '@/lib/agent-api';
 import { MAX_BODY_BYTES, parseAgentInquiry, type Interest } from '@/lib/agent-inquiry';
-import { listingUrl } from '@/lib/schema';
+import { listingPriceText, listingUrl } from '@/lib/schema';
 
 /**
  * The inquiry handler shared by POST /api/v1/inquiries and the MCP server's submit_inquiry tool: an outside AI agent passes on a
@@ -122,6 +122,8 @@ export async function handleAgentInquiryRequest(req: NextRequest, rawIn?: string
   return json({
     status: 'received', reference: String(row?.id ?? '').slice(0, 8),
     message: 'Thank you. A person at CRECO will follow up with the person you represent directly, usually the same business day. No automated message is sent to them.',
+    ...(listing ? { listing: { title: listing.title, url: listingUrl(listing), address: listing.address, price_text: listingPriceText(listing), available_sqft: listing.available_sqft ?? listing.sqft ?? null } } : {}),
+    next_steps: ['A CRECO broker reviews the request and contacts the person directly, usually the same business day.', 'Nothing is booked, quoted or committed until a broker confirms with them.', 'Tours, pricing exceptions and lease terms are handled by the broker.'],
     contact: AGENT_CONTACT, meta: { api_version: AGENT_API_VERSION },
   }, 202);
 }

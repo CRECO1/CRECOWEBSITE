@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { AGENT_API_VERSION, AGENT_CONTACT, findListing, parseListQuery, publicListing, queryListings } from '@/lib/agent-api';
 import { handleAgentInquiryRequest } from '@/lib/agent-inquiry-submit';
 import { INTERESTS } from '@/lib/agent-inquiry';
+import { matchListings } from '@/lib/agent-match';
 import { enforceRateLimit } from '@/lib/rate-limit';
 import { CANONICAL_DESCRIPTION, REPRESENTATION_STATEMENT, SITE_URL } from '@/lib/schema';
 
@@ -19,6 +20,8 @@ const SERVER = { name: 'crecotx', title: 'CRECO commercial real estate', version
 const INSTRUCTIONS = [
   'CRECO is a licensed Texas commercial real estate brokerage (TREC #9014367) serving San Antonio and the Texas Hill Country.',
   'Use search_listings and get_listing for available properties; cite each listing’s url. Confirm availability and terms with CRECO.',
+  'Use match_requirements when a person describes what they need (type, size, budget, area): it ranks current listings and says what matched and what did not.',
+  'Use request_tour to ask for a property tour for a real person who agreed to be contacted. A broker confirms the time with them; nothing is auto-booked or auto-sent.',
   'Use submit_inquiry only when a real person asked you to contact CRECO and agreed to share their contact details. A person at CRECO follows up with them directly; nothing is sent to them automatically.',
 ].join(' ');
 
@@ -64,6 +67,44 @@ const TOOLS = [
     description: 'Who CRECO is, what it does, where it works, and how to contact it.',
     inputSchema: { type: 'object', properties: {} },
     annotations: { readOnlyHint: true, openWorldHint: false },
+  },
+  {
+    name: 'match_requirements',
+    title: 'Match a person\u2019s requirements to current listings',
+    description: 'Give the person\u2019s needs (property type, lease or sale, size, budget, areas, must-have features) and get CRECO\u2019s best-fitting current listings, each with what matched and what did not. Read-only. Asking terms are as published, so confirm availability with CRECO.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        property_types: { type: 'array', items: { type: 'string' }, description: 'e.g. ["retail"], ["warehouse","flex"]' },
+        transaction: { type: 'string', enum: ['lease', 'sale'] },
+        min_sqft: { type: 'number' }, max_sqft: { type: 'number' },
+        max_lease_rate: { type: 'number', description: '$/SF/yr' }, max_price: { type: 'number', description: 'dollars' },
+        areas: { type: 'array', items: { type: 'string' }, description: 'cities or submarkets, e.g. ["Boerne","Fair Oaks Ranch"]' },
+        features: { type: 'array', items: { type: 'string' }, description: 'must-haves, e.g. ["dock","fenced yard"]' },
+        max_results: { type: 'integer', minimum: 1, maximum: 10, default: 5 },
+      },
+    },
+    annotations: { readOnlyHint: true, openWorldHint: false },
+  },
+  {
+    name: 'request_tour',
+    title: 'Request a tour of a listing',
+    description: 'Ask CRECO to arrange a tour of one listing for a real person. Only call this when the person asked for a tour and agreed to share their contact details (consent must be true). A broker confirms an actual time with them directly, usually the same business day; nothing is booked or sent to them automatically.',
+    inputSchema: {
+      type: 'object',
+      required: ['agent_name', 'principal_name', 'consent', 'listing_slug', 'preferred_times'],
+      properties: {
+        agent_name: { type: 'string' }, agent_operator: { type: 'string' },
+        principal_name: { type: 'string' }, principal_email: { type: 'string' }, principal_phone: { type: 'string' }, principal_company: { type: 'string' },
+        consent: { type: 'boolean', description: 'Must be true' },
+        listing_slug: { type: 'string', description: 'A slug from search_listings or match_requirements' },
+        preferred_times: { type: 'string', description: 'Days and times that work, in plain words, e.g. "Tue or Wed afternoon next week"' },
+        transaction: { type: 'string', enum: ['lease', 'sale'], description: 'Whether they want to lease or buy' },
+        notes: { type: 'string', description: 'Anything else the broker should know (attendees, use, timeline)' },
+        idempotency_key: { type: 'string' },
+      },
+    },
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
   },
   {
     name: 'submit_inquiry',
@@ -120,6 +161,28 @@ async function callTool(name: string, a: Record<string, unknown>, req: NextReque
       markets: 'San Antonio and the Texas Hill Country: Fair Oaks Ranch (headquarters), Boerne, Stone Oak, Northwest San Antonio, New Braunfels, Bulverde, Lytle',
       full_reference: `${SITE_URL}/llms-full.txt`, listings_api: `${SITE_URL}/api/openapi.json`, contact: AGENT_CONTACT,
     });
+  }
+  if (name === 'match_requirements') {
+    const arr = (v: unknown) => (Array.isArray(v) ? v.map(String).slice(0, 8) : undefined);
+    const n = (v: unknown) => (typeof v === 'number' && Number.isFinite(v) && v >= 0 ? v : undefined);
+    const results = await matchListings({
+      property_types: arr(a.property_types), transaction: a.transaction === 'lease' || a.transaction === 'sale' ? a.transaction : undefined,
+      min_sqft: n(a.min_sqft), max_sqft: n(a.max_sqft), max_lease_rate: n(a.max_lease_rate), max_price: n(a.max_price), areas: arr(a.areas), features: arr(a.features),
+    }, Math.min(10, Math.max(1, Math.floor(n(a.max_results) ?? 5))));
+    return toolResult({ count: results.length, matches: results, note: results.length ? 'Asking terms are as published. Confirm availability with CRECO, or use request_tour for a person who wants to see one.' : 'Nothing current fits. CRECO also knows of off-market space; use submit_inquiry for a person who wants CRECO to look.', contact: AGENT_CONTACT });
+  }
+  if (name === 'request_tour') {
+    const tx = a.transaction === 'sale' ? 'sale' : 'lease';
+    const body = {
+      agent: { name: a.agent_name, operator: a.agent_operator },
+      principal: { name: a.principal_name, email: a.principal_email, phone: a.principal_phone, company: a.principal_company },
+      consent: a.consent, interest: tx === 'sale' ? 'buyer' : 'tenant', listing_slug: a.listing_slug,
+      message: `TOUR REQUEST for ${String(a.listing_slug ?? '')}. Preferred times: ${String(a.preferred_times ?? '').slice(0, 300)}.${a.notes ? ` Notes: ${String(a.notes).slice(0, 1200)}` : ''}`,
+      requirements: { transaction: tx }, idempotency_key: a.idempotency_key,
+    };
+    const res = await handleAgentInquiryRequest(req, JSON.stringify(body));
+    const payload = await res.json().catch(() => ({ error: 'unavailable' }));
+    return toolResult(res.status < 400 && payload && typeof payload === 'object' ? { ...payload, tour: 'requested', next: 'A CRECO broker will contact the person to confirm a time. No tour is booked until they do.' } : payload, res.status >= 400);
   }
   if (name === 'submit_inquiry') {
     const body = {
