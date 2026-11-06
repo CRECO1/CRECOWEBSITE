@@ -29,23 +29,16 @@ const KEY_LOCATION = `${SITE_URL}/${KEY}.txt`;
 const ENDPOINT = 'https://api.indexnow.org/indexnow';
 const REQUEST_TIMEOUT_MS = 20_000;
 
-/** City / market landing pages — the geo surface AI answers cite most. */
+/** City / market landing pages — the geo surface AI answers cite most.
+ *  Austin / Houston / Dallas hubs are noindex (outside the San Antonio & Hill Country focus),
+ *  so they are deliberately NOT submitted here. */
 const CITY_PATHS = [
   '/san-antonio-commercial-real-estate',
   '/fair-oaks-ranch-commercial-real-estate',
   '/boerne-commercial-real-estate',
-  '/austin-commercial-real-estate',
-  '/houston-commercial-real-estate',
-  '/dallas-commercial-real-estate',
   '/san-antonio-office-space',
   '/san-antonio-industrial-space',
   '/san-antonio-retail-space',
-  '/austin-office-space',
-  '/austin-industrial-space',
-  '/houston-office-space',
-  '/houston-industrial-space',
-  '/dallas-office-space',
-  '/dallas-industrial-space',
 ];
 
 /**
