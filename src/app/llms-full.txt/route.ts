@@ -2,6 +2,7 @@ import { SERVICES } from '@/app/services/page';
 import { REPRESENTATION_PAGES } from '@/lib/representation-pages';
 import { getAvailableListings, filterListings } from '@/lib/public-listings';
 import { ASSET_CLASSES, BUSINESS, CANONICAL_DESCRIPTION, CAPABILITIES, DBA_STATEMENT, CAPABILITY_LINE, FOUNDER, REPRESENTATION_STATEMENT, SITE_URL, assetCategory, listingPriceText, listingUrl } from '@/lib/schema';
+import { ANSWER_PAGES } from '@/lib/answer-pages';
 import { IN_MARKET_SUBMARKETS, PARENT_METRO_LABELS, type ParentMetro } from '@/lib/submarkets-content';
 import { PUBLISHED_GUIDES } from '@/lib/guides';
 import { SORTED_POSTS } from '@/lib/insights';
@@ -156,6 +157,9 @@ ${PUBLISHED_GUIDES.map(g => `- [${g.title}](${SITE_URL}/guides/${g.slug}): ${g.e
 
 Insights:
 ${SORTED_POSTS.map(p => `- [${p.title}](${SITE_URL}/insights/${p.slug}) (${p.publishedAt}): ${p.excerpt}`).join('\n')}
+
+## Sourced answers (Q2 2026 data)
+${ANSWER_PAGES.map(a => `- [${a.question}](${SITE_URL}/answers/${a.slug}): ${a.answer}`).join('\n')}
 
 ## Frequently asked questions
 

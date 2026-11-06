@@ -111,6 +111,7 @@ export default function MarketBriefPage() {
                   <p className="text-caption text-foreground-muted">
                     One email when the next edition is published — Q3 figures once the major brokerages release them. Unsubscribe anytime.
                   </p>
+                  <Link href="/answers" className="block rounded-xl border border-border bg-white p-5 text-body-sm font-semibold text-gold-dark hover:text-gold">Quick sourced answers: vacancy, rents, Boerne, New Braunfels →</Link>
                   <div className="rounded-xl border border-border bg-white p-5">
                     <p className="text-body-sm font-semibold text-primary">Want this applied to your property or search?</p>
                     <p className="mt-1 text-body-sm text-foreground-muted leading-relaxed">Call or text a broker for current availability and rents near you — we own and operate property in these markets.</p>
