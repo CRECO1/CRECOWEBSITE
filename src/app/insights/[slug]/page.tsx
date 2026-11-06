@@ -13,7 +13,12 @@ import { Container } from '@/components/ui/Container';
 import { PhoneCallText } from '@/components/marketing/PhoneCallText';
 import { Breadcrumbs } from '@/components/marketing/Breadcrumbs';
 import { POSTS, findPost } from '@/lib/insights';
-import { BUSINESS_ID } from '@/lib/schema';
+import { BUSINESS_ID, FOUNDER_ID } from '@/lib/schema';
+
+// Broker review of every Insights article. Bump REVIEWED_AT whenever the articles are re-read and refreshed.
+const REVIEWED_AT = '2026-11-05';
+const REVIEWER = 'Zachary Stovall';
+const REVIEWER_TREC = '691174';
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -61,7 +66,9 @@ export default async function InsightDetailPage({ params }: Props) {
             headline: post.title,
             description: post.metaDescription,
             datePublished: post.publishedAt,
-            dateModified: post.publishedAt,
+            dateModified: REVIEWED_AT,
+            reviewedBy: { '@id': FOUNDER_ID },
+            lastReviewed: REVIEWED_AT,
             // Author/publisher point at the canonical org node by @id instead of
             // re-declaring a bare Organization — a detached copy made CRECO look
             // like a second, thinner entity to crawlers merging the page graph.
@@ -133,6 +140,7 @@ export default async function InsightDetailPage({ params }: Props) {
                 <span className="flex items-center gap-1.5"><BookOpen className="h-3.5 w-3.5" /> By {post.author}</span>
                 <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {formatDate(post.publishedAt)}</span>
                 <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> {post.readingMinutes} min read</span>
+                <span className="flex items-center gap-1.5">Reviewed by {REVIEWER}, TREC #{REVIEWER_TREC} · Last reviewed {formatDate(REVIEWED_AT)}</span>
               </div>
             </div>
           </Container>
