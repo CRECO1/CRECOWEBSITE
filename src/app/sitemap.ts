@@ -4,6 +4,7 @@ import { SYNTHETIC_LISTINGS } from '@/lib/featured-properties';
 import { IN_MARKET_SUBMARKETS } from '@/lib/submarkets-content';
 import { PUBLISHED_GUIDES } from '@/lib/guides';
 import { POSTS } from '@/lib/insights';
+import { BRIEF_UPDATED } from '@/lib/brief-meta';
 
 const BASE_URL = 'https://www.crecotx.com';
 
@@ -90,7 +91,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/insights`,                    lastModified: CONTENT_REVISED, changeFrequency: 'weekly',  priority: 0.85 },
     { url: `${BASE_URL}/guides`,                      lastModified: CONTENT_REVISED, changeFrequency: 'monthly', priority: 0.85 },
     // /research and the statewide quarterly reports were pulled (308 → here).
-    { url: `${BASE_URL}/market-brief`,                lastModified: CONTENT_REVISED, changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${BASE_URL}/market-brief`,                lastModified: new Date(BRIEF_UPDATED), changeFrequency: 'monthly', priority: 0.85 },
     { url: `${BASE_URL}/property-alerts`,             lastModified: CONTENT_REVISED, changeFrequency: 'monthly', priority: 0.8  },
     { url: `${BASE_URL}/careers`,                     lastModified: CONTENT_REVISED, changeFrequency: 'monthly', priority: 0.7  },
     // /compare omitted — the route is noindex,nofollow because it's a

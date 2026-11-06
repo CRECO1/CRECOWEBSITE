@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "indexnow": "tsx scripts/indexnow-ping.ts",
+    "ai-report": "tsx scripts/ai-report.ts",
     "export:listings": "tsx scripts/export-listings-feed.ts",
     "seed": "tsx scripts/seed.ts",
     "render:subscriber-email": "tsx scripts/render-subscriber-notification.ts"

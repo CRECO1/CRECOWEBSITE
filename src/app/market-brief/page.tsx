@@ -12,6 +12,11 @@ import { FaqSection } from '@/components/marketing/FaqSection';
 import { MARKET_BRIEF_FAQS } from '@/lib/answers';
 import { FOUNDER, FOUNDER_ID, breadcrumbList, webPage } from '@/lib/schema';
 import { BriefContent, BRIEF_SECTIONS } from './BriefContent';
+import { ListingsSnapshot } from '@/components/marketing/ListingsSnapshot';
+import { BRIEF_UPDATED } from '@/lib/brief-meta';
+
+// Re-render hourly so the live listings snapshot stays current.
+export const revalidate = 3600;
 
 /**
  * /market-brief — the San Antonio & Hill Country Market Brief. Issue 1 (Q2 2026 data)
@@ -53,6 +58,9 @@ export default function MarketBriefPage() {
         data={[
           webPage('WebPage', '/market-brief', TITLE, DESCRIPTION, {
             author: { '@id': FOUNDER_ID },
+            reviewedBy: { '@id': FOUNDER_ID },
+            dateModified: BRIEF_UPDATED,
+            lastReviewed: BRIEF_UPDATED,
           }),
           breadcrumbList([{ name: 'Market Brief', path: '/market-brief' }]),
         ]}
@@ -72,7 +80,7 @@ export default function MarketBriefPage() {
                 San Antonio &amp; Hill Country Market Brief
               </h1>
               <p className="text-body-lg text-white/75 leading-relaxed">
-                Issue 1 · Q2 2026 data · Published October 2026. Retail, office, industrial and flex across San Antonio and the Hill Country, with CBRE, Cushman &amp; Wakefield and Partners side by side and every figure cited. Written by {FOUNDER.name}.
+                Issue 1 · Q2 2026 data · Published October 2026. Retail, office, industrial and flex across San Antonio and the Hill Country, with CBRE, Cushman &amp; Wakefield and Partners side by side and every figure cited. Written by {FOUNDER.name}. Last updated {new Date(BRIEF_UPDATED + 'T12:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}.
               </p>
             </div>
           </Container>
@@ -95,6 +103,7 @@ export default function MarketBriefPage() {
             <div className="grid grid-cols-1 gap-10 lg:grid-cols-5">
               <div className="lg:col-span-3 -mt-8">
                 <BriefContent />
+                <ListingsSnapshot />
               </div>
               <div className="order-first lg:order-none lg:col-span-2">
                 <div className="lg:sticky lg:top-28 space-y-4">
