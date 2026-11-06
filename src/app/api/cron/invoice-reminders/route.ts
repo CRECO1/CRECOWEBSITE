@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import type { Invoice } from '@/lib/invoices';
 import { sendInvoiceEmail } from '@/lib/invoice-send';
 import { fetchW9Attachment } from '@/lib/w9';
+import { approvedWorkspaceIds } from '@/lib/approved-workspaces';
 import { stageForToday, renderReminderContent } from '@/lib/invoice-reminders';
 
 /**
@@ -72,7 +73,7 @@ export async function GET(req: NextRequest) {
   // 3. Pull candidate invoices — anything that's been sent, isn't paid/void,
   //    and has reminders enabled. We could narrow further by date range, but
   //    at our volume scanning every sent invoice once per day is fine.
-  const { data: invoices, error: fetchErr } = await supabase
+  const { data: allInvoices, error: fetchErr } = await supabase
     .from('invoices')
     .select('*')
     .in('status', ['sent', 'overdue'])
@@ -84,6 +85,10 @@ export async function GET(req: NextRequest) {
       { status: 500 },
     );
   }
+
+  // Only workspaces owned by an approved admin send automatic reminders.
+  const approved = await approvedWorkspaceIds(supabase);
+  const invoices = (allInvoices ?? []).filter(i => approved.has(String((i as { workspace_id?: string }).workspace_id)));
 
   const result: RunResult = {
     ok: true,

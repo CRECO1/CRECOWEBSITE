@@ -1,3 +1,4 @@
+import { enforceRateLimit } from '@/lib/rate-limit';
 import { NextRequest, NextResponse } from 'next/server';
 import { AGENT_API_VERSION, AGENT_CONTACT, CACHE, CORS, listingsMarkdown, parseListQuery, publicListing, queryListings } from '@/lib/agent-api';
 import { SITE_URL } from '@/lib/schema';
@@ -6,6 +7,8 @@ export const revalidate = 300;
 
 /** GET /api/v1/listings: CRECO's available commercial listings. Filters and fields are documented at /api/openapi.json. */
 export async function GET(req: NextRequest) {
+  const limited = await enforceRateLimit(req, { namespace: 'listings-api', max: 120, windowMs: 60_000 });
+  if (limited) return limited;
   const sp = new URL(req.url).searchParams;
   const q = parseListQuery(sp);
   const { total, rows } = await queryListings(q).catch(() => ({ total: 0, rows: [] }));

@@ -100,7 +100,9 @@ export async function POST(req: NextRequest) {
   // to make scripted creation pointless.
   // Kill switch: set ONBOARDING_DISABLED=1 in Vercel to close public self-signup
   // without a deploy of code (existing workspaces are unaffected).
-  if (process.env.ONBOARDING_DISABLED === '1') {
+  // Closed by default: self-serve signup creates a real login + workspace, and the billing data is not yet isolated well enough to host
+  // strangers. Set ONBOARDING_ENABLED=1 in Vercel to open it again (ONBOARDING_DISABLED=1 still forces it shut).
+  if (process.env.ONBOARDING_ENABLED !== '1' || process.env.ONBOARDING_DISABLED === '1') {
     return NextResponse.json({ error: 'Signups are currently closed. Email info@crecotx.com and we will set you up.' }, { status: 503 });
   }
   const limited = await enforceRateLimit(req, {

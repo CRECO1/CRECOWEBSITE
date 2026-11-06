@@ -12,6 +12,7 @@
  * the edge and hands us those headers, so we never read, store or email the
  * address itself. The referrer is trimmed to origin + path upstream.
  */
+import { boundedObject } from '@/lib/sanitize';
 import type { NextRequest } from 'next/server';
 
 export interface SignupContext {
@@ -128,13 +129,13 @@ function trackerFromBody(req: NextRequest, body: Record<string, unknown>): Recor
   if (typeof vid === 'string' && ID_RE.test(vid)) out.visitor_id = vid;
   const vc = typeof body.visit_count === 'number' ? body.visit_count : NaN;
   if (Number.isFinite(vc) && vc > 0) out.visit_count = Math.min(Math.round(vc), 100000);
-  if (body.first_touch && typeof body.first_touch === 'object' && !Array.isArray(body.first_touch)) out.first_touch = body.first_touch;
+  { const ft = boundedObject(body.first_touch); if (ft) out.first_touch = ft; }
   if (body.click_ids && typeof body.click_ids === 'object' && !Array.isArray(body.click_ids)) {
     const ci: Record<string, string> = {};
     for (const k of CLICK_KEYS) { const x = (body.click_ids as Record<string, unknown>)[k]; if (typeof x === 'string' && x) ci[k] = x.slice(0, 200); }
     if (Object.keys(ci).length) out.click_ids = ci;
   }
-  const env: Record<string, unknown> = (body.env && typeof body.env === 'object' && !Array.isArray(body.env)) ? { ...(body.env as Record<string, unknown>) } : {};
+  const env: Record<string, unknown> = boundedObject(body.env) ?? {};
   const { browser, os } = browserOs(req.headers.get('user-agent') ?? '');
   if (browser) env.browser = browser;
   if (os) env.os = os;

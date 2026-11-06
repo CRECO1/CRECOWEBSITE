@@ -62,7 +62,8 @@ function telHref(phone: string): string {
 
 /** Subject line: informative, no "bot log" punctuation. */
 export function leadNotificationSubject({ heading, name, company }: { heading: string; name: string; company: string }): string {
-  return company ? `${heading} — ${name}, ${company}` : `${heading} — ${name}`;
+  const one = (v: string) => String(v).replace(/[\r\n\u2028\u2029]+/g, ' ').trim();
+  return one(company ? `${heading} — ${name}, ${company}` : `${heading} — ${name}`);
 }
 
 /** A label/value row in the contact block. `valueHtml` is pre-escaped HTML. */

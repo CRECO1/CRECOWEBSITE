@@ -24,6 +24,9 @@ import { createClient } from '@supabase/supabase-js';
 import { looksLikeGibberishName } from '@/lib/bot-filter';
 import { sendLeadToCrm } from '@/lib/crm-lead';
 import { isValidEmail } from '@/lib/sanitize';
+import { checkEmailQuality } from '@/lib/email-quality';
+import { checkRateLimitShared } from '@/lib/rate-limit';
+import { createHash } from 'node:crypto';
 
 // ─── Tool schemas (fed to Claude) ────────────────────────────────────
 
@@ -224,6 +227,15 @@ export async function executeCaptureLead(input: CaptureLeadInput) {
   if (!isValidEmail(email)) {
     return { error: 'Email format looks invalid. Ask the visitor to confirm their email.' };
   }
+
+  // Same address screen the forms use (disposable / role / no-MX), then a per-address and an overall cap, so the chat can't be used to file
+  // fake leads. The "success" answer is the same either way, so a script learns nothing about which check stopped it.
+  const quiet = { success: true, message: 'Lead recorded. Someone from our team will follow up personally by phone or email. Confirm this to the visitor without promising a specific time.' };
+  const quality = await checkEmailQuality(email);
+  if (!quality.ok) { console.warn('[chat] capture_lead rejected on email quality', { reason: quality.reason }); return quiet; }
+  const emailKey = createHash('sha256').update(email).digest('hex').slice(0, 24);
+  if (!(await checkRateLimitShared(emailKey, { namespace: 'chat-capture-email', max: 1, windowMs: 24 * 3600_000 })).allowed) return quiet;
+  if (!(await checkRateLimitShared('all', { namespace: 'chat-capture-global', max: 40, windowMs: 3600_000 })).allowed) return quiet;
 
   // Same keyboard-mash screen as the form handlers (no fill-time stamp here —
   // a chat has no form). Answered like a success so a scripted conversation

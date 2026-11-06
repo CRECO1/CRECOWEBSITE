@@ -150,7 +150,7 @@ export function renderSubscriberNotification(
   return {
     // The page beats the form id in the subject line — it is the thing
     // Zack actually wants to know at a glance in the inbox list.
-    subject: `New ${subscriptionType} subscriber: ${email}${ctx.pagePath ? ` (from ${ctx.pagePath})` : ''}`,
+    subject: `New ${subscriptionType} subscriber: ${email}${ctx.pagePath ? ` (from ${ctx.pagePath})` : ''}`.replace(/[\r\n\u2028\u2029]+/g, ' '),
     html: `
             <div style="font-family:sans-serif;max-width:640px;color:#1A1A1A">
               <h2 style="margin:0 0 4px">New subscriber — ${escapeHtml(subscriptionType)}</h2>

@@ -6,7 +6,7 @@ import { escapeHtml, clampString, isValidEmail, oneLine, MAX_LEN } from '@/lib/s
 import { pushToCrm } from '@/lib/crm';
 import { findGuide } from '@/lib/guides';
 import { renderGuideEmailHtml } from '@/lib/guide-email';
-import { enforceRateLimit } from '@/lib/rate-limit';
+import { enforceRateLimit, mailAllowed } from '@/lib/rate-limit';
 import { buildSignupContext } from '@/lib/signup-context';
 import { renderSubscriberNotification } from '@/lib/subscriber-notification-email';
 import { renderConfirmEmail } from '@/lib/subscriber-confirm-email';
@@ -223,7 +223,7 @@ export async function POST(req: NextRequest) {
       if (subscription_type === 'lead-magnet' && asset_slug) {
         const guide = findGuide(asset_slug);
         if (guide) {
-          await resend.emails.send({
+          if (await mailAllowed(email)) await resend.emails.send({
             from: getFromEmail(),
             to: email,
             subject: oneLine(`${guide.title} — your CRECO download`),
@@ -233,7 +233,7 @@ export async function POST(req: NextRequest) {
           // Slug didn't match a known guide — fall back to generic ack so
           // the user still gets *something* and we don't 500 their unlock.
           console.warn('[subscribe] unknown guide slug:', asset_slug);
-          await resend.emails.send({
+          if (await mailAllowed(email)) await resend.emails.send({
             from: getFromEmail(),
             to: email,
             subject: 'Your CRECO download is unlocked',
@@ -257,7 +257,7 @@ export async function POST(req: NextRequest) {
           name,
           confirmUrl: `${origin}/api/subscribe/confirm?token=${confirmToken}`,
         });
-        await resend.emails.send({ from: getFromEmail(), to: email, subject, html });
+        if (await mailAllowed(email)) await resend.emails.send({ from: getFromEmail(), to: email, subject, html });
       }
 
       // Notify the team — but only for signups that are real on arrival.

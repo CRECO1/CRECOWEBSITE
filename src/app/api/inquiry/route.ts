@@ -8,7 +8,7 @@ import { screenSubmission } from '@/lib/bot-filter';
 import { buildSignupContext } from '@/lib/signup-context';
 import { checkEmailQuality } from '@/lib/email-quality';
 import { pushToCrm } from '@/lib/crm';
-import { enforceRateLimit } from '@/lib/rate-limit';
+import { enforceRateLimit, mailAllowed } from '@/lib/rate-limit';
 import { buildLeadNotificationEmail, leadNotificationSubject, type LeadAnswer } from '@/lib/lead-notification-email';
 import { buildInquiryAutoreplyEmail, INQUIRY_AUTOREPLY_SUBJECT } from '@/lib/inquiry-autoreply-email';
 import { phoneOnlyEmail } from '@/lib/placeholder-email';
@@ -364,7 +364,7 @@ export async function POST(req: NextRequest) {
       // Not for agent applicants: recruiting conversations start with a real
       // message from Zack, never an automated acknowledgement.
       // No email given (phone-only finish or call-me panel): nothing to send.
-      if (!isAgentApplication && email) {
+      if (!isAgentApplication && email && await mailAllowed(email)) {
         await resend.emails.send({
           from: getFromEmail(),
           to: email,

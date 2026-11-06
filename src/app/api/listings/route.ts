@@ -1,3 +1,4 @@
+import { enforceRateLimit } from '@/lib/rate-limit';
 import { NextRequest, NextResponse } from 'next/server';
 import { getListings } from '@/lib/supabase';
 
@@ -5,6 +6,8 @@ const VALID_STATUS = ['active', 'pending', 'sold', 'leased', 'all'] as const;
 type Status = typeof VALID_STATUS[number];
 
 export async function GET(req: NextRequest) {
+  const limited = await enforceRateLimit(req, { namespace: 'listings-api', max: 120, windowMs: 60_000 });
+  if (limited) return limited;
   const { searchParams } = new URL(req.url);
   const raw = searchParams.get('status') ?? 'active';
   const status: Status = (VALID_STATUS as readonly string[]).includes(raw) ? (raw as Status) : 'active';

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isCronAuthorized } from '@/lib/cron-auth';
+import { approvedWorkspaceIds } from '@/lib/approved-workspaces';
 import { createClient } from '@supabase/supabase-js';
 import { generateInvoiceFromTemplate } from '@/lib/recurring-generate';
 import type { RecurringTemplate } from '@/lib/recurring-invoices';
@@ -54,7 +55,7 @@ export async function GET(req: NextRequest) {
 
   const today = new Date().toISOString().slice(0, 10);
 
-  const { data: templates, error: fetchErr } = await supabase
+  const { data: allTemplates, error: fetchErr } = await supabase
     .from('recurring_invoice_templates')
     .select('*')
     .eq('active', true)
@@ -63,6 +64,10 @@ export async function GET(req: NextRequest) {
   if (fetchErr) {
     return NextResponse.json({ error: fetchErr.message }, { status: 500 });
   }
+
+  // Only workspaces owned by an approved admin generate and send recurring invoices.
+  const approved = await approvedWorkspaceIds(supabase);
+  const templates = (allTemplates ?? []).filter(t => approved.has(String((t as { workspace_id?: string }).workspace_id)));
 
   const result: GenResult = {
     ok: true,

@@ -9,8 +9,9 @@ export const dynamic = 'force-dynamic';
 // the Fair Oaks domain. Writes to the shared CRM (FORG) Supabase — same connection the
 // site already uses to push leads.
 function crmClient(): SupabaseClient | null {
-  const url = process.env.CRM_SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.CRM_SUPABASE_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
+  // No fallback to this site's own database or key: the CRM connection must be configured explicitly.
+  const url = process.env.CRM_SUPABASE_URL;
+  const key = process.env.CRM_SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) return null;
   return createClient(url, key, { auth: { persistSession: false } });
 }

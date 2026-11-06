@@ -26,6 +26,17 @@ export const metadata: Metadata = {
 };
 
 export default function SignupPage() {
+  const open = process.env.ONBOARDING_ENABLED === '1' && process.env.ONBOARDING_DISABLED !== '1';
+  if (!open) {
+    return (
+      <main className="min-h-screen bg-background-cream flex items-center justify-center px-4 py-12">
+        <div className="max-w-md text-center">
+          <h1 className="text-2xl font-semibold mb-3">Workspaces are by invitation</h1>
+          <p>New workspaces are being set up by hand for now. Email <a className="underline" href="mailto:info@crecotx.com">info@crecotx.com</a> and we will get you started.</p>
+        </div>
+      </main>
+    );
+  }
   return (
     <main className="min-h-screen bg-background-cream flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">

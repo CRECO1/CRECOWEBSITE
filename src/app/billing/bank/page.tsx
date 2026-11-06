@@ -78,7 +78,7 @@ export default function BankPage() {
 
   const reloadAll = useCallback(async () => {
     const [accR, txnR, invR] = await Promise.all([
-      supabase.from('bank_accounts').select('*').order('created_at', { ascending: false }),
+      supabase.from('bank_accounts').select('id,plaid_item_id,plaid_account_id,institution_name,account_name,account_mask,account_type,account_subtype,active,last_synced_at,last_sync_error,created_at,updated_at,workspace_id').order('created_at', { ascending: false }),
       supabase.from('bank_transactions').select('*').order('posted_date', { ascending: false }).limit(200),
       // Open invoices = sent or overdue. Used for invoice-match suggestions
       // on inflows. Limit 100 keeps the response small — should cover any

@@ -10,7 +10,7 @@ import { buildSignupContext } from '@/lib/signup-context';
 import { checkEmailQuality } from '@/lib/email-quality';
 import { buildIcs } from '@/lib/ics';
 import { pushToCrm } from '@/lib/crm';
-import { enforceRateLimit } from '@/lib/rate-limit';
+import { enforceRateLimit, mailAllowed } from '@/lib/rate-limit';
 import { leadAlertRecipients, leadCrmOwners } from '@/lib/lead-owner';
 import { getLeadOwner } from '@/lib/broker';
 
@@ -325,7 +325,7 @@ export async function POST(req: NextRequest) {
       const safeNotes = escapeHtml(notes || '');
 
       // 1. Confirmation to the prospect — with ICS attached
-      await resend.emails.send({
+      if (await mailAllowed(email)) await resend.emails.send({
         from: getFromEmail(),
         to: email,
         replyTo: NOTIFICATION_EMAIL,

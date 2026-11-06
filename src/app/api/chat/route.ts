@@ -159,9 +159,14 @@ export async function POST(req: NextRequest) {
 
           // Execute every tool_use block in the turn, in order.
           const toolResults: any[] = [];
+          let leadsCaptured = 0;   // at most ONE lead is recorded per turn: a prompt can't make the bot file a batch of fake leads
           for (const block of message.content) {
             if (block.type === 'tool_use') {
               try {
+                if (block.name === 'capture_lead' && ++leadsCaptured > 1) {
+                  toolResults.push({ type: 'tool_result', tool_use_id: block.id, content: JSON.stringify({ error: 'Only one lead can be recorded at a time. Ask the visitor to confirm, then record just that one.' }) });
+                  continue;
+                }
                 const result = await executeChatTool(block.name, block.input);
                 toolResults.push({
                   type: 'tool_result',

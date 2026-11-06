@@ -29,6 +29,7 @@
  */
 
 import type { NextRequest } from 'next/server';
+import { createHash } from 'node:crypto';
 import { resolveClientIp } from '@/lib/client-ip';
 
 interface Bucket {
@@ -62,6 +63,16 @@ export function clientIp(req: NextRequest): string {
   return resolveClientIp(req.headers);
 }
 
+/** An IPv6 visitor controls a whole /64, so limits key on that prefix, not the single address. IPv4 and "unknown" pass through unchanged. */
+export function ipBucket(ip: string): string {
+  if (!ip.includes(':')) return ip;
+  const [head, tail = ''] = ip.split('::');
+  const h = head ? head.split(':') : [];
+  const t = tail ? tail.split(':') : [];
+  const groups = ip.includes('::') ? [...h, ...Array(Math.max(0, 8 - h.length - t.length)).fill('0'), ...t] : h;
+  return groups.slice(0, 4).map(g => (g || '0').toLowerCase()).join(':') + '::/64';
+}
+
 export interface RateLimitOptions {
   /** Bucket namespace — typically the route path. */
   namespace: string;
@@ -92,6 +103,7 @@ export function checkRateLimit(key: string, opts: RateLimitOptions): RateLimitRe
   const now = Date.now();
   const bucket = ns.get(key);
 
+  if (ns.size > 5000) { for (const [k, b] of ns) if (b.resetAt < now) ns.delete(k); if (ns.size > 5000) ns.clear(); }
   if (!bucket || bucket.resetAt < now) {
     // Fresh window — start a new bucket. count=1 for this request.
     const resetAt = now + opts.windowMs;
@@ -192,7 +204,7 @@ export async function enforceRateLimit(
   req: NextRequest,
   opts: RateLimitOptions,
 ): Promise<Response | null> {
-  const ip = clientIp(req);
+  const ip = ipBucket(clientIp(req));
   const result = await checkRateLimitShared(ip, opts);
   if (result.allowed) return null;
   const retryAfterSeconds = Math.max(1, Math.ceil((result.resetAt - Date.now()) / 1000));
@@ -211,4 +223,20 @@ export async function enforceRateLimit(
       },
     },
   );
+}
+
+
+/**
+ * Gate for automatic email to an address a visitor TYPED INTO A FORM: no more than 2 per recipient per 24 hours and 150 an hour overall, so a form
+ * can't be used to mail-bomb someone from our domain or burn the sending quota. A "no" just skips the automatic reply (the lead is still saved and
+ * the broker still alerted), so a real visitor loses nothing but the courtesy email.
+ */
+export async function mailAllowed(emailRaw: string): Promise<boolean> {
+  const email = String(emailRaw ?? '').trim().toLowerCase();
+  if (!email) return false;
+  const key = createHash('sha256').update(email).digest('hex').slice(0, 24);
+  const per = await checkRateLimitShared(key, { namespace: 'mail-recipient', max: 2, windowMs: 24 * 3600_000 });
+  if (!per.allowed) return false;
+  const all = await checkRateLimitShared('all', { namespace: 'mail-global', max: 150, windowMs: 3600_000 });
+  return all.allowed;
 }

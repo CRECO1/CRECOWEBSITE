@@ -18,7 +18,7 @@ import { MetadataRoute } from 'next';
  * crawler has to infer intent from the wildcard rule. Note: a crawler that
  * matches a named group ignores the `*` group, so the disallows are repeated.
  */
-const PRIVATE_PATHS = ['/admin', '/manage', '/api/', '/billing', '/client/', '/r/'];
+const PRIVATE_PATHS = ['/admin', '/manage', '/api/', '/billing', '/client/', '/r/', '/inv/'];
 // The one public, read-only data surface under /api/: documented at /api/openapi.json. Allow is more specific than
 // Disallow: /api/, so it wins for crawlers that follow the standard longest-match rule.
 const AGENT_API_PATHS = ['/api/v1/', '/api/openapi.json', '/api/mcp'];

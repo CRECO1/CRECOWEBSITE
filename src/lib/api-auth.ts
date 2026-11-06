@@ -77,6 +77,14 @@ export async function requireAdmin(): Promise<RequireAdminResult> {
     };
   }
 
+  // An account with 2-step verification turned on must have used it: a password-only (aal1) session gets nothing from the admin API.
+  if (user.factors?.some(f => f.status === 'verified')) {
+    const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (aal?.currentLevel !== 'aal2') {
+      return { error: NextResponse.json({ error: 'Two-step verification required' }, { status: 401 }) };
+    }
+  }
+
   // Defense in depth: a valid Supabase JWT is necessary but not
   // sufficient. The user must also be on the admin_users allowlist.
   // This prevents a visitor who slipped through self-signup (if project

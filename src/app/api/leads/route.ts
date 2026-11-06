@@ -9,7 +9,7 @@ import { buildSignupContext } from '@/lib/signup-context';
 import { leadSourceLabel } from '@/lib/lead-source-label';
 import { checkEmailQuality } from '@/lib/email-quality';
 import { pushToCrm, isSubscriptionSource } from '@/lib/crm';
-import { enforceRateLimit } from '@/lib/rate-limit';
+import { enforceRateLimit, mailAllowed } from '@/lib/rate-limit';
 import { scoreLead, tierSubjectLabel, tierColor } from '@/lib/lead-score';
 import { leadAlertRecipients, leadCrmOwners } from '@/lib/lead-owner';
 import { getLeadOwner } from '@/lib/broker';
@@ -443,7 +443,7 @@ export async function POST(req: NextRequest) {
       const isValuation = source === 'valuation-request';
       // Market-report signups were promised "Free. No call." — the generic
       // "we'll be in touch" acknowledgement contradicts that, so skip it.
-      if (!isSubscription) await resend.emails.send({
+      if (!isSubscription && await mailAllowed(email)) await resend.emails.send({
         from: getFromEmail(),
         to: email,
         subject: isValuation

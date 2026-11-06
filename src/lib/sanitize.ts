@@ -103,3 +103,18 @@ export const MAX_LEN = {
   shortField: 200,    // budget, timeline, source, asset_slug, etc.
   url: 2048,
 };
+
+
+/** Keep a browser-supplied object small and mostly flat: at most 20 keys, short keys, strings/numbers/booleans (one nested level), under ~2 KB in all. */
+export function boundedObject(v: unknown, depth = 0): Record<string, unknown> | undefined {
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return undefined;
+  const out: Record<string, unknown> = {};
+  for (const [k, x] of Object.entries(v as Record<string, unknown>).slice(0, 20)) {
+    const key = k.slice(0, 40);
+    if (typeof x === 'string') out[key] = x.slice(0, 300);
+    else if (typeof x === 'number' && Number.isFinite(x)) out[key] = x;
+    else if (typeof x === 'boolean') out[key] = x;
+    else if (depth === 0 && x && typeof x === 'object' && !Array.isArray(x)) { const n = boundedObject(x, 1); if (n) out[key] = n; }
+  }
+  return JSON.stringify(out).length > 2000 ? undefined : out;
+}
