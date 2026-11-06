@@ -77,6 +77,11 @@ export async function handleAgentInquiryRequest(req: NextRequest, rawIn?: string
   const { data: dup } = await dupQ;
   if (dup && dup.length) return json({ status: 'duplicate', message: 'This request was already received; nobody needs to resend it.', meta: { api_version: AGENT_API_VERSION } });
 
+  // Global brake (the per-IP limiter is per warm instance, so a spread-out flood could get around it): if the agent API has
+  // already produced this many requests in the last hour, stop recording and alerting until it eases. Real traffic is a few a week.
+  const { count: lastHour } = await db.from('leads').select('id', { count: 'exact', head: true }).eq('source', SOURCE).gte('created_at', new Date(Date.now() - 3_600_000).toISOString());
+  if ((lastHour ?? 0) >= 25) return json({ error: 'busy', message: 'Too many requests right now. Try again in an hour, or have the person call or email CRECO.', contact: AGENT_CONTACT }, 429, { 'Retry-After': '3600' });
+
   const meta = LABEL[q.interest];
   const ua = clampString(req.headers.get('user-agent'), 160);
   const entries: LeadAnswer[] = [
