@@ -42,6 +42,7 @@ export default function LytlePage() {
         cityShort: 'Lytle',
         heroEyebrow: 'Texas Commercial Real Estate · Lytle',
         heroTitle: 'Lytle commercial real estate: small-town Main Street retail on the I-35 corridor.',
+        heroImage: '/properties/15033-main-st-lytle/hero-corner.jpg',
         heroSubhead:
           "Lytle sits on I-35 about 25 miles southwest of downtown San Antonio, with a working Main Street, a daily-needs customer base and room for small businesses to open their own storefront. CRECO owns and leases The Mill at 15033 Main St, so you deal directly with the owner, and we represent tenants, landlords and buyers across Lytle and the surrounding Atascosa, Medina and Bexar County trade area.",
         quickAnswer:
@@ -54,7 +55,7 @@ export default function LytlePage() {
         ],
         marketIntro: [
           "Lytle is a small-town commercial market with an easy I-35 connection. The city straddles Atascosa, Medina and Bexar counties, so its trade area pulls from the southwest San Antonio suburbs as well as the farm-and-ranch communities down the interstate. Commuter traffic and local errands both run through Main Street and the I-35 access road.",
-          "Tenants here are mostly independent operators: salons and barbers, tax and insurance offices, coffee and food concepts, boutiques and service businesses. That mix drives repeat weekly traffic, and it favors small, simple spaces with street frontage, parking and a landlord who can make decisions quickly. Big-footprint national retail is thin in town, which leaves room for local businesses to be the destination.",
+          "Tenants here are mostly independent operators: salons and barbers, tax and insurance offices, coffee and food concepts, boutiques and service businesses. That mix drives repeat weekly traffic, and it favors small, simple spaces with street frontage, parking and a landlord who can make decisions quickly. Most of Lytle's retail is local and independent, with the national names clustered near the I-35 exit, which leaves room for local businesses to be the destination on Main Street.",
           "CRECO is both a broker and an owner in Lytle. We own and operate The Mill at 15033 Main St, a multi-tenant center with a 650 SF standalone building on the same lot, so we know first-hand what tenants here ask for and how leases get done. The same team represents tenants looking for a storefront, owners of Lytle and Atascosa County property, and buyers looking at small commercial assets on the I-35 corridor.",
         ],
         servicesIntro: [
@@ -124,7 +125,7 @@ export default function LytlePage() {
         faqs: [
           {
             q: 'What is The Mill in Lytle, TX?',
-            a: 'The Mill is a multi-tenant retail center at 15033 Main St in Lytle, TX, about 11,750 SF with established local co-tenants. CRECO owns and leases it directly. A 650 SF standalone building on the same lot, at 15055 Main St, is also leased by CRECO.',
+            a: 'The Mill is a multi-tenant retail center at 15033 Main St in Lytle, TX, about 11,750 SF with established local co-tenants. CRECO owns and leases it directly. A 650 SF standalone building on the same lot, at 15055 Main St, is available for lease through CRECO.',
           },
           {
             q: 'How much is retail rent in Lytle?',

@@ -90,6 +90,8 @@ export interface CityHubConfig {
   heroEyebrow: string;
   heroTitle: string;
   heroSubhead: string;
+  /** Optional hero background (public path). Defaults to the San Antonio skyline/River Walk image. */
+  heroImage?: string;
   /** 2-3 paragraphs of market context */
   marketIntro: string[];
   marketStats: MarketStat[];
@@ -289,7 +291,7 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
         {/* Hero */}
         <section className="bg-primary py-16 sm:py-24 text-white relative overflow-hidden">
           <div className="absolute inset-0 opacity-15"
-            style={{ backgroundImage: "url('/images/sa-hero.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }} aria-hidden="true" />
+            style={{ backgroundImage: `url('${config.heroImage || '/images/sa-hero.jpg'}')`, backgroundSize: 'cover', backgroundPosition: 'center' }} aria-hidden="true" />
           <Container className="relative z-10">
             <div className="max-w-3xl">
               <p className="overline mb-3 text-gold flex items-center gap-2">
