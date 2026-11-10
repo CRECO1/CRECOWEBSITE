@@ -525,7 +525,7 @@ export default function GetStartedPage() {
                 How can we help?
               </h1>
               <p className="mt-3 text-body text-foreground-muted">
-                Pick one, leave your name and number — that’s all we need. Everything else is optional.
+                Pick one, leave your name and a phone or email — that’s all we need. Everything else is optional.
               </p>
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -580,6 +580,10 @@ export default function GetStartedPage() {
     const capturedForm = new FormData(e.currentTarget);
     const honeypot = (capturedForm.get('website') as string) ?? '';
     const formRenderedAt = Number(capturedForm.get('form_rendered_at')) || undefined;
+    if (!phone.trim() && !email.trim()) {
+      setSubmitError('Please add a phone number or an email so we can reach you.');
+      return;
+    }
     setLoading(true);
     setSubmitError(null);
     try {
@@ -588,7 +592,8 @@ export default function GetStartedPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          path, name, phone,
+          path, name,
+          phone: phone.trim() || undefined,
           email: email.trim() || undefined,
           answers: labelled,
           surface: 'get-started',
@@ -605,7 +610,7 @@ export default function GetStartedPage() {
         return;
       }
       // The site's primary conversion — mark as a Key Event in GA4.
-      trackEvent('get_started_submitted', { path, email_provided: email.trim().length > 0, funnel_version: FUNNEL_VERSION });
+      trackEvent('get_started_submitted', { path, email_provided: email.trim().length > 0, phone_provided: phone.trim().length > 0, funnel_version: FUNNEL_VERSION });
       setDone(true);
     } catch {
       trackEvent('get_started_failed', { path, reason: 'network', funnel_version: FUNNEL_VERSION });
@@ -679,12 +684,12 @@ export default function GetStartedPage() {
                 <input id="gs-name" required value={name} onChange={e => setName(e.target.value)} placeholder="First & last name" autoComplete="name" className={field} />
               </div>
               <div>
-                <label htmlFor="gs-phone" className="label-readable">Best number to reach you *</label>
-                <input id="gs-phone" required type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="(210) 555-0000" autoComplete="tel" className={field} />
+                <label htmlFor="gs-phone" className="label-readable">Phone <span className="font-normal text-foreground-muted">(phone or email — either is fine)</span></label>
+                <input id="gs-phone" type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="(210) 555-0000" autoComplete="tel" className={field} />
               </div>
               <div>
                 <label htmlFor="gs-email" className="label-readable">
-                  Email <span className="font-normal text-foreground-muted">(optional)</span>
+                  Email
                 </label>
                 <input id="gs-email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@company.com" autoComplete="email" className={field} />
               </div>

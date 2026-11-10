@@ -190,8 +190,15 @@ export async function POST(req: NextRequest) {
 
     const name = clampString(rawName, MAX_LEN.name);
     const phone = safePhone(rawPhone);
-    if (!name || !phone) {
-      return NextResponse.json({ error: 'Name and phone are required' }, { status: 400 });
+    // A "Have us call you" request is a phone call, so it needs a number. The
+    // main finish screen takes a number OR an email — either gives us a way
+    // to reach the person, and asking for both cost leads.
+    const isCallbackReq = callback === true;
+    if (!name || (isCallbackReq ? !phone : (!phone && !email))) {
+      return NextResponse.json(
+        { error: isCallbackReq ? 'Name and phone are required' : 'Name and a phone number or email are required' },
+        { status: 400 },
+      );
     }
 
     const company = clampString(rawCompany, MAX_LEN.company);
@@ -211,7 +218,7 @@ export async function POST(req: NextRequest) {
       : baseMeta;
     // Both stores below require an email; a phone-only lead is kept under a
     // never-deliverable stand-in derived from the number (lib/placeholder-email).
-    const storedEmail = email ?? phoneOnlyEmail(phone);
+    const storedEmail = email ?? phoneOnlyEmail(phone as string);
     // Owners who want to lease their space out are landlords, not sellers.
     const answerText = JSON.stringify(answers ?? {}).toLowerCase();
     const crmType = path === 'agent'

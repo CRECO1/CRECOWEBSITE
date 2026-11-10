@@ -42,7 +42,8 @@ export interface LeadNotificationEmailOptions {
   /** Empty when the lead left only a phone number (the /get-started finish
    *  screen and its call-me panel make email optional). */
   email: string | null;
-  phone: string;
+  /** Null when the lead left only an email (the finish screen takes either). */
+  phone: string | null;
   answers: LeadAnswer[];
   /** Rendered as the "received" timestamp. Defaults to now. */
   submittedAt?: Date;
@@ -103,7 +104,7 @@ export function buildLeadNotificationEmail(options: LeadNotificationEmailOptions
               </tr>`;
 
   const safeEmail = email ? escapeHtml(email) : '';
-  const safePhone = escapeHtml(phone);
+  const safePhone = phone ? escapeHtml(phone) : '';
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -139,7 +140,9 @@ export function buildLeadNotificationEmail(options: LeadNotificationEmailOptions
                 ${contactRow('Email', safeEmail
                   ? `<a href="mailto:${safeEmail}" style="color:${INK};text-decoration:underline">${safeEmail}</a>`
                   : 'Not provided — call or text')}
-                ${contactRow('Phone', `<a href="tel:${escapeHtml(telHref(phone))}" style="color:${INK};text-decoration:underline">${safePhone}</a>`)}
+                ${contactRow('Phone', phone
+                  ? `<a href="tel:${escapeHtml(telHref(phone))}" style="color:${INK};text-decoration:underline">${safePhone}</a>`
+                  : 'Not provided — reply by email')}
               </table>
             </td>
           </tr>
@@ -148,9 +151,11 @@ export function buildLeadNotificationEmail(options: LeadNotificationEmailOptions
           <tr>
             <td style="padding:22px 28px 6px">
               ${safeEmail
-                ? `<a href="mailto:${safeEmail}" style="display:inline-block;background:${INK};color:${GOLD};padding:12px 24px;border-radius:8px;font-weight:700;font-size:15px;text-decoration:none">Reply to ${escapeHtml(name.split(' ')[0] || name)} →</a>
-              <a href="tel:${escapeHtml(telHref(phone))}" style="display:inline-block;margin-left:10px;color:${INK};padding:12px 4px;font-weight:600;font-size:15px;text-decoration:underline">Call ${safePhone}</a>`
-                : `<a href="tel:${escapeHtml(telHref(phone))}" style="display:inline-block;background:${INK};color:${GOLD};padding:12px 24px;border-radius:8px;font-weight:700;font-size:15px;text-decoration:none">Call ${escapeHtml(name.split(' ')[0] || name)} at ${safePhone} →</a>`}
+                ? `<a href="mailto:${safeEmail}" style="display:inline-block;background:${INK};color:${GOLD};padding:12px 24px;border-radius:8px;font-weight:700;font-size:15px;text-decoration:none">Reply to ${escapeHtml(name.split(' ')[0] || name)} →</a>${phone ? `
+              <a href="tel:${escapeHtml(telHref(phone))}" style="display:inline-block;margin-left:10px;color:${INK};padding:12px 4px;font-weight:600;font-size:15px;text-decoration:underline">Call ${safePhone}</a>` : ''}`
+                : phone
+                  ? `<a href="tel:${escapeHtml(telHref(phone))}" style="display:inline-block;background:${INK};color:${GOLD};padding:12px 24px;border-radius:8px;font-weight:700;font-size:15px;text-decoration:none">Call ${escapeHtml(name.split(' ')[0] || name)} at ${safePhone} →</a>`
+                  : ''}
             </td>
           </tr>
 
