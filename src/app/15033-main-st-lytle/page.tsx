@@ -236,14 +236,14 @@ export default function LytleMainStPage() {
               <p className="text-body-lg text-white/80 leading-relaxed mb-7 max-w-2xl">
                 A multi-tenant retail center on the I-35 corridor in the San Antonio southwest metro
                 — <strong className="text-white">five active local co-tenants</strong> across daily-needs, F&amp;B, and specialty
-                retail. Owned and operated by CRECO.
+                retail. <strong className="text-gold">A 650 SF standalone building is available now.</strong> Owned and operated by CRECO.
               </p>
               <div className="flex flex-wrap gap-4">
                 <a
                   href="#inquiry"
                   className="inline-flex items-center gap-2 rounded-lg bg-gold px-7 py-3.5 text-body-sm font-bold text-primary hover:bg-gold-light shadow-lg"
                 >
-                  Inquire about a suite <ArrowRight className="h-4 w-4" />
+                  Inquire about the 650 SF building <ArrowRight className="h-4 w-4" />
                 </a>
                 <a
                   href={PHONE_HREF}
@@ -277,7 +277,7 @@ export default function LytleMainStPage() {
                 Now Leasing
               </span>
               <span className="text-body-sm">·</span>
-              <span className="text-body-sm font-medium">Multi-Tenant Retail</span>
+              <span className="text-body-sm font-medium">650 SF Standalone Available</span>
               <span className="text-body-sm">·</span>
               <span className="text-body-sm font-medium">I-35 Corridor</span>
               <span className="text-body-sm">·</span>
@@ -330,12 +330,12 @@ export default function LytleMainStPage() {
             <div className="max-w-2xl mb-10 mx-auto text-center">
               <p className="overline mb-3 text-gold">Suite breakdown</p>
               <h2 className="font-heading text-heading-xl sm:text-display-sm font-bold text-primary leading-tight">
-                Seven units. 800 – 2,500 SF.
+                Seven units. 650 SF standalone available now.
               </h2>
               <p className="mt-4 text-body text-foreground-muted leading-relaxed">
                 Six in-line suites in the main retail strip plus a small standalone building on the
-                same parcel — different layouts for different concepts. Inquire below for current
-                availability and per-suite specifics.
+                same parcel — different layouts for different concepts. The 650 SF standalone building
+                is available now; inquire below for pricing and to schedule a tour.
               </p>
             </div>
             <div className="max-w-3xl mx-auto rounded-2xl bg-background-cream border border-border overflow-hidden">
@@ -363,9 +363,16 @@ export default function LytleMainStPage() {
                       </p>
                     </div>
                   </div>
-                  <p className="font-heading text-body font-bold text-primary tabular-nums shrink-0">
-                    {s.sf.toLocaleString()} SF
-                  </p>
+                  <div className="flex items-center gap-3 shrink-0">
+                    {s.type === 'standalone' && (
+                      <span className="rounded-full bg-gold px-3 py-1 text-caption font-bold uppercase tracking-wide text-primary">
+                        Available now
+                      </span>
+                    )}
+                    <p className="font-heading text-body font-bold text-primary tabular-nums">
+                      {s.sf.toLocaleString()} SF
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
