@@ -160,6 +160,12 @@ export default function SanAntonioPage() {
         ],
         propertyLinks: [
           {
+            label: '15033 Main St — Lytle retail for lease',
+            href: '/15033-main-st-lytle',
+            description:
+              '650 SF standalone retail building available in an established multi-tenant center on the I-35 corridor, southwest of San Antonio. Contact for pricing.',
+          },
+          {
             label: 'Industrial / warehouse for lease',
             href: '/san-antonio-industrial-space',
             description:
