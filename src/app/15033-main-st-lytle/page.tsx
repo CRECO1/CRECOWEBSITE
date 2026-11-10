@@ -268,6 +268,17 @@ export default function LytleMainStPage() {
           </Container>
         </section>
 
+        <section className="bg-white border-b border-border">
+          <Container>
+            <p className="py-3 text-body-sm text-foreground-muted">
+              <Link href="/lytle-commercial-real-estate" className="font-semibold text-gold-dark hover:underline">
+                &larr; Lytle commercial real estate
+              </Link>
+              {' '}&middot; the market, submarkets and CRECO&rsquo;s services in Lytle
+            </p>
+          </Container>
+        </section>
+
         {/* Status strip — leasing-framed status bar matching the
             Plaza page's visual rhythm. */}
         <section className="bg-gold py-6 text-primary">

@@ -64,15 +64,15 @@ export default function LytlePage() {
         ],
         submarkets: [
           {
-            name: 'Main Street',
+            name: 'Main Street (State Highway 132)',
             characterization: 'Local retail + services',
-            description: 'The center of Lytle commerce. Small-bay retail, salons, offices and food concepts with street frontage. The Mill at 15033 Main St is here.',
+            description: 'The center of Lytle commerce. Main Street is State Highway 132 through town, with small-bay retail, salons, offices and food concepts on street frontage. The Mill at 15033 Main St is here.',
             href: '/15033-main-st-lytle',
           },
           {
             name: 'I-35 Access Road',
             characterization: 'Highway-oriented retail',
-            description: 'Frontage and access-road locations aimed at commuters and passing traffic: fast food, convenience, nails and service retail.',
+            description: 'Frontage and access-road locations near the I-35 exit, aimed at commuters and passing traffic: fast food, convenience, nails and service retail.',
           },
           {
             name: 'McDonald Street',
@@ -80,9 +80,9 @@ export default function LytlePage() {
             description: 'A corridor of small centers connecting the I-35 area to downtown, with insurance, beauty and service tenants.',
           },
           {
-            name: 'Highway 132',
+            name: 'Highway 132 toward Devine',
             characterization: 'Local service commercial',
-            description: 'The road toward Devine, with small offices, bakeries and service businesses serving the surrounding area.',
+            description: 'State Highway 132 as it leaves town toward Devine, with small offices, bakeries and service businesses serving the surrounding area.',
           },
           {
             name: 'Atascosa & Medina County Towns',
