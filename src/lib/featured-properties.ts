@@ -164,7 +164,7 @@ export const DIETZ_ELKHORN_LISTING: Listing = {
  */
 export const LYTLE_MAIN_ST_LISTING: Listing = {
   id: 'synth-15033-main-st-lytle',
-  title: '15033 Main St — Lytle Retail Leasing',
+  title: 'The Mill — 15033 Main St, Lytle Retail Leasing',
   slug: '15033-main-st-lytle',
   address: '15033 Main St',
   city: 'Lytle',
@@ -176,14 +176,14 @@ export const LYTLE_MAIN_ST_LISTING: Listing = {
   lease_rate: null,                          // Call for pricing
   lease_rate_basis: 'NNN',                   // Standard for the property
   sqft: 11750,                               // 6 strip suites (11,100) + 1 standalone (650)
-  available_sqft: 650,                       // 650 SF standalone building available (Zack, 2026-11-10)
+  available_sqft: null,                      // the available 650 SF standalone is its own listing (15055 Main St)
   lot_size: null,
   zoning: null,
   year_built: null,
   clear_height: null,
   dock_doors: null,
   grade_doors: null,
-  headline: '650 SF standalone retail building at 15055 Main St available now — same lot as the ±11,750 SF, 15033 Main St multi-tenant center',
+  headline: 'The Mill: ±11,750 SF multi-tenant retail center on Lytle\'s Main Street — 6 in-line suites + a 650 SF standalone building',
   description: null,
   features: [
     '6 in-line suites (800 – 2,500 SF)',
@@ -205,6 +205,59 @@ export const LYTLE_MAIN_ST_LISTING: Listing = {
   submarket: 'San Antonio Southwest',
   featured: true,
   // OSM house-level geocode for 15033 Main St (Sept 2026).
+  latitude: 29.233958,
+  longitude: -98.794303,
+  geocoded_at: null,
+  created_at: '',
+  updated_at: '',
+  landing_url: '/15033-main-st-lytle',
+};
+
+/**
+ * 15055 Main St — the 650 SF standalone building on the same lot as The Mill
+ * (15033 Main St), Lytle TX. Vacant as of 2026-11-10 (prior tenant moved out);
+ * marketed for lease by CRECO (owner-operator). Shares The Mill's landing page.
+ * `images: null` on purpose until a photo of THIS building exists — the strip
+ * center photos would misrepresent it. Pricing by request.
+ */
+export const LYTLE_STANDALONE_LISTING: Listing = {
+  id: 'synth-15055-main-st-lytle',
+  title: '15055 Main St — Lytle Standalone Retail for Lease',
+  slug: '15055-main-st-lytle',
+  address: '15055 Main St',
+  city: 'Lytle',
+  state: 'TX',
+  zip: '78052',
+  property_type: 'retail',
+  transaction_type: 'lease',
+  sale_price: null,
+  lease_rate: null,                          // contact for pricing
+  lease_rate_basis: 'NNN',
+  sqft: 650,
+  available_sqft: 650,
+  lot_size: null,
+  zoning: null,
+  year_built: null,
+  clear_height: null,
+  dock_doors: null,
+  grade_doors: null,
+  headline: '650 SF standalone retail building with its own entrance and signage — same lot as The Mill, 15033 Main St',
+  description: null,
+  features: [
+    '650 SF standalone building',
+    'Own entrance and signage',
+    'Surface parking on-site',
+    'NNN lease — I-35 corridor',
+    'Owner-operator landlord (CRECO)',
+  ],
+  images: null,
+  brochure_url: null,
+  virtual_tour_url: null,
+  status: 'active',
+  listing_date: null,
+  closed_date: null,
+  submarket: 'San Antonio Southwest',
+  featured: false,
   latitude: 29.233958,
   longitude: -98.794303,
   geocoded_at: null,
@@ -285,6 +338,7 @@ export const SYNTHETIC_LISTINGS: Listing[] = [
   FAIR_OAKS_PLAZA_LISTING,
   DIETZ_ELKHORN_LISTING,
   LYTLE_MAIN_ST_LISTING,
+  LYTLE_STANDALONE_LISTING,
   ELKHORN_POINT_PAD_LISTING,
 ];
 
