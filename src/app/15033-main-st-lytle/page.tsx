@@ -86,8 +86,8 @@ const SPECS: { label: string; value: string }[] = [
   { label: 'Unit count',        value: `${SUITES.length} units (6 in-line suites + 1 standalone)` },
   { label: 'Unit size range',   value: `${SMALLEST_SUITE.toLocaleString()} – ${LARGEST_SUITE.toLocaleString()} SF` },
   { label: 'Lease type',        value: 'NNN (triple net)' },
-  { label: 'Base rent',         value: 'Call for current rates' },
-  { label: 'Availability',      value: 'Contact for currently-available suites' },
+  { label: 'Base rent',         value: 'Contact for pricing' },
+  { label: 'Available now',      value: '650 SF standalone building (own entrance and signage)' },
   { label: 'Parking',           value: 'Surface lot on-site' },
   { label: 'Highway access',    value: 'I-35 corridor, walking distance' },
 ];
@@ -147,7 +147,7 @@ const BASE_KEYWORDS = [
 export const metadata: Metadata = {
   title: '15033 Main St — Retail Space for Lease | Lytle, TX | CRECO',
   description:
-    '15033 Main St in Lytle, TX — multi-tenant retail center now leasing on the I-35 corridor in the San Antonio southwest metro.',
+    '15033 Main St in Lytle, TX — 650 SF standalone retail building available for lease in an established multi-tenant center on the I-35 corridor. Contact CRECO for pricing.',
   keywords: BASE_KEYWORDS,
   alternates: { canonical: 'https://www.crecotx.com/15033-main-st-lytle' },
   openGraph: {
@@ -169,7 +169,7 @@ const SCHEMAS = [
     url: PAGE_PATH,
     images: [PHOTOS.heroCorner, PHOTOS.frontWide, PHOTOS.aerial],
     description:
-      `Multi-tenant retail center for lease at 15033 Main St, Lytle, TX 78052 on the I-35 corridor (San Antonio southwest metro): ±${TOTAL_SF.toLocaleString()} SF across 6 in-line suites (${SMALLEST_SUITE.toLocaleString()}–${LARGEST_SUITE.toLocaleString()} SF) plus a 650 SF standalone building, NNN. Five established co-tenants. Owned and leased by CRECO; call for pricing.`,
+      `Multi-tenant retail center for lease at 15033 Main St, Lytle, TX 78052 on the I-35 corridor (San Antonio southwest metro): ±${TOTAL_SF.toLocaleString()} SF across 6 in-line suites (${SMALLEST_SUITE.toLocaleString()}–${LARGEST_SUITE.toLocaleString()} SF) plus a 650 SF standalone building, NNN. The 650 SF standalone building is available now. Five established co-tenants. Owned and leased by CRECO; contact for pricing.`,
   }),
   breadcrumbList([
     { name: 'Listings', path: '/listings' },
@@ -180,11 +180,11 @@ const SCHEMAS = [
 const FAQS = [
   {
     q: 'What retail space is available at 15033 Main St in Lytle, TX?',
-    a: `The center totals ±${TOTAL_SF.toLocaleString()} SF: six in-line suites from ${SMALLEST_SUITE.toLocaleString()} to ${LARGEST_SUITE.toLocaleString()} SF plus a 650 SF standalone building. Suite availability changes — call CRECO at (210) 817-3443 for which units are open now.`,
+    a: `The center totals ±${TOTAL_SF.toLocaleString()} SF: six in-line suites from ${SMALLEST_SUITE.toLocaleString()} to ${LARGEST_SUITE.toLocaleString()} SF plus a 650 SF standalone building. The 650 SF standalone building is available now; call CRECO at (210) 817-3443 to confirm current availability of other units.`,
   },
   {
     q: 'What is the rent at 15033 Main St, Lytle?',
-    a: 'Leases are NNN (triple net). Base rent is quoted per suite — contact CRECO at (210) 817-3443 or info@crecotx.com for current rates.',
+    a: 'Leases are NNN (triple net). Contact CRECO at (210) 817-3443 or info@crecotx.com for pricing.',
   },
   {
     q: 'Who are the current tenants at 15033 Main St?',

@@ -176,14 +176,14 @@ export const LYTLE_MAIN_ST_LISTING: Listing = {
   lease_rate: null,                          // Call for pricing
   lease_rate_basis: 'NNN',                   // Standard for the property
   sqft: 11750,                               // 6 strip suites (11,100) + 1 standalone (650)
-  available_sqft: null,                      // Per-suite availability varies; broker handles
+  available_sqft: 650,                       // 650 SF standalone building available (Zack, 2026-11-10)
   lot_size: null,
   zoning: null,
   year_built: null,
   clear_height: null,
   dock_doors: null,
   grade_doors: null,
-  headline: '±11,750 SF multi-tenant retail center — 6 in-line suites (800–2,500 SF) + 650 SF standalone building',
+  headline: '650 SF standalone retail building available — in a ±11,750 SF multi-tenant center with 5 established co-tenants',
   description: null,
   features: [
     '6 in-line suites (800 – 2,500 SF)',
