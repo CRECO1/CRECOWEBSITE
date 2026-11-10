@@ -52,6 +52,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // Hill Country gateway submarkets — Fair Oaks Ranch + Boerne
     { url: `${BASE_URL}/fair-oaks-ranch-commercial-real-estate`, lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.95 },
     { url: `${BASE_URL}/boerne-commercial-real-estate`,        lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.9  },
+    { url: `${BASE_URL}/lytle-commercial-real-estate`,        lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.9  },
     // City × asset-class long-tail landing pages — pilot batch. Each
     // captures intent like "office space for lease san antonio" that
     // marketplaces (LoopNet / Crexi) don't optimize for. Expand to the
