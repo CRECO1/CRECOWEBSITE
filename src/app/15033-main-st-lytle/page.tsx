@@ -71,7 +71,7 @@ const SUITES: { unit: string; sf: number; type: 'strip' | 'standalone' }[] = [
   { unit: 'Suite 103', sf: 2100, type: 'strip' },
   { unit: 'Suite 104', sf: 2500, type: 'strip' },
   { unit: 'Suite 105', sf: 2400, type: 'strip' },
-  { unit: 'Standalone building', sf: 650, type: 'standalone' },
+  { unit: 'Standalone building · 15055 Main St', sf: 650, type: 'standalone' },
 ];
 const TOTAL_SF = SUITES.reduce((acc, s) => acc + s.sf, 0);
 const SMALLEST_SUITE = Math.min(...SUITES.map(s => s.sf));
@@ -87,7 +87,7 @@ const SPECS: { label: string; value: string }[] = [
   { label: 'Unit size range',   value: `${SMALLEST_SUITE.toLocaleString()} – ${LARGEST_SUITE.toLocaleString()} SF` },
   { label: 'Lease type',        value: 'NNN (triple net)' },
   { label: 'Base rent',         value: 'Contact for pricing' },
-  { label: 'Available now',      value: '650 SF standalone building (own entrance and signage)' },
+  { label: 'Available now',      value: '650 SF standalone building at 15055 Main St, on the same lot (own entrance and signage)' },
   { label: 'Parking',           value: 'Surface lot on-site' },
   { label: 'Highway access',    value: 'I-35 corridor, walking distance' },
 ];
@@ -147,7 +147,7 @@ const BASE_KEYWORDS = [
 export const metadata: Metadata = {
   title: '15033 Main St — Retail Space for Lease | Lytle, TX | CRECO',
   description:
-    '15033 Main St in Lytle, TX — 650 SF standalone retail building available for lease in an established multi-tenant center on the I-35 corridor. Contact CRECO for pricing.',
+    '650 SF standalone retail building at 15055 Main St, Lytle, TX, on the same lot as the 15033 Main St center, available for lease on the I-35 corridor. Contact CRECO for pricing.',
   keywords: BASE_KEYWORDS,
   alternates: { canonical: 'https://www.crecotx.com/15033-main-st-lytle' },
   openGraph: {
@@ -169,7 +169,7 @@ const SCHEMAS = [
     url: PAGE_PATH,
     images: [PHOTOS.heroCorner, PHOTOS.frontWide, PHOTOS.aerial],
     description:
-      `Multi-tenant retail center for lease at 15033 Main St, Lytle, TX 78052 on the I-35 corridor (San Antonio southwest metro): ±${TOTAL_SF.toLocaleString()} SF across 6 in-line suites (${SMALLEST_SUITE.toLocaleString()}–${LARGEST_SUITE.toLocaleString()} SF) plus a 650 SF standalone building, NNN. The 650 SF standalone building is available now. Five established co-tenants. Owned and leased by CRECO; contact for pricing.`,
+      `Multi-tenant retail center for lease at 15033 Main St, Lytle, TX 78052 on the I-35 corridor (San Antonio southwest metro): ±${TOTAL_SF.toLocaleString()} SF across 6 in-line suites (${SMALLEST_SUITE.toLocaleString()}–${LARGEST_SUITE.toLocaleString()} SF) plus a 650 SF standalone building, NNN. The 650 SF standalone building at 15055 Main St, on the same lot, is available now. Five established co-tenants. Owned and leased by CRECO; contact for pricing.`,
   }),
   breadcrumbList([
     { name: 'Listings', path: '/listings' },
@@ -180,7 +180,7 @@ const SCHEMAS = [
 const FAQS = [
   {
     q: 'What retail space is available at 15033 Main St in Lytle, TX?',
-    a: `The center totals ±${TOTAL_SF.toLocaleString()} SF: six in-line suites from ${SMALLEST_SUITE.toLocaleString()} to ${LARGEST_SUITE.toLocaleString()} SF plus a 650 SF standalone building. The 650 SF standalone building is available now; call CRECO at (210) 817-3443 to confirm current availability of other units.`,
+    a: `The center totals ±${TOTAL_SF.toLocaleString()} SF: six in-line suites from ${SMALLEST_SUITE.toLocaleString()} to ${LARGEST_SUITE.toLocaleString()} SF plus a 650 SF standalone building. The 650 SF standalone building at 15055 Main St, on the same lot, is available now; call CRECO at (210) 817-3443 to confirm current availability of other units.`,
   },
   {
     q: 'What is the rent at 15033 Main St, Lytle?',
@@ -236,7 +236,7 @@ export default function LytleMainStPage() {
               <p className="text-body-lg text-white/80 leading-relaxed mb-7 max-w-2xl">
                 A multi-tenant retail center on the I-35 corridor in the San Antonio southwest metro
                 — <strong className="text-white">five active local co-tenants</strong> across daily-needs, F&amp;B, and specialty
-                retail. <strong className="text-gold">A 650 SF standalone building is available now.</strong> Owned and operated by CRECO.
+                retail. <strong className="text-gold">A 650 SF standalone building at 15055 Main St, on the same lot, is available now.</strong> Owned and operated by CRECO.
               </p>
               <div className="flex flex-wrap gap-4">
                 <a
@@ -334,7 +334,7 @@ export default function LytleMainStPage() {
               </h2>
               <p className="mt-4 text-body text-foreground-muted leading-relaxed">
                 Six in-line suites in the main retail strip plus a small standalone building on the
-                same parcel — different layouts for different concepts. The 650 SF standalone building
+                same parcel — different layouts for different concepts. The 650 SF standalone building at 15055 Main St
                 is available now; inquire below for pricing and to schedule a tour.
               </p>
             </div>

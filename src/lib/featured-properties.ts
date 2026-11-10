@@ -183,7 +183,7 @@ export const LYTLE_MAIN_ST_LISTING: Listing = {
   clear_height: null,
   dock_doors: null,
   grade_doors: null,
-  headline: '650 SF standalone retail building available — in a ±11,750 SF multi-tenant center with 5 established co-tenants',
+  headline: '650 SF standalone retail building at 15055 Main St available now — same lot as the ±11,750 SF, 15033 Main St multi-tenant center',
   description: null,
   features: [
     '6 in-line suites (800 – 2,500 SF)',
