@@ -1,3 +1,4 @@
+import { MarketReportCapture } from '@/components/marketing/MarketReportCapture';
 import Link from 'next/link';
 import { SourcesMethodology } from '@/components/marketing/SourcesMethodology';
 import { ArrowRight, BarChart3, Building2, MapPin, CheckCircle2 } from 'lucide-react';
@@ -443,6 +444,26 @@ export async function CityAssetPage({ config }: { config: CityAssetConfig }) {
             </div>
           </Container>
         </section>
+        {/* Market brief lead magnet */}
+        <section className="bg-background-cream py-12">
+          <Container>
+            <div className="mx-auto grid max-w-4xl items-center gap-6 md:grid-cols-2">
+              <div>
+                <h2 className="font-heading text-heading-md font-bold text-primary mb-2">
+                  San Antonio &amp; Hill Country Market Brief
+                </h2>
+                <p className="text-body-sm text-foreground-muted">
+                  Vacancy, rents and absorption from the major brokerages, side by side and sourced. Read Issue 1 free, and get the next edition by email.
+                </p>
+                <Link href="/market-brief" className="mt-3 inline-block text-body-sm font-semibold text-gold-dark hover:underline">
+                  Read the brief →
+                </Link>
+              </div>
+              <MarketReportCapture variant="light" surface={`${(config.canonicalPath || config.city).replace(/^\//, '')}-brief`} />
+            </div>
+          </Container>
+        </section>
+
         {config.sourcesAsOf && <SourcesMethodology asOf={config.sourcesAsOf} />}
       </main>
       <Footer />

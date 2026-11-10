@@ -1226,6 +1226,60 @@ export const SUBMARKETS: SubmarketEntry[] = [
       propertyLinks: STANDARD_PROPERTY_LINKS,
     },
   },
+  {
+    slug: 'kerrville',
+    parentMetro: 'hill-country',
+    shortLabel: 'Kerrville',
+    tagline: 'Kerr County seat — regional hub for retail, healthcare and services west of Boerne',
+    metaTitle: 'Kerrville Commercial Real Estate | Retail, Medical & Office | CRECO',
+    metaDescription:
+      'Kerrville commercial real estate — retail, medical and professional office, and investment property in Kerr County, the regional hub of the western Hill Country.',
+    keywords: [
+      'kerrville commercial real estate',
+      'kerrville retail space for lease',
+      'kerrville office space',
+      'kerr county commercial property',
+      'kerrville medical office',
+      'kerrville commercial land',
+      'kerrville tx commercial broker',
+    ],
+    config: {
+      city: 'Kerrville',
+      cityShort: 'Kerrville',
+      heroEyebrow: 'Texas Hill Country · Kerr County',
+      heroTitle: 'Kerrville commercial real estate — the western Hill Country\'s regional retail and healthcare hub.',
+      heroSubhead:
+        'Retail, medical and professional office, and investment property in Kerrville and Kerr County. Kerrville serves a wide rural trade area for shopping, healthcare and services. CRECO represents tenants and owners in the western Hill Country.',
+      marketStats: [
+        { label: 'Role', value: 'Regional hub', context: 'retail and healthcare for a wide rural trade area' },
+        { label: 'Primary corridors', value: 'IH-10 & Hwy 16', context: 'plus Sidney Baker Street' },
+        { label: 'Demand drivers', value: 'Healthcare + retirees', context: 'steady, non-cyclical users' },
+        { label: 'Market type', value: 'Value-oriented', context: 'lower basis than San Antonio and Boerne' },
+      ],
+      marketIntro: [
+        'Kerrville is the Kerr County seat and the commercial center for a large part of the western Hill Country. Residents of surrounding small towns come here for groceries, medical care and services, which gives the retail and healthcare sectors a bigger trade area than the city\'s population suggests.',
+        'Healthcare and an older, retiree-heavy population are steady demand drivers, so medical office and service retail tend to hold up in softer cycles. The market is value-oriented: lower land and building costs than San Antonio or Boerne, and lower rents to match, which makes it attractive for owner-users and long-hold investors.',
+        'This is a small market, so figures here are directional only. Reach out for current availability, comps and owner-user opportunities.',
+      ],
+      servicesIntro: [
+        'CRECO represents tenants and owners in Kerrville and the western Hill Country: retail and medical users looking for a regional location, and owners who want to lease or sell with a broker who knows the San Antonio and Hill Country buyer pool.',
+        'For investors in San Antonio and the Hill Country, we can bring Kerrville opportunities into a broader search, including single-tenant NNN and owner-user properties.',
+      ],
+      submarkets: [
+        { name: 'Sidney Baker Street / Hwy 16', characterization: 'Main retail spine', description: 'Primary retail and services corridor with the strongest traffic and tenant mix.' },
+        { name: 'IH-10 frontage', characterization: 'Highway + lodging', description: 'Visibility for hospitality, QSR, and larger-format users.' },
+        { name: 'Medical district', characterization: 'Healthcare office', description: 'Clinics and medical office clustered around the main hospital campus.' },
+        { name: 'Downtown Kerrville', characterization: 'Specialty + professional', description: 'Historic core with small retail, restaurants and professional offices.' },
+      ],
+      whyBullets: STANDARD_WHY_BULLETS,
+      relatedInsights: [
+        { slug: 'texas-retail-leasing-fundamentals-2026', category: 'Owner Strategy', title: 'Texas Retail Leasing Fundamentals 2026' },
+        { slug: 'texas-commercial-real-estate-outlook-2026', category: 'Market Outlook', title: 'Texas Commercial Real Estate Outlook 2026' },
+        { slug: 'texas-tenant-lease-negotiation-playbook', category: 'Tenant Strategy', title: 'The Texas Tenant Lease Negotiation Playbook' },
+      ],
+      propertyLinks: STANDARD_PROPERTY_LINKS,
+    },
+  },
 ];
 
 /**

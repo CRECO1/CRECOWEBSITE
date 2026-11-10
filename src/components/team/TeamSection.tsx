@@ -93,7 +93,7 @@ export function TeamSection({
   // Broker-message capture (opened from inside the profile modal). Turns a
   // profile view into a real lead routed to that broker, instead of relying on
   // a mailto: that opens the visitor's email app and captures nothing.
-  const [showMessageForm, setShowMessageForm] = useState(false);
+  const [showMessageForm, setShowMessageForm] = useState(true);
   const [msgName, setMsgName] = useState('');
   const [msgEmail, setMsgEmail] = useState('');
   const [msgBody, setMsgBody] = useState('');
@@ -117,7 +117,7 @@ export function TeamSection({
   function openProfile(agent: Agent) {
     trackEvent('team_profile_opened', { agent_slug: agent.slug, agent_name: agent.name });
     // Fresh capture state each time a profile opens.
-    setShowMessageForm(false);
+    setShowMessageForm(true);
     setMsgSubmitted(false);
     setMsgError(null);
     setSelected(agent);
@@ -138,7 +138,7 @@ export function TeamSection({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: msgName,
+          name: msgName.trim() || msgEmail.split('@')[0],
           email: msgEmail,
           message: `Message to ${selected.name} (${selected.title}) sent from their team profile:\n\n${msgBody || '(no message provided)'}`,
           property_interest: `Broker: ${selected.name}`,
@@ -357,8 +357,8 @@ export function TeamSection({
                         Send {selected.name.split(' ')[0]} a note — the reply comes straight to your inbox.
                       </p>
                       <input
-                        type="text" required value={msgName} onChange={(e) => setMsgName(e.target.value)}
-                        placeholder="Your name"
+                        type="text" value={msgName} onChange={(e) => setMsgName(e.target.value)}
+                        placeholder="Your name (optional)"
                         className="w-full rounded-lg border border-border bg-white px-3 py-2 text-caption text-primary focus:outline-none focus:border-gold-dark"
                       />
                       <input
