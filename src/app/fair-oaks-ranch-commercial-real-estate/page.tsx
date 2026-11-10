@@ -175,6 +175,7 @@ export default function FairOaksRanchPage() {
         propertyLinks: [
           { label: 'Retail space for lease', href: '/fair-oaks-ranch-retail-space', description: 'Retail in Fair Oaks Ranch and across Texas — strip centers, end-caps with drive-thru, restaurants, and pad sites.' },
           { label: 'Office space for lease', href: '/fair-oaks-ranch-office-space', description: 'Professional services office in Fair Oaks Ranch and the broader I-10 corridor.' },
+          { label: 'Lytle commercial real estate', href: '/lytle-commercial-real-estate', description: 'Our Lytle market page: The Mill at 15033 Main St and small-space retail on the I-35 corridor.' },
           { label: '15033 Main St — Lytle', href: '/15033-main-st-lytle', description: 'A CRECO-owned multi-tenant retail center on the I-35 corridor — 650 SF standalone building available now.' },
           { label: '8000 Fair Oaks Pkwy', href: '/8000-fair-oaks-pkwy', description: "CRECO's mixed-use center at 8000 Fair Oaks Pkwy — 4 retail bays + two executive suite buildings, now leasing." },
           // Elkhorn Point is the only entry here that leaves crecotx.com: the

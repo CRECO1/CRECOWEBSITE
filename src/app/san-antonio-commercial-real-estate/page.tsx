@@ -160,6 +160,12 @@ export default function SanAntonioPage() {
         ],
         propertyLinks: [
           {
+            label: 'Lytle commercial real estate',
+            href: '/lytle-commercial-real-estate',
+            description:
+              'Small-town Main Street retail and service space on the I-35 corridor southwest of San Antonio, including CRECO-owned The Mill.',
+          },
+          {
             label: '15033 Main St — Lytle retail for lease',
             href: '/15033-main-st-lytle',
             description:
