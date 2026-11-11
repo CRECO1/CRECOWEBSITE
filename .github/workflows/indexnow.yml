@@ -1,0 +1,72 @@
+name: IndexNow after deploy
+
+# When Vercel reports a successful PRODUCTION deploy, tell IndexNow (Bing ->
+# Copilot + ChatGPT Search, Yandex) about the pages that deploy changed.
+#
+# Why this exists: the daily /api/cron/indexnow job keys off sitemap lastmod, and
+# most static pages share one hand-set date (CONTENT_REVISED in src/app/sitemap.ts),
+# so an edit to /listings or /get-started never shows up there. This maps the
+# files that changed between the previous successful production deploy and this
+# one to the routes they render (see pathsForChangedFiles in
+# scripts/indexnow-ping.ts) and submits just those.
+#
+# Needs no secrets: the IndexNow key is public by design (public/<key>.txt).
+# Google does not read IndexNow; request indexing in Search Console for that.
+# Manual run / preview of a range:
+#   npm run indexnow -- --dry --from-diff <base> <head>
+
+on:
+  deployment_status:
+
+permissions:
+  contents: read
+  deployments: read
+
+concurrency:
+  group: indexnow-after-deploy
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    if: >-
+      github.event.deployment_status.state == 'success' &&
+      startsWith(github.event.deployment.environment, 'Production')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.deployment.sha }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Find the previous successful production deploy
+        id: prev
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.deployment.sha }}
+          ENVIRONMENT: ${{ github.event.deployment.environment }}
+        run: |
+          BASE=""
+          for CAND in $(gh api "repos/${{ github.repository }}/deployments" -f environment="$ENVIRONMENT" -f per_page=15 --jq '.[].id'); do
+            CSHA=$(gh api "repos/${{ github.repository }}/deployments/$CAND" --jq '.sha')
+            [ "$CSHA" = "$SHA" ] && continue
+            STATE=$(gh api "repos/${{ github.repository }}/deployments/$CAND/statuses" --jq '.[0].state // ""')
+            if [ "$STATE" = "success" ] && git cat-file -e "$CSHA^{commit}" 2>/dev/null; then BASE="$CSHA"; break; fi
+          done
+          # First run, or the history was rewritten: fall back to this deploy's own commit.
+          [ -n "$BASE" ] || BASE="$(git rev-parse "$SHA^")"
+          echo "base=$BASE" >> "$GITHUB_OUTPUT"
+          echo "Diffing $BASE..$SHA"
+
+      - name: Submit changed pages to IndexNow
+        env:
+          BASE: ${{ steps.prev.outputs.base }}
+          SHA: ${{ github.event.deployment.sha }}
+        run: |
+          # Give the CDN a moment so the engines fetch the new build, not the old one.
+          sleep 30
+          npx --yes tsx@4.19.1 scripts/indexnow-ping.ts --from-diff "$BASE" "$SHA"
