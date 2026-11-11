@@ -50,8 +50,9 @@ jobs:
           SHA: ${{ github.event.deployment.sha }}
           ENVIRONMENT: ${{ github.event.deployment.environment }}
         run: |
+          # --method GET matters: with -f, gh api would otherwise POST (create a deployment).
           BASE=""
-          for CAND in $(gh api "repos/${{ github.repository }}/deployments" -f environment="$ENVIRONMENT" -f per_page=15 --jq '.[].id'); do
+          for CAND in $(gh api --method GET "repos/${{ github.repository }}/deployments" -f environment="$ENVIRONMENT" -f per_page=15 --jq '.[].id'); do
             CSHA=$(gh api "repos/${{ github.repository }}/deployments/$CAND" --jq '.sha')
             [ "$CSHA" = "$SHA" ] && continue
             STATE=$(gh api "repos/${{ github.repository }}/deployments/$CAND/statuses" --jq '.[0].state // ""')
