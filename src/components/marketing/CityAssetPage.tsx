@@ -54,6 +54,8 @@ export interface CityAssetConfig {
   /** Month the market figures on this page were last written, e.g. "April 2026" —
    *  renders the Sources & methodology block. */
   sourcesAsOf?: string;
+  /** Named reports behind the figures on this page. When set, the Sources block lists them instead of calling every figure a CRECO estimate. */
+  sources?: { label: string; url?: string }[];
   /** "Austin", "Houston", "San Antonio" */
   city: string;
   /** "office", "industrial", "retail", "medical office", "flex" */
@@ -480,7 +482,7 @@ export async function CityAssetPage({ config }: { config: CityAssetConfig }) {
           </Container>
         </section>
 
-        {config.sourcesAsOf && <SourcesMethodology asOf={config.sourcesAsOf} />}
+        {config.sourcesAsOf && <SourcesMethodology asOf={config.sourcesAsOf} sources={config.sources} />}
       </main>
       <Footer />
     </>

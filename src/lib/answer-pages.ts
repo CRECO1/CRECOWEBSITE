@@ -2,9 +2,9 @@
  * Answer-first pages: one question per page, a short direct answer, the sourced figures behind it, and links
  * to the original reports.
  *
- * Pages without a `period` are the Q2 2026 set: every number is lifted from the published Q2 2026 Market Brief
- * (src/app/market-brief/BriefContent.tsx) or src/lib/answers.ts; when the next brief edition lands, update them
- * together and bump BRIEF_UPDATED.
+ * Pages without a `period` still carry Q2 2026 data lifted from the published Q2 2026 Market Brief
+ * (src/app/market-brief/BriefContent.tsx) or src/lib/answers.ts (today: the medical office page, until Matthews
+ * publishes Q3, and the Fair Oaks Ranch how-to). Bump BRIEF_UPDATED only when the Brief itself is revised.
  *
  * Pages with their own `period` / `updated` (Q3 2026 and later) cite named reports directly. Each figure was read
  * on the publisher's own page or PDF; do NOT add a number you have not read in the source you cite, name the
@@ -47,13 +47,6 @@ export interface AnswerPage {
   faqs?: AnswerFaq[];
 }
 
-const CBRE_IND = 'https://www.cbre.com/insights/figures/san-antonio-industrial-figures-q2-2026';
-const CBRE_OFF = 'https://www.cbre.com/insights/figures/san-antonio-office-figures-q2-2026';
-const CW_IND = 'https://assets.cushmanwakefield.com/-/media/cw/marketbeat-pdfs/2026/q2/us-reports/industrial/sanantonio_americas_marketbeat_industrial_q22026.pdf';
-const CW_OFF = 'https://assets.cushmanwakefield.com/-/media/cw/marketbeat-pdfs/2026/q2/us-reports/office/san-antonio_americas_marketbeat_office_q22026.pdf';
-const P_IND = 'https://partnersrealestate.com/research/san-antonio-industrial-q2-2026-quarterly-market-report/';
-const P_OFF = 'https://partnersrealestate.com/research/san-antonio-office-q2-2026-quarterly-market-report/';
-const P_RET = 'https://partnersrealestate.com/research/san-antonio-retail-q2-2026-quarterly-market-report/';
 const MATTHEWS = 'https://www.matthews.com/insights/san-antonio-medical-office-q2-2026';
 const BRIEF = { label: 'San Antonio & Hill Country Market Brief', href: '/market-brief' };
 
@@ -68,6 +61,10 @@ const MM_RETAIL_MIDYEAR = 'https://www.marcusmillichap.com/research/research-bri
 const CBRE_OFF_Q3 = 'https://www.cbre.com/insights/figures/san-antonio-office-figures-q3-2026';
 const CW_OFF_Q3 = 'https://www.cushmanwakefield.com/en/united-states/insights/us-marketbeats/san-antonio-marketbeats/office';
 const P_OFF_Q3 = 'https://partnersrealestate.com/research/san-antonio-office-q3-2026-quarterly-market-report/';
+const CBRE_IND_Q3 = 'https://www.cbre.com/insights/figures/san-antonio-industrial-figures-q3-2026';
+const CW_IND_Q3 = 'https://www.cushmanwakefield.com/en/united-states/insights/us-marketbeats/san-antonio-marketbeats/industrial';
+const P_IND_Q3 = 'https://partnersrealestate.com/research/san-antonio-industrial-q3-2026-quarterly-market-report/';
+const P_RET_Q3 = 'https://partnersrealestate.com/research/san-antonio-retail-q3-2026-quarterly-market-report/';
 
 export const ANSWER_PAGES: AnswerPage[] = [
   {
@@ -280,7 +277,7 @@ export const ANSWER_PAGES: AnswerPage[] = [
     ],
     related: [
       { label: 'San Antonio office space', href: '/san-antonio-office-space' },
-      { label: 'San Antonio office vacancy (Q2 2026 data)', href: '/answers/san-antonio-office-vacancy-rate' },
+      { label: 'San Antonio office vacancy', href: '/answers/san-antonio-office-vacancy-rate' },
       { label: 'Why market reports show different vacancy rates', href: '/answers/why-market-reports-show-different-vacancy' },
       { label: 'San Antonio medical office vacancy', href: '/answers/san-antonio-medical-office-vacancy' },
       BRIEF,
@@ -290,62 +287,76 @@ export const ANSWER_PAGES: AnswerPage[] = [
     slug: 'san-antonio-office-vacancy-rate',
     short: 'San Antonio office vacancy',
     question: 'What is the office vacancy rate in San Antonio?',
-    answer: 'In Q2 2026 San Antonio office vacancy was 15.2% (Cushman & Wakefield), 16.9% (Partners) or 17.6% (CBRE). The brokerages measure different sets of buildings, so the rates differ. Average asking rent was $27.97 to $29.76/SF full service.',
+    answer: 'In Q3 2026 San Antonio office vacancy was 15.2% (Cushman & Wakefield), 16.6% (Partners) or 17.8% (CBRE). The brokerages measure different sets of buildings, so the rates differ. Average asking rent was $28.67 to $29.86/SF full service.',
+    period: 'Q3 2026',
+    updated: '2026-11-11',
+    reviewed: false,
     points: [
-      'Vacancy: 17.6% CBRE, 15.2% Cushman & Wakefield, 16.9% Partners.',
-      'Average asking rent (full service): $29.76 CBRE, $27.97 Cushman & Wakefield, $29.54 Partners.',
-      'Net absorption disagrees on direction: -43,950 SF (CBRE), +283,787 SF (Cushman & Wakefield), -85,357 SF (Partners).',
-      'The I-10/1604 gateway is far tighter than the metro: Cushman & Wakefield put Far Northwest office vacancy at 9.2%, with $40.41/SF asking and +306,704 SF absorbed in Q2.',
-      'Northwest submarket vacancy: 16.8% (CBRE), 16.7% (Cushman & Wakefield), 15.1% (Partners).',
-      'Under construction: 30,400 SF (CBRE), 0 SF (Cushman & Wakefield), 60,000 SF (Partners), including The Rock Medical and Research Pavilion, 58% pre-leased.',
+      'Vacancy: 17.8% CBRE (down 20 bps from Q2, its lowest since a Q1 2025 peak of 19.7%), 15.2% Cushman & Wakefield (160 bps better than a year ago), 16.6% Partners (99 bps better than a year ago).',
+      'Average asking rent (full service): $29.33 CBRE, $28.67 Cushman & Wakefield, $29.86 Partners.',
+      'Net absorption disagrees on direction: +28,000 SF (CBRE), about -65,000 SF (Cushman & Wakefield), +13,816 SF (Partners, which revised Q2 to -194,053 SF from the -85,357 SF it first reported).',
+      'By class: Class A vacancy was 18.4% (CBRE) and 18.5% (Partners); Class B was 18.0% (CBRE) and 15.0% (Partners).',
+      'The far-west and far-northwest corridors are far tighter than the metro: Cushman & Wakefield has Far West at 8.1% and Far Northwest at 8.3% vacant, and CBRE has Far West at 8.7%. Downtown is the loosest: 18.8% (Cushman & Wakefield), 23.4% (Partners), 25.0% (CBRE).',
+      'Northwest submarket vacancy: 15.4% (CBRE), 16.0% (Cushman & Wakefield), 15.3% (Partners).',
+      'Under construction: none in any of the three reports, and none was delivered in Q3.',
     ],
-    sources: [{ label: 'CBRE, San Antonio Office Figures Q2 2026 (Jul 9 2026)', url: CBRE_OFF }, { label: 'Cushman & Wakefield, MarketBeat San Antonio Office Q2 2026', url: CW_OFF }, { label: 'Partners Real Estate, San Antonio Office Q2 2026 (Aug 11 2026)', url: P_OFF }],
-    related: [{ label: 'San Antonio office space', href: '/san-antonio-office-space' }, { label: 'Class A office rent, Q3 2026 data', href: '/answers/san-antonio-class-a-office-rent' }, { label: 'Why market reports show different vacancy rates', href: '/answers/why-market-reports-show-different-vacancy' }, BRIEF],
+    sources: [{ label: 'CBRE, San Antonio Office Figures Q3 2026 (Oct 9 2026)', url: CBRE_OFF_Q3 }, { label: 'Cushman & Wakefield, MarketBeat San Antonio Office Q3 2026', url: CW_OFF_Q3 }, { label: 'Partners Real Estate, San Antonio Office Q3 2026 (Nov 2 2026)', url: P_OFF_Q3 }],
+    related: [{ label: 'San Antonio office space', href: '/san-antonio-office-space' }, { label: 'Class A office rent, Q3 2026', href: '/answers/san-antonio-class-a-office-rent' }, { label: 'Why market reports show different vacancy rates', href: '/answers/why-market-reports-show-different-vacancy' }, BRIEF],
   },
   {
     slug: 'san-antonio-industrial-vacancy-rate',
     short: 'San Antonio industrial vacancy',
     question: 'What is the industrial vacancy rate in San Antonio?',
-    answer: 'In Q2 2026 San Antonio industrial vacancy was 10.3% (CBRE), 11.1% (Cushman & Wakefield) or 11.3% (Partners), with average asking rents of $8.52 to $9.22/SF NNN.',
+    answer: 'In Q3 2026 San Antonio industrial vacancy was 10.3% (CBRE), 10.6% (Cushman & Wakefield) or 11.5% (Partners), with average asking rents of $8.81 to $9.26/SF on a net basis.',
+    period: 'Q3 2026',
+    updated: '2026-11-11',
+    reviewed: false,
     points: [
-      'Vacancy: 10.3% CBRE, 11.1% Cushman & Wakefield, 11.3% Partners.',
-      'Average asking rent: $8.52 NNN (CBRE), $8.83 overall net (Cushman & Wakefield), $9.22 (Partners).',
-      'Net absorption for the quarter: 252,059 SF (CBRE), 357,376 SF (Cushman & Wakefield), 873,488 SF (Partners).',
-      'Under construction: 2.9M SF (CBRE), 2.70M SF (Cushman & Wakefield), 4.0M SF (Partners), concentrated in manufacturing including JCB\'s 1.0M SF plant and Toyota\'s 500,000 SF Rear Axle facility (CBRE).',
-      'Size matters: CBRE shows 15.9% vacancy in the 100K to 250K SF range versus 6.1% below 50K SF.',
-      'Northwest industrial vacancy was 7.1% to 7.6% across all three sources.',
+      'Vacancy: 10.3% CBRE (direct 9.7%), 10.6% Cushman & Wakefield (down 110 bps from Q2), 11.5% Partners (direct 10.7%, up 19 bps from Q2).',
+      'Average asking rent: $8.81 NNN (CBRE, up 5.0% year over year), $8.85 net (Cushman & Wakefield, up 3.1%), $9.26 NNN (Partners, up 0.4% for the quarter).',
+      'Net absorption for the quarter: 796,000 SF (CBRE), about 310,000 SF (Cushman & Wakefield), 391,242 SF (Partners).',
+      'Leasing: 2.91M SF (CBRE), 2.3M SF (Cushman & Wakefield), 2.35M SF (Partners). Cushman & Wakefield lists PepsiCo\'s 708,000 SF lease at Foster Commerce Center 6 in the South submarket among the quarter\'s key leases.',
+      'Under construction: 2.44M SF (CBRE), about 2.33M SF (Cushman & Wakefield), 3.79M SF (Partners), concentrated in the South submarket (1.5M SF at CBRE and Partners), where CBRE lists JCB\'s 1.0M SF plant and Toyota\'s 500,000 SF Rear Axle facility.',
+      'Size matters: CBRE shows 14.8% vacancy at 100K to 249,999 SF and 15.4% at 250K to 499,999 SF, versus 6.6% below 50K SF.',
+      'Northwest industrial vacancy was 7.9% (Partners), 8.7% (CBRE) and 8.9% (Cushman & Wakefield). The Northeast is the loosest: 12.6% (CBRE), 17.7% (Cushman & Wakefield) and 18.2% (Partners).',
     ],
-    sources: [{ label: 'CBRE, San Antonio Industrial Figures Q2 2026 (Jul 9 2026)', url: CBRE_IND }, { label: 'Cushman & Wakefield, MarketBeat San Antonio Industrial Q2 2026', url: CW_IND }, { label: 'Partners Real Estate, San Antonio Industrial Q2 2026 (Aug 1 2026)', url: P_IND }],
-    related: [{ label: 'San Antonio industrial space', href: '/san-antonio-industrial-space' }, { label: 'Texas industrial property for lease', href: '/texas-industrial-property-for-lease' }, BRIEF],
+    sources: [{ label: 'CBRE, San Antonio Industrial Figures Q3 2026 (Oct 9 2026)', url: CBRE_IND_Q3 }, { label: 'Cushman & Wakefield, MarketBeat San Antonio Industrial Q3 2026', url: CW_IND_Q3 }, { label: 'Partners Real Estate, San Antonio Industrial Q3 2026 (Nov 8 2026)', url: P_IND_Q3 }],
+    related: [{ label: 'San Antonio industrial space', href: '/san-antonio-industrial-space' }, { label: 'Texas industrial property for lease', href: '/texas-industrial-property-for-lease' }, { label: 'Small-bay flex rent and vacancy', href: '/answers/san-antonio-flex-space-rent' }, BRIEF],
   },
   {
     slug: 'san-antonio-flex-space-rent',
     short: 'San Antonio flex rent and vacancy',
     question: 'What does small-bay flex space cost in San Antonio?',
-    answer: 'In Q2 2026 San Antonio small-bay flex space asked about $12.49 to $12.85/SF NNN, with vacancy of 8.0% to 8.7% depending on the brokerage.',
+    answer: 'In Q3 2026 San Antonio small-bay flex space asked about $12.61 to $13.79/SF on a net basis, with vacancy of 7.9% to 8.1% depending on the brokerage.',
+    period: 'Q3 2026',
+    updated: '2026-11-11',
+    reviewed: false,
     points: [
-      'Vacancy: 8.6% (CBRE R&D/Flex), 8.0% (Cushman & Wakefield Office Service/Flex), 8.7% (Partners Flex).',
-      'Asking rent (NNN): $12.59 CBRE, $12.49 Cushman & Wakefield, $12.85 Partners.',
-      'Net absorption: -25,000 SF (CBRE), -45,103 SF (Cushman & Wakefield), +238,700 SF (Partners).',
-      'For comparison, San Antonio warehouse vacancy was 10.3% to 11.3% with average asking rents of $8.52 to $9.22/SF NNN.',
+      'Vacancy: 8.0% (CBRE R&D/Flex), 7.9% (Cushman & Wakefield Office Service/Flex), 8.1% (Partners Flex).',
+      'Asking rent (net): $13.79 CBRE (NNN), $12.61 Cushman & Wakefield, $12.76 Partners (NNN). Partners splits its flex rent further: R&D $14.75 and Service $9.32/SF NNN.',
+      'Net absorption was positive in all three: +96,000 SF (CBRE R&D/Flex), +57,041 SF (Cushman & Wakefield), +61,350 SF (Partners).',
+      'For comparison, overall San Antonio industrial vacancy was 10.3% to 11.5% with average asking rents of $8.81 to $9.26/SF on a net basis.',
     ],
-    sources: [{ label: 'CBRE, San Antonio Industrial Figures Q2 2026', url: CBRE_IND }, { label: 'Cushman & Wakefield, MarketBeat San Antonio Industrial Q2 2026', url: CW_IND }, { label: 'Partners Real Estate, San Antonio Industrial Q2 2026', url: P_IND }],
+    sources: [{ label: 'CBRE, San Antonio Industrial Figures Q3 2026 (Oct 9 2026)', url: CBRE_IND_Q3 }, { label: 'Cushman & Wakefield, MarketBeat San Antonio Industrial Q3 2026', url: CW_IND_Q3 }, { label: 'Partners Real Estate, San Antonio Industrial Q3 2026 (Nov 8 2026)', url: P_IND_Q3 }],
     related: [{ label: 'San Antonio industrial vacancy', href: '/answers/san-antonio-industrial-vacancy-rate' }, BRIEF],
   },
   {
     slug: 'san-antonio-retail-vacancy-rate',
     short: 'San Antonio and Hill Country retail vacancy',
     question: 'What is the retail vacancy rate in San Antonio and the Hill Country?',
-    answer: 'In Q2 2026 San Antonio metro retail vacancy was 4.1% with asking rent of $19.27/SF NNN (Partners). The Hill Country is tighter: 2.4% in Kendall County (Boerne) at $22.85/SF NNN and 2.6% in Comal County (New Braunfels) at $28.16/SF NNN.',
+    answer: 'In Q3 2026 San Antonio metro retail vacancy was 4.3% with asking rent of $19.58/SF NNN (Partners); Matthews put it at 4.0%. The Hill Country is tighter: 3.2% in Kendall County (Boerne) at $22.65/SF NNN and 2.7% in Comal County (New Braunfels) at $27.85/SF NNN.',
+    period: 'Q3 2026',
+    updated: '2026-11-11',
+    reviewed: false,
     points: [
-      'Metro: 4.1% vacancy; net absorption 94,972 SF, down from 405,772 SF in Q1; asking rent $19.27/SF NNN, down 2.5% year over year.',
-      'Kendall County (Boerne): 2.4% vacancy, +15,068 SF absorbed, 70,271 SF under construction, $22.85/SF NNN.',
-      'Comal County (New Braunfels): 2.6% vacancy, +13,396 SF absorbed, 62,700 SF under construction, $28.16/SF NNN.',
-      'Northwest San Antonio: 4.6% vacancy, 270,034 SF under construction, $15.74/SF NNN.',
-      '833,294 SF of retail was under construction metro-wide, about 59% pre-leased; 162,514 SF was delivered.',
-      'Partners is the only free Q2 2026 retail source we found, so these figures have no second source to cross-check.',
+      'Metro (Partners): 4.3% vacancy, up 10 bps from Q2 (itself revised to 4.2% from 4.1%); net absorption 32,095 SF, down from 266,714 SF in Q2 (revised from 94,972 SF); asking rent $19.58/SF NNN, up 0.7% for the quarter and 2.4% year over year.',
+      'Matthews (Nov 4 2026) put metro vacancy at 4.0% and asking rent at $24.12/SF, a record. It does not state its rent basis, so the two rents are not directly comparable.',
+      'Kendall County (Boerne): 3.2% vacancy, -16,769 SF absorbed, 80,366 SF under construction, $22.65/SF NNN.',
+      'Comal County (New Braunfels): 2.7% vacancy, +8,487 SF absorbed, 59,200 SF under construction, $27.85/SF NNN.',
+      'Northwest San Antonio: 4.3% vacancy, +148,835 SF absorbed (the metro\'s strongest), 313,969 SF under construction, $16.48/SF NNN.',
+      'About 1.0M SF of retail was under construction metro-wide, roughly 65% pre-leased; 114,306 SF was delivered. The largest projects were a 163,745 SF Home Depot in Schertz, a 125,000 SF H-E-B at 10137 I-10 E in Converse and the 58,250 SF Stone Oak Mercantile.',
     ],
-    sources: [{ label: 'Partners Real Estate, San Antonio Retail Q2 2026 (Aug 17 2026)', url: P_RET }],
+    sources: [{ label: 'Partners Real Estate, San Antonio Retail Q3 2026 (Oct 19 2026)', url: P_RET_Q3 }, { label: 'Matthews, San Antonio Retail Market Report Q3 2026 (Nov 4 2026)', url: MATTHEWS_SA_RETAIL }],
     related: [{ label: 'San Antonio retail space', href: '/san-antonio-retail-space' }, { label: 'Texas retail cap rates, Q3 2026', href: '/answers/texas-retail-cap-rates' }, { label: 'Boerne market', href: '/answers/boerne-commercial-real-estate-market' }, { label: 'New Braunfels market', href: '/answers/new-braunfels-commercial-real-estate-market' }, BRIEF],
   },
   {
@@ -365,44 +376,54 @@ export const ANSWER_PAGES: AnswerPage[] = [
     slug: 'boerne-commercial-real-estate-market',
     short: 'Boerne commercial market',
     question: 'How tight is the Boerne commercial real estate market?',
-    answer: 'Very tight for retail: Kendall County retail vacancy was 2.4% in Q2 2026 with asking rent of $22.85/SF NNN, and the county grew 20.3% in population from 2020 to 2025.',
+    answer: 'Tight for retail: Kendall County retail vacancy was 3.2% in Q3 2026 with asking rent of $22.65/SF NNN (Partners), below the metro\'s 4.3%, and the county grew 20.3% in population from 2020 to 2025.',
+    period: 'Q3 2026',
+    updated: '2026-11-11',
+    reviewed: false,
     points: [
-      'Kendall County retail Q2 2026: 2.4% vacancy, +15,068 SF absorbed, 70,271 SF under construction, $22.85/SF NNN (Partners).',
+      'Kendall County retail Q3 2026: 3.2% vacancy, 6.2% availability, -16,769 SF absorbed, 80,366 SF under construction, $22.65/SF NNN (Partners).',
       'Population: Kendall County grew from 44,568 (2020) to 53,289 (2025), +20.3% (Census data via Community Impact and FRED).',
       'Medical: Baptist Health System\'s first Boerne hospital and a medical office building at I-10 and SH-46 was scheduled to begin construction in 2026. Wellness Plaza at Boerne, 37,000 SF off Herff Rd, targeted a spring 2026 groundbreaking.',
       'Retail pipeline: Scenic Loop Retail, three shell buildings totaling 30,572 SF at 31905 I-10, is scheduled Oct 2026 to Sep 2027. Buc-ee\'s is capped at a 54,000 SF store under the October 2025 revised agreement.',
-      'CRECO\'s opinion, not data: with so little vacant, tenants should start searches 9 to 12 months ahead.',
+      'CRECO\'s opinion, not data: with Kendall County vacancy still below the metro\'s, tenants should start searches 9 to 12 months ahead.',
     ],
-    sources: [{ label: 'Partners Real Estate, San Antonio Retail Q2 2026', url: P_RET }, { label: 'Community Impact, Dec 2025 and Sep 2025 Boerne development coverage' }, { label: 'FRED / U.S. Census Bureau, Resident Population in Kendall County, TX' }],
+    sources: [{ label: 'Partners Real Estate, San Antonio Retail Q3 2026 (Oct 19 2026)', url: P_RET_Q3 }, { label: 'Community Impact, Dec 2025 and Sep 2025 Boerne development coverage' }, { label: 'FRED / U.S. Census Bureau, Resident Population in Kendall County, TX' }],
     related: [{ label: 'Boerne commercial real estate', href: '/boerne-commercial-real-estate' }, { label: 'Fair Oaks Ranch commercial real estate', href: '/fair-oaks-ranch-commercial-real-estate' }, BRIEF],
   },
   {
     slug: 'new-braunfels-commercial-real-estate-market',
     short: 'New Braunfels commercial market',
     question: 'How is the New Braunfels commercial real estate market doing?',
-    answer: 'Retail is tight and growing: Comal County retail vacancy was 2.6% in Q2 2026 at $28.16/SF NNN asking, and the county\'s population grew 27.8% from 2020 to 2025.',
+    answer: 'Retail is tight and growing: Comal County retail vacancy was 2.7% in Q3 2026 at $27.85/SF NNN asking (Partners), and the county\'s population grew 27.8% from 2020 to 2025.',
+    period: 'Q3 2026',
+    updated: '2026-11-11',
+    reviewed: false,
     points: [
-      'Comal County retail Q2 2026: 2.6% vacancy, +13,396 SF absorbed, 62,700 SF under construction, $28.16/SF NNN (Partners).',
-      'Comal County industrial: 11.3% vacancy, +239,313 SF absorbed, $12.14/SF asking (Partners); 10.0% vacancy, +82,543 SF absorbed (Cushman & Wakefield).',
+      'Comal County retail Q3 2026: 2.7% vacancy, +8,487 SF absorbed, 59,200 SF under construction, $27.85/SF NNN (Partners).',
+      'Comal County industrial Q3 2026: 11.8% vacancy, -100,495 SF absorbed, 636,617 SF under construction, $10.23/SF NNN (Partners); 11.3% vacancy, -105,495 SF absorbed, 311,343 SF under construction (Cushman & Wakefield).',
       'Population: 163,608 (2020) to 209,166 (2025), +27.8% (Community Impact).',
-      'Notable leases: Crunch Fitness, 42,763 SF at New Braunfels Marketplace. Cushman & Wakefield\'s largest Comal industrial deal was a new 173,447 SF lease at 2633 Goodwin Ln, Bldg A.',
+      'Notable leases: Terry Black\'s Barbecue, 8,649 SF at 1310 E. Common St (Partners). Cushman & Wakefield\'s Q3 key leases include Hollingsworth Logistics Group\'s new 340,090 SF lease at Park 35 in Comal County.',
       'Projects: The Neue, $27M and 72,000 SF of condos with ground-floor commercial downtown (broke ground Sep 29 2026, completion expected Nov 2027); Latitude, 65,000 SF of for-sale office/warehouse bays at 710 N. Walnut Ave (groundbreaking expected Q2 2027); Corridor Commercial Center Phase 2, 35,000 SF of flex/retail in spaces of 1,800 to 11,900 SF.',
     ],
-    sources: [{ label: 'Partners Real Estate, San Antonio Retail Q2 2026', url: P_RET }, { label: 'Partners Real Estate, San Antonio Industrial Q2 2026', url: P_IND }, { label: 'Cushman & Wakefield, MarketBeat San Antonio Industrial Q2 2026', url: CW_IND }, { label: 'Community Impact: Comal County population (Apr 8 2026), The Neue (Sep 30 2026), GBMC Communities (Sep 15 2026), Corridor Commercial Center (Jul 29 2026)' }],
+    sources: [{ label: 'Partners Real Estate, San Antonio Retail Q3 2026 (Oct 19 2026)', url: P_RET_Q3 }, { label: 'Partners Real Estate, San Antonio Industrial Q3 2026 (Nov 8 2026)', url: P_IND_Q3 }, { label: 'Cushman & Wakefield, MarketBeat San Antonio Industrial Q3 2026', url: CW_IND_Q3 }, { label: 'Community Impact: Comal County population (Apr 8 2026), The Neue (Sep 30 2026), GBMC Communities (Sep 15 2026), Corridor Commercial Center (Jul 29 2026)' }],
     related: [{ label: 'New Braunfels market page', href: '/markets/new-braunfels' }, BRIEF],
   },
   {
     slug: 'why-market-reports-show-different-vacancy',
     short: 'Why vacancy rates differ by report',
     question: 'Why do brokerage market reports show different vacancy rates?',
-    answer: 'They count different buildings. For San Antonio office, inventory is 34.3M SF at CBRE, 43.7M SF at Partners and 50.3M SF at Cushman & Wakefield, so vacancy and absorption differ even in the same quarter.',
+    answer: 'They count different buildings. For San Antonio office, inventory is 34.3M SF at CBRE, 43.5M SF at Partners (Class A and B only) and 49.9M SF at Cushman & Wakefield, so vacancy and absorption differ even in the same quarter.',
+    period: 'Q3 2026',
+    updated: '2026-11-11',
+    reviewed: false,
     points: [
-      'Q2 2026 San Antonio office vacancy: 17.6% (CBRE), 16.9% (Partners), 15.2% (Cushman & Wakefield).',
-      'Q2 2026 net absorption for office disagrees on direction: Cushman & Wakefield reports positive, CBRE and Partners negative.',
-      'Industrial absorption differs by more than 3x: Partners 873,488 SF versus CBRE 252,059 SF.',
+      'Q3 2026 San Antonio office vacancy: 17.8% (CBRE), 16.6% (Partners), 15.2% (Cushman & Wakefield).',
+      'Q3 2026 office net absorption disagrees on direction: CBRE +28,000 SF and Partners +13,816 SF, Cushman & Wakefield about -65,000 SF.',
+      'Industrial differs too: Q3 net absorption was 796,000 SF at CBRE, 391,242 SF at Partners and about 310,000 SF at Cushman & Wakefield, more than a 2.5x spread, and space under construction was 3.79M SF at Partners against about 2.33M SF at Cushman & Wakefield.',
+      'Reports also revise themselves: Partners moved its Q2 2026 office net absorption to -194,053 SF from the -85,357 SF it first reported, and its Q2 retail net absorption to 266,714 SF from 94,972 SF.',
       'Use the spread as the range, and compare a report with itself over time rather than across brokerages.',
     ],
-    sources: [{ label: 'CBRE, San Antonio Office Figures Q2 2026', url: CBRE_OFF }, { label: 'Cushman & Wakefield, MarketBeat San Antonio Office Q2 2026', url: CW_OFF }, { label: 'Partners Real Estate, San Antonio Office Q2 2026', url: P_OFF }],
+    sources: [{ label: 'CBRE, San Antonio Office Figures Q3 2026', url: CBRE_OFF_Q3 }, { label: 'Cushman & Wakefield, MarketBeat San Antonio Office Q3 2026', url: CW_OFF_Q3 }, { label: 'Partners Real Estate, San Antonio Office Q3 2026', url: P_OFF_Q3 }, { label: 'CBRE, San Antonio Industrial Figures Q3 2026', url: CBRE_IND_Q3 }, { label: 'Cushman & Wakefield, MarketBeat San Antonio Industrial Q3 2026', url: CW_IND_Q3 }, { label: 'Partners Real Estate, San Antonio Industrial Q3 2026', url: P_IND_Q3 }, { label: 'Partners Real Estate, San Antonio Retail Q3 2026', url: P_RET_Q3 }],
     related: [{ label: 'San Antonio office vacancy', href: '/answers/san-antonio-office-vacancy-rate' }, BRIEF],
   },
   {
