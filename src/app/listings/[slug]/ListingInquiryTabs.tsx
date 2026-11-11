@@ -73,6 +73,18 @@ export function ListingInquiryTabs({
           <p className="mb-5 text-body-sm text-foreground-muted">
             Pick a date and time. We'll confirm within an hour during business hours.
           </p>
+          {/* Tour asks for name, phone, email and a day. Someone who only wants
+              to know "is it still available?" shouldn't have to commit to that. */}
+          <p className="-mt-3 mb-5 text-caption text-foreground-muted">
+            Just have a question?{' '}
+            <button
+              type="button"
+              onClick={() => setTab('message')}
+              className="font-semibold text-gold-dark underline-offset-2 hover:underline"
+            >
+              Send a quick message
+            </button>
+          </p>
           <TourSchedulerForm
             listingSlug={listingSlug}
             listingTitle={listingTitle}

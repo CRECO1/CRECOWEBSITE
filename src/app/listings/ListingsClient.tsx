@@ -19,7 +19,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { Search, SlidersHorizontal, MapPin, Building2, Layers, X, Grid3x3, Map as MapIcon, BellRing, ArrowRight } from 'lucide-react';
+import { Search, SlidersHorizontal, MapPin, Building2, Layers, X, Grid3x3, Map as MapIcon, BellRing, ArrowRight, Phone } from 'lucide-react';
 import { Header, Footer } from '@/components/layout';
 import { Container } from '@/components/ui/Container';
 import { Input } from '@/components/ui/Input';
@@ -29,7 +29,7 @@ import { ListingsEmptyState } from '@/components/listings/ListingsEmptyState';
 import { callForPriceText, formatSqft, formatAcres, formatLeaseRate, formatPrice, transactionLabel, propertyTypeLabel } from '@/lib/utils';
 import type { Listing } from '@/lib/supabase';
 import { withSyntheticListings, listingLinkProps } from '@/lib/featured-properties';
-import { trackViewItemList, trackListingSearch, trackSelectItem } from '@/lib/analytics';
+import { trackViewItemList, trackListingSearch, trackSelectItem, trackEvent } from '@/lib/analytics';
 import { PropertyAlertsInline } from '@/components/marketing/PropertyAlertsInline';
 import { MarketReportCapture } from '@/components/marketing/MarketReportCapture';
 import { InlineLeadForm } from '@/components/forms/InlineLeadForm';
@@ -329,6 +329,25 @@ export function ListingsClient({ initialListings, children }: { initialListings:
             <p className="mt-2 text-body text-white/60">
               {totalBuildings} active commercial real estate listings — office, industrial, retail, flex, and land — across San Antonio and the Hill Country.
             </p>
+            {/* The requirements form used to sit below the whole grid, so a visitor
+                who didn't see their space had to scroll past every card to ask.
+                Two quiet links up top reach it (and the phone) in one tap. */}
+            <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3">
+              <a
+                href="#listings-requirements"
+                onClick={() => trackEvent('listings_needs_cta_click', { surface: 'listings_hero' })}
+                className="inline-flex items-center gap-2 rounded-lg bg-gold px-5 py-2.5 text-body-sm font-semibold text-primary hover:bg-gold-light"
+              >
+                Tell us what you need <ArrowRight className="h-4 w-4" />
+              </a>
+              <a
+                href="tel:+12108173443"
+                onClick={() => trackEvent('phone_call', { surface: 'listings_hero' })}
+                className="inline-flex items-center gap-2 text-body-sm font-semibold text-white/80 hover:text-white"
+              >
+                <Phone className="h-4 w-4" /> (210) 817-3443
+              </a>
+            </div>
           </Container>
         </div>
 
