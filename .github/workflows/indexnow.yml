@@ -70,4 +70,7 @@ jobs:
         run: |
           # Give the CDN a moment so the engines fetch the new build, not the old one.
           sleep 30
+          # main tracks a stray node_modules symlink (-> ../CRECOWEBSITE/node_modules). On the
+          # runner that path resolves to the link itself (a loop) and makes npx/tsx die silently.
+          rm -f node_modules
           npx --yes tsx@4.19.1 scripts/indexnow-ping.ts --from-diff "$BASE" "$SHA"
