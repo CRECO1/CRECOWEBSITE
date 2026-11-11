@@ -128,6 +128,10 @@ export default function DallasRetailSpacePage() {
           label: 'Dallas–Fort Worth market overview',
           href: '/dallas-commercial-real-estate',
         },
+        answerLinks: [
+          { label: 'Texas retail cap rates by metro, Q3 2026', href: '/answers/texas-retail-cap-rates' },
+          { label: 'What cap rate does a freestanding H-E-B trade at?', href: '/answers/heb-freestanding-grocery-cap-rate' },
+        ],
         breadcrumbs: [
           { label: 'Texas CRE', href: '/markets' },
           { label: 'Dallas–Fort Worth', href: '/dallas-commercial-real-estate' },

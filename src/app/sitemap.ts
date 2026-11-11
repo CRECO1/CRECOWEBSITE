@@ -9,6 +9,9 @@ import { ANSWER_PAGES } from '@/lib/answer-pages';
 
 const BASE_URL = 'https://www.crecotx.com';
 
+/** Newest genuine date among the answer pages: the /answers index lists them all, so it changes when any one does. */
+const ANSWERS_UPDATED = ANSWER_PAGES.reduce((latest, a) => ((a.updated ?? BRIEF_UPDATED) > latest ? (a.updated ?? BRIEF_UPDATED) : latest), BRIEF_UPDATED);
+
 /**
  * lastmod for pages whose content lives in this repo rather than in a table.
  *
@@ -32,8 +35,8 @@ export const revalidate = 1800;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
-    { url: `${BASE_URL}/answers`, lastModified: new Date(BRIEF_UPDATED), changeFrequency: 'monthly', priority: 0.85 },
-    ...ANSWER_PAGES.map(a => ({ url: `${BASE_URL}/answers/${a.slug}`, lastModified: new Date(BRIEF_UPDATED), changeFrequency: 'monthly' as const, priority: 0.8 })),
+    { url: `${BASE_URL}/answers`, lastModified: new Date(ANSWERS_UPDATED), changeFrequency: 'weekly', priority: 0.85 },
+    ...ANSWER_PAGES.map(a => ({ url: `${BASE_URL}/answers/${a.slug}`, lastModified: new Date(a.updated ?? BRIEF_UPDATED), changeFrequency: 'monthly' as const, priority: 0.8 })),
     { url: BASE_URL,                                  lastModified: CONTENT_REVISED, changeFrequency: 'daily',   priority: 1.0  },
     { url: `${BASE_URL}/listings`,                    lastModified: CONTENT_REVISED, changeFrequency: 'daily',   priority: 0.95 },
     // Highest-impression organic page on the site (valuation tool + FAQ) — was

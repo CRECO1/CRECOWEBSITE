@@ -158,8 +158,8 @@ ${PUBLISHED_GUIDES.map(g => `- [${g.title}](${SITE_URL}/guides/${g.slug}): ${g.e
 Insights:
 ${SORTED_POSTS.map(p => `- [${p.title}](${SITE_URL}/insights/${p.slug}) (${p.publishedAt}): ${p.excerpt}`).join('\n')}
 
-## Sourced answers (Q2 2026 data)
-${ANSWER_PAGES.map(a => `- [${a.question}](${SITE_URL}/answers/${a.slug}): ${a.answer}`).join('\n')}
+## Sourced answers (each states its data period)
+${ANSWER_PAGES.map(a => `- [${a.question}](${SITE_URL}/answers/${a.slug}) (${a.period ?? 'Q2 2026'} data): ${a.answer}`).join('\n')}
 
 ## Frequently asked questions
 

@@ -11,7 +11,7 @@ import { DEFAULT_OG_IMAGE } from '@/lib/og';
 import { metaTitle, metaDescription } from '@/lib/seo-meta';
 import { ANSWER_PAGES, findAnswer } from '@/lib/answer-pages';
 import { BRIEF_UPDATED } from '@/lib/brief-meta';
-import { FOUNDER, FOUNDER_ID, breadcrumbList, faqPage, webPage } from '@/lib/schema';
+import { BUSINESS_ID, FOUNDER, FOUNDER_ID, breadcrumbList, faqPage, webPage } from '@/lib/schema';
 
 interface Props { params: Promise<{ slug: string }> }
 
@@ -36,11 +36,20 @@ export default async function AnswerPage({ params }: Props) {
   const p = findAnswer(slug);
   if (!p) notFound();
   const path = `/answers/${p.slug}`;
+  const period = p.period ?? 'Q2 2026';
+  const updated = p.updated ?? BRIEF_UPDATED;
+  // Pages the named broker has not read yet say so, and the schema does not claim a review.
+  const reviewed = p.reviewed !== false;
+  const faqs = [{ q: p.question, a: p.answer }, ...(p.faqs ?? [])];
   return (
     <>
       <JsonLd data={[
-        webPage('WebPage', path, p.question, p.answer, { author: { '@id': FOUNDER_ID }, reviewedBy: { '@id': FOUNDER_ID }, dateModified: BRIEF_UPDATED, lastReviewed: BRIEF_UPDATED }),
-        faqPage([{ q: p.question, a: p.answer }], path),
+        webPage('WebPage', path, p.question, p.answer, {
+          author: { '@id': reviewed ? FOUNDER_ID : BUSINESS_ID },
+          dateModified: updated,
+          ...(reviewed ? { reviewedBy: { '@id': FOUNDER_ID }, lastReviewed: updated } : {}),
+        }),
+        faqPage(faqs, path),
         breadcrumbList([{ name: 'Answers', path: '/answers' }, { name: p.short, path }]),
       ]} />
       <Header />
@@ -51,17 +60,69 @@ export default async function AnswerPage({ params }: Props) {
         <section className="section-luxury bg-background-cream">
           <Container>
             <article className="mx-auto max-w-3xl">
-              <p className="overline mb-3 text-gold-dark">Answer · San Antonio &amp; Hill Country commercial real estate</p>
+              <p className="overline mb-3 text-gold-dark">Answer · {p.scope ?? 'San Antonio & Hill Country commercial real estate'}</p>
               <h1 className="font-heading text-display-md font-bold leading-tight text-primary">{p.question}</h1>
               <p className="mt-6 rounded-2xl border border-gold/40 bg-white p-6 text-body-lg leading-relaxed text-primary">{p.answer}</p>
-              <p className="mt-3 flex items-center gap-1.5 text-caption text-foreground-muted">
-                <Calendar className="h-3.5 w-3.5" /> Q2 2026 data · Reviewed by {FOUNDER.name}, TREC #{FOUNDER.trecLicense} · Last updated {fmt(BRIEF_UPDATED)}
+              <p className="mt-3 flex items-start gap-1.5 text-caption text-foreground-muted">
+                <Calendar className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                <span>
+                  {period} data · {reviewed ? <>Reviewed by {FOUNDER.name}, TREC #{FOUNDER.trecLicense}</> : <>Prepared by CRECO from the sources below</>} · Last updated {fmt(updated)}
+                </span>
               </p>
+              {(p.tables ?? []).map(t => (
+                <div key={t.caption} className="mt-8">
+                  <p className="mb-2 font-heading text-heading-sm font-semibold text-primary">{t.caption}</p>
+                  {/* Compact on a phone so the numbers sit side by side; only long text columns force a sideways scroll. */}
+                  <div className="overflow-x-auto rounded-2xl border border-border bg-white">
+                    <table className="w-full border-collapse text-left text-[13px] sm:text-body-sm">
+                      <caption className="sr-only">{t.caption}</caption>
+                      <thead>
+                        <tr className="bg-background-cream">
+                          {t.columns.map((c, i) => (
+                            <th key={c} scope="col" className={`px-2 py-2 align-bottom text-[11px] font-semibold uppercase leading-tight tracking-wide text-primary sm:px-4 sm:text-caption ${i === 0 ? 'sticky left-0 min-w-[7rem] bg-background-cream' : ''}`}>{c}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {t.rows.map(r => (
+                          <tr key={r[0]} className="border-t border-border/60">
+                            {r.map((cell, i) => i === 0
+                              ? <th key={i} scope="row" className="sticky left-0 min-w-[7rem] max-w-[11rem] bg-white px-2 py-2.5 font-semibold leading-snug text-primary sm:px-4">{cell}</th>
+                              : <td key={i} className={`px-2 py-2.5 tabular-nums leading-snug text-foreground-muted sm:px-4 ${cell.length <= 16 ? 'whitespace-nowrap' : 'min-w-[9rem]'}`}>{cell}</td>)}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {t.note && <p className="mt-2 text-caption leading-relaxed text-foreground-muted">{t.note}</p>}
+                </div>
+              ))}
 
               <h2 className="mt-10 font-heading text-heading-lg font-bold text-primary">The details</h2>
               <ul className="mt-3 list-disc space-y-2 pl-5 text-body leading-relaxed text-foreground-muted marker:text-gold">
                 {p.points.map(x => <li key={x}>{x}</li>)}
               </ul>
+
+              {p.opinion && (
+                <aside className="mt-8 rounded-2xl border border-border bg-white p-5">
+                  <p className="overline mb-1 text-gold-dark">CRECO&rsquo;s view, not data</p>
+                  <p className="text-body leading-relaxed text-foreground-muted">{p.opinion}</p>
+                </aside>
+              )}
+
+              {p.faqs && p.faqs.length > 0 && (
+                <>
+                  <h2 className="mt-10 font-heading text-heading-lg font-bold text-primary">Related questions</h2>
+                  <div className="mt-3 space-y-5">
+                    {p.faqs.map(f => (
+                      <div key={f.q}>
+                        <h3 className="font-heading text-heading-sm font-semibold text-primary">{f.q}</h3>
+                        <p className="mt-1 text-body leading-relaxed text-foreground-muted">{f.a}</p>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
 
               {p.sources.length > 0 && (
                 <>

@@ -77,6 +77,8 @@ export interface CityAssetConfig {
   listingsLink: { label: string; href: string };
   /** Cross-link to the city hub. */
   cityHubLink: { label: string; href: string };
+  /** Sourced market-data answers to link from this page (/answers/...). Optional. */
+  answerLinks?: { label: string; href: string }[];
   /** Breadcrumb trail (Home is auto-prepended). */
   breadcrumbs: { label: string; href?: string }[];
   /** Canonical path (e.g. "/austin-office-space"). When set, the page emits
@@ -422,6 +424,20 @@ export async function CityAssetPage({ config }: { config: CityAssetConfig }) {
                 <ArrowRight className="h-5 w-5 text-gold-dark shrink-0" />
               </Link>
             </div>
+            {config.answerLinks && config.answerLinks.length > 0 && (
+              <div className="mt-5 rounded-xl border border-border bg-background-cream p-6">
+                <p className="overline text-gold-dark mb-3">Sourced market data</p>
+                <ul className="space-y-2">
+                  {config.answerLinks.map(l => (
+                    <li key={l.href}>
+                      <Link href={l.href} className="inline-flex items-center gap-2 text-body-sm font-semibold text-primary hover:text-gold-dark">
+                        {l.label} <ArrowRight className="h-4 w-4 shrink-0" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </Container>
         </section>
 

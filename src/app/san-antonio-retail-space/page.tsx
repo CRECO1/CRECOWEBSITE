@@ -126,6 +126,10 @@ export default function SanAntonioRetailSpacePage() {
           label: 'San Antonio market overview',
           href: '/san-antonio-commercial-real-estate',
         },
+        answerLinks: [
+          { label: 'Texas retail cap rates by metro, Q3 2026', href: '/answers/texas-retail-cap-rates' },
+          { label: 'San Antonio and Hill Country retail vacancy', href: '/answers/san-antonio-retail-vacancy-rate' },
+        ],
         breadcrumbs: [
           { label: 'Texas CRE', href: '/markets' },
           { label: 'San Antonio', href: '/san-antonio-commercial-real-estate' },

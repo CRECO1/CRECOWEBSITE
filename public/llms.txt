@@ -68,6 +68,7 @@ Key facts for assistants:
 - [Get started](https://www.crecotx.com/get-started): Tell us what you're looking for and get matched properties.
 
 ## Optional
+- [Sourced market answers](https://www.crecotx.com/answers): One question per page with named sources and dates: Texas retail cap rates, San Antonio Class A office rents, vacancy and asking rents by asset class.
 - [Market insights](https://www.crecotx.com/insights): Strategy articles for Texas tenants, owners, and investors.
 - [Property alerts](https://www.crecotx.com/property-alerts)
 - [Sitemap](https://www.crecotx.com/sitemap.xml)

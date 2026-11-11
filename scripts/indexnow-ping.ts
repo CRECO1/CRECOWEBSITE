@@ -111,14 +111,44 @@ export function pathsForChangedFiles(files: string[]): string[] {
   return [...out];
 }
 
+/**
+ * Data-driven content files: one entry per page, so a file-level diff can't say WHICH pages changed. Compare the
+ * entries (keyed by slug) before and after, and ping each new or edited entry's own page plus the hub that lists it.
+ */
+const ENTRY_FILES: Record<string, string> = {
+  'src/lib/answer-pages.ts': '/answers',
+  'src/lib/insights.ts': '/insights',
+  'src/lib/guides.ts': '/guides',
+};
+
+function entriesBySlug(src: string): Map<string, string> {
+  const hits = [...src.matchAll(/\bslug:\s*'([^']+)'/g)];
+  const out = new Map<string, string>();
+  hits.forEach((m, i) => out.set(m[1], src.slice(m.index!, hits[i + 1]?.index ?? src.length)));
+  return out;
+}
+
+export function pathsForChangedEntries(file: string, before: string, after: string): string[] {
+  const hub = ENTRY_FILES[file];
+  if (!hub) return [];
+  const prev = entriesBySlug(before);
+  const out: string[] = [];
+  for (const [slug, text] of entriesBySlug(after)) if (prev.get(slug) !== text) out.push(`${hub}/${slug}`);
+  return out.length ? [hub, ...out] : [];
+}
+
 async function changedPaths(base: string, head: string): Promise<string[]> {
   const { execFileSync } = await import('node:child_process');
   const names = execFileSync('git', ['diff', '--name-only', base, head], { encoding: 'utf8' })
     .split('\n').map(s => s.trim()).filter(Boolean);
-  const wanted = pathsForChangedFiles(names);
+  const wanted = new Set(pathsForChangedFiles(names));
+  const show = (rev: string, file: string) => {
+    try { return execFileSync('git', ['show', `${rev}:${file}`], { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 }); } catch { return ''; }
+  };
+  for (const f of names.filter(n => n in ENTRY_FILES)) pathsForChangedEntries(f, show(base, f), show(head, f)).forEach(p => wanted.add(p));
   // Only submit what the live sitemap actually lists — never a noindex or private route.
   const inMap = new Set((await sitemapUrls()).map(u => new URL(u).pathname.replace(/\/$/, '') || '/'));
-  return wanted.filter(p => inMap.has(p.replace(/\/$/, '') || '/') || /^\/llms(-full)?\.txt$/.test(p));
+  return [...wanted].filter(p => inMap.has(p.replace(/\/$/, '') || '/') || /^\/llms(-full)?\.txt$/.test(p));
 }
 
 async function main() {
@@ -176,4 +206,4 @@ async function main() {
   }
 }
 
-main();
+if (process.env.INDEXNOW_NO_MAIN !== '1') main();

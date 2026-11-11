@@ -10,7 +10,7 @@ import { ANSWER_PAGES } from '@/lib/answer-pages';
 import { FOUNDER_ID, breadcrumbList, webPage } from '@/lib/schema';
 
 const TITLE = 'Commercial Real Estate Answers: San Antonio & Hill Country | CRECO';
-const DESCRIPTION = 'Direct, sourced answers to common San Antonio and Texas Hill Country commercial real estate questions: vacancy rates, asking rents, Boerne, New Braunfels and Fair Oaks Ranch.';
+const DESCRIPTION = 'Direct, sourced answers to common Texas and San Antonio commercial real estate questions: retail cap rates, Class A office rents, vacancy rates, asking rents, Boerne, New Braunfels and Fair Oaks Ranch.';
 
 export const metadata: Metadata = {
   title: TITLE,

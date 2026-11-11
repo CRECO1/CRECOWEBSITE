@@ -128,6 +128,10 @@ export default function HoustonRetailSpacePage() {
           label: 'Houston market overview',
           href: '/houston-commercial-real-estate',
         },
+        answerLinks: [
+          { label: 'Texas retail cap rates by metro, Q3 2026', href: '/answers/texas-retail-cap-rates' },
+          { label: 'What cap rate does a freestanding H-E-B trade at?', href: '/answers/heb-freestanding-grocery-cap-rate' },
+        ],
         breadcrumbs: [
           { label: 'Texas CRE', href: '/markets' },
           { label: 'Houston', href: '/houston-commercial-real-estate' },

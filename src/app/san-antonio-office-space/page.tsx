@@ -127,6 +127,10 @@ export default function SanAntonioOfficeSpacePage() {
           label: 'San Antonio market overview',
           href: '/san-antonio-commercial-real-estate',
         },
+        answerLinks: [
+          { label: 'Class A office rent in San Antonio, Q3 2026 (three reports)', href: '/answers/san-antonio-class-a-office-rent' },
+          { label: 'San Antonio office vacancy rate', href: '/answers/san-antonio-office-vacancy-rate' },
+        ],
         breadcrumbs: [
           { label: 'Texas CRE', href: '/markets' },
           { label: 'San Antonio', href: '/san-antonio-commercial-real-estate' },
