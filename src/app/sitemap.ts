@@ -28,6 +28,14 @@ const ANSWERS_UPDATED = ANSWER_PAGES.reduce((latest, a) => ((a.updated ?? BRIEF_
  */
 const CONTENT_REVISED = new Date('2026-10-06T00:00:00.000Z');
 
+/**
+ * The San Antonio office page had its market stats rewritten to the Q3 2026
+ * CBRE / Cushman & Wakefield / Partners reports on 2026-11-11, so it carries
+ * that date instead of CONTENT_REVISED. Same rule as above: a real date, set
+ * by hand when the copy genuinely changes, never "now".
+ */
+const SA_OFFICE_REVISED = new Date('2026-11-11T00:00:00.000Z');
+
 // Rebuilt every 30 minutes (same cadence as /listings). Without this the sitemap was
 // frozen at deploy time, so a listing added between deploys was invisible to crawlers
 // until the next release.
@@ -60,7 +68,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // captures intent like "office space for lease san antonio" that
     // marketplaces (LoopNet / Crexi) don't optimize for. Expand to the
     // full 15-page set as the Q3 2026 data refresh lands.
-    { url: `${BASE_URL}/san-antonio-office-space`,             lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
+    { url: `${BASE_URL}/san-antonio-office-space`,             lastModified: SA_OFFICE_REVISED, changeFrequency: 'weekly', priority: 0.92 },
     { url: `${BASE_URL}/san-antonio-industrial-space`,         lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
     { url: `${BASE_URL}/san-antonio-retail-space`,             lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
     { url: `${BASE_URL}/san-antonio-medical-office-space`, lastModified: CONTENT_REVISED, changeFrequency: 'weekly', priority: 0.92 },
