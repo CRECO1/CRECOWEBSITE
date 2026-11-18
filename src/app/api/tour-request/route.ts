@@ -10,7 +10,7 @@ import { buildSignupContext } from '@/lib/signup-context';
 import { checkEmailQuality } from '@/lib/email-quality';
 import { buildIcs } from '@/lib/ics';
 import { pushToCrm } from '@/lib/crm';
-import { enforceRateLimit, mailAllowed } from '@/lib/rate-limit';
+import { enforceRateLimit, mailAllowed, teamAlertAllowed } from '@/lib/rate-limit';
 import { leadAlertRecipients, leadCrmOwners } from '@/lib/lead-owner';
 import { getLeadOwner } from '@/lib/broker';
 
@@ -366,7 +366,7 @@ export async function POST(req: NextRequest) {
       //    URL the broker can hit to flip the lead to 'tour-scheduled' and
       //    fire a confirmation email to the prospect automatically.
       const confirmUrl = `https://www.crecotx.com/api/tour-confirm?token=${confirmToken}`;
-      await resend.emails.send({
+      if (await teamAlertAllowed()) await resend.emails.send({
         from: getFromEmail(),
         to: leadAlertRecipients(getLeadOwner({ listingSlug })),
         subject: oneLine(`🏢 Tour requested: ${listingTitle || listingSlug || 'Property'} — ${name}`),

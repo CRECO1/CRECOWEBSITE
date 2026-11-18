@@ -1,3 +1,4 @@
+import { mailAllowed } from '@/lib/rate-limit';
 import { NextRequest, NextResponse } from 'next/server';
 import { isCronAuthorized } from '@/lib/cron-auth';
 import { createClient } from '@supabase/supabase-js';
@@ -233,6 +234,8 @@ export async function GET(req: NextRequest) {
     .from('leads')
     .select('id, name, email, phone, property_interest, source, message, created_at')
     .neq('source', 'valuation-request')  // Handled by valuation-followup
+    // An AI agent submitting on someone's behalf (/api/v1/inquiries, MCP) promises the person is never emailed (lib/agent-inquiry-submit.ts).
+    .not('source', 'like', 'AI agent:%')
     // Phone-only leads carry a never-deliverable stand-in address
     // (lib/placeholder-email) — nothing to email; the broker calls them.
     .not('email', 'like', PLACEHOLDER_EMAIL_LIKE)
@@ -266,6 +269,14 @@ export async function GET(req: NextRequest) {
     // tour-followup has always had.
     if (!lead.email || !lead.email.trim()) {
       result.errors.push({ lead_id: lead.id, error: 'NO_EMAIL_PHONE_ONLY_LEAD' });
+      continue;
+    }
+    // A typed-in address is not proof its owner asked: one follow-up per address per week, and the shared per-recipient /
+    // hourly mail caps apply here too (Nov 2026 audit: anyone could make this cron mail a victim repeatedly).
+    const { count: recent } = await supabase.from('leads').select('id', { count: 'exact', head: true })
+      .ilike('email', lead.email.trim().replace(/[\\%_]/g, c => '\\' + c)).gte('general_followup_sent_at', new Date(now - 7 * 86_400_000).toISOString());
+    if ((recent ?? 0) > 0 || !(await mailAllowed(lead.email))) {
+      result.errors.push({ lead_id: lead.id, error: 'SKIPPED_MAIL_CAP' });
       continue;
     }
     // 4. Reserve the follow-up slot atomically

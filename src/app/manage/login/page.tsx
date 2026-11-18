@@ -23,6 +23,8 @@ function safeRedirect(value: string | null): string {
   if (typeof value !== 'string' || value.length === 0) return '/admin';
   if (value[0] !== '/') return '/admin';
   if (value.length > 1 && (value[1] === '/' || value[1] === '\\')) return '/admin';
+  // Browsers strip tabs/newlines from URLs, so "/<TAB>/evil.com" becomes "//evil.com": allow only a plain path (no whitespace or control characters).
+  if (/[\s\u0000-\u001f\u007f]/.test(value) || !/^\/[A-Za-z0-9]/.test(value) && value !== '/') return '/admin';
   return value;
 }
 

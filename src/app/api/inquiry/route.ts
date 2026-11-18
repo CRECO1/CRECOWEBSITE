@@ -8,7 +8,7 @@ import { screenSubmission } from '@/lib/bot-filter';
 import { buildSignupContext } from '@/lib/signup-context';
 import { checkEmailQuality } from '@/lib/email-quality';
 import { pushToCrm } from '@/lib/crm';
-import { enforceRateLimit, mailAllowed } from '@/lib/rate-limit';
+import { enforceRateLimit, mailAllowed, teamAlertAllowed } from '@/lib/rate-limit';
 import { buildLeadNotificationEmail, leadNotificationSubject, type LeadAnswer } from '@/lib/lead-notification-email';
 import { buildInquiryAutoreplyEmail, INQUIRY_AUTOREPLY_SUBJECT } from '@/lib/inquiry-autoreply-email';
 import { phoneOnlyEmail } from '@/lib/placeholder-email';
@@ -108,6 +108,17 @@ const FIELD_LABELS: Record<string, string> = {
  * The email renders these as table rows; `summarizeAnswers` flattens the same
  * pairs to the plain-text form stored on the lead row and pushed to the CRM.
  */
+/** At most 30 answers, keys 60 chars, values short strings or short string lists — the real forms never come near this. */
+function boundAnswers(input: unknown): Record<string, unknown> {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return {};
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(input as Record<string, unknown>).slice(0, 30)) {
+    const key = k.slice(0, 60);
+    out[key] = Array.isArray(v) ? v.slice(0, 20).map(x => String(x ?? '').slice(0, 300)) : typeof v === 'string' || typeof v === 'number' || typeof v === 'boolean' ? String(v).slice(0, 2000) : '';
+  }
+  return out;
+}
+
 function answerEntries(answers: Record<string, unknown> | undefined | null): LeadAnswer[] {
   if (!answers) return [];
   return Object.entries(answers).map(([k, v]) => ({
@@ -137,16 +148,21 @@ export async function POST(req: NextRequest) {
   if (limited) return limited;
 
   try {
-    const body = await req.json();
+    // The form is a few short fields: refuse anything big before parsing (the platform limit is ~4.5 MB, which let a script
+    // post megabytes of answer keys that were echoed into the team email and stored on the lead + CRM rows).
+    const rawText = await req.text();
+    if (rawText.length > 20_000) return NextResponse.json({ error: 'Request too large' }, { status: 413 });
+    const body = JSON.parse(rawText);
     const ctx = buildSignupContext(req, body);
     const {
       path, name: rawName, company: rawCompany, email: rawEmail,
-      phone: rawPhone, answers, recaptchaToken, website, callback,
+      phone: rawPhone, answers: rawAnswers, recaptchaToken, website, callback,
           utm_source: rawUtmSource, utm_medium: rawUtmMedium,
       utm_campaign: rawUtmCampaign, utm_term: rawUtmTerm,
       utm_content: rawUtmContent, referrer: rawReferrer,
       landing_page: rawLandingPage,
     } = body;
+    const answers = boundAnswers(rawAnswers);
 
     // Honeypot — silent accept on bot
     if (typeof website === 'string' && website.length > 0) {
@@ -264,7 +280,7 @@ export async function POST(req: NextRequest) {
         company: company || null,
         source: meta.source,
         status: 'new',
-        intake_data: { path, ...answers },
+        intake_data: { ...answers, path },   // path last: a submitted "path" answer must not overwrite the real one
         message: `${meta.humanLabel}\n\n${answerSummary}`,
         utm_source, utm_medium, utm_campaign, utm_term, utm_content,
         referrer, landing_page,
@@ -346,7 +362,7 @@ export async function POST(req: NextRequest) {
     if (process.env.RESEND_API_KEY) {
       const resend = new Resend(process.env.RESEND_API_KEY);
 
-      await resend.emails.send({
+      if (await teamAlertAllowed()) await resend.emails.send({
         from: getFromEmail(),
         // Client inquiries also go straight to the lead owner; agent
         // applications are recruiting, not leads, so they stay with the inbox.

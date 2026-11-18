@@ -240,3 +240,13 @@ export async function mailAllowed(emailRaw: string): Promise<boolean> {
   const all = await checkRateLimitShared('all', { namespace: 'mail-global', max: 150, windowMs: 3600_000 });
   return all.allowed;
 }
+
+/**
+ * Global brake on the TEAM alert emails (one per accepted lead / inquiry / tour request / lead-magnet signup). mailAllowed() above only covers
+ * the prospect auto-reply, so a script rotating IPs could flood the broker inbox and the Resend quota. The lead itself is always stored and
+ * pushed to the CRM; only the alert email is skipped once more than 40 have gone out in an hour.
+ */
+export async function teamAlertAllowed(): Promise<boolean> {
+  const all = await checkRateLimitShared('all', { namespace: 'team-alert-global', max: 40, windowMs: 3600_000 });
+  return all.allowed;
+}

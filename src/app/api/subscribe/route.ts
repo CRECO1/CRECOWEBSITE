@@ -6,7 +6,7 @@ import { escapeHtml, clampString, isValidEmail, oneLine, MAX_LEN } from '@/lib/s
 import { pushToCrm } from '@/lib/crm';
 import { findGuide } from '@/lib/guides';
 import { renderGuideEmailHtml } from '@/lib/guide-email';
-import { enforceRateLimit, mailAllowed } from '@/lib/rate-limit';
+import { enforceRateLimit, mailAllowed, teamAlertAllowed } from '@/lib/rate-limit';
 import { buildSignupContext } from '@/lib/signup-context';
 import { renderSubscriberNotification } from '@/lib/subscriber-notification-email';
 import { renderConfirmEmail } from '@/lib/subscriber-confirm-email';
@@ -272,7 +272,7 @@ export async function POST(req: NextRequest) {
           filters,
           ctx,
         });
-        await resend.emails.send({ from: getFromEmail(), to: NOTIFICATION_EMAIL, subject, html });
+        if (await teamAlertAllowed()) await resend.emails.send({ from: getFromEmail(), to: NOTIFICATION_EMAIL, subject, html });
       }
     }
 

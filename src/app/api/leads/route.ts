@@ -9,7 +9,7 @@ import { buildSignupContext } from '@/lib/signup-context';
 import { leadSourceLabel } from '@/lib/lead-source-label';
 import { checkEmailQuality } from '@/lib/email-quality';
 import { pushToCrm, isSubscriptionSource } from '@/lib/crm';
-import { enforceRateLimit, mailAllowed } from '@/lib/rate-limit';
+import { enforceRateLimit, mailAllowed, teamAlertAllowed } from '@/lib/rate-limit';
 import { scoreLead, tierSubjectLabel, tierColor } from '@/lib/lead-score';
 import { leadAlertRecipients, leadCrmOwners } from '@/lib/lead-owner';
 import { getLeadOwner } from '@/lib/broker';
@@ -413,7 +413,7 @@ export async function POST(req: NextRequest) {
       // recipient of the notification, we don't want a malicious submission
       // to be able to inject markup into the inbox view. replyTo=lead's email
       // so the broker can just hit Reply to respond to the prospect directly.
-      if (!isSubscription) await resend.emails.send({
+      if (!isSubscription && await teamAlertAllowed()) await resend.emails.send({
         from: getFromEmail(),
         to: leadAlertRecipients(owner),
         replyTo: email,
