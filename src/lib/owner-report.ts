@@ -4,14 +4,14 @@
  * Each report is a snapshot of one owner's parcels from the county appraisal
  * roll plus county-wide benchmarks, built offline
  * (Marketing/Kendall-Landlords/build_owner_reports.mjs) into the CRM table
- * crm_owner_reports. The page reads it server-side with the CRM service role;
+ * crm_owner_reports. The page reads it server-side through the CRM's narrow site endpoint;
  * the token in the URL is the only key, so it is long, random, and never
  * sent to GA (GoogleAnalytics.tsx reports /r/ pages as /r/owner-report).
  *
  * Everything shown is public record or derived from it — no CRECO-estimated
  * price. The ask is a Broker Opinion of Value, which Zack prepares.
  */
-import { crmAdminClient } from './crm';
+import { crmSite } from './crm-site';
 
 export interface ReportProperty {
   address: string;
@@ -57,18 +57,12 @@ export const TOKEN_RE = /^[A-Za-z0-9_-]{16,64}$/;
 
 export async function getOwnerReport(token: string): Promise<OwnerReport | null> {
   if (!TOKEN_RE.test(token)) return null;
-  const db = crmAdminClient();
-  if (!db) return null;
-  const { data, error } = await db
-    .from('crm_owner_reports')
-    .select('id, token, client_id, owner_entity, contact_name, county, roll_year, properties, benchmark, bov_requested_at')
-    .eq('token', token)
-    .maybeSingle();
-  if (error) {
-    console.error('[owner-report] fetch failed:', error.message);
+  const r = await crmSite<{ report: OwnerReport }>({ action: 'report.get', token });
+  if (r.status !== 200) {
+    if (r.status !== 404) console.error('[owner-report] fetch failed:', r.status);
     return null;
   }
-  return (data as OwnerReport | null) ?? null;
+  return r.data?.report ?? null;
 }
 
 const KEEP_UPPER = new Set(['LLC', 'LP', 'LTD', 'LLP', 'INC', 'II', 'III', 'IV', 'VI', 'USA', 'HC', 'TR', 'HEB', 'BKCK', 'KSKM', 'JRH', 'VBM', 'NSA', 'TGA', 'MOB', 'SCF', 'RC', 'MSC', 'TBS', 'AGAP', 'D&L', 'G', 'D']);

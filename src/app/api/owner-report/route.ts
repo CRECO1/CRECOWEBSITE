@@ -12,7 +12,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { enforceRateLimit } from '@/lib/rate-limit';
-import { crmAdminClient } from '@/lib/crm';
+import { crmSite } from '@/lib/crm-site';
 import { matchCrawler } from '@/lib/crawler-hits';
 import { TOKEN_RE, displayEntity, usd } from '@/lib/owner-report';
 import { getLeadOwner } from '@/lib/broker';
@@ -50,27 +50,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, ignored: true });
   }
 
-  const db = crmAdminClient();
-  if (!db) return NextResponse.json({ error: 'unavailable' }, { status: 503 });
-
-  const { data: report } = await db
-    .from('crm_owner_reports')
-    .select('id, client_id, owner_entity, contact_name, properties, view_count, first_viewed_at, bov_requested_at')
-    .eq('token', token)
-    .maybeSingle();
-  if (!report) return NextResponse.json({ error: 'not found' }, { status: 404 });
-
-  const { data: client } = report.client_id
-    ? await db.from('crm_clients').select('id, first_name, last_name, business_name, email, phone, agent_id, tags').eq('id', report.client_id).maybeSingle()
-    : { data: null };
-  const c = client as Client | null;
-
-  const now = new Date().toISOString();
-  const entity = displayEntity(report.owner_entity);
-  const who = report.contact_name ? `${report.contact_name} (${entity})` : entity;
-  const props = (report.properties as Array<{ address: string; appraised: number }>) ?? [];
+  type RepData = { owner_entity: string; contact_name: string | null; properties: Array<{ address: string; appraised: number }> };
+  type Contact = { email: string | null; phone: string | null } | null;
+  // The CRM checks the token and owns the database; this route composes the text and sends the alert email.
+  const peek = await crmSite<{ report: RepData; contact: Contact }>({ action: 'report.get', token });
+  if (peek.status === 404) return NextResponse.json({ error: 'not found' }, { status: 404 });
+  if (peek.status !== 200 || !peek.data) return NextResponse.json({ error: 'unavailable' }, { status: 503 });
+  const entity = displayEntity(peek.data.report.owner_entity);
+  const who = peek.data.report.contact_name ? `${peek.data.report.contact_name} (${entity})` : entity;
+  const props = peek.data.report.properties ?? [];
   const total = props.reduce((s, p) => s + (p.appraised || 0), 0);
   const where = props.length === 1 ? props[0].address : `${props.length} properties`;
+  const c: Contact = peek.data.contact;
   const owner = getLeadOwner({ source: 'owner-report' });
 
   async function alert(subject: string, lead: string, extra: string) {
@@ -100,49 +91,26 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  async function note(text: string, tag: string) {
-    if (!c) return;
-    await db!.from('crm_client_activities').insert([{ client_id: c.id, agent_id: c.agent_id, type: 'note', note: text }]);
-    const tags = Array.from(new Set([...(c.tags ?? []), tag]));
-    await db!.from('crm_clients').update({ tags }).eq('id', c.id);
-  }
-
   if (type === 'view') {
-    const first = !report.first_viewed_at;
-    await db.from('crm_owner_reports').update({
-      view_count: (report.view_count ?? 0) + 1,
-      last_viewed_at: now,
-      ...(first ? { first_viewed_at: now } : {}),
-    }).eq('id', report.id);
-    if (first) {
-      await note(`👀 Opened their property report (${where}). Warm signal — good moment to call.`, 'Viewed Owner Report');
+    const r = await crmSite<{ first?: boolean }>({ action: 'report.view', token, note: `👀 Opened their property report (${where}). Warm signal — good moment to call.` });
+    if (r.status !== 200) return NextResponse.json({ error: 'unavailable' }, { status: 503 });
+    if (r.data?.first) {
       await alert(`👀 ${who} just opened their property report`, `${escapeHtml(who)} is reading their CRECO property report right now. This is the warmest moment to reach out.`, '');
     }
     return NextResponse.json({ ok: true });
   }
 
   // type === 'bov'
-  if (report.bov_requested_at && Date.now() - new Date(report.bov_requested_at).getTime() < 24 * 3600_000) {
-    return NextResponse.json({ ok: true, duplicate: true });
-  }
   const interest = typeof body.interest === 'string' && INTERESTS.has(body.interest) ? body.interest : null;
   const phone = typeof body.phone === 'string' ? safePhone(body.phone) : '';
-  await db.from('crm_owner_reports').update({ bov_requested_at: now, interest, bov_phone: phone || null }).eq('id', report.id);
-  if (c) {
-    if (phone && !c.phone) await db.from('crm_clients').update({ phone }).eq('id', c.id);
-    const assignee = c.agent_id;
-    if (assignee) {
-      await db.from('crm_tasks').insert([{
-        client_id: c.id,
-        title: `Call ${who} — requested a Broker Opinion of Value`.slice(0, 200),
-        type: 'call',
-        notes: [`🔥 Requested a free BOV from their property report.`, `Property: ${where} (appraised ${usd(total)})`, interest ? `On their radar: ${interest}` : '', phone ? `Best number: ${phone}` : c.phone ? `Phone on file: ${c.phone}` : '', c.email ? `Email: ${c.email}` : ''].filter(Boolean).join('\n'),
-        status: 'open', priority: 'urgent', due_date: todayCentral(),
-        agent_id: assignee, assigned_to: assignee, created_by: assignee, business_unit: 'commercial',
-      }]);
-    }
-    await note(`🔥 Requested a free Broker Opinion of Value from their property report${interest ? ` — on their radar: ${interest}` : ''}${phone ? ` — best number ${phone}` : ''}.`, 'Requested BOV');
-  }
+  const r = await crmSite<{ duplicate?: boolean }>({
+    action: 'report.bov', token, interest, phone,
+    taskTitle: `Call ${who} — requested a Broker Opinion of Value`.slice(0, 200),
+    taskNotes: [`🔥 Requested a free BOV from their property report.`, `Property: ${where} (appraised ${usd(total)})`, interest ? `On their radar: ${interest}` : '', phone ? `Best number: ${phone}` : c?.phone ? `Phone on file: ${c.phone}` : '', c?.email ? `Email: ${c.email}` : ''].filter(Boolean).join('\n'),
+    note: `🔥 Requested a free Broker Opinion of Value from their property report${interest ? ` — on their radar: ${interest}` : ''}${phone ? ` — best number ${phone}` : ''}.`,
+  });
+  if (r.status !== 200) return NextResponse.json({ error: 'unavailable' }, { status: 503 });
+  if (r.data?.duplicate) return NextResponse.json({ ok: true, duplicate: true });
   await alert(
     `🔥 BOV request: ${who}`,
     `${escapeHtml(who)} asked for a free Broker Opinion of Value from their property report. A call task is on the owner's list for today.`,

@@ -1,20 +1,12 @@
 import { NextRequest } from 'next/server';
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { crmSite } from '@/lib/crm-site';
 import { enforceRateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-// CRECO-branded unsubscribe, served on crecotx.com so commercial emails never point at
-// the Fair Oaks domain. Writes to the shared CRM (FORG) Supabase — same connection the
-// site already uses to push leads.
-function crmClient(): SupabaseClient | null {
-  // No fallback to this site's own database or key: the CRM connection must be configured explicitly.
-  const url = process.env.CRM_SUPABASE_URL;
-  const key = process.env.CRM_SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) return null;
-  return createClient(url, key, { auth: { persistSession: false } });
-}
+// CRECO-branded unsubscribe, served on crecotx.com so commercial emails never point at the Fair Oaks domain.
+// The CRM does the database work (lib/crm-site.ts); this site holds no CRM key.
 
 function page(title: string, body: string, status = 200): Response {
   return new Response(
@@ -55,16 +47,9 @@ export async function POST(req: NextRequest) {
   const token = req.nextUrl.searchParams.get('token');
   if (!token || token.length > 200) return page('Invalid link', 'This unsubscribe link is missing its token.', 400);
 
-  const supabase = crmClient();
-  if (!supabase) return page('Temporarily unavailable', 'Please try again in a moment.', 503);
-
-  const { data: client } = await supabase
-    .from('crm_clients').select('id').eq('unsubscribe_token', token).maybeSingle();
-  if (!client) return page('Link not found', 'This unsubscribe link is invalid or has already been used.', 404);
-
-  await supabase.from('crm_clients').update({ unsubscribed_at: new Date().toISOString() }).eq('id', client.id);
-  await supabase.from('crm_campaign_enrollments').update({ active: false }).eq('client_id', client.id);
-  await supabase.from('crm_action_plan_enrollments').update({ active: false }).eq('client_id', client.id);
+  const r = await crmSite({ action: 'unsubscribe', token });
+  if (r.status === 404) return page('Link not found', 'This unsubscribe link is invalid or has already been used.', 404);
+  if (r.status !== 200) return page('Temporarily unavailable', 'Please try again in a moment.', 503);
 
   return page(
     "You've been unsubscribed",
