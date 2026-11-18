@@ -384,251 +384,63 @@ function attributionFields(p: CrmPayload): Record<string, unknown> {
 }
 
 /**
- * Push a single lead to the shared CRM. Always writes to both
- * `crm_clients` (dedupe by email) and `email_lead_imports` (the table
- * the Prospects dashboard reads from).
+ * Push a single lead to the shared CRM through its secret-authenticated lead webhook (/api/webhook/lead) with
+ * `web_lead_sync`, so this public site holds NO CRM database key. The CRM does the database work: find the contact (email or
+ * phone), merge tags, log the lead on email_lead_imports (the Prospects view) and open a Prospect deal when the rules allow
+ * (see dealTypeFor). Everything sent here is derived by the pure helpers above.
  *
- * Returns true if the prospect row was successfully created or matched
- * an existing client. Errors are logged but never thrown.
+ * Unlike the old direct writer, a returning contact's prospect_status is NOT reset to "new" by a form submission.
+ *
+ * Returns true if the CRM accepted it. Errors are logged but never thrown.
  */
+const CRM_LEAD_WEBHOOK_URL = process.env.CRM_LEAD_WEBHOOK_URL ?? 'https://www.fairoaksrealtygroup.com/api/webhook/lead';
+
 export async function pushToCrm(p: CrmPayload): Promise<boolean> {
-  const supabase = adminClient();
-  if (!supabase) {
-    // Local dev / preview without service role — silent noop.
-    return false;
-  }
+  const secret = process.env.CRM_LEAD_WEBHOOK_SECRET;
+  if (!secret) return false; // local dev / preview — silent noop
 
   try {
-    // 1. Find or create the contact (dedupe by email)
     const { first, last } = splitName(p.name);
-    const phone = (p.phone ?? '').trim();
-    const company = (p.company ?? '').trim();
-    const tags = buildTags(p);
-    const message = buildMessage(p);
-    const sourceLabel = SOURCE_TO_LABEL[p.source] ?? 'CRECO Website';
-    const attr = attributionFields(p);
-
-    // An UNMAPPED source is not a buyer. It used to default to 'Buyer',
-    // which both mislabeled the contact and (via TYPE_TO_DEAL) manufactured
-    // a "Buyer Purchase" deal. Unknown now means 'Other' and no deal.
     const type: CrmLeadType = SOURCE_TO_TYPE[p.source] ?? 'Other';
-
-    // Dedupe on email OR phone: the same person often subscribes with a
-    // personal address and later inquires with a work one.
-    const variants = phoneVariants(phone);
-    const matchFilter = [
-      `email.eq.${p.email}`,
-      ...variants.map(v => `phone.eq.${v}`),
-    ].join(',');
-
-    const { data: matches } = await supabase
-      .from('crm_clients')
-      .select('id, tags, lead_source, prospect_status, agent_id, business_name, channel, visitor_id')
-      .or(matchFilter)
-      .limit(1);
-    const existing = matches?.[0] ?? null;
-
-    let clientId: string | null = null;
-    let agentId: string | null = existing?.agent_id ?? null;
-
-    if (existing) {
-      // Merge tags, keep original source if it was set
-      const mergedTags = Array.from(new Set([...(existing.tags ?? []), ...tags]));
-      const { error: updateErr } = await supabase
-        .from('crm_clients')
-        .update({
-          tags: mergedTags,
-          lead_source: existing.lead_source || sourceLabel,
-          // Backfill attribution only when the contact has none (no channel yet),
-          // matching the FORG webhook: a returning lead that arrives with a
-          // campaign/journey shouldn't lose it because we already knew the person,
-          // but a later Direct visit must not overwrite the original acquisition.
-          ...(existing.channel ? {} : attr),
-          // A returning contact keeps their original acquisition source, but we still learn this browser's identity.
-          ...(existing.visitor_id ? {} : { ...(attr.visitor_id ? { visitor_id: attr.visitor_id } : {}), ...(attr.env ? { env: attr.env } : {}) }),
-          // Fill in a company we captured later; never blank an existing one.
-          ...(company && !existing.business_name ? { business_name: company } : {}),
-          // Re-surface to "new" if the broker had moved them elsewhere
-          prospect_status: existing.prospect_status === 'closed' ? existing.prospect_status : 'new',
-          last_touched_at: new Date().toISOString(),
-        })
-        .eq('id', existing.id);
-      if (updateErr) {
-        console.error('[crm] crm_clients update failed:', updateErr.message);
-      }
-      clientId = existing.id;
-    } else {
-      // The lead's owner (Brian on his listing, Zack for everything else —
-      // Zack triages and assigns on; see getLeadOwner). Falls back to the first admin only if that profile
-      // can't be found, so a renamed mailbox never leaves the contact unowned.
-      const leadOwner = getLeadOwner({ listingSlug: p.listing_slug, source: p.source });
-      const ownerEmail = leadOwner.crm_profile_email;
-      const { data: ownerProfile } = await supabase
-        .from('crm_profiles')
-        .select('id')
-        .ilike('email', ownerEmail)
-        .limit(1)
-        .maybeSingle();
-      const { data: adminProfile } = ownerProfile ? { data: null } : await supabase
-        .from('crm_profiles')
-        .select('id')
-        .eq('role', 'admin')
-        .limit(1)
-        .maybeSingle();
-      agentId = ownerProfile?.id ?? adminProfile?.id ?? null;
-      // The backup (the other of Zack/Brian) shares the contact (assigned_agent_ids).
-      const { data: backupProfile } = await supabase
-        .from('crm_profiles')
-        .select('id')
-        .ilike('email', getLeadBackup(leadOwner).crm_profile_email)
-        .limit(1)
-        .maybeSingle();
-      const backupIds = backupProfile?.id && backupProfile.id !== agentId ? [backupProfile.id] : [];
-
-      const { data: created, error: insertErr } = await supabase
-        .from('crm_clients')
-        .insert([{
-          first_name: first || 'Web',
-          last_name:  last || 'Lead',
-          email:      p.email,
-          phone:      phone || '',
-          // Was dropped entirely, so captured company names vanished.
-          // '' not null — business_name is NOT NULL on crm_clients, so a
-          // null here failed the insert (23502) for every submission from a
-          // form without a company field. That was every property-alerts
-          // signup, which is why subscribers never became CRM contacts.
-          business_name: company || '',
-          type,
-          notes:      message,
-          agent_id:   agentId,
-          assigned_agent_ids: backupIds,
-          lead_source: sourceLabel,
-          business_unit: 'commercial',
-          tags,
-          prospect_status: 'new',
-          // Where this lead came from + the pages/dwell of the visit that
-          // produced it. Matches the FORG webhook's insert so both writers
-          // store the same shape; omitted fields simply stay null.
-          ...attr,
-        }])
-        .select('id')
-        .single();
-
-      if (insertErr) {
-        console.error('[crm] crm_clients insert failed:', insertErr.message);
-        return false;
-      }
-      clientId = created?.id ?? null;
-    }
-
-    if (!clientId) {
-      console.error('[crm] could not resolve client_id; aborting prospect insert');
+    const leadOwner = getLeadOwner({ listingSlug: p.listing_slug, source: p.source });
+    const attr = attributionFields(p);
+    const res = await fetch(CRM_LEAD_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${secret}` },
+      body: JSON.stringify({
+        web_lead_sync: true,
+        first_name: first || 'Web',
+        last_name: last || 'Lead',
+        email: p.email,
+        phone: (p.phone ?? '').trim() || undefined,
+        company: (p.company ?? '').trim() || undefined,
+        source: p.source,
+        lead_source_label: SOURCE_TO_LABEL[p.source] ?? 'CRECO Website',
+        type,
+        message: buildMessage(p),
+        tags: buildTags(p),
+        event: p.event,
+        subscription_type: p.subscription_type ?? undefined,
+        property_interest: p.property_interest ?? undefined,
+        deal_type: dealTypeFor(p),
+        import_message_id: syntheticMessageId(p),
+        import_subject: `${p.event} — ${p.source}`,
+        owner_email: leadOwner.crm_profile_email,
+        backup_email: getLeadBackup(leadOwner).crm_profile_email,
+        business_unit: 'commercial',
+        lead_site: 'crecotx.com',
+        notify: false, // the forms already email the team
+        ...attr,
+      }),
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) {
+      console.error('[crm] webhook rejected the lead:', res.status, (await res.text()).slice(0, 200));
       return false;
     }
-
-    // Tie this browser's anonymous visitor id to the contact so everything they do on our sites shows on the contact card.
-    if (attr.visitor_id) {
-      await supabase.from('site_visitor_links').upsert({ visitor_id: attr.visitor_id, client_id: clientId, source: 'lead_form' }, { onConflict: 'visitor_id' });
-    }
-
-    // 2. Insert into email_lead_imports — this is what the Prospects
-    //    view reads from. Without this row, the lead won't appear there
-    //    even if crm_clients was created.
-    const { error: importErr } = await supabase
-      .from('email_lead_imports')
-      .insert([{
-        gmail_message_id: syntheticMessageId(p),
-        source:           sourceLabel,
-        business_unit:    'commercial',
-        client_id:        clientId,
-        raw_subject:      `${p.event} — ${p.source}`,
-        parsed_name:      [first, last].filter(Boolean).join(' '),
-        parsed_email:     p.email,
-        parsed_phone:     phone || null,
-        parsed_property:  p.property_interest ?? null,
-        parsed_message:   message,
-      }]);
-
-    if (importErr) {
-      // Unique-violation on gmail_message_id means we already imported
-      // this exact event — fine, treat as success.
-      const code = (importErr as { code?: string }).code;
-      if (code !== '23505') {
-        console.error('[crm] email_lead_imports insert failed:', importErr.message);
-        return false;
-      }
-    }
-
-    // 3. Mirror the lead into the Deal Flow "Prospect" column.
-    //
-    //    A deal is created ONLY when all three hold:
-    //      - the source maps to a real transaction type (no 'Buyer' default)
-    //      - the payload isn't a subscription (alerts / newsletter /
-    //        lead-magnet / market-report), whatever the event is called
-    //      - the person has no open deal already, matched by client_id OR
-    //        by email/phone within a short window
-    //
-    //    Agent/Broker/Other leads have no TYPE_TO_DEAL entry, so they fall
-    //    out here on their own.
-    const dealType = dealTypeFor(p);
-    if (dealType) {
-      const { data: openDeal } = await supabase
-        .from('crm_deals')
-        .select('id')
-        .eq('client_id', clientId)
-        .not('stage', 'in', OPEN_DEAL_STAGES)
-        .limit(1)
-        .maybeSingle();
-
-      // Same human, different contact row (or a deal created before the
-      // client row existed): look for a recent Prospect deal by email or
-      // phone. Scoped to a 24h window so a genuine new inquiry weeks later
-      // still opens its own deal.
-      let recentDuplicate = false;
-      if (!openDeal) {
-        const since = new Date(Date.now() - DUPLICATE_DEAL_WINDOW_MS).toISOString();
-        const dealFilter = [
-          `client_email.eq.${p.email}`,
-          ...variants.map(v => `client_phone.eq.${v}`),
-        ].join(',');
-        const { data: recent } = await supabase
-          .from('crm_deals')
-          .select('id')
-          .eq('stage', 'Prospect')
-          .gte('created_at', since)
-          .or(dealFilter)
-          .limit(1);
-        recentDuplicate = Boolean(recent?.length);
-      }
-
-      if (!openDeal && !recentDuplicate) {
-        if (!agentId) {
-          const { data: adminProfile } = await supabase
-            .from('crm_profiles').select('id').eq('role', 'admin').limit(1).maybeSingle();
-          agentId = adminProfile?.id ?? null;
-        }
-        const { error: dealErr } = await supabase.from('crm_deals').insert([{
-          client_id:     clientId,
-          client:        [first, last].filter(Boolean).join(' ') || 'Web Lead',
-          client_email:  p.email,
-          client_phone:  phone || '',
-          type:          dealType,
-          property:      p.property_interest ?? '',
-          value:         0,
-          notes:         message,
-          agent_id:      agentId,
-          stage:         'Prospect',
-          last_touch:    new Date().toISOString().slice(0, 10),
-          business_unit: 'commercial',
-        }]);
-        if (dealErr) console.error('[crm] crm_deals insert failed:', dealErr.message);
-      }
-    }
-
     return true;
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    console.error('[crm] pushToCrm threw:', msg);
+    console.error('[crm] pushToCrm threw:', err instanceof Error ? err.message : String(err));
     return false;
   }
 }
