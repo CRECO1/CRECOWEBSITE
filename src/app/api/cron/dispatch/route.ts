@@ -39,8 +39,6 @@ import { GET as runValuationFollowup }  from '../valuation-followup/route';
 import { GET as runTourFollowup }       from '../tour-followup/route';
 import { GET as runLeadFollowup }       from '../lead-followup/route';
 import { GET as runGeocodeListings }    from '../geocode-listings/route';
-import { GET as runMarketReport }       from '../market-report/route';
-import { GET as runTrackingRetention }  from '../tracking-retention/route';
 import { GET as runIndexNow }          from '../indexnow/route';
 
 export const runtime = 'nodejs';
@@ -84,12 +82,6 @@ const SUB_CRONS = [
   // /api/cron/lead-followup/route.ts for the design + gating logic.
   { name: 'lead-followup',       handler: runLeadFollowup },
   { name: 'geocode-listings',    handler: runGeocodeListings },
-  // Quarterly market report — no-ops daily unless the "Quarterly Market Report"
-  // CRM campaign has a Send Date that's due; then emails the current subscriber
-  // segment and clears the date. See /api/cron/market-report/route.ts.
-  { name: 'market-report',       handler: runMarketReport },
-  // 12-month retention for first-party visitor tracking (crecotx rows in the CRM's site_events / site_pageviews).
-  { name: 'tracking-retention',  handler: runTrackingRetention },
   // Push sitemap URLs changed in the last 36h to IndexNow (Bing -> ChatGPT Search/Copilot). No-ops when nothing changed.
   { name: 'indexnow',            handler: runIndexNow },
 ] as const;
