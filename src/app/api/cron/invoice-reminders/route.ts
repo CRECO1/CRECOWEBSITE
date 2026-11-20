@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import type { Invoice } from '@/lib/invoices';
 import { sendInvoiceEmail } from '@/lib/invoice-send';
 import { fetchW9Attachment } from '@/lib/w9';
+import { fetchInvoiceAttachments } from '@/lib/invoice-attachments';
 import { approvedWorkspaceIds } from '@/lib/approved-workspaces';
 import { stageForToday, renderReminderContent } from '@/lib/invoice-reminders';
 
@@ -233,7 +234,7 @@ export async function GET(req: NextRequest) {
         invoice: fullInvoice,
         subject: content.subject,
         message: content.message,
-        extraAttachments: w9 ? [w9] : undefined,
+        extraAttachments: [...(w9 ? [w9] : []), ...(await fetchInvoiceAttachments(supabase, fullInvoice.id))],
       });
       // Save the Resend message ID on the reminder row for later auditing
       if (emailId) {

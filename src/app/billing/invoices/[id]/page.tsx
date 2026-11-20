@@ -30,6 +30,7 @@ import { formInputCls as inputCls } from '@/lib/form-styles';
 import { REMINDER_STAGES, type ReminderStage } from '@/lib/invoice-reminders';
 import { ModalBase } from '@/components/ui/ModalBase';
 import { logActivity } from '@/lib/activity-log';
+import { listInvoiceAttachments, uploadInvoiceAttachment, removeInvoiceAttachment, attachmentUrl, type InvoiceAttachmentInfo } from '@/lib/invoice-attachments';
 import { useToast } from '@/components/billing/Toast';
 import { useWorkspaceOrThrow } from '@/components/billing/WorkspaceProvider';
 
@@ -1092,6 +1093,8 @@ export default function InvoiceDetailPage() {
                 )}
               </Card>
 
+              <AttachmentsCard invoiceId={invoice.id} workspaceId={invoice.workspace_id} locked={invoice.status === 'void'} />
+
               {/* Payment reminders — only relevant once the invoice has been
                   sent. Drafts don't get reminders. */}
               {invoice.status !== 'draft' && invoice.status !== 'void' && (
@@ -1667,6 +1670,76 @@ export default function InvoiceDetailPage() {
   );
 }
 
+
+/**
+ * Files that go out with this invoice's email (signed proposal, contract…), plus whether the workspace
+ * W-9 will be attached. Stored in the private tax-documents bucket under invoices/<id>/ (lib/invoice-attachments).
+ */
+function AttachmentsCard({ invoiceId, workspaceId, locked }: { invoiceId: string; workspaceId: string; locked: boolean }) {
+  const [files, setFiles] = useState<InvoiceAttachmentInfo[] | null>(null);
+  const [w9Name, setW9Name] = useState<string | null | undefined>(undefined);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const reload = useCallback(async () => {
+    setFiles(await listInvoiceAttachments(supabase, invoiceId));
+    const { data } = await supabase.from('invoice_settings').select('w9_storage_path, w9_filename').eq('workspace_id', workspaceId).maybeSingle();
+    setW9Name(data?.w9_storage_path ? (data.w9_filename || 'W-9.pdf') : null);
+  }, [invoiceId, workspaceId]);
+  useEffect(() => { reload(); }, [reload]);
+
+  async function onPick(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    setBusy(true); setErr(null);
+    const r = await uploadInvoiceAttachment(supabase, invoiceId, file);
+    if (!r.ok) setErr(r.error);
+    await reload();
+    setBusy(false);
+  }
+  async function open(path: string) {
+    const url = await attachmentUrl(supabase, path);
+    if (url) window.open(url, '_blank', 'noopener');
+  }
+  async function remove(a: InvoiceAttachmentInfo) {
+    if (!window.confirm(`Remove ${a.filename} from this invoice? It won't be attached to the email anymore.`)) return;
+    setBusy(true);
+    if (!(await removeInvoiceAttachment(supabase, a.path))) setErr('Could not remove that file.');
+    await reload();
+    setBusy(false);
+  }
+
+  return (
+    <Card title="Attachments">
+      <div className="space-y-2">
+        <p className="text-caption text-foreground-muted">Sent with the invoice email, along with the invoice PDF.</p>
+        <ul className="space-y-1.5">
+          <li className="flex items-center justify-between gap-2 text-body-sm">
+            <span>📎 Invoice PDF</span><span className="text-caption text-foreground-muted">always</span>
+          </li>
+          <li className="flex items-center justify-between gap-2 text-body-sm">
+            {w9Name === undefined ? <span className="text-foreground-muted">Checking W-9…</span>
+              : w9Name ? <><span>📎 {w9Name}</span><span className="text-caption text-foreground-muted">W-9 on file</span></>
+              : <><span className="text-red-700">No W-9 on file</span><Link href="/billing/invoices/settings" className="text-caption text-gold-dark hover:underline">Add in settings</Link></>}
+          </li>
+          {(files ?? []).map(a => (
+            <li key={a.path} className="flex items-center justify-between gap-2 text-body-sm">
+              <button type="button" onClick={() => open(a.path)} className="text-left text-gold-dark hover:underline break-all">📎 {a.filename}</button>
+              {!locked && <button type="button" onClick={() => remove(a)} disabled={busy} className="text-caption text-foreground-muted hover:text-red-700">Remove</button>}
+            </li>
+          ))}
+        </ul>
+        {!locked && (
+          <label className={`inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-body-sm font-semibold hover:bg-surface-subtle ${busy ? 'opacity-60' : ''}`}>
+            <input type="file" accept="application/pdf,.pdf" className="sr-only" onChange={onPick} disabled={busy} />
+            {busy ? 'Working…' : '+ Attach a PDF'}
+          </label>
+        )}
+        {err && <p className="text-caption text-red-700">{err}</p>}
+      </div>
+    </Card>
+  );
+}
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (

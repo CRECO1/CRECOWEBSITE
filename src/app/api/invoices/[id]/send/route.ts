@@ -6,6 +6,7 @@ import { FALLBACK_TEMPLATE, substituteTemplate } from '@/lib/invoice-email';
 import { sendInvoiceEmail } from '@/lib/invoice-send';
 import { createInvoicePaymentLink, isStripeConfigured } from '@/lib/stripe';
 import { fetchW9Attachment } from '@/lib/w9';
+import { fetchInvoiceAttachments } from '@/lib/invoice-attachments';
 
 /**
  * POST /api/invoices/[id]/send
@@ -135,7 +136,7 @@ export async function POST(
       subject: bodySubject || `Invoice ${invoice.invoice_number} from CRECO`,
       message: bodyMessage,
       cc: bodyCc,
-      extraAttachments: w9 ? [w9] : undefined,
+      extraAttachments: [...(w9 ? [w9] : []), ...(await fetchInvoiceAttachments(supabase, id))],
     });
   } catch (err) {
     console.error('Invoice send error:', err);

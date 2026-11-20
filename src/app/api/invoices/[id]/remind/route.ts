@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { requireWorkspaceAdmin } from '@/lib/api-auth';
 import { sendInvoiceEmail } from '@/lib/invoice-send';
+import { fetchW9Attachment } from '@/lib/w9';
+import { fetchInvoiceAttachments } from '@/lib/invoice-attachments';
 import {
   REMINDER_STAGES, renderReminderContent,
   type ReminderStage,
@@ -156,10 +158,15 @@ export async function POST(
   }
 
   try {
+    // Same attachments as the first send: the workspace W-9 and the invoice's own files.
+    const { data: w9Settings } = await supabase.from('invoice_settings')
+      .select('w9_storage_path, w9_filename').eq('workspace_id', fullInvoice.workspace_id).maybeSingle();
+    const w9 = await fetchW9Attachment(supabase, w9Settings?.w9_storage_path ?? null, w9Settings?.w9_filename ?? null);
     const emailId = await sendInvoiceEmail({
       invoice: fullInvoice,
       subject: content.subject,
       message: content.message,
+      extraAttachments: [...(w9 ? [w9] : []), ...(await fetchInvoiceAttachments(supabase, fullInvoice.id))],
     });
     if (emailId) {
       await supabase
