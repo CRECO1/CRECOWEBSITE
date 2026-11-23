@@ -277,17 +277,37 @@ export const SUBMARKETS: SubmarketEntry[] = [
       heroSubhead:
         'Class A office, lifestyle retail, mixed-use, and flex space across Frisco — anchored by The Star (Cowboys HQ), the PGA of America\'s national headquarters, and a continuous pipeline of corporate relocations. CRECO covers tenant representation, owner services, and investment sales across Collin County.',
       marketStats: [
-        { label: 'Class A office rents',         value: '$36–44/SF',  context: 'gross, premium suburban' },
-        { label: 'Office vacancy (Frisco core)', value: '~12%',       context: 'tightest in the DFW suburban submarket' },
-        { label: 'Population growth',            value: '+6%/yr',     context: 'fastest-growing US city its size' },
-        { label: 'Corporate HQ relocations',     value: 'Top 3',      context: 'US cities since 2018' },
+        { label: 'Class A office rent',          value: '$44.62–$45.38', context: '/SF full service, Q3 2026 (CBRE Far North Dallas, Cushman Legacy/Frisco)' },
+        { label: 'Office vacancy',               value: '22.5–23.8%',    context: 'Q3 2026, close to the DFW metro\'s 23.7–24.6%' },
+        { label: 'Office net absorption, YTD',   value: '+0.93–1.06M SF',context: 'the most of any submarket in both reports (Cushman, CBRE)' },
+        { label: 'Office under construction',    value: '289,687 SF',    context: 'Legacy/Frisco, Q3 2026 (Cushman & Wakefield)' },
       ],
       marketIntro: [
         'Frisco is the most concentrated story of Texas\'s corporate-relocation decade. Toyota North America\'s 2017 move to neighboring Plano set the tone for the corridor. Keurig Dr Pepper and Jamba put headquarters here, and Frisco has drawn a steady run of corporate offices since. The Cowboys built The Star here. The PGA of America moved its national headquarters here. The relocations aren\'t over — Frisco\'s 2026 pipeline of announced corporate moves rivals 2018-19 peaks.',
-        'The CRE consequence: Frisco Class A office is one of the few US suburban office submarkets that\'s actually tightening, not softening. New trophy buildings deliver and lease within 18 months. Tenants pay $36–44/SF gross for the corporate-relocation premium. Retail — particularly in the Frisco Square and Stonebriar corridor — runs at sub-5% vacancy with premium rents in every category from grocery-anchored to restaurant pad sites.',
+        'The CRE consequence: Frisco is one of the strongest office recoveries in DFW, though not yet a tight market. In Q3 2026 Cushman & Wakefield\'s Legacy/Frisco submarket absorbed 179,490 SF (929,796 SF year to date, the most of any of its submarkets), and CBRE\'s Far North Dallas submarket, which covers Frisco, absorbed 733,000 SF in the quarter. Vacancy is still 22.5% to 23.8%, close to the metro average, and Class A asks $44.62 to $45.38/SF full service against about $40 for the metro. Retail, particularly in the Frisco Square and Stonebriar corridor, runs at sub-5% vacancy with premium rents in every category from grocery-anchored to restaurant pad sites.',
         'Industrial is the smaller story but real. The DFW logistics network extends north into Frisco/Plano, with small-bay and last-mile distribution serving the explosive Collin County population. Most of the bulk industrial sits further south (Alliance, South Dallas) but Collin County is where the metro\'s higher industrial rents are: CBRE shows Allen/McKinney at $15.24/SF NNN and Plano at $14.37, against $10.39 for the whole metro in Q3 2026. Frisco itself is not broken out in the published reports; see the nearby data below.',
       ],
-      dataBox: {
+      dataBoxes: [
+        {
+          overline: 'Office data in and near Frisco',
+          heading: 'Office figures, Q3 2026',
+          lead: 'Cushman & Wakefield tracks Frisco together with Legacy as one submarket. CBRE has no Frisco row; its map places Frisco within Far North Dallas, which covers a wider area (48.3M SF). The Richardson/Plano and metro rows are for comparison.',
+          head: ['Q3 2026', 'Vacancy', 'Asking rent', 'Class A rent', 'Net absorption'],
+          rows: [
+            ['Legacy/Frisco (Cushman)', '22.5%', '$43.46', '$45.38', '+179,490 SF'],
+            ['Far North Dallas (CBRE)', '23.8%', '$39.37', '$44.62', '+733,000 SF'],
+            ['Richardson/Plano (Cushman)', '18.2%', '$26.98', '$30.17', '−50,605 SF'],
+            ['Richardson/Plano (CBRE)', '19.0%', '$27.04', '$29.67', '−68,000 SF'],
+            ['DFW metro (Cushman)', '23.7%', '$34.14', '$39.94', '+156,935 SF'],
+            ['DFW metro (CBRE)', '24.6%', '$35.09', '$40.10', '+1.00M SF'],
+          ],
+          note: 'Rents are asking rents in $/SF per year, full service (gross). Asking rent is what landlords list, not what tenants pay. The two firms draw submarket boundaries differently, so compare each firm with its own metro figure. Cushman & Wakefield counts 289,687 SF under construction in Legacy/Frisco, including Fields West Building L (66,899 SF), which began foundation work in Q3.',
+          sources: [
+            { label: 'Cushman & Wakefield, MarketBeat Dallas/Fort Worth Office Q3 2026', url: 'https://www.cushmanwakefield.com/en/united-states/insights/us-marketbeats/dallas-ft-worth-marketbeats/office' },
+            { label: 'CBRE, Dallas/Fort Worth Office Figures Q3 2026 (Oct 9 2026)', url: 'https://www.cbre.com/insights/figures/dallas-fort-worth-office-figures-q3-2026' },
+          ],
+        },
+        {
         overline: 'Industrial data near Frisco',
         heading: 'Nearby industrial figures, Q3 2026',
         lead: 'Frisco is not one of CBRE\'s ten Dallas–Fort Worth industrial districts, and Cushman & Wakefield does not publish a submarket table, so there is no Frisco-only industrial figure. The closest published districts are Allen/McKinney and Plano in Collin County, shown here with the metro and with small buildings metro-wide.',
@@ -304,7 +324,8 @@ export const SUBMARKETS: SubmarketEntry[] = [
         sources: [
           { label: 'CBRE, Dallas/Fort Worth Industrial Figures Q3 2026 (Oct 9 2026)', url: 'https://www.cbre.com/insights/figures/dallas-fort-worth-industrial-figures-q3-2026' },
         ],
-      },
+        },
+      ],
 
       servicesIntro: [
         'CRECO\'s Frisco practice is heaviest in two areas: Class A office tenant representation for corporate-relocation candidates and growing local employers, and high-end retail leasing in the Frisco Square / Stonebriar / The Star ecosystem.',
