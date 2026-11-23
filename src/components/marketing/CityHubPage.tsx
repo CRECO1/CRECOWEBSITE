@@ -95,6 +95,16 @@ export interface CityHubConfig {
   /** 2-3 paragraphs of market context */
   marketIntro: string[];
   marketStats: MarketStat[];
+  /** Optional sourced data table under the market overview (own source links; independent of sourcesAsOf). */
+  dataBox?: {
+    overline: string;
+    heading: string;
+    lead: string;
+    head: string[];
+    rows: string[][];
+    note: string;
+    sources: { label: string; url: string }[];
+  };
   /** What CRECO does in this city specifically */
   servicesIntro: string[];
   /** Submarkets / districts within the city */
@@ -434,6 +444,44 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
             </div>
           </Container>
         </section>
+
+        {/* Sourced data box (optional) */}
+        {config.dataBox && (
+          <section className="section-luxury bg-white">
+            <Container>
+              <div className="max-w-3xl mx-auto">
+                <p className="overline mb-3">{config.dataBox.overline}</p>
+                <h2 className="font-heading text-display-sm font-bold text-primary mb-4">{config.dataBox.heading}</h2>
+                <p className="text-body text-foreground-muted leading-relaxed">{config.dataBox.lead}</p>
+                <div className="mt-6 overflow-x-auto rounded-xl border border-border bg-white">
+                  <table className="w-full min-w-[520px] text-left text-body-sm">
+                    <thead className="bg-background-cream text-caption uppercase tracking-wide text-foreground-muted">
+                      <tr>{config.dataBox.head.map((h, i) => <th key={i} className="px-4 py-3 font-semibold">{h}</th>)}</tr>
+                    </thead>
+                    <tbody>
+                      {config.dataBox.rows.map((r, i) => (
+                        <tr key={i} className="border-t border-border/70">
+                          {r.map((c, j) => <td key={j} className={`px-4 py-3 ${j === 0 ? 'font-semibold text-primary' : 'text-foreground-muted'}`}>{c}</td>)}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <p className="mt-3 text-caption text-foreground-muted leading-relaxed">{config.dataBox.note}</p>
+                <p className="mt-2 text-caption text-foreground-muted">
+                  Source:{' '}
+                  {config.dataBox.sources.map((s, i) => (
+                    <span key={s.url}>
+                      {i > 0 && '; '}
+                      <a href={s.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-gold-dark underline underline-offset-2 hover:text-gold">{s.label}</a>
+                    </span>
+                  ))}
+                  .
+                </p>
+              </div>
+            </Container>
+          </section>
+        )}
 
         {/* Submarkets */}
         {config.submarkets.length > 0 && (

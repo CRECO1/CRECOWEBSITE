@@ -285,8 +285,27 @@ export const SUBMARKETS: SubmarketEntry[] = [
       marketIntro: [
         'Frisco is the most concentrated story of Texas\'s corporate-relocation decade. Toyota North America\'s 2017 move to neighboring Plano set the tone for the corridor. Keurig Dr Pepper and Jamba put headquarters here, and Frisco has drawn a steady run of corporate offices since. The Cowboys built The Star here. The PGA of America moved its national headquarters here. The relocations aren\'t over — Frisco\'s 2026 pipeline of announced corporate moves rivals 2018-19 peaks.',
         'The CRE consequence: Frisco Class A office is one of the few US suburban office submarkets that\'s actually tightening, not softening. New trophy buildings deliver and lease within 18 months. Tenants pay $36–44/SF gross for the corporate-relocation premium. Retail — particularly in the Frisco Square and Stonebriar corridor — runs at sub-5% vacancy with premium rents in every category from grocery-anchored to restaurant pad sites.',
-        'Industrial is the smaller story but real. The DFW logistics network extends north into Frisco/Plano, with small-bay and last-mile distribution serving the explosive Collin County population. Most of the bulk industrial sits further south (Alliance, South Dallas) but the small-bay 20K–60K SF segment is genuinely tight in Collin County and trades at premium per-SF prices.',
+        'Industrial is the smaller story but real. The DFW logistics network extends north into Frisco/Plano, with small-bay and last-mile distribution serving the explosive Collin County population. Most of the bulk industrial sits further south (Alliance, South Dallas) but Collin County is where the metro\'s higher industrial rents are: CBRE shows Allen/McKinney at $15.24/SF NNN and Plano at $14.37, against $10.39 for the whole metro in Q3 2026. Frisco itself is not broken out in the published reports; see the nearby data below.',
       ],
+      dataBox: {
+        overline: 'Industrial data near Frisco',
+        heading: 'Nearby industrial figures, Q3 2026',
+        lead: 'Frisco is not one of CBRE\'s ten Dallas–Fort Worth industrial districts, and Cushman & Wakefield does not publish a submarket table, so there is no Frisco-only industrial figure. The closest published districts are Allen/McKinney and Plano in Collin County, shown here with the metro and with small buildings metro-wide.',
+        head: ['Q3 2026 (CBRE)', 'Vacancy', 'Asking rent NNN', 'Net absorption', 'Under construction'],
+        rows: [
+          ['Allen/McKinney', '7.6%', '$15.24', '+411,000 SF', '1.25M SF'],
+          ['Plano', '8.2%', '$14.37', '−201,000 SF', '558,000 SF'],
+          ['Northeast Dallas district', '7.4%', '$12.54', '+766,000 SF', '3.76M SF'],
+          ['DFW metro', '7.8%', '$10.39', '+6.44M SF', '33.91M SF'],
+          ['Metro, buildings under 50K SF', '6.4%', '$12.63', '−968,000 SF', '168,000 SF'],
+          ['Metro, R&D/flex', '6.4%', '$12.83', '−258,000 SF', '168,000 SF'],
+        ],
+        note: 'Asking rent is the average direct asking rate in $/SF per year. CBRE\'s Northeast Dallas district groups Allen/McKinney, Plano, NE Dallas/Garland, Richardson and Rockwall. The small-building and R&D/flex rows are metro-wide, not Frisco. Rents here are what landlords ask, not what tenants pay.',
+        sources: [
+          { label: 'CBRE, Dallas/Fort Worth Industrial Figures Q3 2026 (Oct 9 2026)', url: 'https://www.cbre.com/insights/figures/dallas-fort-worth-industrial-figures-q3-2026' },
+        ],
+      },
+
       servicesIntro: [
         'CRECO\'s Frisco practice is heaviest in two areas: Class A office tenant representation for corporate-relocation candidates and growing local employers, and high-end retail leasing in the Frisco Square / Stonebriar / The Star ecosystem.',
         'For corporate tenants evaluating Frisco, our work starts before the location decision — we model net occupancy economics, run comparative-submarket analyses across DFW (Frisco vs Plano vs Las Colinas vs Uptown), and structure the actual lease to maximize TI, abatement, and renewal flexibility. Frisco demands aggressive structure because the corporate-relocation premium gets quoted casually by listing brokers.',
