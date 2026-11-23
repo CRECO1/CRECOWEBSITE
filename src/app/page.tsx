@@ -76,6 +76,10 @@ const LOCAL_MARKETS = [
 const FAQS = [
   ...CORE_ANSWERS,
   {
+    q: 'How is the San Antonio commercial real estate market right now?',
+    a: 'In Q3 2026, San Antonio retail vacancy was 4.0% to 4.3%, office 15.2% to 17.8%, industrial 10.3% to 11.5% and small-bay flex 7.9% to 8.1%, depending on the brokerage (Matthews, Partners, CBRE, Cushman & Wakefield). Hill Country retail is tighter: 3.2% in Kendall County (Boerne) and 2.7% in Comal County (New Braunfels), and no office space is under construction in the metro. The full sourced numbers are in the CRECO Market Brief.',
+  },
+  {
     q: 'Does CRECO represent tenants or landlords?',
     a: 'Both — and investors. CRECO is a full-service brokerage, not a tenant-only firm: it represents tenants and buyers looking for space, landlords and owners leasing or selling property, and investors buying and selling commercial real estate, across retail, office, industrial, flex, and land. When both parties authorize it in writing, CRECO can act as an intermediary under Texas law. For tenants, representation is typically free because the landlord pays the commission.',
   },
@@ -107,6 +111,15 @@ const FAQS = [
     q: 'What makes CRECO different from CBRE, JLL, or Cushman & Wakefield?',
     a: 'The big national firms are great for institutional clients with $100M+ deals. CRECO serves the broad middle of the Texas market — entrepreneurs, family offices, multi-property owners with $1M to $50M assets, and growing tenants — with principal-level attention on every engagement. Every client works directly with the people doing the deal, not a junior associate handed off from someone you met at the pitch.',
   },
+];
+
+// Q3 2026 market snapshot. Every figure is a range across the brokerages cited in the Market Brief
+// (src/app/market-brief/BriefContent.tsx); keep the two in step when a new edition ships.
+const MARKET_SNAPSHOT = [
+  { label: 'Retail', range: '4.0–4.3%', note: 'Hill Country: 2.7% in Comal, 3.2% in Kendall' },
+  { label: 'Office', range: '15.2–17.8%', note: 'No new office under construction' },
+  { label: 'Industrial', range: '10.3–11.5%', note: 'Net absorption positive in all three reports' },
+  { label: 'Small-bay flex', range: '7.9–8.1%', note: 'Asking rent about $12.61–$13.79/SF NNN' },
 ];
 
 const DEFAULT_SETTINGS = {
@@ -464,6 +477,38 @@ export default async function HomePage() {
       <div data-track-section="reviews">
         <GoogleReviews askForReview />
       </div>
+
+      {/* ── Market snapshot ──────────────────────────────────────────── */}
+      <section data-track-section="market_snapshot" className="section-luxury bg-background-cream">
+        <Container>
+          <RevealOnScroll>
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="overline mb-3">Market Intelligence</p>
+              <h2 className="font-heading text-display font-bold text-primary gold-line gold-line-center inline-block pb-4">San Antonio &amp; Hill Country, Q3 2026</h2>
+              <p className="mt-6 text-body-lg text-foreground-muted leading-relaxed">
+                Vacancy by property type across CBRE, Cushman &amp; Wakefield, Partners and Matthews. Every figure is sourced, and where the firms disagree we show the range.
+              </p>
+            </div>
+          </RevealOnScroll>
+          <div className="mx-auto mt-10 grid max-w-4xl grid-cols-2 gap-4 lg:grid-cols-4">
+            {MARKET_SNAPSHOT.map((m, i) => (
+              <RevealOnScroll key={m.label} delay={i * 60}>
+                <div className="h-full rounded-xl border border-border bg-white p-5 text-center shadow-card">
+                  <p className="overline mb-2 text-gold">{m.label}</p>
+                  <p className="font-heading text-display-sm font-bold text-primary">{m.range}</p>
+                  <p className="mt-1 text-caption uppercase tracking-wide text-foreground-muted">Vacancy</p>
+                  <p className="mt-3 text-body-sm text-foreground-muted leading-relaxed">{m.note}</p>
+                </div>
+              </RevealOnScroll>
+            ))}
+          </div>
+          <div className="mt-8 text-center">
+            <Link href="/market-brief" className="inline-flex items-center gap-2 text-body font-semibold text-gold-dark hover:text-gold">
+              Read the full Q3 Market Brief <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+        </Container>
+      </section>
 
       {/* ── FAQ ──────────────────────────────────────────────────────── */}
       <section data-track-section="faq" className="section-luxury bg-white">
