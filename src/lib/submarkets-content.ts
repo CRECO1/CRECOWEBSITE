@@ -256,7 +256,7 @@ export const SUBMARKETS: SubmarketEntry[] = [
     tagline: 'DFW\'s premier corporate-relocation submarket',
     metaTitle: 'Frisco Commercial Real Estate | Class A Office, Retail, Industrial | CRECO',
     metaDescription:
-      'Frisco commercial real estate — DFW\'s premier corporate-relocation submarket and home to The Star, the PGA, and dozens of corporate HQ relocations. Class A office, retail, and industrial leasing + investment sales from CRECO.',
+      'Frisco commercial real estate — DFW\'s premier corporate-relocation submarket and home to The Star, the PGA, and a steady run of corporate relocations. Class A office, retail, and industrial leasing + investment sales from CRECO.',
     keywords: [
       'frisco commercial real estate',
       'frisco office space',
@@ -283,9 +283,17 @@ export const SUBMARKETS: SubmarketEntry[] = [
         { label: 'Office under construction',    value: '289,687 SF',    context: 'Legacy/Frisco, Q3 2026 (Cushman & Wakefield)' },
       ],
       marketIntro: [
-        'Frisco is the most concentrated story of Texas\'s corporate-relocation decade. Toyota North America\'s 2017 move to neighboring Plano set the tone for the corridor. Keurig Dr Pepper and Jamba put headquarters here, and Frisco has drawn a steady run of corporate offices since. The Cowboys built The Star here. The PGA of America moved its national headquarters here. The relocations aren\'t over — Frisco\'s 2026 pipeline of announced corporate moves rivals 2018-19 peaks.',
-        'The CRE consequence: Frisco is one of the strongest office recoveries in DFW, though not yet a tight market. In Q3 2026 Cushman & Wakefield\'s Legacy/Frisco submarket absorbed 179,490 SF (929,796 SF year to date, the most of any of its submarkets), and CBRE\'s Far North Dallas submarket, which covers Frisco, absorbed 733,000 SF in the quarter. Vacancy is still 22.5% to 23.8%, close to the metro average, and Class A asks $44.62 to $45.38/SF full service against about $40 for the metro. Retail, particularly in the Frisco Square and Stonebriar corridor, runs at sub-5% vacancy with premium rents in every category from grocery-anchored to restaurant pad sites.',
+        'Frisco has been one of the main destinations of Texas\'s corporate-relocation decade. Toyota Motor North America opened its headquarters in neighboring Plano in July 2017, and the Dallas Cowboys moved their headquarters and training complex to The Star in July 2016. In February 2019 Keurig Dr Pepper announced a 350,000 SF build-to-suit Texas headquarters at The Star, one of its two headquarters, planned for 2021. The relocations have continued: the Frisco Economic Development Corporation supported 14 corporate office relocations and expansions in fiscal 2025 (nine without financial incentives, expected to create or retain more than 3,100 jobs), and in March 2026 Public Storage chose Frisco for a 119,000 SF headquarters, the largest out-of-state headquarters relocation by square footage in Dallas–Fort Worth since 2021.',
+        'The CRE consequence: Frisco is one of the strongest office recoveries in DFW, though not yet a tight market. In Q3 2026 Cushman & Wakefield\'s Legacy/Frisco submarket absorbed 179,490 SF (929,796 SF year to date, the most of any of its submarkets), and CBRE\'s Far North Dallas submarket, which covers Frisco, absorbed 733,000 SF in the quarter. Vacancy is still 22.5% to 23.8%, close to the metro average, and Class A asks $44.62 to $45.38/SF full service against about $40 for the metro. Retail is tight across the metro: Matthews put Dallas–Fort Worth retail vacancy at 5.1% in Q3 2026 with a record $25.56/SF average asking rent, and the 8.03M SF under construction is concentrated in North Collin County, where it equals 23.2% of existing stock. Matthews does not publish Frisco-level retail figures.',
         'Industrial is the smaller story but real. The DFW logistics network extends north into Frisco/Plano, with small-bay and last-mile distribution serving the explosive Collin County population. Most of the bulk industrial sits further south (Alliance, South Dallas) but Collin County is where the metro\'s higher industrial rents are: CBRE shows Allen/McKinney at $15.24/SF NNN and Plano at $14.37, against $10.39 for the whole metro in Q3 2026. Frisco itself is not broken out in the published reports; see the nearby data below.',
+      ],
+      introSources: [
+        { label: 'Toyota, new North American headquarters opening (Jul 6 2017)', url: 'https://pressroom.toyota.com/toyota-opens-billion-dollar-north-american-headquarters-texas/' },
+        { label: 'CBS Texas, Cowboys move to The Star (Jul 21 2016)', url: 'https://www.cbsnews.com/texas/news/dallas-cowboys-make-their-official-move-to-the-star-in-frisco/' },
+        { label: 'Community Impact, Keurig Dr Pepper Texas headquarters (Feb 21 2019)', url: 'https://communityimpact.com/plano/business/keurig-dr-pepper-announces-relocation-of-texas-headquarters-to-frisco/' },
+        { label: 'Frisco EDC, 2025 business investment (Feb 3 2026)', url: 'https://friscoedc.com/news/frisco-economic-development-corporation-attracts-significant-business-investment-in-2025' },
+        { label: 'Frisco EDC, Public Storage headquarters (Mar 6 2026)', url: 'https://friscoedc.com/news/public-storage-chooses-frisco-for-major-headquarters-relocation-largest-in-dfw-since-2021' },
+        { label: 'Matthews, Dallas–Fort Worth Retail Market Report Q3 2026 (Oct 26 2026)', url: 'https://www.matthews.com/insights/dallas-fort-worth-retail-market-report-q3-2026' },
       ],
       dataBoxes: [
         {

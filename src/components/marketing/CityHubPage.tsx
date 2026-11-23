@@ -94,6 +94,8 @@ export interface CityHubConfig {
   heroImage?: string;
   /** 2-3 paragraphs of market context */
   marketIntro: string[];
+  /** Optional source links shown under the market overview paragraphs. */
+  introSources?: { label: string; url: string }[];
   marketStats: MarketStat[];
   /** Optional sourced data tables under the market overview (own source links; independent of sourcesAsOf). */
   dataBoxes?: {
@@ -441,6 +443,18 @@ export async function CityHubPage({ config }: { config: CityHubConfig }) {
                   <p key={i} className="text-body text-foreground leading-relaxed">{p}</p>
                 ))}
               </div>
+              {config.introSources && config.introSources.length > 0 && (
+                <p className="mt-5 text-caption text-foreground-muted leading-relaxed">
+                  Sources:{' '}
+                  {config.introSources.map((s, i) => (
+                    <span key={s.url}>
+                      {i > 0 && '; '}
+                      <a href={s.url} target="_blank" rel="noopener noreferrer" className="font-semibold text-gold-dark underline underline-offset-2 hover:text-gold">{s.label}</a>
+                    </span>
+                  ))}
+                  .
+                </p>
+              )}
             </div>
           </Container>
         </section>
