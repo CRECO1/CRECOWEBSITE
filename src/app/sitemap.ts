@@ -107,6 +107,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/guides`,                      lastModified: CONTENT_REVISED, changeFrequency: 'monthly', priority: 0.85 },
     // /research and the statewide quarterly reports were pulled (308 → here).
     { url: `${BASE_URL}/market-brief`,                lastModified: new Date(BRIEF_UPDATED), changeFrequency: 'monthly', priority: 0.85 },
+    { url: `${BASE_URL}/market-brief/q2-2026`,        lastModified: new Date('2026-11-05'), changeFrequency: 'yearly', priority: 0.5 },
     { url: `${BASE_URL}/property-alerts`,             lastModified: CONTENT_REVISED, changeFrequency: 'monthly', priority: 0.8  },
     { url: `${BASE_URL}/careers`,                     lastModified: CONTENT_REVISED, changeFrequency: 'monthly', priority: 0.7  },
     // /compare omitted — the route is noindex,nofollow because it's a

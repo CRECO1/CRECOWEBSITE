@@ -150,7 +150,7 @@ ${metros.map(m => {
 
 ## Market data
 
-CRECO's San Antonio & Hill Country Market Brief — a quarterly brief by ${FOUNDER.name} with cited sources — Issue 1 (Q2 2026 data: vacancy, rents and absorption from CBRE, Cushman & Wakefield and Partners, plus Boerne, Fair Oaks Ranch and New Braunfels) is published at ${SITE_URL}/market-brief
+CRECO's San Antonio & Hill Country Market Brief — a quarterly brief by ${FOUNDER.name} with cited sources — Issue 2 (Q3 2026 data: vacancy, rents and absorption from CBRE, Cushman & Wakefield, Partners and Matthews, plus Boerne, Fair Oaks Ranch and New Braunfels) is published at ${SITE_URL}/market-brief, with Issue 1 (Q2 2026) archived at ${SITE_URL}/market-brief/q2-2026
 
 Guides and playbooks:
 ${PUBLISHED_GUIDES.map(g => `- [${g.title}](${SITE_URL}/guides/${g.slug}): ${g.excerpt}`).join('\n')}

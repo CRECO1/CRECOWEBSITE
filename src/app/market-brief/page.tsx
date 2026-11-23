@@ -13,13 +13,13 @@ import { MARKET_BRIEF_FAQS } from '@/lib/answers';
 import { FOUNDER, FOUNDER_ID, breadcrumbList, webPage } from '@/lib/schema';
 import { BriefContent, BRIEF_SECTIONS } from './BriefContent';
 import { ListingsSnapshot } from '@/components/marketing/ListingsSnapshot';
-import { BRIEF_UPDATED } from '@/lib/brief-meta';
+import { BRIEF_UPDATED, BRIEF_ISSUE, BRIEF_REVIEWED } from '@/lib/brief-meta';
 
 // Re-render hourly so the live listings snapshot stays current.
 export const revalidate = 3600;
 
 /**
- * /market-brief — the San Antonio & Hill Country Market Brief. Issue 1 (Q2 2026 data)
+ * /market-brief — the San Antonio & Hill Country Market Brief. Issue 2 (Q3 2026 data)
  * is published here in full, no gate; the signup is for the NEXT edition. Content lives
  * in ./BriefContent.tsx. The signup reuses MarketReportCapture (posts to /api/leads with
  * source 'market-report' — a subscription source, so no broker "new lead" alert; honeypot
@@ -28,7 +28,7 @@ export const revalidate = 3600;
 
 const TITLE = 'San Antonio & Hill Country Market Brief | CRECO';
 const DESCRIPTION =
-  "Q2 2026 San Antonio and Hill Country retail, office, industrial and flex vacancy and rents from CBRE, Cushman & Wakefield and Partners. Every figure sourced.";
+  "Q3 2026 San Antonio and Hill Country retail, office, industrial and flex vacancy, rents and absorption from CBRE, Cushman & Wakefield, Partners and Matthews side by side, plus Boerne, Fair Oaks Ranch and New Braunfels. Every figure sourced.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -58,9 +58,8 @@ export default function MarketBriefPage() {
         data={[
           webPage('WebPage', '/market-brief', TITLE, DESCRIPTION, {
             author: { '@id': FOUNDER_ID },
-            reviewedBy: { '@id': FOUNDER_ID },
+            ...(BRIEF_REVIEWED ? { reviewedBy: { '@id': FOUNDER_ID }, lastReviewed: BRIEF_UPDATED } : {}),
             dateModified: BRIEF_UPDATED,
-            lastReviewed: BRIEF_UPDATED,
           }),
           breadcrumbList([{ name: 'Market Brief', path: '/market-brief' }]),
         ]}
@@ -80,7 +79,7 @@ export default function MarketBriefPage() {
                 San Antonio &amp; Hill Country Market Brief
               </h1>
               <p className="text-body-lg text-white/75 leading-relaxed">
-                Issue 1 · Q2 2026 data · Published October 2026. Retail, office, industrial and flex across San Antonio and the Hill Country, with CBRE, Cushman &amp; Wakefield and Partners side by side and every figure cited. Written by {FOUNDER.name}. Last updated {new Date(BRIEF_UPDATED + 'T12:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}.
+                Issue {BRIEF_ISSUE.number} · {BRIEF_ISSUE.period} data · Published {BRIEF_ISSUE.published}. Retail, office, industrial and flex across San Antonio and the Hill Country, with CBRE, Cushman &amp; Wakefield, Partners and Matthews side by side and every figure cited. {BRIEF_REVIEWED ? <>Written by {FOUNDER.name}.</> : 'Prepared by CRECO.'} Last updated {new Date(BRIEF_UPDATED + 'T12:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}.
               </p>
             </div>
           </Container>
@@ -109,8 +108,9 @@ export default function MarketBriefPage() {
                 <div className="lg:sticky lg:top-28 space-y-4">
                   <MarketReportCapture variant="dark" surface="market-brief" />
                   <p className="text-caption text-foreground-muted">
-                    One email when the next edition is published — Q3 figures once the major brokerages release them. Unsubscribe anytime.
+                    One email when the next edition is published (Q4 2026 figures, once the major brokerages release them). Unsubscribe anytime.
                   </p>
+                  <Link href="/market-brief/q2-2026" className="block rounded-xl border border-border bg-white p-5 text-body-sm font-semibold text-gold-dark hover:text-gold">Issue 1 archive: Q2 2026 data →</Link>
                   <Link href="/answers" className="block rounded-xl border border-border bg-white p-5 text-body-sm font-semibold text-gold-dark hover:text-gold">Quick sourced answers: vacancy, rents, Boerne, New Braunfels →</Link>
                   <div className="rounded-xl border border-border bg-white p-5">
                     <p className="text-body-sm font-semibold text-primary">Want this applied to your property or search?</p>

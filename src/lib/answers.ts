@@ -61,11 +61,15 @@ export const MARKET_BRIEF_FAQS: Faq[] = [
   },
   {
     q: 'What is the San Antonio & Hill Country Market Brief?',
-    a: `A quarterly brief on San Antonio and Texas Hill Country commercial real estate (retail, office, industrial and flex) written by ${FOUNDER.name}, with each figure cited to its source. Issue 1 (Q2 2026 data, October 2026) is published on this page; sign up to get one email when the next edition is out.`,
+    a: `A quarterly brief on San Antonio and Texas Hill Country commercial real estate (retail, office, industrial and flex) written by ${FOUNDER.name}, with each figure cited to its source. Issue 2 (Q3 2026 data, November 2026) is published on this page and Issue 1 (Q2 2026) is archived at /market-brief/q2-2026; sign up to get one email when the next edition is out.`,
   },
   {
     q: 'Where can I find CRECO\'s San Antonio market information today?',
     a: 'CRECO publishes market pages for San Antonio commercial real estate, Fair Oaks Ranch and Boerne, plus submarket pages for Stone Oak, Northwest San Antonio, Schertz–Cibolo–Selma, New Braunfels and Bulverde & Spring Branch. For current availability, rents or a specific submarket, call (210) 817-3443.',
+  },
+  {
+    q: 'What does the Q3 2026 Market Brief say about San Antonio vacancy?',
+    a: 'Q3 2026 vacancy by property type: office 15.2% to 17.8% (Cushman & Wakefield, Partners, CBRE), industrial 10.3% to 11.5%, small-bay flex 7.9% to 8.1%, and retail 4.0% to 4.3% (Matthews, Partners). The Hill Country is tighter for retail: 3.2% in Kendall County (Boerne) and 2.7% in Comal County (New Braunfels). The brokerages measure different sets of buildings, so the brief shows all of them.',
   },
   {
     q: 'Who writes the brief?',

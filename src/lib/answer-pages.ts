@@ -3,7 +3,7 @@
  * to the original reports.
  *
  * Pages without a `period` still carry Q2 2026 data lifted from the published Q2 2026 Market Brief
- * (src/app/market-brief/BriefContent.tsx) or src/lib/answers.ts (today: the medical office page, until Matthews
+ * (src/app/market-brief/BriefContentQ2.tsx) or src/lib/answers.ts (today: the medical office page, until Matthews
  * publishes Q3, and the Fair Oaks Ranch how-to). Bump BRIEF_UPDATED only when the Brief itself is revised.
  *
  * Pages with their own `period` / `updated` (Q3 2026 and later) cite named reports directly. Each figure was read
@@ -363,6 +363,7 @@ export const ANSWER_PAGES: AnswerPage[] = [
     slug: 'san-antonio-medical-office-vacancy',
     short: 'San Antonio medical office vacancy',
     question: 'What is the medical office vacancy rate in San Antonio?',
+    updated: '2026-11-05',
     answer: 'In July 2026 Matthews reported 12.27% medical office vacancy in the San Antonio metro, asking rent of $29.99/SF and 80,128 SF under construction.',
     points: [
       'Vacancy 12.27%, asking rent $29.99/SF, 80,128 SF under construction (Matthews, Jul 2026).',
@@ -429,6 +430,7 @@ export const ANSWER_PAGES: AnswerPage[] = [
   {
     slug: 'how-to-lease-commercial-space-fair-oaks-ranch',
     short: 'Leasing commercial space in Fair Oaks Ranch',
+    updated: '2026-11-05',
     question: 'How do I lease commercial space in Fair Oaks Ranch?',
     answer: 'Tell CRECO what you need (use, size, budget, timing) at crecotx.com/get-started or call (210) 817-3443. CRECO shortlists available space, including off-market options, tours it with you, and negotiates the letter of intent and lease. A focused search usually takes about 30 to 90 days to a signed lease.',
     points: [
