@@ -129,7 +129,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Each post carries its own publishedAt, which is the honest lastmod.
   const insightPages: MetadataRoute.Sitemap = POSTS.map(p => ({
     url: `${BASE_URL}/insights/${p.slug}`,
-    lastModified: new Date(p.publishedAt),
+    lastModified: new Date(p.dataUpdate?.asOf ?? p.publishedAt),
     changeFrequency: 'monthly',
     priority: 0.8,
   }));

@@ -624,10 +624,10 @@ export const SUBMARKETS: SubmarketEntry[] = [
       heroSubhead:
         'Retail, industrial, office, and investment property across New Braunfels — one of the fastest-growing small-mid cities in America, anchored by I-35 between Austin and San Antonio. Strong retail demand, expanding industrial inventory, and a mature Class B office base. CRECO covers tenant rep, owner services, and investment sales across Comal County.',
       marketStats: [
-        { label: 'Population growth',     value: 'Top 5',       context: 'fastest-growing US cities its size' },
-        { label: 'Retail vacancy',        value: '~5%',         context: 'tightest in primary growth centers' },
-        { label: 'Industrial inventory',  value: 'Growing',     context: 'I-35 corridor absorption strong' },
-        { label: 'Hospitality demand',    value: 'Strong',      context: 'Schlitterbahn + Gruene draw' },
+        { label: 'Population growth',     value: '+27.8%',      context: 'Comal County, 2020 to 2025 (Community Impact)' },
+        { label: 'Retail vacancy',        value: '2.7%',        context: 'Comal County, Q3 2026 (Partners)' },
+        { label: 'Retail asking rent',    value: '$27.85',      context: 'per SF NNN, Comal County, Q3 2026 (Partners)' },
+        { label: 'Industrial vacancy',    value: '11.3–11.8%',  context: 'Comal County, Q3 2026 (Cushman & Wakefield, Partners)' },
       ],
       marketIntro: [
         'New Braunfels has been one of America\'s fastest-growing cities its size for a decade running. Population growth driven by the I-35 corridor between Austin and San Antonio, hospitality and lifestyle appeal (Gruene, Schlitterbahn, the Comal and Guadalupe rivers), and an increasingly diverse local economy. The result is a CRE market that\'s emerged from "small-town Texas" into a real submarket with depth across retail, industrial, and office.',

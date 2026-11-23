@@ -157,6 +157,32 @@ export default async function InsightDetailPage({ params }: Props) {
                 ))}
               </div>
 
+              {/* Sourced data check (figures newer than the article) */}
+              {post.dataUpdate && (
+                <aside className="mb-12 rounded-2xl border border-border bg-background-cream p-6 sm:p-8">
+                  <p className="overline mb-2 text-gold">{post.dataUpdate.heading}</p>
+                  <p className="text-body-sm text-foreground-muted leading-relaxed">{post.dataUpdate.lead}</p>
+                  <ul className="mt-4 space-y-2.5">
+                    {post.dataUpdate.bullets.map((b, i) => (
+                      <li key={i} className="flex items-start gap-3 text-body text-foreground-muted">
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
+                        <span>{b}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <p className="mt-4 text-caption text-foreground-muted">
+                    {post.dataUpdate.reviewed ? 'Checked' : 'Prepared by CRECO, not yet reviewed by the broker. Checked'} {formatDate(post.dataUpdate.asOf)}.
+                  </p>
+                  <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:gap-x-6">
+                    {post.dataUpdate.links.map(l => (
+                      <Link key={l.href} href={l.href} className="inline-flex items-center gap-2 text-body-sm font-semibold text-gold-dark hover:text-gold">
+                        {l.label} <ArrowRight className="h-4 w-4" />
+                      </Link>
+                    ))}
+                  </div>
+                </aside>
+              )}
+
               {/* Sections */}
               {post.sections.map((section, i) => (
                 <section key={i} className="mb-12">

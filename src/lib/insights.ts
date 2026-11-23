@@ -46,6 +46,21 @@ export interface InsightPost {
   cover?: { src: string; alt: string; position?: string };
   /** Slugs of related posts to link from the bottom of this post */
   relatedSlugs?: string[];
+  /**
+   * Sourced data check shown in a labelled box above the article body, for figures newer than the article.
+   * Every figure must be one read in the cited report (see src/lib/answer-pages.ts). `reviewed: false` means the
+   * named broker has not read it yet, so the box says "Prepared by CRECO" and the article's broker-review stamp
+   * does not cover it.
+   */
+  dataUpdate?: {
+    heading: string;
+    /** ISO date the figures were checked; also the sitemap lastmod. */
+    asOf: string;
+    reviewed: boolean;
+    lead: string;
+    bullets: string[];
+    links: { label: string; href: string }[];
+  };
 }
 
 export const POSTS: InsightPost[] = [
@@ -126,6 +141,22 @@ export const POSTS: InsightPost[] = [
       'For owners: focus on submarket selection, asset modernization, and disciplined hold/sell decisions on each individual asset. For tenants: take advantage of negotiating leverage in the segments where it exists (Class B office, Class C industrial, secondary retail). For investors: cap rates have moved out, off-market deal flow is real, and 1031 timing is favorable.',
       'If you want to talk through how any of this applies to your specific Texas commercial real estate situation, get in touch. CRECO\'s practice spans every major Texas market and every property type — and we are happy to share our perspective without expectation, even if you don\'t end up engaging us.',
     ],
+    dataUpdate: {
+      heading: 'Q3 2026 data check',
+      asOf: '2026-11-23',
+      reviewed: false,
+      lead: 'This article was written in April 2026. The cap-rate and rent ranges in it are CRECO\'s market view; these are the published, sourced averages for Q3 2026.',
+      bullets: [
+        'Retail cap rates (metro-wide averages for all retail): Austin 6.53%, San Antonio 6.66%, Dallas–Fort Worth 6.86% and Houston 7.30% (Matthews; Lee & Associates for Houston).',
+        'Direction differs by metro: San Antonio cap rates have risen for 13 straight quarters and Austin for 16, Dallas–Fort Worth has fallen for five, and Houston has been flat since Q4 2025.',
+        'San Antonio office: vacancy of 15.2% to 17.8% depending on the brokerage, Class A asking rent of $32.02 to $36.56/SF full service, and no office space under construction in any of the three reports.',
+        'San Antonio industrial: vacancy of 10.3% to 11.5% and average asking rent of $8.81 to $9.26/SF on a net basis, with 2.3M to 3.8M SF under construction.',
+      ],
+      links: [
+        { label: 'Texas retail cap rates by metro', href: '/answers/texas-retail-cap-rates' },
+        { label: 'San Antonio & Hill Country Market Brief, Q3 2026', href: '/market-brief' },
+      ],
+    },
     relatedSlugs: ['lease-vs-buy-texas-business', 'multi-property-owner-strategy'],
   },
 
@@ -430,6 +461,25 @@ export const POSTS: InsightPost[] = [
       "Texas industrial leasing is a structured exercise: identify the specs that actually serve your business, run a competitive process across 4-5 candidate buildings, push on the deal terms that actually move money (TI, abatement, escalations, OpEx), and walk away from the deal terms that signal a bad partnership.",
       "If you're a Texas business looking at warehouse, distribution, or flex space and want a tenant rep who will run that process for you, CRECO covers this every day across San Antonio, Austin, Houston, DFW, and the surrounding submarkets. There's no out-of-pocket cost for tenants — landlord pays the tenant rep commission.",
     ],
+    dataUpdate: {
+      heading: 'Q3 2026 data check: San Antonio industrial',
+      asOf: '2026-11-23',
+      reviewed: false,
+      lead: 'This article was written in April 2026 and gives CRECO\'s rate ranges for several Texas metros. For San Antonio, here is what CBRE, Cushman & Wakefield and Partners published for Q3 2026. We have not yet added Q3 figures for the other metros.',
+      bullets: [
+        'Average asking rent: $8.81/SF NNN (CBRE), $8.85 net (Cushman & Wakefield) and $9.26 NNN (Partners). CBRE has it up 5.0% year over year.',
+        'Vacancy: 10.3% (CBRE), 10.6% (Cushman & Wakefield) and 11.5% (Partners). Net absorption was positive in all three reports.',
+        'Size changes your leverage. CBRE shows 14.8% vacancy at 100,000 to 249,999 SF and 15.4% at 250,000 to 499,999 SF, versus 6.6% below 50,000 SF.',
+        'Leasing activity was 2.91M SF (CBRE), 2.3M SF (Cushman & Wakefield) and 2.35M SF (Partners), including a 708,000 SF PepsiCo lease at Foster Commerce Center 6 in the South submarket.',
+        'Location matters: Northwest vacancy was 7.9% to 8.9%, while the Northeast ran 12.6% (CBRE) to 18.2% (Partners).',
+        'Small-bay flex: 7.9% to 8.1% vacancy at about $12.61 to $13.79/SF NNN.',
+      ],
+      links: [
+        { label: 'San Antonio industrial vacancy', href: '/answers/san-antonio-industrial-vacancy-rate' },
+        { label: 'Small-bay flex rent and vacancy', href: '/answers/san-antonio-flex-space-rent' },
+        { label: 'Market Brief, Q3 2026', href: '/market-brief' },
+      ],
+    },
     relatedSlugs: ['lease-vs-buy-texas-business', 'texas-commercial-real-estate-outlook-2026'],
   },
 
@@ -652,6 +702,24 @@ export const POSTS: InsightPost[] = [
       "Texas retail leasing in 2026 rewards specificity. Strong centers are leasing well at premium rates. Weak centers are stuck. Owners who actively manage and tenants who pick the right locations will both outperform — owners who don't and tenants who chase headline rates over location quality will both underperform.",
       "If you're an owner deciding what to do with a Texas retail asset, or a tenant evaluating retail space, CRECO is happy to walk through the specifics. Our retail leasing practice covers landlord representation, tenant representation, anchor placement, and pad site disposition across Texas.",
     ],
+    dataUpdate: {
+      heading: 'Q3 2026 data check: San Antonio and the Hill Country',
+      asOf: '2026-11-23',
+      reviewed: false,
+      lead: 'This article was written earlier in 2026. For San Antonio and the Hill Country, here is what Partners and Matthews published for Q3 2026.',
+      bullets: [
+        'Metro retail vacancy was 4.3% (Partners) or 4.0% (Matthews). Partners put asking rent at $19.58/SF NNN, up 2.4% year over year.',
+        'The Hill Country is tighter: 3.2% in Kendall County (Boerne) at $22.65/SF NNN and 2.7% in Comal County (New Braunfels) at $27.85/SF NNN.',
+        'About 1.0M SF of retail was under construction metro-wide, roughly 65% pre-leased. The largest projects were a 163,745 SF Home Depot in Schertz and a 125,000 SF H-E-B in Converse.',
+        'Matthews put the San Antonio average retail cap rate at 6.66%, up for 13 straight quarters, with pricing of $271/SF.',
+        'No free report publishes a cap rate for strip centers or a specific grocer. Nationally, Marcus & Millichap shows single-tenant retail from about 7.4% with five years or less of lease left down to 5.9% with more than 15 years left.',
+      ],
+      links: [
+        { label: 'San Antonio and Hill Country retail vacancy', href: '/answers/san-antonio-retail-vacancy-rate' },
+        { label: 'Texas retail cap rates by metro', href: '/answers/texas-retail-cap-rates' },
+        { label: 'H-E-B and grocery cap rates', href: '/answers/heb-freestanding-grocery-cap-rate' },
+      ],
+    },
     relatedSlugs: ['texas-commercial-real-estate-outlook-2026', 'multi-property-owner-strategy'],
   },
 ];
